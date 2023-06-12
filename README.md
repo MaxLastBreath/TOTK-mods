@@ -1,5 +1,5 @@
 # TOTK Mod Folder LOG 
-# [DISCORD](https://discord.com/invite/7MMv4yGfhM) - [KOFi](https://ko-fi.com/maxlastbreath#) - [Youtube](https://www.youtube.com/channel/UC9-81HNX9HfWHUsXBz5xYsQ)
+# [DISCORD](https://discord.com/invite/7MMv4yGfhM) - [KOFi](https://ko-fi.com/maxlastbreath#) - [Youtube](https://www.youtube.com/channel/UC9-81HNX9HfWHUsXBz5xYsQ) - [Reddit](https://www.reddit.com/user/Maxlastbreath)
 
 This repository is a backup of my work done in [Rentry](https://rentry.org/ModFolder/). So in case any Rentry link doesn't work, you can use this Github repository. 
 
