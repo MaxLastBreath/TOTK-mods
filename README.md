@@ -17,11 +17,11 @@ BlackscreenFix
 - Full **Ryujinx Changelog**:  [HERE](https://github.com/MaxLastBreath/TOTK-mods/blob/main/Changes%20Ryujinx.md)
 
 ## Credits
-[u/StevenssND For helping me open Github.](https://www.reddit.com/user/StevenssND)
-[Dynamic FPS Mod](https://www.reddit.com/user/ChucksFeedAndSeed/)
-[Blackscreen FIX](https://www.reddit.com/user/MarethyuX)
-[60FPS Mod](https://gbatemp.net/download/loz-tears-of-the-kingdom-dynamic-fps-static-fps-and-visual-fixes-patch-collection.37996/)
-Sweetmini - LOD mod
-@Wollnashorn - Anisotrophic Filter
-Patchaton - Some of the Visual Mods
-Socats, Darktalon and Sweetmini - 1080p resolution
+- [u/StevenssND For helping me open Github.](https://www.reddit.com/user/StevenssND)
+- [Dynamic FPS Mod](https://www.reddit.com/user/ChucksFeedAndSeed/)
+- [Blackscreen FIX](https://www.reddit.com/user/MarethyuX)
+- [60FPS Mod](https://gbatemp.net/download/loz-tears-of-the-kingdom-dynamic-fps-static-fps-and-visual-fixes-patch-collection.37996/)
+- Sweetmini - LOD mod
+- @Wollnashorn - Anisotrophic Filter
+- Patchaton - Some of the Visual Mods
+- Socats, Darktalon and Sweetmini - 1080p resolution
