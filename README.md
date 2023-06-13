@@ -1,9 +1,9 @@
-# TOTK Mod Folder LOG 
+# TOTK Mod Folder INFO 
 # [DISCORD](https://discord.com/invite/7MMv4yGfhM) - [KOFi](https://ko-fi.com/maxlastbreath#) - [Youtube](https://www.youtube.com/channel/UC9-81HNX9HfWHUsXBz5xYsQ) - [Reddit](https://www.reddit.com/user/Maxlastbreath)
 
 This repository is a backup of my work done in [Rentry](https://rentry.org/ModFolder/). So in case any Rentry link doesn't work, you can use this Github repository.
 
-##Installation
+## Installation
 Open Yuzu, top left click on files>Open Yuzu Folder, extract config and load folder. (You can skip config)
 
 ## Contains
