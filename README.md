@@ -16,7 +16,7 @@ BlackscreenFix
 - Full **Yuzu Changelog**: [HERE](https://github.com/MaxLastBreath/TOTK-mods/blob/main/Changes%20Yuzu.md)
 - Full **Ryujinx Changelog**:  [HERE](https://github.com/MaxLastBreath/TOTK-mods/blob/main/Changes%20Ryujinx.md)
 
-## Credits
+## Copyright Source & Credits
 - [u/StevenssND For helping me open Github.](https://www.reddit.com/user/StevenssND)
 - [Dynamic FPS Mod](https://www.reddit.com/user/ChucksFeedAndSeed/)
 - [Blackscreen FIX](https://www.reddit.com/user/MarethyuX)
