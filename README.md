@@ -25,6 +25,7 @@ BlackscreenFix
 
 ## Copyright Source & Credits
 - [u/StevenssND For helping me open Github.](https://www.reddit.com/user/StevenssND)
+- [Jake for reformatting and cleaning readme.](https://github.com/JakeDystopia/)
 - [Dynamic FPS Mod](https://www.reddit.com/user/ChucksFeedAndSeed/)
 - [Blackscreen FIX](https://www.reddit.com/user/MarethyuX)
 - [60FPS Mod](https://gbatemp.net/download/loz-tears-of-the-kingdom-dynamic-fps-static-fps-and-visual-fixes-patch-collection.37996/)
