@@ -5,6 +5,8 @@
 
 This repository is a backup of my work done in [Rentry](https://rentry.org/ModFolder/). So in case any Rentry link doesn't work, you can use this Github repository.
 
+[![Download](https://img.shields.io/badge/Download-0d1117?style=for-the-badge&logoColor=white)(https://github.com/MaxLastBreath/TOTK-mods/releases/download/Yuzu/Mod.Folder.4.1.zip)
+
 ## ☕ Installation
 
 ```
