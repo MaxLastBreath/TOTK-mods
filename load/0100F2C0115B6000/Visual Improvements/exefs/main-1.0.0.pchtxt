@@ -14,7 +14,7 @@
 
 // Disable FSR downscaling
 @enabled
-00C40A70 08008052
+00C40A80 08008052
 @stop
 
 // Credit: ChucksFeedAndSeed
