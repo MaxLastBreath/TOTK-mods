@@ -1,0 +1,55 @@
+//File source https://www.reddit.com/user/Maxlastbreath/comments/148o725/tears_of_the_kingdom_yuzu_setup_guide_60_fps_up/
+//Ports from StevenssND
+@nsobid-6F32C68DD3BC7D77AA714B80E92A096A737CDA77
+
+@flag print_values
+@flag offset_shift 0x100
+
+// Disable FSR downscaling
+@enabled
+00c42750 08008052
+@stop
+
+// Force 1080p
+@enabled
+00c34774 15000014
+@stop
+
+// Disable LOD Quality Reduction when framerate dips
+// (game changes model LODs etc to match handheld, causing textures etc to visibly change)
+@enabled
+00c4275c C0000014
+@stop
+
+// Shadows 1024x1024
+@enabled
+00ccd368 0B808052
+00ccd36c 17000014
+@stop
+
+// LOD Improvement v2
+// Credit: theboy181 + sweetmini
+@enabled
+027c3ea8 24000014
+@stop
+
+// Island Fix
+@enabled
+02a34904 00102A1E
+@stop
+
+// Removes the DOF effect when targeting
+// Credit: theboy181 & OldManKain
+@enabled
+00c07024 C0035FD6
+@stop
+
+// Lensflare Removal
+@enabled
+02a2d460 1F2003D5
+@stop
+
+// Disables FXAA
+@enabled
+00c42740 08008052
+@stop
