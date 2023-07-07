@@ -1,7 +1,11 @@
 <img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=6c7086&height=120&section=header"/>
 
 # TOTK Mod Folder README
+<<<<<<< HEAD
 # [![Download](https://img.shields.io/badge/Download-%23ffffff.svg?style=for-the-badge)](https://github.com/MaxLastBreath/TOTK-mods/releases/download/Yuzu-4.3/Mod.Folder.4.3.zip) - [![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/invite/7MMv4yGfhM)  - [![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/maxlastbreath#) - [![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)](https://www.youtube.com/channel/UC9-81HNX9HfWHUsXBz5xYsQ) - [![Reddit](https://img.shields.io/badge/Reddit-%23FF4500.svg?style=for-the-badge&logo=Reddit&logoColor=white)](https://www.reddit.com/user/Maxlastbreath) 
+=======
+# [![Download](https://img.shields.io/badge/Download-%23ffffff.svg?style=for-the-badge)](https://github.com/MaxLastBreath/TOTK-mods/releases/download/Yuzu-4.2/Mod.Folder.4.3.zip) - [![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/invite/7MMv4yGfhM)  - [![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/maxlastbreath#) - [![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)](https://www.youtube.com/channel/UC9-81HNX9HfWHUsXBz5xYsQ) - [![Reddit](https://img.shields.io/badge/Reddit-%23FF4500.svg?style=for-the-badge&logo=Reddit&logoColor=white)](https://www.reddit.com/user/Maxlastbreath) 
+>>>>>>> 163eaf8d98467d1c6750c5b3a39c0e94a5ed21d5
 
 This repository is a backup of my work done in [Rentry](https://rentry.org/ModFolder/). So in case any Rentry link doesn't work, you can use this Github repository.
 
