@@ -31,11 +31,12 @@ Credits to respetive Creators:
 60FPS mod Mod: https://gbatemp.net/download/loz-tears-of-the-kingdom-20fps-30fps-60fps-patch.37996/updates
 Dynamic FPS mod Credit2: https://www.reddit.com/user/ChucksFeedAndSeed
 Blackscreen Fix Mod: https://www.reddit.com/user/MarethyuX
-Sweetmini - LOD mod
+Sweetmini - Lod
+theboy181 - Lod/Skyisland/Dof
 @Wollnashorn - Anisotrophic Filter
 Patchaton - Some of the Visual Mods
 Socats, Darktalon and Sweetmini - 1080p resolution
-StevenssND - Some ports to 1.1.0
+StevenssND - Different Ports of Certain Mods.
 
 
 
