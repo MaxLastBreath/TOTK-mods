@@ -9,6 +9,7 @@
     "Disable Fxaa": "\\\\Remove FXAA @Father_Of_Egg, @InfiniteParallel, @OldManKain, @TheBoy181\n@enabled\n00C40A70 08008052\n@stop\n",
     "Disable Fsr": "\\\\Remove FSR\n@enabled\n00C40A70 08008052\n@stop\n",
     "Improve Lod": "\\\\Not needed for 1.0.0"
+    "Improve Something": ""
   },
   {
     "version": "main1.1.0",
