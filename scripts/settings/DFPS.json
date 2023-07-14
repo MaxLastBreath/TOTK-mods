@@ -1,14 +1,9 @@
 {
-  "ver": "1.0.0",
-  "ResolutionNames": [ "600p", "720p HD", "1080p FHD", "1440p QHD", "4k UHD", "6K QUHD", "8K UUHD" ],
-  "ResolutionValues": [ "800x600", "1280x720", "1920x1080", "2560x1440", "3840x2160", "6144x3160", "7680x4320" ],
-  "DefaultResolution": "1920x1080",
+  "ResolutionNames": [ "600p", "720p HD - Experimental", "1080p FHD", "1440p QHD - Experimental", "4k UHD", "6K QUHD - Experimental", "8K UUHD" ],
+  "ResolutionValues": [ "800x600", "1280x720", "1920x1080", "2560x1440", "3840x2160", "5760x3240", "7680x4320" ],
   "FPS": [ 30, 45, 60, 90, 120 ],
-  "DefaultFPS": 60,
-  "ShadowResolutionNames": [ "Very Low", "Low", "Medium", "High", "Ultra High", "EXTREME", "Ultra Extreme" ],
+  "ShadowResolutionNames": [ "Very Low x108", "Low x208", "Medium x512", "High x1024", "Ultra High x2048", "EXTREME x4096", "Ultra Extreme x8192" ],
   "ShadowResolutionValues": [ "108", "208", "512", "1024", "2048", "4096", "8192" ],
-  "DefaultShadowResolution": "High",
   "CameraQualityNames": [ "Enable", "Disable" ],
-  "CameraQualityValues": [ "True", "False" ],
-  "DefaultCameraQuality": "True"
+  "CameraQualityValues": [ "True", "False" ]
 }
