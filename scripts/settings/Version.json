@@ -6,9 +6,9 @@
     "offset": "\n@flag print_values\n@flag offset_shift 0x100\n",
     "Disable DOF": "\\\\Dof Disable - @TheBoy181\n@enabled\n00BD0F14 C0035FD6\n@stop\n",
     "Disable Lensflare": "\\\\Lens Flare - @TheBoy181\n@enabled\n029ca250 1F2003D5\n@stop\n",
-    "Disable Fxaa": "\\\\Remove FXAA @Father_Of_Egg, @InfiniteParallel, @OldManKain, @TheBoy181\n@enabled\n00C40A70 08008052\n@stop\n",
-    "Disable Fsr": "\\\\Remove FSR\n@enabled\n00C40A70 08008052\n@stop\n",
-    "Improve Lod": "\\\\Not needed for 1.0.0"
+    "Disable FXAA": "\\\\Remove FXAA @Father_Of_Egg, @InfiniteParallel, @OldManKain, @TheBoy181\n@enabled\n00C40A70 08008052\n@stop\n",
+    "Disable FSR": "\\\\Remove FSR\n@enabled\n00C40A70 08008052\n@stop\n",
+    "Improve LOD": "\\\\Not needed for 1.0.0"
   },
   {
     "version": "main1.1.0",
@@ -17,9 +17,9 @@
     "offset": "\n@flag print_values\n@flag offset_shift 0x100\n",
     "Disable DOF": "\\\\Dof Disable - @TheBoy181\n@enabled\n00C488B4 C0035FD6\n@stop\n",
     "Disable Lensflare": "\\\\Lens Flare - @TheBoy181\n@enabled\n02A42490 1F2003D5\n@stop\n",
-    "Disable Fxaa": "\\\\Remove FXAA @Father_Of_Egg, @InfiniteParallel, @OldManKain, @TheBoy181\n@enabled\n00CAD330 08008052\n@stop\n",
-    "Disable Fsr": "\\\\Remove FSR\n@enabled\n00CAD330 08008052\n@stop\n",
-    "Improve Lod": "\\\\Improve LOD @Theboy181 @sweetmini\n@enabled\n027D9448 24000014\n@stop\n"
+    "Disable FXAA": "\\\\Remove FXAA @Father_Of_Egg, @InfiniteParallel, @OldManKain, @TheBoy181\n@enabled\n00CAD330 08008052\n@stop\n",
+    "Disable FSR": "\\\\Remove FSR\n@enabled\n00CAD330 08008052\n@stop\n",
+    "Improve LOD": "\\\\Improve LOD @Theboy181 @sweetmini\n@enabled\n027D9448 24000014\n@stop\n"
   },
   {
     "version": "main1.1.1",
@@ -28,9 +28,9 @@
     "offset": "\n@flag print_values\n@flag offset_shift 0x100\n",
     "Disable DOF": "\\\\Dof Disable - @TheBoy181\n@enabled\n00C25898 C0035FD6\n@stop\n",
     "Disable Lensflare": "\\\\Lens Flare - @TheBoy181\n@enabled\n02A4A1E0 1F2003D5\n@stop\n",
-    "Disable Fxaa": "\\\\Remove FXAA @Father_Of_Egg, @InfiniteParallel, @OldManKain, @TheBoy181\n@enabled\n00CC1C10 08008052\n@stop\n",
-    "Disable Fsr": "\\\\Remove FSR\n@enabled\n00CC1C20 08008052\n@stop\n",
-    "Improve Lod": "\\\\Improve LOD @Theboy181 @sweetmini\n@enabled\n027E07F8 10000014\n@stop\n"
+    "Disable FXAA": "\\\\Remove FXAA @Father_Of_Egg, @InfiniteParallel, @OldManKain, @TheBoy181\n@enabled\n00CC1C10 08008052\n@stop\n",
+    "Disable FSR": "\\\\Remove FSR\n@enabled\n00CC1C20 08008052\n@stop\n",
+    "Improve LOD": "\\\\Improve LOD @Theboy181 @sweetmini\n@enabled\n027E07F8 10000014\n@stop\n"
   },
   {
     "version": "main1.1.2",
@@ -39,9 +39,9 @@
     "offset": "\n@flag print_values\n@flag offset_shift 0x100\n",
     "Disable DOF": "\\\\Dof Disable - @TheBoy181\n@enabled\n00C4B934 C0035FD6\n@stop\n",
     "Disable Lensflare": "\\\\Lens Flare - @TheBoy181\n@enabled\n02A395F0 1F2003D5\n@stop\n",
-    "Disable Fxaa": "\\\\Remove FXAA @Father_Of_Egg, @InfiniteParallel, @OldManKain, @TheBoy181\n@enabled\n00C76FE0 08008052\n@stop\n",
-    "Disable Fsr": "\\\\Remove FSR\n@enabled\n00C76FF0 08008052\n@stop\n",
-    "Improve Lod": "\\\\Improve LOD @Theboy181 @sweetmini\n@enabled\n027D04F8 24000014\n@stop\n"
+    "Disable FXAA": "\\\\Remove FXAA @Father_Of_Egg, @InfiniteParallel, @OldManKain, @TheBoy181\n@enabled\n00C76FE0 08008052\n@stop\n",
+    "Disable FSR": "\\\\Remove FSR\n@enabled\n00C76FF0 08008052\n@stop\n",
+    "Improve LOD": "\\\\Improve LOD @Theboy181 @sweetmini\n@enabled\n027D04F8 24000014\n@stop\n"
   },
   {
     "version": "main1.2.0",
@@ -50,9 +50,9 @@
     "offset": "\n@flag print_values\n@flag offset_shift 0x100\n",
     "Disable DOF": "\\\\Dof Disable - @TheBoy181\n@enabled\n00c07024 C0035FD6\n@stop\n",
     "Disable Lensflare": "\\\\Lens Flare - @TheBoy181\n@enabled\n02a2d460 1F2003D5\n@stop\n",
-    "Disable Fxaa": "\\\\Remove FXAA @Father_Of_Egg, @InfiniteParallel, @OldManKain, @TheBoy181\n@enabled\n00c42740 08008052\n@stop\n",
-    "Disable Fsr": "\\\\Remove FSR\n@enabled\n00c42750 08008052\n@stop\n",
-    "Improve Lod": "\\\\Improve LOD @Theboy181 @sweetmini\n@enabled\n027c3ea8 24000014\n@stop\n"
+    "Disable FXAA": "\\\\Remove FXAA @Father_Of_Egg, @InfiniteParallel, @OldManKain, @TheBoy181\n@enabled\n00c42740 08008052\n@stop\n",
+    "Disable FSR": "\\\\Remove FSR\n@enabled\n00c42750 08008052\n@stop\n",
+    "Improve LOD": "\\\\Improve LOD @Theboy181 @sweetmini\n@enabled\n027c3ea8 24000014\n@stop\n"
   }
 
 
