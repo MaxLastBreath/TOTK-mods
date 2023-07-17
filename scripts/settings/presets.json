@@ -11,7 +11,6 @@
     "Disable FSR": "Enable",
     "Improve LOD": "Enable"
   },
-{
   "Low": {
     "Resolution": "1080p FHD",
     "FPS": "30",
@@ -24,7 +23,7 @@
     "Disable FSR": "Disable",
     "Improve LOD": "Enable"
   },
-    "Medium": {
+  "Medium": {
     "Resolution": "1440p QHD - Experimental",
     "FPS": "30",
     "ShadowResolution": "Auto",
@@ -36,7 +35,7 @@
     "Disable FSR": "Enable",
     "Improve LOD": "Enable"
   },
-    "High": {
+  "High": {
     "Resolution": "4K UHD",
     "FPS": "60",
     "ShadowResolution": "Auto",
@@ -48,7 +47,7 @@
     "Disable FSR": "Enable",
     "Improve LOD": "Enable"
   },
-    "Very High": {
+  "Very High": {
     "Resolution": "6K QUHD - Experimental",
     "FPS": "60",
     "ShadowResolution": "Auto",
@@ -60,7 +59,7 @@
     "Disable FSR": "Enable",
     "Improve LOD": "Enable"
   },
-    "RTX 4090 SUPER HIGH": {
+  "RTX 4090 SUPER HIGH": {
     "Resolution": "8k UUHD",
     "FPS": "60",
     "ShadowResolution": "Auto",
