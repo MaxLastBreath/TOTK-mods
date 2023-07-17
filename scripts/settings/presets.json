@@ -4,7 +4,7 @@
     "FPS": "60",
     "ShadowResolution": "Auto",
     "CameraQuality": "Enable",
-    "UI": "None",
+    "UI": "Black Screen Fix",
     "Disable DOF": "Enable",
     "Disable Lensflare": "Enable",
     "Disable FXAA": "Enable",
@@ -16,7 +16,7 @@
     "FPS": "30",
     "ShadowResolution": "Auto",
     "CameraQuality": "Disable",
-    "UI": "None",
+    "UI": "Black Screen Fix",
     "Disable DOF": "Enable",
     "Disable Lensflare": "Enable",
     "Disable FXAA": "Enable",
@@ -28,11 +28,11 @@
     "FPS": "30",
     "ShadowResolution": "Auto",
     "CameraQuality": "Disable",
-    "UI": "None",
+    "UI": "Black Screen Fix",
     "Disable DOF": "Disable",
     "Disable Lensflare": "Enable",
-    "Disable FXAA": "Enable",
-    "Disable FSR": "Enable",
+    "Disable FXAA": "Disable",
+    "Disable FSR": "Disable",
     "Improve LOD": "Enable"
   },
   "High": {
@@ -40,23 +40,23 @@
     "FPS": "60",
     "ShadowResolution": "Auto",
     "CameraQuality": "Enable",
-    "UI": "None",
+    "UI": "Black Screen Fix",
     "Disable DOF": "Enable",
     "Disable Lensflare": "Enable",
-    "Disable FXAA": "Enable",
-    "Disable FSR": "Enable",
+    "Disable FXAA": "Disable",
+    "Disable FSR": "Disable",
     "Improve LOD": "Enable"
   },
-  "Very High": {
+  "Ultra": {
     "Resolution": "6K QUHD - Experimental",
     "FPS": "60",
     "ShadowResolution": "Auto",
     "CameraQuality": "Enable",
-    "UI": "None",
+    "UI": "Black Screen Fix",
     "Disable DOF": "Enable",
     "Disable Lensflare": "Enable",
-    "Disable FXAA": "Enable",
-    "Disable FSR": "Enable",
+    "Disable FXAA": "Disable",
+    "Disable FSR": "Disable",
     "Improve LOD": "Enable"
   },
   "RTX 4090 SUPER HIGH": {
@@ -64,11 +64,11 @@
     "FPS": "60",
     "ShadowResolution": "Auto",
     "CameraQuality": "Enable",
-    "UI": "None",
+    "UI": "Black Screen Fix",
     "Disable DOF": "Enable",
     "Disable Lensflare": "Enable",
-    "Disable FXAA": "Enable",
-    "Disable FSR": "Enable",
+    "Disable FXAA": "Disable",
+    "Disable FSR": "Disable",
     "Improve LOD": "Enable"
   }
 }
