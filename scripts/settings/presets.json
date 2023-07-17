@@ -2,17 +2,74 @@
   "Default": {
     "Resolution": "1080p FHD",
     "FPS": "60",
-    "ShadowResolution": "High",
+    "ShadowResolution": "Auto",
     "CameraQuality": "Enable",
     "UI": "None",
-    "Disable DOF": "Enable"
+    "Disable DOF": "Enable",
+    "Disable Lensflare": "Enable",
+    "Disable FXAA": "Enable",
+    "Disable FSR": "Enable",
+    "Improve LOD": "Enable"
   },
-  "High Performance": {
-    "Resolution": "720p HD Experimental",
-    "FPS": "60",
-    "ShadowResolution": "Low x218",
+{
+  "Low": {
+    "Resolution": "1080p FHD",
+    "FPS": "30",
+    "ShadowResolution": "Auto",
     "CameraQuality": "Disable",
     "UI": "None",
-    "Disable DOF": "Disable"
-  }
+    "Disable DOF": "Enable",
+    "Disable Lensflare": "Enable",
+    "Disable FXAA": "Enable",
+    "Disable FSR": "Disable",
+    "Improve LOD": "Enable"
+  },
+    "Medium": {
+    "Resolution": "1440p QHD - Experimental",
+    "FPS": "30",
+    "ShadowResolution": "Auto",
+    "CameraQuality": "Disable",
+    "UI": "None",
+    "Disable DOF": "Disable",
+    "Disable Lensflare": "Enable",
+    "Disable FXAA": "Enable",
+    "Disable FSR": "Enable",
+    "Improve LOD": "Enable"
+  },
+    "High": {
+    "Resolution": "4K UHD",
+    "FPS": "60",
+    "ShadowResolution": "Auto",
+    "CameraQuality": "Enable",
+    "UI": "None",
+    "Disable DOF": "Enable",
+    "Disable Lensflare": "Enable",
+    "Disable FXAA": "Enable",
+    "Disable FSR": "Enable",
+    "Improve LOD": "Enable"
+  },
+    "Very High": {
+    "Resolution": "6K QUHD - Experimental",
+    "FPS": "60",
+    "ShadowResolution": "Auto",
+    "CameraQuality": "Enable",
+    "UI": "None",
+    "Disable DOF": "Enable",
+    "Disable Lensflare": "Enable",
+    "Disable FXAA": "Enable",
+    "Disable FSR": "Enable",
+    "Improve LOD": "Enable"
+  },
+    "RTX 4090 SUPER HIGH": {
+    "Resolution": "8k UUHD",
+    "FPS": "60",
+    "ShadowResolution": "Auto",
+    "CameraQuality": "Enable",
+    "UI": "None",
+    "Disable DOF": "Enable",
+    "Disable Lensflare": "Enable",
+    "Disable FXAA": "Enable",
+    "Disable FSR": "Enable",
+    "Improve LOD": "Enable"
+  },
 }
