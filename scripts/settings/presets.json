@@ -6,7 +6,7 @@
     "CameraQuality": "Enable",
     "UI": "None",
     "Disable DOF": "Enable",
-  },
+},
 "High Performance": {
     "Resolution": "720p HD Experimental",
     "FPS": "60",
