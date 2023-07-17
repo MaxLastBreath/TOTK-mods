@@ -1,0 +1,18 @@
+{
+"Default": {
+    "Resolution": "1080p FHD",
+    "FPS": "60",
+    "ShadowResolution": "High",
+    "CameraQuality": "Enable",
+    "UI": "None",
+    "Disable DOF": "Enable",
+  },
+"High Performance": {
+    "Resolution": "720p HD Experimental",
+    "FPS": "60",
+    "ShadowResolution": "Low x218",
+    "CameraQuality": "Disable",
+    "UI": "None",
+    "Disable DOF": "Disable",
+  },
+}
