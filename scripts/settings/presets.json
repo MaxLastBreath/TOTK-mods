@@ -58,7 +58,7 @@
     "Resolution": "1080p FHD",
     "FPS": "30",
     "ShadowResolution": "Auto",
-    "CameraQuality": "Disabled",
+    "CameraQuality": "Disable",
     "First Person": "Disabled",
     "UI": "Black Screen Fix",
     "Disable DOF": "Enable",
