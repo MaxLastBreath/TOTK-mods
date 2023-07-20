@@ -8,8 +8,6 @@
     "First Person": "Disabled",
     "Disable DOF": "Enable",
     "Disable Lensflare": "Enable",
-    "Disable FXAA": "Enable",
-    "Disable FSR": "Enable",
     "Improve LOD": "Enable"
   },
   "Low": {
@@ -21,8 +19,6 @@
     "First Person": "Disabled",
     "Disable DOF": "Enable",
     "Disable Lensflare": "Enable",
-    "Disable FXAA": "Enable",
-    "Disable FSR": "Disable",
     "Improve LOD": "Enable"
   },
   "Medium": {
@@ -34,8 +30,6 @@
     "UI": "Black Screen Fix",
     "Disable DOF": "Disable",
     "Disable Lensflare": "Enable",
-    "Disable FXAA": "Disable",
-    "Disable FSR": "Disable",
     "Improve LOD": "Enable"
   },
   "High": {
@@ -47,8 +41,6 @@
     "UI": "Black Screen Fix",
     "Disable DOF": "Enable",
     "Disable Lensflare": "Enable",
-    "Disable FXAA": "Disable",
-    "Disable FSR": "Disable",
     "Improve LOD": "Enable"
   },
   "Ultra": {
@@ -60,8 +52,6 @@
     "UI": "Black Screen Fix",
     "Disable DOF": "Enable",
     "Disable Lensflare": "Enable",
-    "Disable FXAA": "Disable",
-    "Disable FSR": "Disable",
     "Improve LOD": "Enable"
   },
   "RTX 4090 SUPER HIGH": {
@@ -73,8 +63,6 @@
     "UI": "Black Screen Fix",
     "Disable DOF": "Enable",
     "Disable Lensflare": "Enable",
-    "Disable FXAA": "Disable",
-    "Disable FSR": "Disable",
     "Improve LOD": "Enable"
   }
 }
