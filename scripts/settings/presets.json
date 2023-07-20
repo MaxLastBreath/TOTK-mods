@@ -54,6 +54,17 @@
     "Disable Lensflare": "Enable",
     "Improve LOD": "Enable"
   },
+    "Steamdeck": {
+    "Resolution": "1080p FHD",
+    "FPS": "30",
+    "ShadowResolution": "Auto",
+    "CameraQuality": "Disabled",
+    "First Person": "Disabled",
+    "UI": "Black Screen Fix",
+    "Disable DOF": "Enable",
+    "Disable Lensflare": "Enable",
+    "Improve LOD": "Enable"
+  }
   "RTX 4090 SUPER HIGH": {
     "Resolution": "8K UUHD",
     "FPS": "60",
