@@ -28,7 +28,7 @@ DynamicFPS - Controls Resolution, FPS, Shadow Quality and Camera Quality.
 ## Copyright Source & Credits
 - [Dynamic FPS Mod](https://www.reddit.com/user/ChucksFeedAndSeed/)
 - [Blackscreen FIX](https://www.reddit.com/user/MarethyuX)
-- [Controller UI mods] (https://gamebanana.com/members/1944248)
+- [Controller UI mods](https://gamebanana.com/members/1944248)
 - Theboy181 - LOD mod, DOF mod, Lensflare mod.
 - First Person Mod - me @maxlastbreath
 
