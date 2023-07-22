@@ -1,6 +1,0 @@
-Disable FPS++ or DynamicFPS++ (same mod)
-Updating to 1.2.1
-DFPS 1.5.3 behavior has been largely improved and now will be apart of the modfolder due to more frequent updates.
-Huge upgrades to LOD and skyislands, doesn't seem to have performance impact from my testing.
-Enjoy the game.
-DFPS 1.5.2 causes less stuttering and 1.5.3 fixes physic related issues.
