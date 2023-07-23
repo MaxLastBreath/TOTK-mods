@@ -195,7 +195,7 @@ class Manager:
             self.configdir = os.path.join(self.Globaldir, "config", "qt-config.ini")
             if os.path.exists("/run/media/mmcblk0p1/Emulation/storage/yuzu"):
                 self.configdir = os.path.join(home_directory, ".config", "yuzu", "qt-config.ini")
-            config_parser = configparser.ConfigParser()
+            config_parser = configparser.RawConfigParser()
             config_parser.read(self.configdir)
             self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{self.Globaldir}/nand'))
             self.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{self.Globaldir}/load')), "0100F2C0115B6000")
@@ -208,7 +208,7 @@ class Manager:
             # Check for user folder
             if os.path.exists(userfolder):
                 self.configdir = os.path.join(yuzupath, "../user/config/qt-config.ini")
-                config_parser = configparser.ConfigParser()
+                config_parser = configparser.RawConfigParser()
                 config_parser.read(self.configdir)
                 self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{os.path.join(yuzupath, "../user/nand")}'))
                 self.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{os.path.join(yuzupath, "../user/nand")}')), "0100F2C0115B6000")
@@ -237,7 +237,7 @@ class Manager:
             else:
                 self.Globaldir = os.path.join(home_directory, "AppData", "Roaming", "yuzu")
                 self.configdir = os.path.join(self.Globaldir, "config", "qt-config.ini")
-                config_parser = configparser.ConfigParser()
+                config_parser = configparser.RawConfigParser()
                 config_parser.read(self.configdir)
                 self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{self.Globaldir}/nand'))
                 self.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{self.Globaldir}/load')), "0100F2C0115B6000")
@@ -441,7 +441,7 @@ class Manager:
         self.save_user_choices(config_file, "appdata")
     # Load Yuzu Dir
     def load_yuzu_path(self, config_file):
-            config = configparser.ConfigParser()
+            config = configparser.RawConfigParser()
             config.read(config_file)
             yuzu_path = config.get('Paths', 'YuzuPath', fallback="Appdata")
             return yuzu_path
@@ -480,7 +480,7 @@ class Manager:
            return response.json()
 
     def save_user_choices(self, config_file, yuzu_path=None):
-        config = configparser.ConfigParser()
+        config = configparser.RawConfigParser()
         if os.path.exists(config_file):
             config.read(config_file)
 
@@ -506,7 +506,7 @@ class Manager:
             config.write(file)
 
     def load_user_choices(self, config_file):
-        config = configparser.ConfigParser()
+        config = configparser.RawConfigParser()
         config.read(config_file)
 
         # Load the selected options
@@ -552,7 +552,7 @@ class Manager:
         warning_message = None
         configfile = os.path.join(self.configdir, "../custom/0100F2C0115B6000.ini")
         print(f"{configfile}")
-        config = configparser.ConfigParser()
+        config = configparser.RawConfigParser()
         config.read(configfile)
 
         if setting_type == "Res":
@@ -711,7 +711,7 @@ class Manager:
                 os.remove(ini_file_path)
 
             # Save the selected options to the INI file
-            config = configparser.ConfigParser()
+            config = configparser.RawConfigParser()
 
             # Add the selected resolution, FPS, shadow resolution, and camera quality
             self.Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
@@ -790,7 +790,7 @@ class Manager:
                         if proper_res > 1080:
                             configfile = os.path.join(self.configdir, "../custom/0100F2C0115B6000.ini")
                             print(f"{configfile}")
-                            config = configparser.ConfigParser()
+                            config = configparser.RawConfigParser()
                             config.read(configfile)
                             if config.has_option("Renderer", "resolution_setup\\use_global"):
                                 config.remove_option("Renderer", "resolution_setup\\use_global")
@@ -823,7 +823,7 @@ class Manager:
             else:
                 print("Selected option has no associated setting folder.")
         def DownloadDFPS():
-            config = configparser.ConfigParser()
+            config = configparser.RawConfigParser()
             config_file = "VisualImprovements.ini"
             config.read(config_file)
             if not config.has_section("Updates"):
