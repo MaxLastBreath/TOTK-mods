@@ -781,12 +781,11 @@ class Manager:
                      print("Installing High End Nvidia Yuzu Preset")
             if Setting_selection is not None:
                     repo_url = 'https://github.com/MaxLastBreath/TOTK-mods'
-                    Settingfolder_path = f'{Setting_folder}'
-                    Setting_directory = f"{self.configdir}/custom/"
+                    Setting_directory = os.path.join(f"{self.configdir}", "../custom/0100F2C0115B6000.ini")
                     raw_url = f'{repo_url}/raw/main/{SettingGithubFolder}'
                     response = requests.get(raw_url)
                     if response.status_code == 200:
-                        with open(os.path.join(Setting_directory, "0100F2C0115B6000.ini"), "wb") as file:
+                        with open(Setting_directory, "wb") as file:
                             file.write(response.content)
                         print("Successfully Installed TOTK Yuzu preset settings!")
                         current_res = self.dfps_options.get("ResolutionValues", [""])[self.Resindex].split("x")[1]
