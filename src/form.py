@@ -193,7 +193,8 @@ class Manager:
         if self.os_platform == "Linux":
             self.Globaldir = os.path.join(home_directory, ".local", "share", "yuzu")
             self.configdir = os.path.join(self.Globaldir, "config", "qt-config.ini")
-            if os.path.exists("/run/media/mmcblk0p1/Emulation/storage/yuzu"):
+            if not os.path.exists(self.configdir):
+                print("Detected a steamdeck!")
                 self.configdir = os.path.join(home_directory, ".config", "yuzu", "qt-config.ini")
             config_parser = configparser.ConfigParser()
             config_parser.read(self.configdir)
@@ -547,7 +548,7 @@ class Manager:
         else:
             print("Yuzu path not found in the config file - Defaulting to Default Dir!")
             self.checkpath()
-
+ 
     def warning_window(self, setting_type):
         warning_message = None
         configfile = os.path.join(self.configdir, "../custom/0100F2C0115B6000.ini")
@@ -711,12 +712,14 @@ class Manager:
                 os.remove(ini_file_path)
 
             # Save the selected options to the INI file
-            config = configparser.ConfigParser()
+            config = configparser.ConfigParser() 
+            config.optionxform = lambda option: option
 
             # Add the selected resolution, FPS, shadow resolution, and camera quality
             self.Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
             ShadowIndex = self.dfps_options.get("ShadowResolutionNames").index(shadow_resolution)
             CameraIndex = self.dfps_options.get("CameraQualityNames").index(camera_quality)
+
             config['Graphics'] = {
                 'ResolutionWidth': self.dfps_options.get("ResolutionValues", [""])[self.Resindex].split("x")[0],
                 'ResolutionHeight': self.dfps_options.get("ResolutionValues", [""])[self.Resindex].split("x")[1],
@@ -747,6 +750,7 @@ class Manager:
                     for key, value in version_option.items():
                         if key not in ["Source", "nsobid", "offset", "version"] and key in selected_options and selected_options[key] == "Enable":
                             file.write(value + "\n")
+    
             # Update Visual Improvements MOD.
             with open(ini_file_path, 'w') as configfile:
                 config.write(configfile)
@@ -782,7 +786,7 @@ class Manager:
                     raw_url = f'{repo_url}/raw/main/{SettingGithubFolder}'
                     response = requests.get(raw_url)
                     if response.status_code == 200:
-                        with open(os.path.join(self.load_dir, "0100F2C0115B6000.ini"), "wb") as file:
+                        with open(os.path.join(Setting_directory, "0100F2C0115B6000.ini"), "wb") as file:
                             file.write(response.content)
                         print("Successfully Installed TOTK Yuzu preset settings!")
                         current_res = self.dfps_options.get("ResolutionValues", [""])[self.Resindex].split("x")[1]
