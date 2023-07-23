@@ -547,7 +547,7 @@ class Manager:
         else:
             print("Yuzu path not found in the config file - Defaulting to Default Dir!")
             self.checkpath()
- 
+
     def warning_window(self, setting_type):
         warning_message = None
         configfile = os.path.join(self.configdir, "../custom/0100F2C0115B6000.ini")
@@ -711,14 +711,12 @@ class Manager:
                 os.remove(ini_file_path)
 
             # Save the selected options to the INI file
-            config = configparser.ConfigParser() 
-            config.optionxform = lambda option: option
+            config = configparser.ConfigParser()
 
             # Add the selected resolution, FPS, shadow resolution, and camera quality
             self.Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
             ShadowIndex = self.dfps_options.get("ShadowResolutionNames").index(shadow_resolution)
             CameraIndex = self.dfps_options.get("CameraQualityNames").index(camera_quality)
-
             config['Graphics'] = {
                 'ResolutionWidth': self.dfps_options.get("ResolutionValues", [""])[self.Resindex].split("x")[0],
                 'ResolutionHeight': self.dfps_options.get("ResolutionValues", [""])[self.Resindex].split("x")[1],
@@ -749,13 +747,9 @@ class Manager:
                     for key, value in version_option.items():
                         if key not in ["Source", "nsobid", "offset", "version"] and key in selected_options and selected_options[key] == "Enable":
                             file.write(value + "\n")
-    
             # Update Visual Improvements MOD.
             with open(ini_file_path, 'w') as configfile:
                 config.write(configfile)
-
-
-
         def UpdateSettings():
             Setting_folder = None
             SettingGithubFolder = None
