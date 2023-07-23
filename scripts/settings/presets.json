@@ -6,6 +6,7 @@
     "CameraQuality": "Disable",
     "UI": "Black Screen Fix",
     "First Person": "Disabled",
+    "Disable QReduction": "Enable",
     "Disable DOF": "Enable",
     "Disable Lensflare": "Enable",
     "Improve LOD": "Enable"
@@ -17,6 +18,7 @@
     "CameraQuality": "Disable",
     "UI": "Black Screen Fix",
     "First Person": "Disabled",
+    "Disable QReduction": "Disable",
     "Disable DOF": "Enable",
     "Disable Lensflare": "Enable",
     "Improve LOD": "Enable"
@@ -28,6 +30,7 @@
     "CameraQuality": "Disable",
     "First Person": "Disabled",
     "UI": "Black Screen Fix",
+    "Disable QReduction": "Enable",
     "Disable DOF": "Disable",
     "Disable Lensflare": "Enable",
     "Improve LOD": "Enable"
@@ -39,6 +42,7 @@
     "CameraQuality": "Disable",
     "First Person": "Disabled",
     "UI": "Black Screen Fix",
+    "Disable QReduction": "Enable",
     "Disable DOF": "Enable",
     "Disable Lensflare": "Enable",
     "Improve LOD": "Enable"
@@ -50,6 +54,7 @@
     "CameraQuality": "Disable",
     "First Person": "Disabled",
     "UI": "Black Screen Fix",
+    "Disable QReduction": "Enable",
     "Disable DOF": "Enable",
     "Disable Lensflare": "Enable",
     "Improve LOD": "Enable"
@@ -61,6 +66,7 @@
     "CameraQuality": "Disable",
     "First Person": "Disabled",
     "UI": "Black Screen Fix",
+    "Disable QReduction": "Disable",
     "Disable DOF": "Enable",
     "Disable Lensflare": "Enable",
     "Improve LOD": "Enable"
@@ -72,6 +78,7 @@
     "CameraQuality": "Disable",
     "First Person": "Disabled",
     "UI": "Black Screen Fix",
+    "Disable QReduction": "Enable",
     "Disable DOF": "Enable",
     "Disable Lensflare": "Enable",
     "Improve LOD": "Enable"
