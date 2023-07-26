@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import CURRENT, ttk
 from form import Manager
 
-currentver = "1.0.0"
+currentver = "1.0.3"
 # Create the main window
 if __name__ == "__main__":
     window = tk.Tk()
