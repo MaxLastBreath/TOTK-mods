@@ -577,6 +577,8 @@ class Manager:
             Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
             current_res = self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1]
             proper_res = float(current_res)
+            if not config.has_section("Core"):
+                config.add_section("Core")
             try:
                 mem1 = config.get("Core", "use_unsafe_extended_memory_layout\\use_global")
                 mem2 = config.get("Core", "use_unsafe_extended_memory_layout\\default")
@@ -588,10 +590,18 @@ class Manager:
                 res2 = config.get("Renderer", "resolution_setup\\default")
                 res3 = int(config.get("Renderer", "resolution_setup"))
             except configparser.NoOptionError as e:
-                return
+                mem1 = "true"
+                mem2 = "true"
+                mem3 = "false"
+                newmem1 = "true"
+                newmem2 = "true"
+                newmemsetting = 0
+                res1 = "true"
+                res1 = "true"
+                res3 = 0
 
             if proper_res > 1080:
-                if mem3 == "false" or newmemsetting == 0 or not res3 == 2:
+                if mem3 == "false" or newmemsetting == 0 or not res3 == 2 or not newmem1 == "false" or not newmem2 == "false" or not mem1 == "false" or not mem2 == "false":
                     file_path = self.TOTKconfig
                     warning_message = f"Resolution {resolution}, requires 1x Yuzu renderer and extended memory layout 8GB to be enabled, otherwise it won't function properly and will cause artifacts, you currently have them disabled, do you want to enable them?"
                 else:
