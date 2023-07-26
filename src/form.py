@@ -577,51 +577,55 @@ class Manager:
             Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
             current_res = self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1]
             proper_res = float(current_res)
-
             try:
                 mem1 = config.get("Core", "use_unsafe_extended_memory_layout\\use_global")
                 mem2 = config.get("Core", "use_unsafe_extended_memory_layout\\default")
-                mem3 = config.get("Core", "use_unsafe_extended_memory_layout")
+                mem3 = config.get("Core", "use_unsafe_extended_memory_layout") # true = 8gb - doesn't work anymore in new version of Yuzu
+                newmem1 = config.get("Core", "memory_layout_mode\\use_global")
+                newmem2 = config.get("Core", "memory_layout_mode\\default")
+                newmemsetting = int(config.get("Core", "memory_layout_mode")) # 0 - 4gb, 1 - 6gb, 2 - 8gb
                 res1 = config.get("Renderer", "resolution_setup\\use_global")
                 res2 = config.get("Renderer", "resolution_setup\\default")
                 res3 = int(config.get("Renderer", "resolution_setup"))
-    
-                if proper_res > 1080:
-                    if mem1 == "true" or mem2 == "true" or mem3 == "false" or res1 == "true" or res2 == "true" or res3 > 2 or res3 < 2:
-                        file_path = self.TOTKconfig
-                        warning_message = f"Resolution {resolution}, requires 1x Yuzu renderer and extended memory layout 8GB to be enabled, otherwise it won't function properly and will cause artifacts, you currently have them disabled, do you want to enable them?"
-                    else:
-                        print("Correct settings are already applied, no changes required!!")
-                else:
-                    print("Resolution is lower than 1080p! No changes required!")
+            except configparser.NoOptionError as e:
+                return
 
-            except NoOptionError as e:
-                if proper_res > 1080:
+            if proper_res > 1080:
+                if mem3 == "false" or newmemsetting == 0 or not res3 == 2:
                     file_path = self.TOTKconfig
                     warning_message = f"Resolution {resolution}, requires 1x Yuzu renderer and extended memory layout 8GB to be enabled, otherwise it won't function properly and will cause artifacts, you currently have them disabled, do you want to enable them?"
                 else:
-                    print("Resolution is lower than 1080p! No changes required!")
+                    print("Correct settings are already applied, no changes required!!")
+            else:
+                print("Resolution is lower than 1080p! No changes required!")
 
         if warning_message is not None and warning_message.strip():
             response = messagebox.askyesno(f"WARNING! Required settings NOT Enabled!", warning_message)
             # If Yes, Modify the Config File.
             if response:
                 # Remove existing options in Renderer section
-                if config.has_option("Renderer", "resolution_setup\\use_global"):
-                    config.remove_option("Renderer", "resolution_setup\\use_global")
-                if config.has_option("Renderer", "resolution_setup\\default"):
-                    config.remove_option("Renderer", "resolution_setup\\default")
-                if config.has_option("Renderer", "resolution_setup"):
-                    config.remove_option("Renderer", "resolution_setup")
+                if config.has_section("Renderer"):
+                    if config.has_option("Renderer", "resolution_setup\\use_global"):
+                        config.remove_option("Renderer", "resolution_setup\\use_global")
+                    if config.has_option("Renderer", "resolution_setup\\default"):
+                        config.remove_option("Renderer", "resolution_setup\\default")
+                    if config.has_option("Renderer", "resolution_setup"):
+                        config.remove_option("Renderer", "resolution_setup")
 
                 # Remove existing options in Core section
-                if config.has_option("Core", "use_unsafe_extended_memory_layout\\use_global"):
-                    config.remove_option("Core", "use_unsafe_extended_memory_layout\\use_global")
-                if config.has_option("Core", "use_unsafe_extended_memory_layout\\default"):
-                    config.remove_option("Core", "use_unsafe_extended_memory_layout\\default")
-                if config.has_option("Core", "use_unsafe_extended_memory_layout"):
-                    config.remove_option("Core", "use_unsafe_extended_memory_layout")
-
+                if config.has_section("Core"):
+                    if config.has_option("Core", "use_unsafe_extended_memory_layout\\use_global"):
+                        config.remove_option("Core", "use_unsafe_extended_memory_layout\\use_global")
+                    if config.has_option("Core", "use_unsafe_extended_memory_layout\\default"):
+                        config.remove_option("Core", "use_unsafe_extended_memory_layout\\default")
+                    if config.has_option("Core", "use_unsafe_extended_memory_layout"):
+                        config.remove_option("Core", "use_unsafe_extended_memory_layout")
+                    if config.has_option("Core", "memory_layout_mode\\use_global"):
+                        config.remove_option("Core", "memory_layout_mode\\use_global")
+                    if config.has_option("Core", "memory_layout_mode\\default"):
+                        config.remove_option("Core", "memory_layout_mode\\default")
+                    if config.has_option("Core", "memory_layout_mode"):
+                        config.remove_option("Core", "memory_layout_mode")
                 # Add new values
                 config.set("Renderer", "resolution_setup\\use_global", "false")
                 config.set("Renderer", "resolution_setup\\default", "false")
@@ -630,9 +634,12 @@ class Manager:
                 config.set("Core", "use_unsafe_extended_memory_layout\\use_global", "false")
                 config.set("Core", "use_unsafe_extended_memory_layout\\default", "false")
                 config.set("Core", "use_unsafe_extended_memory_layout", "true")
+                config.set("Core", "memory_layout_mode\\use_global", "false")
+                config.set("Core", "memory_layout_mode\\default", "false")
+                config.set("Core", "memory_layout_mode", "1")
 
                 with open(configfile, "w") as configfile:
-                    config.write(configfile)
+                    config.write(configfile, space_around_delimiters=False)
             else:
                 # If No, do nothing.
                 print(f"Turning on required settings declined!!")
@@ -828,14 +835,23 @@ class Manager:
                             config.remove_option("Core", "use_unsafe_extended_memory_layout\\default")
                         if config.has_option("Core", "use_unsafe_extended_memory_layout"):
                             config.remove_option("Core", "use_unsafe_extended_memory_layout")
+                        if config.has_option("Core", "memory_layout_mode\\use_global"):
+                            config.remove_option("Core", "memory_layout_mode\\use_global")
+                        if config.has_option("Core", "memory_layout_mode\\default"):
+                            config.remove_option("Core", "memory_layout_mode\\default")
+                        if config.has_option("Core", "memory_layout_mode"):
+                            config.remove_option("Core", "memory_layout_mode")
                         # Add new values
                         config.set("Renderer", "resolution_setup\\use_global", "false")
-                        config.set("Renderer", "resolution_setup\\default", "false")
+                        config.set("Renderer", "resolution_setup\\default","false")
                         config.set("Renderer", "resolution_setup", "2")
 
                         config.set("Core", "use_unsafe_extended_memory_layout\\use_global", "false")
                         config.set("Core", "use_unsafe_extended_memory_layout\\default", "false")
                         config.set("Core", "use_unsafe_extended_memory_layout", "true")
+                        config.set("Core", "memory_layout_mode\\use_global", "false")
+                        config.set("Core", "memory_layout_mode\\default", "false")
+                        config.set("Core", "memory_layout_mode", "1")
                         with open(configfile, "w") as configfile:
                             config.write(configfile)
             else:
