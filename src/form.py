@@ -38,16 +38,16 @@ class Manager:
         # Configure Text Font.
         textfont = ("Arial Bold", 10, "bold")
         # Create a transparent black background
-        UI_path = "HUD/BG_Left.png"
+        UI_path = self.get_UI_path("BG_Left.png")
         image = Image.open(UI_path)
         image = image.resize((1200 * self.scalingfactor, 600 * self.scalingfactor))
         self.background_UI = ImageTk.PhotoImage(image)
-        UI_path2 = "HUD/BG_Right.png"
+        UI_path2 = self.get_UI_path("BG_Right.png")
         image = Image.open(UI_path2)
         image = image.resize((1200, 600))
         self.background_UI2 = ImageTk.PhotoImage(image)
         # Load and set the image as the background
-        image_path = "HUD/image.png"
+        image_path = self.get_UI_path("image.png")
         image = Image.open(image_path)
         image = image.resize((1200, 600))
         self.background_image = ImageTk.PhotoImage(image)
@@ -157,7 +157,7 @@ class Manager:
             row += 40
 
         # Ko-fi Button
-        kofi_image_path = "HUD/Kofi.png"
+        kofi_image_path = self.get_UI_path("Kofi.png")
         kofi_image = Image.open(kofi_image_path)
         kofi_image = kofi_image.resize((150, 42))
         self.kofi_image = ImageTk.PhotoImage(kofi_image)
@@ -165,7 +165,7 @@ class Manager:
         kofi_button_window = canvas.create_window(1110, 550, anchor="center", window=kofi_button)
 
         # GitHub Button
-        github_image_path = "HUD/github.png"
+        github_image_path = self.get_UI_path("github.png")
         github_image = Image.open(github_image_path)
         github_image = github_image.resize((76, 40))
         self.github_image = ImageTk.PhotoImage(github_image)
@@ -179,6 +179,18 @@ class Manager:
         # Load Saved User Options.
         config_file = "VisualImprovements.ini"
         self.load_user_choices(config_file)
+    # run UI properly as executable
+    def get_UI_path(self, file_name):
+        if getattr(sys, 'frozen', False):
+            # Look for the 'HUD' folder next to the executable
+            executable_dir = os.path.dirname(sys.executable)
+            hud_folder_path = os.path.join(executable_dir, "HUD")
+            if os.path.exists(hud_folder_path):
+                return os.path.abspath(os.path.join(hud_folder_path, file_name))
+        # If not running as an executable or 'HUD' folder not found, assume it's in the same directory as the script
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        hud_folder_path = os.path.join(script_dir, "HUD")
+        return os.path.abspath(os.path.join(hud_folder_path, file_name))
     # Define OS
     def DetectOS(self):
         if self.os_platform == "Linux":
@@ -193,9 +205,11 @@ class Manager:
         if self.os_platform == "Linux":
             self.Globaldir = os.path.join(home_directory, ".local", "share", "yuzu")
             self.configdir = os.path.join(self.Globaldir, "config", "qt-config.ini")
+            self.TOTKconfig = os.path.join(self.Globaldir, "config", "custom", "0100F2C0115B6000.ini")
             if not os.path.exists(self.configdir):
                 print("Detected a steamdeck!")
                 self.configdir = os.path.join(home_directory, ".config", "yuzu", "qt-config.ini")
+                self.TOTKconfig = os.path.join(home_directory, ".config", "yuzu", "custom", "0100F2C0115B6000.ini")
             config_parser = configparser.ConfigParser()
             config_parser.read(self.configdir)
             self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{self.Globaldir}/nand'))
@@ -209,6 +223,7 @@ class Manager:
             # Check for user folder
             if os.path.exists(userfolder):
                 self.configdir = os.path.join(yuzupath, "../user/config/qt-config.ini")
+                self.TOTKconfig = os.path.join(self.configdir, "../custom/0100F2C0115B6000.ini")
                 config_parser = configparser.ConfigParser()
                 config_parser.read(self.configdir)
                 self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{os.path.join(yuzupath, "../user/nand")}'))
@@ -238,6 +253,7 @@ class Manager:
             else:
                 self.Globaldir = os.path.join(home_directory, "AppData", "Roaming", "yuzu")
                 self.configdir = os.path.join(self.Globaldir, "config", "qt-config.ini")
+                self.TOTKconfig = os.path.join(self.configdir, "../custom/0100F2C0115B6000.ini")
                 config_parser = configparser.ConfigParser()
                 config_parser.read(self.configdir)
                 self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{self.Globaldir}/nand'))
@@ -551,7 +567,7 @@ class Manager:
  
     def warning_window(self, setting_type):
         warning_message = None
-        configfile = os.path.join(self.configdir, "../custom/0100F2C0115B6000.ini")
+        configfile = self.TOTKconfig
         print(f"{configfile}")
         config = configparser.ConfigParser()
         config.read(configfile)
@@ -572,7 +588,7 @@ class Manager:
     
                 if proper_res > 1080:
                     if mem1 == "true" or mem2 == "true" or mem3 == "false" or res1 == "true" or res2 == "true" or res3 > 2 or res3 < 2:
-                        file_path = os.path.abspath(os.path.join(self.configdir, "../custom/0100F2C0115B6000.ini"))
+                        file_path = self.TOTKconfig
                         warning_message = f"Resolution {resolution}, requires 1x Yuzu renderer and extended memory layout 8GB to be enabled, otherwise it won't function properly and will cause artifacts, you currently have them disabled, do you want to enable them?"
                     else:
                         print("Correct settings are already applied, no changes required!!")
@@ -581,7 +597,7 @@ class Manager:
 
             except NoOptionError as e:
                 if proper_res > 1080:
-                    file_path = os.path.abspath(os.path.join(self.configdir, "../custom/0100F2C0115B6000.ini"))
+                    file_path = self.TOTKconfig
                     warning_message = f"Resolution {resolution}, requires 1x Yuzu renderer and extended memory layout 8GB to be enabled, otherwise it won't function properly and will cause artifacts, you currently have them disabled, do you want to enable them?"
                 else:
                     print("Resolution is lower than 1080p! No changes required!")
@@ -703,7 +719,7 @@ class Manager:
             camera_quality = self.camera_var.get()
 
             # Determine the path to the INI file in the user's home directory
-            ini_file_directory = os.path.join(self.load_dir, "Visual Improvements", "romfs", "dfps")
+            ini_file_directory = os.path.join(self.load_dir, "Mod Manager Patch", "romfs", "dfps")
             os.makedirs(ini_file_directory, exist_ok=True)
             ini_file_path = os.path.join(ini_file_directory, "default.ini")
 
@@ -736,7 +752,7 @@ class Manager:
             # Logic for Updating Visual Improvements Mod
             for version_option in self.version_options:
                 version = version_option.get("version", "")
-                mod_path = os.path.join(self.load_dir, "Visual Improvements", "exefs")
+                mod_path = os.path.join(self.load_dir, "Mod Manager Patch", "exefs")
 
                 # Create the directory if it doesn't exist
                 os.makedirs(mod_path, exist_ok=True)
@@ -781,7 +797,7 @@ class Manager:
                      print("Installing High End Nvidia Yuzu Preset")
             if Setting_selection is not None:
                     repo_url = 'https://github.com/MaxLastBreath/TOTK-mods'
-                    Setting_directory = os.path.join(f"{self.configdir}", "../custom/0100F2C0115B6000.ini")
+                    Setting_directory = self.TOTKconfig
                     raw_url = f'{repo_url}/raw/main/{SettingGithubFolder}'
                     response = requests.get(raw_url)
                     if response.status_code == 200:
@@ -790,39 +806,38 @@ class Manager:
                         print("Successfully Installed TOTK Yuzu preset settings!")
                         current_res = self.dfps_options.get("ResolutionValues", [""])[self.Resindex].split("x")[1]
                         proper_res = float(current_res)
-                        if proper_res > 1080:
-                            configfile = os.path.join(self.configdir, "../custom/0100F2C0115B6000.ini")
-                            print(f"{configfile}")
-                            config = configparser.ConfigParser()
-                            config.read(configfile)
-                            if config.has_option("Renderer", "resolution_setup\\use_global"):
-                                config.remove_option("Renderer", "resolution_setup\\use_global")
-                            if config.has_option("Renderer", "resolution_setup\\default"):
-                                config.remove_option("Renderer", "resolution_setup\\default")
-                            if config.has_option("Renderer", "resolution_setup"):
-                                config.remove_option("Renderer", "resolution_setup")
-
-                            # Remove existing options in Core section
-                            if config.has_option("Core", "use_unsafe_extended_memory_layout\\use_global"):
-                                config.remove_option("Core", "use_unsafe_extended_memory_layout\\use_global")
-                            if config.has_option("Core", "use_unsafe_extended_memory_layout\\default"):
-                                config.remove_option("Core", "use_unsafe_extended_memory_layout\\default")
-                            if config.has_option("Core", "use_unsafe_extended_memory_layout"):
-                                config.remove_option("Core", "use_unsafe_extended_memory_layout")
-
-                            # Add new values
-                            config.set("Renderer", "resolution_setup\\use_global", "false")
-                            config.set("Renderer", "resolution_setup\\default", "false")
-                            config.set("Renderer", "resolution_setup", "2")
-
-                            config.set("Core", "use_unsafe_extended_memory_layout\\use_global", "false")
-                            config.set("Core", "use_unsafe_extended_memory_layout\\default", "false")
-                            config.set("Core", "use_unsafe_extended_memory_layout", "true")
-                            with open(configfile, "w") as configfile:
-                                config.write(configfile)
                     else:
                         print(f"Failed to download file from {raw_url}. Status code: {response.status_code}")
                         return
+                    if proper_res > 1080:
+                        configfile = self.TOTKconfig
+                        print(f"{configfile}")
+                        config = configparser.ConfigParser()
+                        config.read(configfile)
+                        if config.has_option("Renderer", "resolution_setup\\use_global"):
+                            config.remove_option("Renderer", "resolution_setup\\use_global")
+                        if config.has_option("Renderer", "resolution_setup\\default"):
+                            config.remove_option("Renderer", "resolution_setup\\default")
+                        if config.has_option("Renderer", "resolution_setup"):
+                            config.remove_option("Renderer", "resolution_setup")
+
+                        # Remove existing options in Core section
+                        if config.has_option("Core", "use_unsafe_extended_memory_layout\\use_global"):
+                            config.remove_option("Core", "use_unsafe_extended_memory_layout\\use_global")
+                        if config.has_option("Core", "use_unsafe_extended_memory_layout\\default"):
+                            config.remove_option("Core", "use_unsafe_extended_memory_layout\\default")
+                        if config.has_option("Core", "use_unsafe_extended_memory_layout"):
+                            config.remove_option("Core", "use_unsafe_extended_memory_layout")
+                        # Add new values
+                        config.set("Renderer", "resolution_setup\\use_global", "false")
+                        config.set("Renderer", "resolution_setup\\default", "false")
+                        config.set("Renderer", "resolution_setup", "2")
+
+                        config.set("Core", "use_unsafe_extended_memory_layout\\use_global", "false")
+                        config.set("Core", "use_unsafe_extended_memory_layout\\default", "false")
+                        config.set("Core", "use_unsafe_extended_memory_layout", "true")
+                        with open(configfile, "w") as configfile:
+                            config.write(configfile)
             else:
                 print("Selected option has no associated setting folder.")
         def DownloadDFPS():

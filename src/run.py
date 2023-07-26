@@ -1,12 +1,11 @@
 import tkinter as tk
-from tkinter import CURRENT, ttk
 from form import Manager
+from update import textver, check_for_updates
 
-currentver = "1.0.3"
-# Create the main window
 if __name__ == "__main__":
+    check_for_updates()
     window = tk.Tk()
-    window.title(f"TOTK MOD Manager {currentver}")
+    window.title(f"TOTK MOD Manager {textver}")
     main = Manager(window)
     window_width = 1200
     window_height = 600
@@ -18,5 +17,4 @@ if __name__ == "__main__":
     y_position = (screen_height - window_height) // 2
     window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
     window.resizable(False, False)
-
     window.mainloop()
