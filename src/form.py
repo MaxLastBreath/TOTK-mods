@@ -1,20 +1,17 @@
 import tkinter as tk
-from tkinter import CURRENT, Tk, ttk, filedialog, messagebox, Toplevel
+from tkinter import ttk, filedialog, messagebox, Toplevel
 import configparser
 import threading
 import os
 import sys
 import shutil
-import patoolib
 import json
 import requests
 import tkinter.font as tkFont
 import platform
 from PIL import Image, ImageTk
-from datetime import datetime, timezone
 from configparser import NoOptionError
-from pathlib import Path
-import time
+from modules.qt_config import modify_disabled_key, write_config_file
 
 class Manager:
     def __init__(self, window):
@@ -24,6 +21,7 @@ class Manager:
         self.warnagain = "yes"
         self.root = window
         self.window = window
+        self.title_id = "72324500776771584"
         # Run Script
         self.checkpath()
         self.DetectOS()
@@ -913,6 +911,11 @@ class Manager:
             else:
                 print("You already have the latest DFPS version and the folder exists!")
         def DownloadUI():
+
+            config = configparser.ConfigParser(allow_no_value=True, delimiters=('=',), comment_prefixes=('#',), strict=False)
+            config.optionxform = lambda option: option  # To preserve the case of the options
+            config.read(self.configdir)
+
             ui_mod_folder = None
             CurrentFolder = None
             ui_selection = self.ui_var.get()
@@ -920,12 +923,21 @@ class Manager:
             if ui_selection == "none":
                print("No UI Selected")
             elif ui_selection == "PS4":
+                     modify_disabled_key(self.configdir, self.load_dir, config, self.title_id, "Xbox UI", action="add")
+                     modify_disabled_key(self.configdir, self.load_dir, config, self.title_id, "BlackscreenFix", action="add")
+                     modify_disabled_key(self.configdir, self.load_dir, config, self.title_id, "Playstation UI", action="remove")
                      ui_mod_folder = "Playstation UI"
                      CurrentFolder = "scripts/UI/Playstation%20UI/"
             elif ui_selection == "Xbox":
+                     modify_disabled_key(self.configdir, self.load_dir, config, self.title_id, "Playstation UI", action="add")
+                     modify_disabled_key(self.configdir, self.load_dir, config, self.title_id, "BlackscreenFix", action="add")
+                     modify_disabled_key(self.configdir, self.load_dir, config, self.title_id, "Xbox UI", action="remove")
                      ui_mod_folder = "Xbox UI"
                      CurrentFolder = 'scripts/UI/Xbox%20UI/'
             elif ui_selection == "Black Screen Fix":
+                     modify_disabled_key(self.configdir, self.load_dir, config, self.title_id, "Playstation UI", action="add")
+                     modify_disabled_key(self.configdir, self.load_dir, config, self.title_id, "Xbox UI", action="add")
+                     modify_disabled_key(self.configdir, self.load_dir, config, self.title_id, "BlackscreenFix", action="remove")
                      ui_mod_folder = "BlackscreenFix"
                      CurrentFolder = 'scripts/UI/BlackscreenFix/'
 
@@ -933,7 +945,6 @@ class Manager:
                     repo_url = 'https://api.github.com/repos/MaxLastBreath/TOTK-mods'
                     folder_path = f'{CurrentFolder}'
                     Mod_directory = os.path.join(self.load_dir, f'{ui_mod_folder}')
-
                     if os.path.exists(Mod_directory):
                         print(f"The UI mod folder '{ui_mod_folder}' already exists. Skipping download.")
                         return
@@ -947,6 +958,7 @@ class Manager:
                         return
                     else:
                         print("failed to retrive folder and contents")
+
         def DownloadFP():
             FP_mod_folder = None
             FPCurrentFolder = None
@@ -981,6 +993,7 @@ class Manager:
                         return
                     else:
                         print("failed to retrive folder and contents")
+
         # Execute tasks and make a Progress Window.
         progress_window = Toplevel(self.root)
         progress_window.title("Downloading")
