@@ -5,11 +5,16 @@ from packaging.version import Version, parse
 import platform
 import sys
 import subprocess
+import tkinter as tk
+from tkinter import messagebox
 
 Version = "manager-1.1.0"
 textver = Version.strip("manager-")
 GITHUB = "TOTK-mods"
 OWNER = "MaxLastBreath"
+def show_confirmation_dialog(remote_version_str):
+    result = messagebox.askyesno("Confirmation", f"Mod Manager version {remote_version_str} was found, do you want to apply the update?")
+    return result
 
 # Check For Update
 def check_for_updates():
@@ -23,8 +28,11 @@ def check_for_updates():
         remote_version = parse(remote_version_str)
 
         if remote_version > parse(textver):
-            print("Update Available")
-            download_update(release_info["assets"])
+            confirmation_result = show_confirmation_dialog(remote_version_str)
+            if confirmation_result:
+               download_update(release_info["assets"])
+            else:
+                return
         else:
             print("No Updates Found. Your app is up to date.")
 
@@ -62,24 +70,38 @@ def download_update(assets):
                 f.write(response.content)
 
             print("Asset downloaded successfully.")
-        apply_update()
+        apply_update(assets)
 
-def apply_update():
+def apply_update(assets):
     print("Applying Update...")
-    updated_executable = "TOTK Mod Manager"
+    current_platform = platform.system()
+    updated_executable = None
+
+    for asset in assets:
+        asset_name = asset["name"]
+        if current_platform == "Windows" and asset_name.endswith(".exe"):
+            updated_executable = asset_name
+            break
+
+    if updated_executable is None:
+        print("No Windows executable found in the assets.")
+        return
+
     try:
         if sys.platform.startswith("linux"):
             subprocess.Popen(["chmod", "+x", updated_executable])
         elif sys.platform.startswith("win"):
             pass 
 
-        subprocess.Popen([updated_executable])
+        os.execl(updated_executable, *([updated_executable] + sys.argv[1:]))
     except Exception as e:
         print(f"Error applying update: {e}")
         return
 
     print("Update Applied. Exiting...")
-    relaunch()
-
-def relaunch():
+    time.sleep(2)
     sys.exit()
+
+
+
+

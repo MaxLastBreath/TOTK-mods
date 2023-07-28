@@ -101,11 +101,11 @@ def find_and_remove_entry(configdir, directory, config, title_id, entry_to_remov
     found = False
     for key, value in config.items(section):
         if value == entry_to_remove:
-            print(f"Entry to remove found: {entry_to_remove}")
+            # print(f"Entry to remove found: {entry_to_remove}")
             found = True
             break
     if not found:
-        print(f"Entry '{entry_to_remove}' doesn't exist in section with title_id: {title_id}")
+        # print(f"Entry '{entry_to_remove}' doesn't exist in section with title_id: {title_id}")
         return
 
     d_values.remove(f"{entry_to_remove}")
@@ -135,7 +135,7 @@ def add_entry(configdir, directory, config, title_id, entry_to_add):
     # Check if the entry already exists
     d_values = sorted(get_d_values(config, properindex))
     if entry_to_add in d_values:
-        print(f"Already exists{entry_to_add}")
+        # print(f"Already exists{entry_to_add}")
         return
 
     d_values.append(f"{entry_to_add}")
@@ -153,10 +153,10 @@ def add_entry(configdir, directory, config, title_id, entry_to_add):
 
 def modify_disabled_key(configdir, directory, config, title_id, entry, action='add'):
     if action == "add":
-        print("Adding key:", entry)
+        # print("Adding key:", entry)
         add_entry(configdir, directory, config, title_id, entry)
     if action == "remove":
-        print("Adding key:", entry)
+        # print("Adding key:", entry)
         find_and_remove_entry(configdir, directory, config, title_id, entry)
 
 def write_config_file(configdir, config):

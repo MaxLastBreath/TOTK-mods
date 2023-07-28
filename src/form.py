@@ -115,8 +115,16 @@ class Manager:
         shadow_resolution_dropdown_window = canvas.create_window(200, 200, anchor="w", window=shadow_resolution_dropdown)
 
         # Create a Label for camera quality
-        canvas.create_text(40, 240, text="Camera Quality:", anchor="w", fill="#D1F3FD", font=textfont)
-        self.camera_var = tk.StringVar(value=self.dfps_options.get("CameraQualityNames", [""])[0])  # Set the default camera quality to "Enable"
+        # Make exception for camera quality
+        CameraQ = self.dfps_options.get("CameraQualityNames", [""])
+        for index, value in enumerate(CameraQ):
+            if value == "Enable" or value == "Enabled":
+                CameraQ[index] = "On"
+            elif value == "Disable" or value == "Disabled":
+                CameraQ[index] = "Off"
+
+        canvas.create_text(40, 240, text="Camera Quality++:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.camera_var = tk.StringVar(value=CameraQ[0])  # Set the default camera quality to "Enable"
         camera_dropdown = ttk.Combobox(window, textvariable=self.camera_var, values=self.dfps_options.get("CameraQualityNames", []))
         camera_dropdown_window = canvas.create_window(200, 240, anchor="w", window=camera_dropdown)
 
@@ -129,11 +137,11 @@ class Manager:
 
         # First Person and FOV
         canvas.create_text(40, 320, text="Enable First Person:", anchor="w", fill="#D1F3FD", font=textfont)
-        fp_values = ["Disabled", "70 FOV", "90 FOV", "110 FOV"]
+        fp_values = ["Off", "70 FOV", "90 FOV", "110 FOV"]
         self.fp_var = tk.StringVar(value=ui_values[0])
         fp_dropdown = ttk.Combobox(window, textvariable=self.fp_var, values=fp_values)
         fp_dropdown_window = canvas.create_window(200, 320, anchor="w", window=fp_dropdown)
-
+        
         # Create labels and enable/disable options for each entry
         self.selected_options = {}
         row = 320
@@ -147,8 +155,8 @@ class Manager:
                 canvas.create_text(40, row + 40, text=version_option_name, anchor="w", fill="#D1F3FD", font=textfont)
 
             # Create enable/disable dropdown menu
-            version_option_var = tk.StringVar(value="Enable")
-            version_option_dropdown = ttk.Combobox(window, textvariable=version_option_var, values=["Enable", "Disable"])
+            version_option_var = tk.StringVar(value="On")
+            version_option_dropdown = ttk.Combobox(window, textvariable=version_option_var, values=["On", "Off"])
             version_option_dropdown_window = canvas.create_window(200, row + 40, anchor="w", window=version_option_dropdown)
 
             self.selected_options[version_option_name] = version_option_var
@@ -277,6 +285,16 @@ class Manager:
             else:
                 messagebox.showinfo("Saved Preset", "No saved preset found. Please save your current settings first.")
         elif selected_preset in self.presets_data:
+            preset_to_apply = self.presets_data[selected_preset]
+            for key, value in preset_to_apply.items():
+                if value == "Enable":
+                    preset_to_apply[key] = "On"
+                if value == "Enabled":
+                    preset_to_apply[key] = "On"
+                elif value == "Disable":
+                    preset_to_apply[key] = "Off"
+                elif value == "Disabled":
+                    preset_to_apply[key] = "Off"
             # Apply the selected preset from the online presets
             self.apply_preset(self.presets[selected_preset])
     #fetch presets
@@ -358,7 +376,6 @@ class Manager:
                     self.dfps_options = json.load(file)
             else:
                 self.dfps_options = {}
-
         return self.dfps_options
 
     def load_version_options_from_json(self):
@@ -779,12 +796,20 @@ class Manager:
                     file.write(version_option.get("offset", "") + "\n")
 
                     for key, value in version_option.items():
-                        if key not in ["Source", "nsobid", "offset", "version"] and key in selected_options and selected_options[key] == "Enable":
+                        if key not in ["Source", "nsobid", "offset", "version"] and key in selected_options and selected_options[key] in ["Enable", "On"]:
                             file.write(value + "\n")
-    
+            qtconfig = configparser.ConfigParser(allow_no_value=True, delimiters=('=',), comment_prefixes=('#',), strict=False)
+            qtconfig.optionxform = lambda option: option
+            qtconfig.read(self.configdir)
+            # Ensures that the patches are active
+            modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "DFPS", action="remove")
+            modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Mod Manager Patches", action="remove")
+            # To maximize compatbility with old version of Mod Folders and Mod Manager.
+            modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Visual Improvements", action="add")
             # Update Visual Improvements MOD.
             with open(ini_file_path, 'w') as configfile:
                 config.write(configfile)
+
         def UpdateSettings():
             Setting_folder = None
             SettingGithubFolder = None
@@ -864,7 +889,14 @@ class Manager:
                             config.write(configfile)
             else:
                 print("Selected option has no associated setting folder.")
+
         def DownloadDFPS():
+            # Make sure DFPS is enabled.
+            qtconfig = configparser.ConfigParser(allow_no_value=True, delimiters=('=',), comment_prefixes=('#',), strict=False)
+            qtconfig.optionxform = lambda option: option
+            qtconfig.read(self.configdir)
+            modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "DFPS", action="remove")
+
             config = configparser.ConfigParser()
             config_file = "VisualImprovements.ini"
             config.read(config_file)
@@ -910,34 +942,37 @@ class Manager:
                     config.write(configfile)
             else:
                 print("You already have the latest DFPS version and the folder exists!")
-        def DownloadUI():
 
-            config = configparser.ConfigParser(allow_no_value=True, delimiters=('=',), comment_prefixes=('#',), strict=False)
-            config.optionxform = lambda option: option  # To preserve the case of the options
-            config.read(self.configdir)
+        def DownloadUI():
+            qtconfig = configparser.ConfigParser(allow_no_value=True, delimiters=('=',), comment_prefixes=('#',), strict=False)
+            qtconfig.optionxform = lambda option: option
+            qtconfig.read(self.configdir)
 
             ui_mod_folder = None
             CurrentFolder = None
             ui_selection = self.ui_var.get()
             print(f"{self.fp_var.get()}")
             if ui_selection == "none":
-               print("No UI Selected")
+                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Xbox UI", action="add")
+                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Playstation UI", action="add")
+                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "BlackscreenFix", action="add")
+                print("No UI Selected, Disabling all UI mods!")
             elif ui_selection == "PS4":
-                     modify_disabled_key(self.configdir, self.load_dir, config, self.title_id, "Xbox UI", action="add")
-                     modify_disabled_key(self.configdir, self.load_dir, config, self.title_id, "BlackscreenFix", action="add")
-                     modify_disabled_key(self.configdir, self.load_dir, config, self.title_id, "Playstation UI", action="remove")
+                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Xbox UI", action="add")
+                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "BlackscreenFix", action="add")
+                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Playstation UI", action="remove")
                      ui_mod_folder = "Playstation UI"
                      CurrentFolder = "scripts/UI/Playstation%20UI/"
             elif ui_selection == "Xbox":
-                     modify_disabled_key(self.configdir, self.load_dir, config, self.title_id, "Playstation UI", action="add")
-                     modify_disabled_key(self.configdir, self.load_dir, config, self.title_id, "BlackscreenFix", action="add")
-                     modify_disabled_key(self.configdir, self.load_dir, config, self.title_id, "Xbox UI", action="remove")
+                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Playstation UI", action="add")
+                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "BlackscreenFix", action="add")
+                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Xbox UI", action="remove")
                      ui_mod_folder = "Xbox UI"
                      CurrentFolder = 'scripts/UI/Xbox%20UI/'
             elif ui_selection == "Black Screen Fix":
-                     modify_disabled_key(self.configdir, self.load_dir, config, self.title_id, "Playstation UI", action="add")
-                     modify_disabled_key(self.configdir, self.load_dir, config, self.title_id, "Xbox UI", action="add")
-                     modify_disabled_key(self.configdir, self.load_dir, config, self.title_id, "BlackscreenFix", action="remove")
+                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Playstation UI", action="add")
+                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Xbox UI", action="add")
+                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "BlackscreenFix", action="remove")
                      ui_mod_folder = "BlackscreenFix"
                      CurrentFolder = 'scripts/UI/BlackscreenFix/'
 
@@ -960,20 +995,36 @@ class Manager:
                         print("failed to retrive folder and contents")
 
         def DownloadFP():
+            qtconfig = configparser.ConfigParser(allow_no_value=True, delimiters=('=',), comment_prefixes=('#',), strict=False)
+            qtconfig.optionxform = lambda option: option
+            qtconfig.read(self.configdir)
+
             FP_mod_folder = None
             FPCurrentFolder = None
             FP_selection = self.fp_var.get()
-            if FP_selection == "Disabled":
-                print("Third Person is selected!")
+            if FP_selection == "Off":
+                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 110 FOV", action="add")
+                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 90 FOV", action="add")
+                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 70 FOV", action="add")
+                print("Selected Third Person, removing ALL First Person Mods!")
             elif FP_selection == "70 FOV":
                      FP_mod_folder = "First Person 70 FOV"
                      FPCurrentFolder = "scripts/UI/First%20Person%20FOV%2070/"
+                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 110 FOV", action="add")
+                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 90 FOV", action="add")
+                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 70 FOV", action="remove")
             elif FP_selection == "90 FOV":
                      FP_mod_folder = "First Person 90 FOV"
                      FPCurrentFolder = 'scripts/UI/First%20Person%20FOV%2090/'
+                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 110 FOV", action="add")
+                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 70 FOV", action="add")
+                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 90 FOV", action="remove")
             elif FP_selection == "110 FOV":
                      FP_mod_folder = "First Person 110 FOV"
                      FPCurrentFolder = 'scripts/UI/First%20Person%20FOV%20110/'
+                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 70 FOV", action="add")
+                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 90 FOV", action="add")
+                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 100 FOV", action="remove")
             if FP_mod_folder is not None:
                     repo_url = 'https://api.github.com/repos/MaxLastBreath/TOTK-mods'
                     FPfolder_path = f'{FPCurrentFolder}'
@@ -1004,6 +1055,7 @@ class Manager:
         x_coordinate = (screen_width - window_width) // 2
         y_coordinate = (screen_height - window_height) // 2
         progress_window.geometry(f"{window_width}x{window_height}+{x_coordinate}+{y_coordinate}")
+        progress_window.resizable(False, False)
         total_iterations = 100
         progress_bar = ttk.Progressbar(progress_window, mode="determinate", maximum=total_iterations)
         progress_bar.pack(pady=20)
