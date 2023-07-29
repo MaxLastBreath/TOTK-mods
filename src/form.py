@@ -12,6 +12,7 @@ import platform
 from PIL import Image, ImageTk
 from configparser import NoOptionError
 from modules.qt_config import modify_disabled_key, write_config_file
+import re
 
 class Manager:
     def __init__(self, window):
@@ -784,8 +785,7 @@ class Manager:
 
             for option_name, option_var in self.selected_options.items():
                 selected_options[option_name] = option_var.get()
-
-            # Logic for Updating Visual Improvements Mod
+            # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.
             for version_option in self.version_options:
                 version = version_option.get("version", "")
                 mod_path = os.path.join(self.load_dir, "Mod Manager Patch", "exefs")
@@ -794,14 +794,28 @@ class Manager:
                 os.makedirs(mod_path, exist_ok=True)
 
                 filename = os.path.join(mod_path, f"{version}.pchtxt")
+                all_values = []
                 with open(filename, "w") as file:
                     file.write(version_option.get("Source", "") + "\n")
                     file.write(version_option.get("nsobid", "") + "\n")
                     file.write(version_option.get("offset", "") + "\n")
-
                     for key, value in version_option.items():
                         if key not in ["Source", "nsobid", "offset", "version"] and key in selected_options and selected_options[key] in ["Enable", "On"]:
-                            file.write(value + "\n")
+                            pattern = r"@enabled\n([\da-fA-F\s]+)\n@stop"
+                            matches = re.findall(pattern, value)
+                            for match in matches:
+                                hex_values = match.strip().split()
+                                all_values.extend(hex_values)
+                                # Print @enabled and then @stop at the end.
+                    file.write("@enabled\n")
+                    for i, value in enumerate(all_values):
+                        file.write(value)
+                        if i % 2 == 1 and i != len(all_values) - 1:
+                            file.write("\n")
+                        else:
+                            file.write(" ")
+                    file.write("\n@stop\n")
+
             qtconfig = configparser.ConfigParser(allow_no_value=True, delimiters=('=',), comment_prefixes=('#',), strict=False)
             qtconfig.optionxform = lambda option: option
             qtconfig.read(self.configdir)
