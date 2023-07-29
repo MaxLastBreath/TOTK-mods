@@ -552,12 +552,12 @@ class Manager:
         self.shadow_resolution_var.set(config.get('Options', 'ShadowResolution', fallback=self.dfps_options.get("ShadowResolutionNames", [""])[0])) # Shadow Auto
         self.camera_var.set(config.get('Options', 'CameraQuality', fallback=self.dfps_options.get("CameraQualityNames", [""])[0]))
         ui_selection = config.get('Options', 'UI', fallback="None")
-        fp_selection = config.get('Options', 'First Person', fallback="Disabled")
+        fp_selection = config.get('Options', 'First Person', fallback="Off")
         # Neccessary to FIX ui, won't download otherwise.
-        if fp_selection in ["Disabled", "70 FOV", "90 FOV", "110 FOV"]:
+        if fp_selection in ["Off", "70 FOV", "90 FOV", "110 FOV"]:
            self.fp_var.set(fp_selection)
         else:
-           self.fp_var.set("Disabled")
+           self.fp_var.set("Off")
         # Neccessary to FIX ui, won't download otherwise.
         if ui_selection in ["None", "Black Screen Fix", "PS4", "Xbox"]:
            self.ui_var.set(ui_selection)
@@ -565,7 +565,7 @@ class Manager:
            self.ui_var.set("None")
         # Load the enable/disable choices
         for option_name, option_var in self.selected_options.items():
-            option_value = config.get('Options', option_name, fallback="Enable")
+            option_value = config.get('Options', option_name, fallback="On")
             option_var.set(option_value)
 
         self.yuzu_path = self.load_yuzu_path(config_file)
