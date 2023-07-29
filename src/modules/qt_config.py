@@ -1,6 +1,7 @@
 import configparser
 import os
 import re
+import platform
 
 def list_all_folders(directory_path):
     folders = []
@@ -43,24 +44,6 @@ def find_highest_title_id_index(config):
         return highest_index
     return None
 
-def find_highest_disabled_index(config, title_id):
-    section = "DisabledAddOns"
-    if not config.has_section(section):
-        config.add_section(section)
-    else:
-        highest_index = -1
-        for key, value in config.items(section):
-            match = re.match(r'^(\d+)\\disabled\\(\d+)\\d$', key)
-            if match:
-                title_index = int(match.group(1))
-                if title_index == int(title_id):
-                    disabled_index = int(match.group(2))
-                    highest_index = max(highest_index, disabled_index)
-        if highest_index >= 0:
-            return highest_index
-    # Return -1 if no disabled entry is found for the title_id
-    return -1
-
 def remove_entries_for_each(config, title_id):
     section = "DisabledAddOns"
     properindex = find_title_id_index(config, title_id)
@@ -75,7 +58,11 @@ def remove_entries_for_each(config, title_id):
         config.remove_option(section, key)
 
 def remove_duplicates(arr):
-    return list(set(arr))
+    unique_list = []
+    for item in arr:
+        if item not in unique_list:
+            unique_list.append(item)
+    return unique_list
 
 def get_d_values(config, properindex):
     section = "DisabledAddOns"
@@ -86,6 +73,7 @@ def get_d_values(config, properindex):
     return d_values
 
 def find_and_remove_entry(configdir, directory, config, title_id, entry_to_remove):
+
     properindex = find_title_id_index(config, title_id)
     section = "DisabledAddOns"
     d_values = sorted(get_d_values(config, properindex))
@@ -93,25 +81,18 @@ def find_and_remove_entry(configdir, directory, config, title_id, entry_to_remov
         config.add_section(section)
 
     TitleIndexnum = find_title_id_index(config, title_id)
-    disabledindex = find_highest_disabled_index(config, TitleIndexnum)
     testforfolder = find_folder_index_by_name(directory, entry_to_remove)
     if testforfolder is None:
         return
-
-    found = False
-    for key, value in config.items(section):
-        if value == entry_to_remove:
-            # print(f"Entry to remove found: {entry_to_remove}")
-            found = True
-            break
-    if not found:
-        # print(f"Entry '{entry_to_remove}' doesn't exist in section with title_id: {title_id}")
+   
+    try:
+        d_values.remove(entry_to_remove)
+    except ValueError:
         return
 
-    d_values.remove(f"{entry_to_remove}")
     d_values = remove_duplicates(d_values)
     d_values.sort()
-
+    disabledindex = len(d_values) + 1
     for i, d_value in enumerate(d_values):
         key = f"{properindex}\\disabled\\{i + 1}\\d"
         default_key = f"{properindex}\\disabled\\{i + 1}\\d\\default"
@@ -122,14 +103,17 @@ def find_and_remove_entry(configdir, directory, config, title_id, entry_to_remov
     write_config_file(configdir, config)
 
 def add_entry(configdir, directory, config, title_id, entry_to_add):
+
     properindex = find_title_id_index(config, title_id)
     section = f"DisabledAddOns"
     if not config.has_section(section):
         config.add_section(section)
-
     TitleIndexnum = find_title_id_index(config, title_id)
-    disabledindex = find_highest_disabled_index(config, TitleIndexnum)
-    testforfolder = find_folder_index_by_name(directory, entry_to_add)
+    try:
+        testforfolder = find_folder_index_by_name(directory, entry_to_add)
+    except ValueError:
+        return
+
     if testforfolder is None:
         return
     # Check if the entry already exists
@@ -141,7 +125,7 @@ def add_entry(configdir, directory, config, title_id, entry_to_add):
     d_values.append(f"{entry_to_add}")
     d_values = remove_duplicates(d_values)
     d_values.sort()
-
+    disabledindex = len(d_values) + 1
     for i, d_value in enumerate(d_values):
         key = f"{properindex}\\disabled\\{i + 1}\\d"
         default_key = f"{properindex}\\disabled\\{i + 1}\\d\\default"
@@ -152,12 +136,17 @@ def add_entry(configdir, directory, config, title_id, entry_to_add):
     write_config_file(configdir, config)
 
 def modify_disabled_key(configdir, directory, config, title_id, entry, action='add'):
-    if action == "add":
-        # print("Adding key:", entry)
-        add_entry(configdir, directory, config, title_id, entry)
-    if action == "remove":
-        # print("Adding key:", entry)
-        find_and_remove_entry(configdir, directory, config, title_id, entry)
+
+    if platform.system() == "Linux":
+        return
+
+    if platform.system() == "Windows":
+        if action == "add":
+            # print("Adding key:", entry)
+            add_entry(configdir, directory, config, title_id, entry)
+        if action == "remove":
+            # print("Adding key:", entry)
+            find_and_remove_entry(configdir, directory, config, title_id, entry)
 
 def write_config_file(configdir, config):
     with open(configdir, 'w') as config_file:
