@@ -265,6 +265,10 @@ class Manager:
                 self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{self.Globaldir}/nand'))
                 self.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{self.Globaldir}/load')), "0100F2C0115B6000")
                 self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "yuzu", "load", "0100F2C0115B6000")
+        # Ensure the path exists.
+        os.makedirs(self.nand_dir, exist_ok=True)
+        os.makedirs(self.load_dir, exist_ok=True)
+        os.makedirs(self.Yuzudir, exist_ok=True)
     # Handle Presets
     def apply_selected_preset(self, event=None):
         selected_preset = self.selected_preset.get()

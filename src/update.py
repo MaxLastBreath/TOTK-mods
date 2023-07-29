@@ -88,9 +88,9 @@ def apply_update(assets):
         return
 
     try:
-        if sys.platform.startswith("linux"):
+        if current_platform == "Linux":
             subprocess.Popen(["chmod", "+x", updated_executable])
-        elif sys.platform.startswith("win"):
+        elif current_platform == "Windows":
             pass 
 
         os.execl(updated_executable, *([updated_executable] + sys.argv[1:]))
