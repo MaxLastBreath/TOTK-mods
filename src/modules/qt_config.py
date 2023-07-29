@@ -44,19 +44,6 @@ def find_highest_title_id_index(config):
         return highest_index
     return None
 
-def remove_entries_for_each(config, title_id):
-    section = "DisabledAddOns"
-    properindex = find_title_id_index(config, title_id)
-    keys_to_remove = []
-    # Find all properindexes present in the configuration
-    for key in config[section]:
-        match = re.match(f'^{properindex}\\\\disabled\\\\(\\d+)\\\\d', key)
-        if match:
-            keys_to_remove.append(key)
-
-    for key in keys_to_remove:
-        config.remove_option(section, key)
-
 def remove_duplicates(arr):
     unique_list = []
     for item in arr:
@@ -72,8 +59,11 @@ def get_d_values(config, properindex):
             d_values.append(value)
     return d_values
 
-def find_and_remove_entry(configdir, directory, config, title_id, entry_to_remove):
 
+    for key in keys_to_remove:
+        config.remove_option(section, key)
+
+def find_and_remove_entry(configdir, directory, config, title_id, entry_to_remove):
     properindex = find_title_id_index(config, title_id)
     section = "DisabledAddOns"
     d_values = sorted(get_d_values(config, properindex))
@@ -86,19 +76,22 @@ def find_and_remove_entry(configdir, directory, config, title_id, entry_to_remov
         return
    
     try:
-        d_values.remove(entry_to_remove)
+        while entry_to_remove in d_values:
+            d_values.remove(entry_to_remove)
     except ValueError:
         return
 
-    d_values = remove_duplicates(d_values)
-    d_values.sort()
-    disabledindex = len(d_values) + 1
-    for i, d_value in enumerate(d_values):
+    clean_d_values = remove_duplicates(d_values)
+    clean_d_values.sort()
+    disabledindex = len(clean_d_values)
+    clean_disabled_addons(config, title_id)
+    for i, d_value in enumerate(clean_d_values):
         key = f"{properindex}\\disabled\\{i + 1}\\d"
         default_key = f"{properindex}\\disabled\\{i + 1}\\d\\default"
         config.set(section, key, d_value)
         config.set(section, default_key, "false")
 
+        print(f"{clean_d_values}")
     config.set(section, f"{TitleIndexnum}\\disabled\\size", str(disabledindex))
     write_config_file(configdir, config)
 
@@ -123,15 +116,16 @@ def add_entry(configdir, directory, config, title_id, entry_to_add):
         return
 
     d_values.append(f"{entry_to_add}")
-    d_values = remove_duplicates(d_values)
-    d_values.sort()
-    disabledindex = len(d_values) + 1
-    for i, d_value in enumerate(d_values):
+    clean_d_values = remove_duplicates(d_values)
+    clean_d_values.sort()
+    disabledindex = len(clean_d_values)
+    clean_disabled_addons(config, title_id)
+    for i, d_value in enumerate(clean_d_values):
         key = f"{properindex}\\disabled\\{i + 1}\\d"
         default_key = f"{properindex}\\disabled\\{i + 1}\\d\\default"
         config.set(section, key, d_value)
         config.set(section, default_key, "false")
-
+    print(f"{clean_d_values}")
     config.set(section, f"{TitleIndexnum}\\disabled\\size", str(disabledindex))
     write_config_file(configdir, config)
 
