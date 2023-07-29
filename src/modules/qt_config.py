@@ -59,6 +59,14 @@ def get_d_values(config, properindex):
             d_values.append(value)
     return d_values
 
+def clean_disabled_addons(config, title_id):
+    section = "DisabledAddOns"
+    keys_to_remove = []
+    properindex = find_title_id_index(config, title_id)
+    for key in config[section]:
+        match = re.match('^' + properindex + r'\\disabled\\\d+\\d', key)
+        if match:
+            keys_to_remove.append(key)
 
     for key in keys_to_remove:
         config.remove_option(section, key)
