@@ -2,6 +2,6 @@ Welcome to Mod Manager!
 You will get new Information here!
 Latest TOTK release 1.2.0!
 Latest DFPS Version 1.5.5(beta3)
---Fixes--
-Hotfix 1.1.1 - Fixed Linux
+--Hotfix Fixes--
+1.1.1 - Fixed Linux
 Improved Windows Logic
