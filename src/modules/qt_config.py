@@ -2,6 +2,20 @@ import configparser
 import os
 import re
 import platform
+from configparser import Interpolation
+
+class CustomInterpolation(Interpolation):
+    def before_get(self, parser, section, option, value, defaults):
+        return value
+
+    def before_set(self, parser, section, option, value):
+        if value.startswith("%") and not value.startswith("%%"):
+            return value.replace("%", "%%", 1)
+        return value
+
+def get_config_parser():
+    config = configparser.ConfigParser(interpolation=CustomInterpolation())
+    return config
 
 def list_all_folders(directory_path):
     folders = []

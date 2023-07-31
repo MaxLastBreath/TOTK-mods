@@ -68,7 +68,7 @@ def checkpath(self):
             self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "yuzu", "load", "0100F2C0115B6000")
     # Ensure the path exists.
     if self.os_platform == "Windows":
-        # Ensure directories exist for windows, skip for linux (gives off errors.)
+        # Ensure directories exist for windows, skip for linux (gives off permission errors.)
         os.makedirs(self.nand_dir, exist_ok=True)
         os.makedirs(self.load_dir, exist_ok=True)
         os.makedirs(self.Yuzudir, exist_ok=True)

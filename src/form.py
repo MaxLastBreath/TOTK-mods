@@ -11,7 +11,7 @@ import tkinter.font as tkFont
 import platform
 from PIL import Image, ImageTk
 from configparser import NoOptionError
-from modules.qt_config import modify_disabled_key, write_config_file
+from modules.qt_config import modify_disabled_key, write_config_file, get_config_parser
 from modules.checkpath import checkpath, DetectOS
 import re
 
@@ -744,7 +744,7 @@ class Manager:
                             file.write(" ")
                     file.write("\n@stop\n")
 
-            qtconfig = configparser.ConfigParser(allow_no_value=True, delimiters=('=',), comment_prefixes=('#',), strict=False)
+            qtconfig = get_config_parser()
             qtconfig.optionxform = lambda option: option
             qtconfig.read(self.configdir)
             # Ensures that the patches are active
@@ -838,7 +838,7 @@ class Manager:
 
         def DownloadDFPS():
             # Make sure DFPS is enabled.
-            qtconfig = configparser.ConfigParser(allow_no_value=True, delimiters=('=',), comment_prefixes=('#',), strict=False)
+            qtconfig = get_config_parser()
             qtconfig.optionxform = lambda option: option
             qtconfig.read(self.configdir)
             modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "DFPS", action="remove")
@@ -890,7 +890,7 @@ class Manager:
                 print("You already have the latest DFPS version and the folder exists!")
 
         def DownloadUI():
-            qtconfig = configparser.ConfigParser(allow_no_value=True, delimiters=('=',), comment_prefixes=('#',), strict=False)
+            qtconfig = get_config_parser()
             qtconfig.optionxform = lambda option: option
             qtconfig.read(self.configdir)
 
@@ -941,7 +941,7 @@ class Manager:
                         print("failed to retrive folder and contents")
 
         def DownloadFP():
-            qtconfig = configparser.ConfigParser(allow_no_value=True, delimiters=('=',), comment_prefixes=('#',), strict=False)
+            qtconfig = get_config_parser()
             qtconfig.optionxform = lambda option: option
             qtconfig.read(self.configdir)
 
