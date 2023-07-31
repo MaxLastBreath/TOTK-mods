@@ -8,7 +8,7 @@ import subprocess
 import tkinter as tk
 from tkinter import messagebox
 
-Version = "manager-1.1.1"
+Version = "manager-1.1.2"
 textver = Version.strip("manager-")
 GITHUB = "TOTK-mods"
 OWNER = "MaxLastBreath"
@@ -88,9 +88,9 @@ def apply_update(assets):
         return
 
     try:
-        if current_platform == "Linux":
+        if sys.platform.startswith("linux"):
             subprocess.Popen(["chmod", "+x", updated_executable])
-        elif current_platform == "Windows":
+        elif sys.platform.startswith("win"):
             pass 
 
         os.execl(updated_executable, *([updated_executable] + sys.argv[1:]))

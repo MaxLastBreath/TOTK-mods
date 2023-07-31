@@ -23,12 +23,14 @@ def find_title_id_index(config, title_id):
     section = f"DisabledAddOns"
     if not config.has_section(section):
         config.add_section(section)
+        print(f"Config has not been able, identify title_ID: {title_id}, the manager will continue but the mods won't be turned off as expected.")
+        return None
     else:
         for key, value in config.items(section):
             if value == title_id:
                 TitleIndexnum = key.split("\\")[0]
                 return TitleIndexnum
-    return 
+    return None
 
 def find_highest_title_id_index(config):
     section = "DisabledAddOns"
@@ -63,6 +65,8 @@ def clean_disabled_addons(config, title_id):
     section = "DisabledAddOns"
     keys_to_remove = []
     properindex = find_title_id_index(config, title_id)
+    if properindex == None:
+        return
     for key in config[section]:
         match = re.match('^' + properindex + r'\\disabled\\\d+\\d', key)
         if match:
@@ -73,6 +77,9 @@ def clean_disabled_addons(config, title_id):
 
 def find_and_remove_entry(configdir, directory, config, title_id, entry_to_remove):
     properindex = find_title_id_index(config, title_id)
+    if properindex == None:
+        return
+        
     section = "DisabledAddOns"
     d_values = sorted(get_d_values(config, properindex))
     if not config.has_section(section):
@@ -99,13 +106,14 @@ def find_and_remove_entry(configdir, directory, config, title_id, entry_to_remov
         config.set(section, key, d_value)
         config.set(section, default_key, "false")
 
-        print(f"{clean_d_values}")
     config.set(section, f"{TitleIndexnum}\\disabled\\size", str(disabledindex))
     write_config_file(configdir, config)
 
 def add_entry(configdir, directory, config, title_id, entry_to_add):
 
     properindex = find_title_id_index(config, title_id)
+    if properindex == None:
+        return
     section = f"DisabledAddOns"
     if not config.has_section(section):
         config.add_section(section)
@@ -133,7 +141,7 @@ def add_entry(configdir, directory, config, title_id, entry_to_add):
         default_key = f"{properindex}\\disabled\\{i + 1}\\d\\default"
         config.set(section, key, d_value)
         config.set(section, default_key, "false")
-    print(f"{clean_d_values}")
+
     config.set(section, f"{TitleIndexnum}\\disabled\\size", str(disabledindex))
     write_config_file(configdir, config)
 

@@ -12,6 +12,7 @@ import platform
 from PIL import Image, ImageTk
 from configparser import NoOptionError
 from modules.qt_config import modify_disabled_key, write_config_file
+from modules.checkpath import checkpath, DetectOS
 import re
 
 class Manager:
@@ -24,8 +25,8 @@ class Manager:
         self.window = window
         self.title_id = "72324500776771584"
         # Run Script
-        self.checkpath()
-        self.DetectOS()
+        checkpath(self)
+        DetectOS(self)
         # Load options from DFPS.json
         self.dfps_options = self.load_dfps_options_from_json()
         # Load options from Version.json
@@ -90,7 +91,6 @@ class Manager:
             reset_button = ttk.Button(window, text="Use Appdata", command=self.yuzu_appdata)
             reset_button_window = canvas.create_window(300, 80, anchor="w", window=reset_button)
             backupbutton = 400
-
 
         # Create a Backup button
         backup_button = ttk.Button(window, text="Backup", command=self.backup)
@@ -198,78 +198,6 @@ class Manager:
         script_dir = os.path.dirname(os.path.abspath(__file__))
         hud_folder_path = os.path.join(script_dir, "HUD")
         return os.path.abspath(os.path.join(hud_folder_path, file_name))
-    # Define OS
-    def DetectOS(self):
-        if self.os_platform == "Linux":
-            print("Detected a Linux based SYSTEM!")
-        elif self.os_platform == "Windows":
-            print("Detected a Windows based SYSTEM!")
-    # Define Directories for different OS or Yuzu Folders, Check if User has correct paths for User Folder.
-    def checkpath(self):
-        home_directory = os.path.expanduser("~")
-        # Default Dir for Linux/SteamOS
-        self.os_platform = platform.system()
-        if self.os_platform == "Linux":
-            self.Globaldir = os.path.join(home_directory, ".local", "share", "yuzu")
-            self.configdir = os.path.join(self.Globaldir, "config", "qt-config.ini")
-            self.TOTKconfig = os.path.join(self.Globaldir, "config", "custom", "0100F2C0115B6000.ini")
-            if not os.path.exists(self.configdir):
-                print("Detected a steamdeck!")
-                self.configdir = os.path.join(home_directory, ".config", "yuzu", "qt-config.ini")
-                self.TOTKconfig = os.path.join(home_directory, ".config", "yuzu", "custom", "0100F2C0115B6000.ini")
-            config_parser = configparser.ConfigParser()
-            config_parser.read(self.configdir)
-            self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{self.Globaldir}/nand'))
-            self.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{self.Globaldir}/load')), "0100F2C0115B6000")
-            self.Yuzudir = os.path.join(home_directory, ".local", "share", "yuzu", "load", "0100F2C0115B6000")
-        # Default Dir for Windows or user folder.
-        elif self.os_platform == "Windows":
-            config = "VisualImprovements.ini"
-            yuzupath = self.load_yuzu_path(config)
-            userfolder = os.path.join(yuzupath, "../user/")
-            # Check for user folder
-            if os.path.exists(userfolder):
-                self.configdir = os.path.join(yuzupath, "../user/config/qt-config.ini")
-                self.TOTKconfig = os.path.join(self.configdir, "../custom/0100F2C0115B6000.ini")
-                config_parser = configparser.ConfigParser()
-                config_parser.read(self.configdir)
-                self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{os.path.join(yuzupath, "../user/nand")}'))
-                self.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{os.path.join(yuzupath, "../user/nand")}')), "0100F2C0115B6000")
-                self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "yuzu", "load", "0100F2C0115B6000")
-                NEWyuzu_path = os.path.normpath(os.path.join(userfolder, "../"))
-                qt_config_save_dir = os.path.normpath(os.path.join(self.nand_dir, "../../"))
-                # Warn user that their QT-Config path is INCORRECT!
-                if qt_config_save_dir != NEWyuzu_path and self.warnagain == "yes":
-                    message = (
-                        f"WARNING: Your QT Config Save Directory may not be correct!\n"
-                        f"Your saves could be in danger.\n"
-                        f"Your current Yuzu directory: {NEWyuzu_path}\n"
-                        f"Your QT Config Save Directory: {qt_config_save_dir}\n"
-                        f"Do you want to create a backup of your save file?"
-                    )
-                    response = messagebox.askyesno("Warning", message, icon=messagebox.WARNING)
-                    if response:
-                       self.backup()
-                       self.warnagain = "no"
-                       print("Sucessfully backed up save files, in backup folder. Please delete qt-config in USER folder! Or correct the user folder paths, then use the backup file to recover your saves!")
-                       pass
-                    else:
-                        self.warnagain = "no"
-                        print("Warning has been declined!")
-            # Default to Appdata
-            else:
-                self.Globaldir = os.path.join(home_directory, "AppData", "Roaming", "yuzu")
-                self.configdir = os.path.join(self.Globaldir, "config", "qt-config.ini")
-                self.TOTKconfig = os.path.join(self.configdir, "../custom/0100F2C0115B6000.ini")
-                config_parser = configparser.ConfigParser()
-                config_parser.read(self.configdir)
-                self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{self.Globaldir}/nand'))
-                self.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{self.Globaldir}/load')), "0100F2C0115B6000")
-                self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "yuzu", "load", "0100F2C0115B6000")
-        # Ensure the path exists.
-        os.makedirs(self.nand_dir, exist_ok=True)
-        os.makedirs(self.load_dir, exist_ok=True)
-        os.makedirs(self.Yuzudir, exist_ok=True)
     # Handle Presets
     def apply_selected_preset(self, event=None):
         selected_preset = self.selected_preset.get()
@@ -456,15 +384,15 @@ class Manager:
                 if os.path.exists(Default_Directory):
                     self.Yuzudir = os.path.join(home_directory, "user", "load", "0100F2C0115B6000")
                     print(f"Successfully selected Yuzu.exe! And a user folder was found at {home_directory}!")
-                    self.checkpath()
+                    checkpath(self)
                 else:
                     print("User Folder not Found defaulting to Yuzu Dir!")
-                    self.checkpath()
+                    checkpath(self)
 
                 # Update the yuzu.exe path in the current session
                 self.yuzu_path = yuzu_path
             else:
-                self.checkpath()
+                checkpath(self)
             # Save the selected yuzu.exe path to a configuration file
             config_file = "VisualImprovements.ini"
             self.save_user_choices(config_file, yuzu_path)
@@ -472,7 +400,7 @@ class Manager:
         return
     # Return Yuzu Dir to Appdata (Windows ONLY)
     def yuzu_appdata(self):
-        self.checkpath()
+        checkpath(self)
         print("Successfully Defaulted to Appdata!")
         config_file = "VisualImprovements.ini"
         self.save_user_choices(config_file, "appdata")
@@ -580,10 +508,10 @@ class Manager:
             
             else:
                 print("User Folder not Found defaulting to Default Dir!")
-                self.checkpath()
+                checkpath(self)
         else:
             print("Yuzu path not found in the config file - Defaulting to Default Dir!")
-            self.checkpath()
+            checkpath(self)
  
     def warning_window(self, setting_type):
         warning_message = None
@@ -730,7 +658,7 @@ class Manager:
             messagebox.showerror("Backup Error", f"Error creating backup: {e}")
     # Submit the results, run download manager. Open a Loading screen.
     def submit(self):
-        self.checkpath()
+        checkpath(self)
         def timer(value):
             progress_bar["value"] = value
             self.window.update_idletasks()

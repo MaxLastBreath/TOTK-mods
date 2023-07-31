@@ -1,6 +1,6 @@
 import tkinter as tk
 from form import Manager
-from update import textver, check_for_updates
+from modules.update import textver, check_for_updates
 
 if __name__ == "__main__":
     check_for_updates()
