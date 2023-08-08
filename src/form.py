@@ -44,7 +44,7 @@ class Manager:
         culsel = 200
 
         # Configure Text Font. 
-        textfont = ("Arial Bold", 10, "bold")
+        textfont = ("Arial Bold", 10)
         self.textfont = textfont
         style = "success"
 
@@ -102,10 +102,10 @@ class Manager:
         self.preset_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=self.preset_dropdown)
         self.preset_dropdown.bind("<<ComboboxSelected>>", self.apply_selected_preset)
         # Setting Preset
-        self.Settings_label = canvas.create_text(350, 40, text="Yuzu Settings:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.Settings_label = canvas.create_text(370, 40, text="Yuzu Settings:", anchor="w", fill="#D1F3FD", font=textfont)
         self.selected_settings = tk.StringVar(value="No Change")
         self.second_dropdown = ttk.Combobox(self.window, textvariable=self.selected_settings, values=["No Change", "Steamdeck", "AMD", "Nvidia", "High End Nvidia"])
-        self.second_dropdown_window = canvas.create_window(450, 40, anchor="w", window=self.second_dropdown)
+        self.second_dropdown_window = canvas.create_window(480, 40, anchor="w", window=self.second_dropdown)
         self.second_dropdown.bind("<<ComboboxSelected>>")
         row += 40
 
@@ -212,16 +212,16 @@ class Manager:
         kofi_image = Image.open(kofi_image_path)
         kofi_image = kofi_image.resize((150, 42))
         self.kofi_image = ImageTk.PhotoImage(kofi_image)
-        kofi_button = ttk.Button(self.window, image=self.kofi_image, command=self.open_kofi)
+        kofi_button = ttk.Button(self.window, image=self.kofi_image, bootstyle="light", command=self.open_kofi)
         kofi_button_window = canvas.create_window(1110, 550, anchor="center", window=kofi_button)
 
         # GitHub Button
         github_image_path = self.get_UI_path("github.png")
         github_image = Image.open(github_image_path)
-        github_image = github_image.resize((76, 40))
+        github_image = github_image.resize((83, 43))
         self.github_image = ImageTk.PhotoImage(github_image)
-        github_button = ttk.Button(self.window, image=self.github_image, command=self.open_github)
-        github_button_window = canvas.create_window(980, 550, anchor="center", window=github_button)
+        github_button = ttk.Button(self.window, image=self.github_image, bootstyle="light", command=self.open_github)
+        github_button_window = canvas.create_window(960, 550, anchor="center", window=github_button)
 
         # Create a submit button
         submit_button = ttk.Button(self.window, text="Apply", command=self.submit)
@@ -999,34 +999,60 @@ class Manager:
                 qtconfig.read(self.configdir)
             else:
                 qtconfig = None
-
+            #dirs
+            Blackscreen = os.path.join(self.load_dir, "BlackscreenFIX")
+            Xbox = os.path.join(self.load_dir, "Xbox UI")
+            Ps4 = os.path.join(self.load_dir, "Playstation UI")
+            #ui
             ui_mod_folder = None
             CurrentFolder = None
             ui_selection = self.ui_var.get()
             print(f"{self.fp_var.get()}")
-            if ui_selection == "none":
+            if ui_selection == "None":
                 modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Xbox UI", action="add")
                 modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Playstation UI", action="add")
                 modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "BlackscreenFix", action="add")
+                if self.mode == "Ryujinx":
+                    if os.path.exists(Ps4):
+                       shutil.rmtree(Ps4)
+                    if os.path.exists(Blackscreen):
+                       shutil.rmtree(Blackscreen)
+                    if os.path.exists(Xbox):
+                       shutil.rmtree(Xbox)
                 print("No UI Selected, Disabling all UI mods!")
             elif ui_selection == "PS4":
-                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Xbox UI", action="add")
-                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "BlackscreenFix", action="add")
-                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Playstation UI", action="remove")
-                     ui_mod_folder = "Playstation UI"
-                     CurrentFolder = "scripts/UI/Playstation%20UI/"
+                if self.mode == "Ryujinx":
+                    if os.path.exists(Xbox):
+                       shutil.rmtree(Xbox)
+                    if os.path.exists(Blackscreen):
+                       shutil.rmtree(Blackscreen)
+                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Xbox UI", action="add")
+                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "BlackscreenFix", action="add")
+                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Playstation UI", action="remove")
+                ui_mod_folder = "Playstation UI"
+                CurrentFolder = "scripts/UI/Playstation%20UI/"
             elif ui_selection == "Xbox":
-                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Playstation UI", action="add")
-                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "BlackscreenFix", action="add")
-                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Xbox UI", action="remove")
-                     ui_mod_folder = "Xbox UI"
-                     CurrentFolder = 'scripts/UI/Xbox%20UI/'
+                if self.mode == "Ryujinx":
+                    if os.path.exists(Ps4):
+                       shutil.rmtree(Ps4)
+                    if os.path.exists(Blackscreen):
+                       shutil.rmtree(Blackscreen)
+                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Playstation UI", action="add")
+                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "BlackscreenFix", action="add")
+                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Xbox UI", action="remove")
+                ui_mod_folder = "Xbox UI"
+                CurrentFolder = 'scripts/UI/Xbox%20UI/'
             elif ui_selection == "Black Screen Fix":
-                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Playstation UI", action="add")
-                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Xbox UI", action="add")
-                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "BlackscreenFix", action="remove")
-                     ui_mod_folder = "BlackscreenFix"
-                     CurrentFolder = 'scripts/UI/BlackscreenFix/'
+                if self.mode == "Ryujinx":
+                    if os.path.exists(Ps4):
+                       shutil.rmtree(Ps4)
+                    if os.path.exists(Xbox):
+                       shutil.rmtree(Xbox)
+                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Playstation UI", action="add")
+                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Xbox UI", action="add")
+                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "BlackscreenFix", action="remove")
+                ui_mod_folder = "BlackscreenFix"
+                CurrentFolder = 'scripts/UI/BlackscreenFix/'
 
             if ui_mod_folder is not None:
                     repo_url = 'https://api.github.com/repos/MaxLastBreath/TOTK-mods'
@@ -1057,29 +1083,54 @@ class Manager:
             FP_mod_folder = None
             FPCurrentFolder = None
             FP_selection = self.fp_var.get()
+            fov70 = os.path.join(self.load_dir, "First Person 70 FOV")
+            fov90 = os.path.join(self.load_dir, "First Person 90 FOV")
+            fov110 = os.path.join(self.load_dir, "First Person 110 FOV")
             if FP_selection == "Off":
+                if self.mode == "Ryujinx":
+                    if os.path.exists(fov70):
+                       shutil.rmtree(fov70)
+                    if os.path.exists(fov90):
+                       shutil.rmtree(fov90)
+                    if os.path.exists(fov110):
+                       shutil.rmtree(fov110)
                 modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 110 FOV", action="add")
                 modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 90 FOV", action="add")
                 modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 70 FOV", action="add")
                 print("Selected Third Person, removing ALL First Person Mods!")
             elif FP_selection == "70 FOV":
-                     FP_mod_folder = "First Person 70 FOV"
-                     FPCurrentFolder = "scripts/UI/First%20Person%20FOV%2070/"
-                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 110 FOV", action="add")
-                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 90 FOV", action="add")
-                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 70 FOV", action="remove")
+                    FP_mod_folder = "First Person 70 FOV"
+                    FPCurrentFolder = "scripts/UI/First%20Person%20FOV%2070/"
+                    if self.mode == "Ryujinx":
+                        if os.path.exists(fov90):
+                            shutil.rmtree(fov90)
+                        if os.path.exists(fov110):
+                            shutil.rmtree(fov110)
+                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 110 FOV", action="add")
+                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 90 FOV", action="add")
+                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 70 FOV", action="remove")
             elif FP_selection == "90 FOV":
-                     FP_mod_folder = "First Person 90 FOV"
-                     FPCurrentFolder = 'scripts/UI/First%20Person%20FOV%2090/'
-                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 110 FOV", action="add")
-                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 70 FOV", action="add")
-                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 90 FOV", action="remove")
+                    FP_mod_folder = "First Person 90 FOV"
+                    FPCurrentFolder = 'scripts/UI/First%20Person%20FOV%2090/'
+                    if self.mode == "Ryujinx":
+                        if os.path.exists(fov70):
+                            shutil.rmtree(fov70)
+                        if os.path.exists(fov110):
+                            shutil.rmtree(fov110)
+                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 110 FOV", action="add")
+                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 70 FOV", action="add")
+                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 90 FOV", action="remove")
             elif FP_selection == "110 FOV":
-                     FP_mod_folder = "First Person 110 FOV"
-                     FPCurrentFolder = 'scripts/UI/First%20Person%20FOV%20110/'
-                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 70 FOV", action="add")
-                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 90 FOV", action="add")
-                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 100 FOV", action="remove")
+                    FP_mod_folder = "First Person 110 FOV"
+                    FPCurrentFolder = 'scripts/UI/First%20Person%20FOV%20110/'
+                    if self.mode == "Ryujinx":
+                        if os.path.exists(fov70):
+                            shutil.rmtree(fov70)
+                        if os.path.exists(fov90):
+                            shutil.rmtree(fov90)
+                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 70 FOV", action="add")
+                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 90 FOV", action="add")
+                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 100 FOV", action="remove")
             if FP_mod_folder is not None:
                     repo_url = 'https://api.github.com/repos/MaxLastBreath/TOTK-mods'
                     FPfolder_path = f'{FPCurrentFolder}'
