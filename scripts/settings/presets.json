@@ -2,7 +2,7 @@
   "Default": {
     "Resolution": "1080p FHD",
     "FPS": "60",
-    "ShadowResolution": "Auto",
+    "ShadowResolution": "High x1024",
     "CameraQuality": "Disable",
     "UI": "Black Screen Fix",
     "First Person": "Disabled",
@@ -14,7 +14,7 @@
   "Low": {
     "Resolution": "1080p FHD",
     "FPS": "30",
-    "ShadowResolution": "Auto",
+    "ShadowResolution": "Medium x512",
     "CameraQuality": "Disable",
     "UI": "Black Screen Fix",
     "First Person": "Disabled",
@@ -26,7 +26,7 @@
   "Medium": {
     "Resolution": "1440p QHD - Experimental",
     "FPS": "30",
-    "ShadowResolution": "Auto",
+    "ShadowResolution": "High x1024",
     "CameraQuality": "Disable",
     "First Person": "Disabled",
     "UI": "Black Screen Fix",
@@ -38,7 +38,7 @@
   "High": {
     "Resolution": "4K UHD",
     "FPS": "60",
-    "ShadowResolution": "Auto",
+    "ShadowResolution": "High x1024",
     "CameraQuality": "Disable",
     "First Person": "Disabled",
     "UI": "Black Screen Fix",
@@ -50,7 +50,7 @@
   "Ultra": {
     "Resolution": "6K QUHD - Experimental",
     "FPS": "60",
-    "ShadowResolution": "Auto",
+    "ShadowResolution": "High x1024",
     "CameraQuality": "Disable",
     "First Person": "Disabled",
     "UI": "Black Screen Fix",
@@ -62,7 +62,7 @@
     "Steamdeck": {
     "Resolution": "1080p FHD",
     "FPS": "30",
-    "ShadowResolution": "Auto",
+    "ShadowResolution": "Medium x512",
     "CameraQuality": "Disable",
     "First Person": "Disabled",
     "UI": "Black Screen Fix",
@@ -72,9 +72,9 @@
     "Improve LOD": "Enable"
   },
   "RTX 4090 SUPER HIGH": {
-    "Resolution": "8K UUHD",
+    "Resolution": "6K QUHD - Experimental",
     "FPS": "60",
-    "ShadowResolution": "Auto",
+    "ShadowResolution": "High x1024",
     "CameraQuality": "Disable",
     "First Person": "Disabled",
     "UI": "Black Screen Fix",
