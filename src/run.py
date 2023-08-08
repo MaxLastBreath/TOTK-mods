@@ -1,10 +1,11 @@
-import tkinter as tk
+import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
 from form import Manager
 from modules.update import textver, check_for_updates
 
 if __name__ == "__main__":
     check_for_updates()
-    window = tk.Tk()
+    window = ttk.Window(themename="flatly")
     window.title(f"TOTK MOD Manager {textver}")
     main = Manager(window)
     window_width = 1200

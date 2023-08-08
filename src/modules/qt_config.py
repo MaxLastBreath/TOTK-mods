@@ -164,6 +164,9 @@ def modify_disabled_key(configdir, directory, config, title_id, entry, action='a
     if platform.system() == "Linux":
         return
 
+    if config == None:
+        return
+
     if platform.system() == "Windows":
         if action == "add":
             # print("Adding key:", entry)

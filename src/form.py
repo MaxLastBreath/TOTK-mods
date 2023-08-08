@@ -7,8 +7,10 @@ import sys
 import shutil
 import json
 import requests
-import tkinter.font as tkFont
 import platform
+import ttkbootstrap as ttk
+import time
+from ttkbootstrap.constants import *
 from PIL import Image, ImageTk
 from configparser import NoOptionError
 from modules.qt_config import modify_disabled_key, write_config_file, get_config_parser
@@ -19,24 +21,46 @@ class Manager:
     def __init__(self, window):
         # Variables
         self.config = "VisualImprovements.ini"
+        config = configparser.ConfigParser()
+        config.read(self.config)
+        self.mode = config.get("Mode", "managermode", fallback="Yuzu")
+        print(f"{self.mode}")
         self.Yuzudir = None
         self.warnagain = "yes"
         self.root = window
         self.window = window
         self.title_id = "72324500776771584"
-        # Run Script
-        checkpath(self)
-        DetectOS(self)
+        # create the entire GUI and Canvas elements.
+        self.canvas = self.createcanvas()
+        # Switches the mod to ryujinx if it's saved in the config file.
+        self.switchmode("false")
+
+    def createcanvas(self):
+        # Text Position
+        row = 40
+        cultex = 40
+        culsel = 200
+
+        # Configure Text Font. 
+        textfont = ("Arial Bold", 10, "bold")
+        self.textfont = textfont
+        style = "success"
+
+        # Run Scripts for checking OS and finding location
+        checkpath(self, self.mode)
+        DetectOS(self, self.mode)
+
         # Load options from DFPS.json
         self.dfps_options = self.load_dfps_options_from_json()
+
         # Load options from Version.json
         self.version_options = self.load_version_options_from_json()
         self.scalingfactor = 1
+
         # Create the main canvas
-        canvas = tk.Canvas(window, width=1200 * self.scalingfactor, height=600 * self.scalingfactor)
+        canvas = tk.Canvas(self.window, width=1200 * self.scalingfactor, height=600 * self.scalingfactor)
         canvas.pack()
-        # Configure Text Font.
-        textfont = ("Arial Bold", 10, "bold")
+
         # Create a transparent black background
         UI_path = self.get_UI_path("BG_Left.png")
         image = Image.open(UI_path)
@@ -46,6 +70,7 @@ class Manager:
         image = Image.open(UI_path2)
         image = image.resize((1200, 600))
         self.background_UI2 = ImageTk.PhotoImage(image)
+
         # Load and set the image as the background
         image_path = self.get_UI_path("image.png")
         image = Image.open(image_path)
@@ -69,53 +94,62 @@ class Manager:
         else:
             self.presets = presets_data
         self.presets = {"Saved": {}} | self.presets
-        self.preset_label = canvas.create_text(40, 40, text="Select Preset:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.preset_label = canvas.create_text(cultex, row, text="Select Preset:", anchor="w", fill="#D1F3FD", font=textfont)
         self.selected_preset = tk.StringVar(value="Saved")
-        self.preset_dropdown = ttk.Combobox(window, textvariable=self.selected_preset, values=list(self.presets.keys()))
-        self.preset_dropdown_window = canvas.create_window(200, 40, anchor="w", window=self.preset_dropdown)
+        self.preset_dropdown = ttk.Combobox(self.window, textvariable=self.selected_preset, values=list(self.presets.keys()))
+        self.preset_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=self.preset_dropdown)
         self.preset_dropdown.bind("<<ComboboxSelected>>", self.apply_selected_preset)
         # Setting Preset
         self.Settings_label = canvas.create_text(350, 40, text="Yuzu Settings:", anchor="w", fill="#D1F3FD", font=textfont)
         self.selected_settings = tk.StringVar(value="No Change")
-        self.second_dropdown = ttk.Combobox(window, textvariable=self.selected_settings, values=["No Change", "Steamdeck", "AMD", "Nvidia", "High End Nvidia"])
+        self.second_dropdown = ttk.Combobox(self.window, textvariable=self.selected_settings, values=["No Change", "Steamdeck", "AMD", "Nvidia", "High End Nvidia"])
         self.second_dropdown_window = canvas.create_window(450, 40, anchor="w", window=self.second_dropdown)
         self.second_dropdown.bind("<<ComboboxSelected>>")
+        row += 40
+
+        # Switch mode between Ryujinx and Yuzu
+        switchtext = "Switch to Yuzu"
+        self.manager_switch = ttk.Button(self.window, text=f"{switchtext}", command=self.switchmode, bootstyle=style)
+        self.manager_switch_window = canvas.create_window(270, 520, anchor="w", window=self.manager_switch)
 
         # Create a label for yuzu.exe selection
-        canvas.create_text(40, 80, text="Select yuzu.exe:", anchor="w", fill="#D1F3FD", font=textfont)
-        backupbutton = 200
+        backupbutton = culsel
+        self.selectexe = canvas.create_text(cultex, row, text="Select yuzu.exe:", anchor="w", fill="#D1F3FD", font=textfont)
         if self.os_platform == "Windows":
-            yuzu_button = ttk.Button(window, text="Browse", command=self.select_yuzu_exe)
-            yuzu_button_window = canvas.create_window(200, 80, anchor="w", window=yuzu_button)
+            yuzu_button = ttk.Button(self.window, text="Browse", command=self.select_yuzu_exe)
+            yuzu_button_window = canvas.create_window(culsel, row, anchor="w", window=yuzu_button)
             # Reset to Appdata
-            reset_button = ttk.Button(window, text="Use Appdata", command=self.yuzu_appdata)
-            reset_button_window = canvas.create_window(300, 80, anchor="w", window=reset_button)
-            backupbutton = 400
-
+            reset_button = ttk.Button(self.window, text="Use Appdata", command=self.yuzu_appdata)
+            reset_button_window = canvas.create_window(270, row, anchor="w", window=reset_button)
+            backupbutton = 370
         # Create a Backup button
-        backup_button = ttk.Button(window, text="Backup", command=self.backup)
-        backup_button_window = canvas.create_window(backupbutton, 80, anchor="w", window=backup_button)
+        backup_button = ttk.Button(self.window, text="Backup", command=self.backup)
+        backup_button_window = canvas.create_window(backupbutton, row, anchor="w", window=backup_button)
+        row += 40
+
 
         # Create a label for resolution selection
-        canvas.create_text(40, 120, text="Select a Resolution:", anchor="w", fill="#D1F3FD", font=textfont)
+        canvas.create_text(cultex, row, text="Select a Resolution:", anchor="w", fill="#D1F3FD", font=textfont)
         self.resolution_var = tk.StringVar(value=self.dfps_options.get("ResolutionNames", [""])[2])  # Set the default resolution to "1080p FHD"
-        resolution_dropdown = ttk.Combobox(window, textvariable=self.resolution_var, values=self.dfps_options.get("ResolutionNames", []))
-        resolution_dropdown_window = canvas.create_window(200, 120, anchor="w", window=resolution_dropdown)
+        resolution_dropdown = ttk.Combobox(self.window, textvariable=self.resolution_var, values=self.dfps_options.get("ResolutionNames", []))
+        resolution_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=resolution_dropdown)
         resolution_dropdown.bind("<<ComboboxSelected>>", lambda event: self.warning_window("Res"))
+        row += 40
 
         # Create a label for FPS selection
-        canvas.create_text(40, 160, text="Select an FPS:", anchor="w", fill="#D1F3FD", font=textfont)
+        canvas.create_text(cultex, row, text="Select an FPS:", anchor="w", fill="#D1F3FD", font=textfont)
         self.fps_var = tk.StringVar(value=str(self.dfps_options.get("FPS", [])[2]))  # Set the default FPS to 60
-        fps_dropdown = ttk.Combobox(window, textvariable=self.fps_var, values=self.dfps_options.get("FPS", []))
-        fps_dropdown_window = canvas.create_window(200, 160, anchor="w", window=fps_dropdown)
+        fps_dropdown = ttk.Combobox(self.window, textvariable=self.fps_var, values=self.dfps_options.get("FPS", []))
+        fps_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=fps_dropdown)
+        row += 40
 
         # Create a label for shadow resolution selection
-        canvas.create_text(40, 200, text="Shadow Resolution:", anchor="w", fill="#D1F3FD", font=textfont)
+        canvas.create_text(40, row, text="Shadow Resolution:", anchor="w", fill="#D1F3FD", font=textfont)
         self.shadow_resolution_var = tk.StringVar(value=self.dfps_options.get("ShadowResolutionNames", [""])[0])  # Set the default shadow resolution to "Auto"
-        shadow_resolution_dropdown = ttk.Combobox(window, textvariable=self.shadow_resolution_var, values=self.dfps_options.get("ShadowResolutionNames", []))
-        shadow_resolution_dropdown_window = canvas.create_window(200, 200, anchor="w", window=shadow_resolution_dropdown)
+        shadow_resolution_dropdown = ttk.Combobox(self.window, textvariable=self.shadow_resolution_var, values=self.dfps_options.get("ShadowResolutionNames", []))
+        shadow_resolution_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=shadow_resolution_dropdown)
+        row += 40
 
-        # Create a Label for camera quality
         # Make exception for camera quality
         CameraQ = self.dfps_options.get("CameraQualityNames", [""])
         for index, value in enumerate(CameraQ):
@@ -124,28 +158,29 @@ class Manager:
             elif value == "Disable" or value == "Disabled":
                 CameraQ[index] = "Off"
 
-        canvas.create_text(40, 240, text="Camera Quality++:", anchor="w", fill="#D1F3FD", font=textfont)
+        canvas.create_text(cultex, row, text="Camera Quality++:", anchor="w", fill="#D1F3FD", font=textfont)
         self.camera_var = tk.StringVar(value=CameraQ[0])  # Set the default camera quality to "Enable"
-        camera_dropdown = ttk.Combobox(window, textvariable=self.camera_var, values=self.dfps_options.get("CameraQualityNames", []))
-        camera_dropdown_window = canvas.create_window(200, 240, anchor="w", window=camera_dropdown)
+        camera_dropdown = ttk.Combobox(self.window, textvariable=self.camera_var, values=self.dfps_options.get("CameraQualityNames", []))
+        camera_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=camera_dropdown)
+        row += 40
 
         # Create a label for UI selection
-        canvas.create_text(40, 280, text="Select a UI:", anchor="w", fill="#D1F3FD", font=textfont)
+        canvas.create_text(cultex, row, text="Select a UI:", anchor="w", fill="#D1F3FD", font=textfont)
         ui_values = ["None", "Black Screen Fix", "PS4", "Xbox"]
         self.ui_var = tk.StringVar(value=ui_values[0])
-        ui_dropdown = ttk.Combobox(window, textvariable=self.ui_var, values=ui_values)
-        ui_dropdown_window = canvas.create_window(200, 280, anchor="w", window=ui_dropdown)
+        ui_dropdown = ttk.Combobox(self.window, textvariable=self.ui_var, values=ui_values)
+        ui_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=ui_dropdown)
+        row += 40
 
         # First Person and FOV
-        canvas.create_text(40, 320, text="Enable First Person:", anchor="w", fill="#D1F3FD", font=textfont)
+        canvas.create_text(cultex, row, text="Enable First Person:", anchor="w", fill="#D1F3FD", font=textfont)
         fp_values = ["Off", "70 FOV", "90 FOV", "110 FOV"]
         self.fp_var = tk.StringVar(value=ui_values[0])
-        fp_dropdown = ttk.Combobox(window, textvariable=self.fp_var, values=fp_values)
-        fp_dropdown_window = canvas.create_window(200, 320, anchor="w", window=fp_dropdown)
+        fp_dropdown = ttk.Combobox(self.window, textvariable=self.fp_var, values=fp_values)
+        fp_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=fp_dropdown)
         
         # Create labels and enable/disable options for each entry
         self.selected_options = {}
-        row = 320
         for version_option_name, version_option_value in self.version_options[0].items():
             # Exclude specific keys from being displayed
             if version_option_name in ["Source", "nsobid", "offset", "version"]:
@@ -153,22 +188,29 @@ class Manager:
 
             # Create label
             if version_option_name not in ["Source", "nsobid", "offset", "version"]:
-                canvas.create_text(40, row + 40, text=version_option_name, anchor="w", fill="#D1F3FD", font=textfont)
+                canvas.create_text(cultex, row + 40, text=version_option_name, anchor="w", fill="#D1F3FD", font=textfont)
 
             # Create enable/disable dropdown menu
             version_option_var = tk.StringVar(value="On")
-            version_option_dropdown = ttk.Combobox(window, textvariable=version_option_var, values=["On", "Off"])
-            version_option_dropdown_window = canvas.create_window(200, row + 40, anchor="w", window=version_option_dropdown)
+            version_option_dropdown = ttk.Combobox(self.window, textvariable=version_option_var, values=["On", "Off"])
+            version_option_dropdown_window = canvas.create_window(culsel, row + 40, anchor="w", window=version_option_dropdown)
 
             self.selected_options[version_option_name] = version_option_var
             row += 40
+
+            if row == 480:
+                row = 80
+                cultex = 400
+                culsel = 540
+
+
 
         # Ko-fi Button
         kofi_image_path = self.get_UI_path("Kofi.png")
         kofi_image = Image.open(kofi_image_path)
         kofi_image = kofi_image.resize((150, 42))
         self.kofi_image = ImageTk.PhotoImage(kofi_image)
-        kofi_button = ttk.Button(window, image=self.kofi_image, command=self.open_kofi)
+        kofi_button = ttk.Button(self.window, image=self.kofi_image, command=self.open_kofi)
         kofi_button_window = canvas.create_window(1110, 550, anchor="center", window=kofi_button)
 
         # GitHub Button
@@ -176,16 +218,47 @@ class Manager:
         github_image = Image.open(github_image_path)
         github_image = github_image.resize((76, 40))
         self.github_image = ImageTk.PhotoImage(github_image)
-        github_button = ttk.Button(window, image=self.github_image, command=self.open_github)
+        github_button = ttk.Button(self.window, image=self.github_image, command=self.open_github)
         github_button_window = canvas.create_window(980, 550, anchor="center", window=github_button)
 
         # Create a submit button
-        submit_button = ttk.Button(window, text="Save", command=self.submit)
-        submit_button_window = canvas.create_window(200, row + 40, anchor="w", window=submit_button)
+        submit_button = ttk.Button(self.window, text="Apply", command=self.submit)
+        submit_button_window = canvas.create_window(200, 520, anchor="w", window=submit_button)
 
         # Load Saved User Options.
-        config_file = "VisualImprovements.ini"
-        self.load_user_choices(config_file)
+        self.load_user_choices(self.config)
+        return canvas
+
+    def switchmode(self, command="true"):
+        if command == "true":
+            if self.mode == "Yuzu":
+                self.mode = "Ryujinx"
+                self.manager_switch['text'] = "Switch to Yuzu"
+                self.canvas.itemconfig(self.Settings_label, text="")
+                self.canvas.itemconfig(self.selectexe, text="Select ryujinx.exe")
+                self.second_dropdown.destroy()
+                return
+            if self.mode == "Ryujinx":
+                self.mode = "Yuzu"
+                # change text
+                self.manager_switch['text'] = "Switch to Ryujinx"
+                self.canvas.itemconfig(self.Settings_label, text="Yuzu Settings:")
+                self.canvas.itemconfig(self.selectexe, text="Select yuzu.exe")
+
+                # create new labels
+                self.selected_settings = tk.StringVar(value="No Change")
+                self.second_dropdown = ttk.Combobox(self.window, textvariable=self.selected_settings, values=["No Change", "Steamdeck", "AMD", "Nvidia", "High End Nvidia"])
+                self.second_dropdown_window = self.canvas.create_window(450, 40, anchor="w", window=self.second_dropdown)
+                self.second_dropdown.bind("<<ComboboxSelected>>")
+                return
+        elif command == "false":
+            if self.mode == "Ryujinx":
+                self.manager_switch['text'] = "Switch to Yuzu"
+                self.canvas.itemconfig(self.Settings_label, text="")
+                self.canvas.itemconfig(self.selectexe, text="Select ryujinx.exe")
+                self.second_dropdown.destroy()
+                return
+
     # run UI properly as executable
     def get_UI_path(self, file_name):
         if getattr(sys, 'frozen', False):
@@ -203,18 +276,16 @@ class Manager:
         selected_preset = self.selected_preset.get()
 
         if selected_preset == "None":
-            config_file = "VisualImprovements.ini"
-            if os.path.exists(config_file):
-                self.load_user_choices(config_file)
+            if os.path.exists(self.config):
+                self.load_user_choices(self.config)
             else:
                 # Fallback to the default preset
                 default_preset = self.get_local_presets().get("Default", {})
                 self.apply_preset(default_preset)
         
         elif selected_preset == "Saved":
-            config_file = "VisualImprovements.ini"
-            if os.path.exists(config_file):
-                self.load_user_choices(config_file)
+            if os.path.exists(self.config):
+                self.load_user_choices(self.config)
             else:
                 messagebox.showinfo("Saved Preset", "No saved preset found. Please save your current settings first.")
         elif selected_preset in self.presets_data:
@@ -375,35 +446,31 @@ class Manager:
             )
             home_directory = os.path.dirname(self.yuzu_path)
             Default_Directory = os.path.join(home_directory, "user")
-
             if yuzu_path:
                 # Save the selected yuzu.exe path to a configuration file
-                config_file = "VisualImprovements.ini"
-                self.save_user_choices(config_file, yuzu_path)
+                self.save_user_choices(self.config, yuzu_path)
                 home_directory = os.path.dirname(yuzu_path)
                 if os.path.exists(Default_Directory):
                     self.Yuzudir = os.path.join(home_directory, "user", "load", "0100F2C0115B6000")
                     print(f"Successfully selected Yuzu.exe! And a user folder was found at {home_directory}!")
-                    checkpath(self)
+                    checkpath(self, self.mode)
                 else:
                     print("User Folder not Found defaulting to Yuzu Dir!")
-                    checkpath(self)
+                    checkpath(self, self.mode)
 
                 # Update the yuzu.exe path in the current session
                 self.yuzu_path = yuzu_path
             else:
-                checkpath(self)
+                checkpath(self, self.mode)
             # Save the selected yuzu.exe path to a configuration file
-            config_file = "VisualImprovements.ini"
-            self.save_user_choices(config_file, yuzu_path)
+            self.save_user_choices(self.config, yuzu_path) 
         else: print(f"You are not running Windows this feature is disabled, defaulting to {self.Yuzudir}")
         return
-    # Return Yuzu Dir to Appdata (Windows ONLY)
+
     def yuzu_appdata(self):
-        checkpath(self)
+        checkpath(self, self.mode)
         print("Successfully Defaulted to Appdata!")
-        config_file = "VisualImprovements.ini"
-        self.save_user_choices(config_file, "appdata")
+        self.save_user_choices(self.config, "appdata")
     # Load Yuzu Dir
     def load_yuzu_path(self, config_file):
             config = configparser.ConfigParser()
@@ -463,8 +530,15 @@ class Manager:
             config['Options'][option_name] = option_var.get()
 
         # Save the yuzu.exe path if provided
-        if yuzu_path:
-            config['Paths'] = {'YuzuPath': yuzu_path}
+        if self.mode == "Yuzu":
+            if yuzu_path:
+                config['Paths'] = {'YuzuPath': yuzu_path}
+        if self.mode == "Ryujinx":
+            if yuzu_path:
+                config['Paths'] = {'RyujinxPath': yuzu_path}
+
+        # Save the manager selected mode I.E Ryujinx/Yuzu
+        config["Mode"] = {"ManagerMode": self.mode}
 
         # Write the updated configuration back to the file
         with open(config_file, 'w') as file:
@@ -508,10 +582,10 @@ class Manager:
             
             else:
                 print("User Folder not Found defaulting to Default Dir!")
-                checkpath(self)
+                checkpath(self, self.mode)
         else:
             print("Yuzu path not found in the config file - Defaulting to Default Dir!")
-            checkpath(self)
+            checkpath(self, self.mode)
  
     def warning_window(self, setting_type):
         warning_message = None
@@ -658,7 +732,7 @@ class Manager:
             messagebox.showerror("Backup Error", f"Error creating backup: {e}")
     # Submit the results, run download manager. Open a Loading screen.
     def submit(self):
-        checkpath(self)
+        checkpath(self, self.mode)
         def timer(value):
             progress_bar["value"] = value
             self.window.update_idletasks()
@@ -675,8 +749,7 @@ class Manager:
             UpdateSettings()
             progress_window.destroy()
         def UpdateVisualImprovements():
-            config_file = "VisualImprovements.ini"
-            self.save_user_choices(config_file)
+            self.save_user_choices(self.config)
 
             resolution = self.resolution_var.get()
             fps = self.fps_var.get()
@@ -743,10 +816,12 @@ class Manager:
                         else:
                             file.write(" ")
                     file.write("\n@stop\n")
-
-            qtconfig = get_config_parser()
-            qtconfig.optionxform = lambda option: option
-            qtconfig.read(self.configdir)
+            if self.mode == "Yuzu":
+                qtconfig = get_config_parser()
+                qtconfig.optionxform = lambda option: option
+                qtconfig.read(self.configdir)
+            else:
+                qtconfig = None
             # Ensures that the patches are active
             modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "DFPS", action="remove")
             modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Mod Manager Patches", action="remove")
@@ -838,25 +913,27 @@ class Manager:
 
         def DownloadDFPS():
             # Make sure DFPS is enabled.
-            qtconfig = get_config_parser()
-            qtconfig.optionxform = lambda option: option
-            qtconfig.read(self.configdir)
+            if self.mode == "Yuzu":
+                qtconfig = get_config_parser()
+                qtconfig.optionxform = lambda option: option
+                qtconfig.read(self.configdir)
+            else:
+                qtconfig = None
             modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "DFPS", action="remove")
 
             config = configparser.ConfigParser()
-            config_file = "VisualImprovements.ini"
-            config.read(config_file)
+            config.read(self.config)
             if not config.has_section("Updates"):
                 config.add_section("Updates")
                 config.set("Updates", "dfps", "1.0.0")
-                with open(config_file, "w") as configfile:
+                with open(self.config, "w") as configfile:
                     config.write(configfile)
             try:
                 latest_dfps_version = config.get("Updates", "dfps")
             except NoOptionError as e:
                 # Handle the case when "dfps" option doesn't exist
                 config.set("Updates", "dfps", "1.0.0")
-                with open(config_file, "w") as configfile:
+                with open(self.config, "w") as configfile:
                     config.write(configfile)
                 latest_dfps_version = "1.0.0"
             print(f"Successfully updated config!")
@@ -884,15 +961,18 @@ class Manager:
                     Manager.download_file(url, save_path)
                 # Update Config File
                 config.set("Updates", "dfps", current_dfps_version)
-                with open(config_file, "w") as configfile:
+                with open(self.config, "w") as configfile:
                     config.write(configfile)
             else:
                 print("You already have the latest DFPS version and the folder exists!")
 
         def DownloadUI():
-            qtconfig = get_config_parser()
-            qtconfig.optionxform = lambda option: option
-            qtconfig.read(self.configdir)
+            if self.mode == "Yuzu":
+                qtconfig = get_config_parser()
+                qtconfig.optionxform = lambda option: option
+                qtconfig.read(self.configdir)
+            else:
+                qtconfig = None
 
             ui_mod_folder = None
             CurrentFolder = None
@@ -941,9 +1021,12 @@ class Manager:
                         print("failed to retrive folder and contents")
 
         def DownloadFP():
-            qtconfig = get_config_parser()
-            qtconfig.optionxform = lambda option: option
-            qtconfig.read(self.configdir)
+            if self.mode == "Yuzu":
+                qtconfig = get_config_parser()
+                qtconfig.optionxform = lambda option: option
+                qtconfig.read(self.configdir)
+            else:
+                qtconfig = None
 
             FP_mod_folder = None
             FPCurrentFolder = None
