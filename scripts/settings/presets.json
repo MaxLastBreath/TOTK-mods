@@ -72,7 +72,7 @@
     "Improve LOD": "Enable"
   },
   "RTX 4090 SUPER HIGH": {
-    "Resolution": "8K UUHD",
+    "Resolution": "6K QUHD - Experimental",
     "FPS": "60",
     "ShadowResolution": "High x1024",
     "CameraQuality": "Disable",
