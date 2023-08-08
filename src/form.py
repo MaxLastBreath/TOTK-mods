@@ -250,7 +250,7 @@ class Manager:
                 # create new labels
                 self.selected_settings = tk.StringVar(value="No Change")
                 self.second_dropdown = ttk.Combobox(self.window, textvariable=self.selected_settings, values=["No Change", "Steamdeck", "AMD", "Nvidia", "High End Nvidia"])
-                self.second_dropdown_window = self.canvas.create_window(450, 40, anchor="w", window=self.second_dropdown)
+                self.second_dropdown_window = self.canvas.create_window(470, 40, anchor="w", window=self.second_dropdown)
                 self.second_dropdown.bind("<<ComboboxSelected>>")
                 return
         elif command == "false":
@@ -463,7 +463,6 @@ class Manager:
                 self.save_user_choices(self.config, yuzu_path)
                 home_directory = os.path.dirname(yuzu_path)
                 if os.path.exists(Default_Yuzu_Directory) or os.path.exists(Default_Ryujinx_Directory):
-                    self.Yuzudir = os.path.join(home_directory, "user", "load", "0100F2C0115B6000")
                     print(f"Successfully selected {self.mode}.exe! And a portable folder was found at {home_directory}!")
                     checkpath(self, self.mode)
                 else:
@@ -476,7 +475,6 @@ class Manager:
                 checkpath(self, self.mode)
             # Save the selected yuzu.exe path to a configuration file
             self.save_user_choices(self.config, yuzu_path) 
-        else: print(f"You are not running Windows this feature is disabled, defaulting to {self.Yuzudir}")
         return
 
     def yuzu_appdata(self):
@@ -550,10 +548,10 @@ class Manager:
         # Save the yuzu.exe path if provided
         if self.mode == "Yuzu":
             if yuzu_path:
-                config['Paths'] = {'YuzuPath': yuzu_path}
+                config['Paths']['YuzuPath'] = yuzu_path
         if self.mode == "Ryujinx":
             if yuzu_path:
-                config['Paths'] = {'RyujinxPath': yuzu_path}
+                config['Paths']['RyujinxPath'] = yuzu_path
 
         # Save the manager selected mode I.E Ryujinx/Yuzu
         config["Mode"] = {"ManagerMode": self.mode}
