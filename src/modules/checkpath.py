@@ -10,18 +10,26 @@ def checkpath(self, mode):
     # Default Dir for Linux/SteamOS
     self.os_platform = platform.system()
     if self.os_platform == "Linux":
-        self.Globaldir = os.path.join(home_directory, ".local", "share", "yuzu")
-        self.configdir = os.path.join(self.Globaldir, "config", "qt-config.ini")
-        self.TOTKconfig = os.path.join(self.Globaldir, "config", "custom", "0100F2C0115B6000.ini")
-        if not os.path.exists(self.configdir):
-            print("Detected a steamdeck!")
-            self.configdir = os.path.join(home_directory, ".config", "yuzu", "qt-config.ini")
-            self.TOTKconfig = os.path.join(home_directory, ".config", "yuzu", "custom", "0100F2C0115B6000.ini")
-        config_parser = configparser.ConfigParser()
-        config_parser.read(self.configdir)
-        self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{self.Globaldir}/nand'))
-        self.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{self.Globaldir}/load')), "0100F2C0115B6000")
-        self.Yuzudir = os.path.join(home_directory, ".local", "share", "yuzu", "load", "0100F2C0115B6000")
+        if mode == "Yuzu":
+            self.Globaldir = os.path.join(home_directory, ".local", "share", "yuzu")
+            self.configdir = os.path.join(self.Globaldir, "config", "qt-config.ini")
+            self.TOTKconfig = os.path.join(self.Globaldir, "config", "custom", "0100F2C0115B6000.ini")
+            if not os.path.exists(self.configdir):
+                print("Detected a steamdeck!")
+                self.configdir = os.path.join(home_directory, ".config", "yuzu", "qt-config.ini")
+                self.TOTKconfig = os.path.join(home_directory, ".config", "yuzu", "custom", "0100F2C0115B6000.ini")
+            config_parser = configparser.ConfigParser()
+            config_parser.read(self.configdir)
+            self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{self.Globaldir}/nand'))
+            self.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{self.Globaldir}/load')), "0100F2C0115B6000")
+            self.Yuzudir = os.path.join(home_directory, ".local", "share", "yuzu", "load", "0100F2C0115B6000")
+        if mode == "Ryujinx":
+            self.Globaldir = os.path.join(home_directory, ".config", "Ryujinx")
+            self.configdir = None
+            self.TOTKconfig = None
+            self.nand_dir = os.path.join(f"{self.Globaldir}", "bis", "user", "save")
+            self.load_dir = os.path.join(f"{self.Globaldir}", "mods", "contents", "0100F2C0115B6000")
+            self.Yuzudir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents", "0100F2C0115B6000")
     # Default Dir for Windows or user folder.
     elif self.os_platform == "Windows":
         config = "VisualImprovements.ini"
