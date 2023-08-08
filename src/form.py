@@ -34,6 +34,8 @@ class Manager:
         self.canvas = self.createcanvas()
         # Switches the mod to ryujinx if it's saved in the config file.
         self.switchmode("false")
+        selfmode = self.switchmode("Mode")
+        print(f"{self.mode}")
 
     def createcanvas(self):
         # Text Position
@@ -235,10 +237,10 @@ class Manager:
                 self.mode = "Ryujinx"
                 self.manager_switch['text'] = "Switch to Yuzu"
                 self.canvas.itemconfig(self.Settings_label, text="")
-                self.canvas.itemconfig(self.selectexe, text="Select ryujinx.exe")
+                self.canvas.itemconfig(self.selectexe, text="Select Ryujinx.exe")
                 self.second_dropdown.destroy()
                 return
-            if self.mode == "Ryujinx":
+            elif self.mode == "Ryujinx":
                 self.mode = "Yuzu"
                 # change text
                 self.manager_switch['text'] = "Switch to Ryujinx"
@@ -255,9 +257,11 @@ class Manager:
             if self.mode == "Ryujinx":
                 self.manager_switch['text'] = "Switch to Yuzu"
                 self.canvas.itemconfig(self.Settings_label, text="")
-                self.canvas.itemconfig(self.selectexe, text="Select ryujinx.exe")
+                self.canvas.itemconfig(self.selectexe, text="Select Ryujinx.exe")
                 self.second_dropdown.destroy()
                 return
+        elif command == "Mode":
+            return self.mode
 
     # run UI properly as executable
     def get_UI_path(self, file_name):
@@ -445,17 +449,25 @@ class Manager:
                 filetypes=[("Executable files", "*.exe"), ("All Files", "*.*")]
             )
             home_directory = os.path.dirname(self.yuzu_path)
-            Default_Directory = os.path.join(home_directory, "user")
+            Default_Yuzu_Directory = os.path.join(home_directory, "user")
+            Default_Ryujinx_Directory = os.path.join(home_directory, "portable")
+            executablename = yuzu_path
+            if executablename.endswith("Ryujinx.exe"):
+                if self.mode == "Yuzu":
+                    self.switchmode("true")
+            if executablename.endswith("yuzu.exe"):
+                if self.mode == "Ryujinx":
+                    self.switchmode("true")
             if yuzu_path:
                 # Save the selected yuzu.exe path to a configuration file
                 self.save_user_choices(self.config, yuzu_path)
                 home_directory = os.path.dirname(yuzu_path)
-                if os.path.exists(Default_Directory):
+                if os.path.exists(Default_Yuzu_Directory) or os.path.exists(Default_Ryujinx_Directory):
                     self.Yuzudir = os.path.join(home_directory, "user", "load", "0100F2C0115B6000")
-                    print(f"Successfully selected Yuzu.exe! And a user folder was found at {home_directory}!")
+                    print(f"Successfully selected {self.mode}.exe! And a portable folder was found at {home_directory}!")
                     checkpath(self, self.mode)
                 else:
-                    print("User Folder not Found defaulting to Yuzu Dir!")
+                    print("Portable folder not found defaulting to default appdata directory!")
                     checkpath(self, self.mode)
 
                 # Update the yuzu.exe path in the current session
@@ -473,10 +485,16 @@ class Manager:
         self.save_user_choices(self.config, "appdata")
     # Load Yuzu Dir
     def load_yuzu_path(self, config_file):
+        if self.mode == "Yuzu":
             config = configparser.ConfigParser()
             config.read(config_file)
             yuzu_path = config.get('Paths', 'YuzuPath', fallback="Appdata")
             return yuzu_path
+        if self.mode == "Ryujinx":
+            config = configparser.ConfigParser()
+            config.read(config_file)
+            ryujinx_path = config.get('Paths', 'RyujinxPath', fallback="Appdata")
+            return ryujinx_path
     # Download Manager
     @staticmethod
     def download_file(url, save_path):
@@ -575,10 +593,15 @@ class Manager:
         if self.yuzu_path:
             home_directory = os.path.dirname(self.yuzu_path)
             Default_Directory = os.path.join(home_directory, "user")
-
-            if os.path.exists(Default_Directory):
-                self.Yuzudir = os.path.join(home_directory, "user", "load", "0100F2C0115B6000")
-                print(f"User Folder Found! New mod path! {self.Yuzudir}")
+            Default_Directory = os.path.join(home_directory, "portable")
+            if self.mode == "Yuzu":
+                if os.path.exists(Default_Directory):
+                    self.Yuzudir = os.path.join(home_directory, "user", "load", "0100F2C0115B6000")
+                    print(f"User Folder Found! New mod path! {self.Yuzudir}")
+            elif self.mode == "Ryujinx":
+                if os.path.exists(Default_Directory):
+                    self.Yuzudir = os.path.join(home_directory, "portable", "mods", "contents", "0100f2c0115b6000")
+                    print(f"Portable Folder Found! New mod path! {self.Yuzudir}")
             
             else:
                 print("User Folder not Found defaulting to Default Dir!")

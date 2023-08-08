@@ -79,14 +79,12 @@ def checkpath(self, mode):
                 return
         if mode == "Ryujinx":
             if os.path.exists(portablefolder):
-                print("Found portable Folder")
                 self.configdir = None
                 self.TOTKconfig = None
                 self.nand_dir = os.path.join(f"{portablefolder}", "bis", "user", "save")
                 self.load_dir = os.path.join(f"{portablefolder}", "mods", "contents", "0100F2C0115B6000")
                 self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", "0100F2C0115B6000")
             else:
-                print("Ryujinx Mode selected!")
                 self.Globaldir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx")
                 self.configdir = None
                 self.TOTKconfig = None

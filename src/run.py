@@ -6,7 +6,7 @@ from modules.update import textver, check_for_updates
 if __name__ == "__main__":
     check_for_updates()
     window = ttk.Window(themename="flatly")
-    window.title(f"TOTK MOD Manager {textver}")
+    window.title(f"TOTK Mod Manager {textver}")
     main = Manager(window)
     window_width = 1200
     window_height = 600
