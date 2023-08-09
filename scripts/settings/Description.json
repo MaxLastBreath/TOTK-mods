@@ -1,5 +1,5 @@
 {
-	"HARDCODED MODS": "None",
+	"HARDCODED MODS - GROUP": "None",
 
 	"Resolution": "Choose the desired resolution for Tears of The Kingdom.",
 	"FPS": "Choose the desired fps limit for Tears of The Kingdom.",
@@ -8,12 +8,12 @@
 	"UI": "Choose the button prompts for Tears of The Kingdom.\nNote: Recommended to use BlackscreenFIX, if you don't desire to use any other UI mod.",
 	"First Person": "Switches the camera to First Person Mod.",
 
-	"PRESETS": "None",
+	"PRESETS - GROUP": "None",
 
 	"Presets": "Presets for the Mod Manager.",
 	"Settings": "Select yuzu specific TOTK settings, based on your PC configuration.",
 
-	"BUTTONS": "None",
+	"BUTTONS - GROUP": "None",
 
 	"Reset": "Removes the portable path and defaults to Appdata",
 	"Browse": "Search for PORTABLE Yuzu/Ryujinx.exe.",
@@ -23,7 +23,7 @@
 	"Apply": "Applies the selected settings!",
 	"Switch": "Switch between Yuzu and Ryujinx mode.",
 
-	"DYNAMICMODS": "None",
+	"DYNAMICMODS - GROUP": "None",
 
 	"Remove QuaReduction": "Improves Quality when FPS drops.\nThis is mandatory with new DFPS.",
 	"Remove DOF": "Removes Depth of Field effect.",
