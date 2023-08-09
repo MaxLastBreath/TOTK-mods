@@ -10,6 +10,7 @@ import requests
 import platform
 import ttkbootstrap as ttk
 import time
+from idlelib.tooltip import Hovertip
 from ttkbootstrap.constants import *
 from PIL import Image, ImageTk
 from configparser import NoOptionError
@@ -57,6 +58,7 @@ class Manager:
 
         # Load options from Version.json
         self.version_options = self.load_version_options_from_json()
+        self.version_description = self.load_descriptions_from_json()
         self.scalingfactor = 1
 
         # Create the main canvas
@@ -101,18 +103,22 @@ class Manager:
         self.preset_dropdown = ttk.Combobox(self.window, textvariable=self.selected_preset, values=list(self.presets.keys()))
         self.preset_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=self.preset_dropdown)
         self.preset_dropdown.bind("<<ComboboxSelected>>", self.apply_selected_preset)
+        self.hoverpreset = Hovertip(self.preset_dropdown, "Presets for the Mod Manager.", hover_delay=500)
+
         # Setting Preset
         self.Settings_label = canvas.create_text(370, 40, text="Yuzu Settings:", anchor="w", fill="#D1F3FD", font=textfont)
         self.selected_settings = tk.StringVar(value="No Change")
         self.second_dropdown = ttk.Combobox(self.window, textvariable=self.selected_settings, values=["No Change", "Steamdeck", "AMD", "Nvidia", "High End Nvidia"])
         self.second_dropdown_window = canvas.create_window(480, 40, anchor="w", window=self.second_dropdown)
         self.second_dropdown.bind("<<ComboboxSelected>>")
+        self.hoversettings = Hovertip(self.second_dropdown, "Select yuzu specific TOTK settings, based on your PC configuration.", hover_delay=500)
         row += 40
 
         # Switch mode between Ryujinx and Yuzu
         switchtext = "Switch to Yuzu"
         self.manager_switch = ttk.Button(self.window, text=f"{switchtext}", command=self.switchmode, bootstyle=style)
         self.manager_switch_window = canvas.create_window(270, 520, anchor="w", window=self.manager_switch)
+        self.switchhover = Hovertip(self.manager_switch, "Switch between Yuzu and Ryujinx mode.", hover_delay=500)
 
         # Create a label for yuzu.exe selection
         backupbutton = culsel
@@ -120,13 +126,17 @@ class Manager:
         if self.os_platform == "Windows":
             yuzu_button = ttk.Button(self.window, text="Browse", command=self.select_yuzu_exe)
             yuzu_button_window = canvas.create_window(culsel, row, anchor="w", window=yuzu_button)
+            self.browsehover = Hovertip(yuzu_button, "Search for PORTABLE Yuzu/Ryujinx.exe.", hover_delay=500)
+
             # Reset to Appdata
             reset_button = ttk.Button(self.window, text="Use Appdata", command=self.yuzu_appdata)
             reset_button_window = canvas.create_window(270, row, anchor="w", window=reset_button)
+            self.resethover = Hovertip(reset_button, "Removes the portable path and defaults to Appdata/Local for Linux..", hover_delay=500)
             backupbutton = 370
         # Create a Backup button
         backup_button = ttk.Button(self.window, text="Backup", command=self.backup)
         backup_button_window = canvas.create_window(backupbutton, row, anchor="w", window=backup_button)
+        self.backuphover = Hovertip(backup_button, "Backups your TOTK saves.", hover_delay=500)
         row += 40
 
 
@@ -136,6 +146,7 @@ class Manager:
         resolution_dropdown = ttk.Combobox(self.window, textvariable=self.resolution_var, values=self.dfps_options.get("ResolutionNames", []))
         resolution_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=resolution_dropdown)
         resolution_dropdown.bind("<<ComboboxSelected>>", lambda event: self.warning_window("Res"))
+        self.reshover = Hovertip(resolution_dropdown, "Choose the desired resolution for Tears of The Kingdom.", hover_delay=500)
         row += 40
 
         # Create a label for FPS selection
@@ -143,6 +154,7 @@ class Manager:
         self.fps_var = tk.StringVar(value=str(self.dfps_options.get("FPS", [])[2]))  # Set the default FPS to 60
         fps_dropdown = ttk.Combobox(self.window, textvariable=self.fps_var, values=self.dfps_options.get("FPS", []))
         fps_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=fps_dropdown)
+        self.fpshover = Hovertip(fps_dropdown, "Choose the desired fps limit for Tears of The Kingdom.", hover_delay=500)
         row += 40
 
         # Create a label for shadow resolution selection
@@ -150,6 +162,7 @@ class Manager:
         self.shadow_resolution_var = tk.StringVar(value=self.dfps_options.get("ShadowResolutionNames", [""])[0])  # Set the default shadow resolution to "Auto"
         shadow_resolution_dropdown = ttk.Combobox(self.window, textvariable=self.shadow_resolution_var, values=self.dfps_options.get("ShadowResolutionNames", []))
         shadow_resolution_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=shadow_resolution_dropdown)
+        self.shadhover = Hovertip(shadow_resolution_dropdown, "Choose the desired shadow resolution for Tears of The Kingdom.\nNote: Recommended to use 1024x.", hover_delay=500)
         row += 40
 
         # Make exception for camera quality
@@ -164,6 +177,7 @@ class Manager:
         self.camera_var = tk.StringVar(value=CameraQ[0])  # Set the default camera quality to "Enable"
         camera_dropdown = ttk.Combobox(self.window, textvariable=self.camera_var, values=self.dfps_options.get("CameraQualityNames", []))
         camera_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=camera_dropdown)
+        self.camhover = Hovertip(camera_dropdown, "Increases camera Picture Quality.\nNote: Recommended to not use this mod, as it COULD cause issues.", hover_delay=500)
         row += 40
 
         # Create a label for UI selection
@@ -172,6 +186,7 @@ class Manager:
         self.ui_var = tk.StringVar(value=ui_values[0])
         ui_dropdown = ttk.Combobox(self.window, textvariable=self.ui_var, values=ui_values)
         ui_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=ui_dropdown)
+        self.UIhover = Hovertip(ui_dropdown, "Choose the button prompts for Tears of The Kingdom.\nNote: Recommended to use BlackscreenFIX, if you don't desire to use any other UI mod.", hover_delay=500)
         row += 40
 
         # First Person and FOV
@@ -180,6 +195,7 @@ class Manager:
         self.fp_var = tk.StringVar(value=ui_values[0])
         fp_dropdown = ttk.Combobox(self.window, textvariable=self.fp_var, values=fp_values)
         fp_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=fp_dropdown)
+        self.fphover = Hovertip(fp_dropdown, "Switches the camera to First Person Mod.", hover_delay=500)
         
         # Create labels and enable/disable options for each entry
         self.selected_options = {}
@@ -192,10 +208,16 @@ class Manager:
             if version_option_name not in ["Source", "nsobid", "offset", "version"]:
                 canvas.create_text(cultex, row + 40, text=version_option_name, anchor="w", fill="#D1F3FD", font=textfont)
 
+
+
             # Create enable/disable dropdown menu
             version_option_var = tk.StringVar(value="On")
             version_option_dropdown = ttk.Combobox(self.window, textvariable=version_option_var, values=["On", "Off"])
             version_option_dropdown_window = canvas.create_window(culsel, row + 40, anchor="w", window=version_option_dropdown)
+            if version_option_name in self.version_description:
+                hover = self.version_description[version_option_name]
+                self.versionhover = Hovertip(version_option_dropdown, f"{hover}", hover_delay=500)
+                print(f"{hover}")
 
             self.selected_options[version_option_name] = version_option_var
             row += 40
@@ -214,6 +236,7 @@ class Manager:
         self.kofi_image = ImageTk.PhotoImage(kofi_image)
         kofi_button = ttk.Button(self.window, image=self.kofi_image, bootstyle="light", command=self.open_kofi)
         kofi_button_window = canvas.create_window(1110, 550, anchor="center", window=kofi_button)
+        self.fphover = Hovertip(kofi_button, "If you wish to donate to support this project further,\nfeel free to check my Kofi link.", hover_delay=500)
 
         # GitHub Button
         github_image_path = self.get_UI_path("github.png")
@@ -222,10 +245,12 @@ class Manager:
         self.github_image = ImageTk.PhotoImage(github_image)
         github_button = ttk.Button(self.window, image=self.github_image, bootstyle="light", command=self.open_github)
         github_button_window = canvas.create_window(960, 550, anchor="center", window=github_button)
+        self.githover = Hovertip(github_button, "Leads to the Project page.", hover_delay=500)
 
         # Create a submit button
         submit_button = ttk.Button(self.window, text="Apply", command=self.submit)
         submit_button_window = canvas.create_window(200, 520, anchor="w", window=submit_button)
+        self.submithover = Hovertip(submit_button, "Applies the selected settings!", hover_delay=500)
 
         # Load Saved User Options.
         self.load_user_choices(self.config)
@@ -385,6 +410,44 @@ class Manager:
             else:
                 self.dfps_options = {}
         return self.dfps_options
+    def load_descriptions_from_json(self):
+        # Check if the .presets folder exists, if not, create it
+        presets_folder = "json.data"
+        if not os.path.exists(presets_folder):
+            os.makedirs(presets_folder)
+        json_url = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/Description.json"
+        description_options_file_path = os.path.join(presets_folder, "Description.json")
+
+        try:
+            response = requests.get(json_url, timeout=5)
+            response.raise_for_status()
+
+            data = response.json()
+
+            if os.path.exists(description_options_file_path):
+                with open(description_options_file_path, "r") as file:
+                    local_description_options = json.load(file)
+
+                if data != local_description_options:
+                    with open(description_options_file_path, "w") as file:
+                        json.dump(data, file)
+                        self.description_options = data
+                else:
+                    self.description_options = local_description_options
+            else:
+                with open(description_options_file_path, "w") as file:
+                    json.dump(data, file)
+                    self.description_options = data
+
+        except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
+            print(f"Error occurred while fetching or parsing Description.json: {e}")
+            if os.path.exists(description_options_file_path):
+                with open(description_options_file_path, "r") as file:
+                    self.description_options = json.load(file)
+            else:
+                self.description_options = []
+
+        return self.description_options
 
     def load_version_options_from_json(self):
         # Check if the .presets folder exists, if not, create it

@@ -28,8 +28,8 @@ def checkpath(self, mode):
             self.configdir = None
             self.TOTKconfig = None
             self.nand_dir = os.path.join(f"{self.Globaldir}", "bis", "user", "save")
-            self.load_dir = os.path.join(f"{self.Globaldir}", "mods", "contents", "0100F2C0115B6000")
-            self.Yuzudir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents", "0100F2C0115B6000")
+            self.load_dir = os.path.join(f"{self.Globaldir}", "mods", "contents", "0100f2C0115b6000")
+            self.Yuzudir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents", "0100f2C0115b6000")
     # Default Dir for Windows or user folder.
     elif self.os_platform == "Windows":
         config = "VisualImprovements.ini"
@@ -82,15 +82,15 @@ def checkpath(self, mode):
                 self.configdir = None
                 self.TOTKconfig = None
                 self.nand_dir = os.path.join(f"{portablefolder}", "bis", "user", "save")
-                self.load_dir = os.path.join(f"{portablefolder}", "mods", "contents", "0100F2C0115B6000")
-                self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", "0100F2C0115B6000")
+                self.load_dir = os.path.join(f"{portablefolder}", "mods", "contents", "0100f2C0115b6000")
+                self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", "0100f2C0115b6000")
             else:
                 self.Globaldir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx")
                 self.configdir = None
                 self.TOTKconfig = None
                 self.nand_dir = os.path.join(f"{self.Globaldir}", "bis", "user", "save")
-                self.load_dir = os.path.join(f"{self.Globaldir}", "mods", "contents", "0100F2C0115B6000")
-                self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", "0100F2C0115B6000")
+                self.load_dir = os.path.join(f"{self.Globaldir}", "mods", "contents", "0100f2C0115b6000")
+                self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", "0100f2C0115b6000")
     # Ensure the path exists.
     if self.os_platform == "Windows":
         # Ensure directories exist for windows, skip for linux (gives off permission errors.)

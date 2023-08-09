@@ -1,3 +1,4 @@
+  description = 
   {
     "Remove QuaReduction": "Improves Quality when FPS drops.\nThis is mandatory with new DFPS.",
     "Remove DOF": "Removes Depth of Field effect.",
