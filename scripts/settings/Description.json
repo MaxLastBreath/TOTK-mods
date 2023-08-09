@@ -1,15 +1,20 @@
 {
-	// Hardcoded mods
+	"HARDCODED MODS": "None",
+
 	"Resolution": "Choose the desired resolution for Tears of The Kingdom.",
 	"FPS": "Choose the desired fps limit for Tears of The Kingdom.",
 	"Shadows": "Choose the desired shadow resolution for Tears of The Kingdom.\nNote: Recommended to use 1024x.",
 	"Camera Quality": "Increases camera Picture Quality.\nNote: Recommended to not use this mod, as it COULD cause issues.",
 	"UI": "Choose the button prompts for Tears of The Kingdom.\nNote: Recommended to use BlackscreenFIX, if you don't desire to use any other UI mod.",
 	"First Person": "Switches the camera to First Person Mod.",
-	// Presets
+
+	"PRESETS": "None",
+
 	"Presets": "Presets for the Mod Manager.",
 	"Settings": "Select yuzu specific TOTK settings, based on your PC configuration.",
-	// Buttons
+
+	"BUTTONS": "None",
+
 	"Reset": "Removes the portable path and defaults to Appdata",
 	"Browse": "Search for PORTABLE Yuzu/Ryujinx.exe.",
 	"Backup": "Backups your TOTK saves.",
@@ -17,7 +22,9 @@
 	"Github": "Leads to the Project page.",
 	"Apply": "Applies the selected settings!",
 	"Switch": "Switch between Yuzu and Ryujinx mode.",
-	// Dynamic Mods
+
+	"DYNAMICMODS": "None",
+
 	"Remove QuaReduction": "Improves Quality when FPS drops.\nThis is mandatory with new DFPS.",
 	"Remove DOF": "Removes Depth of Field effect.",
 	"Remove Lensflare": "Removes flickering lensflare altogether.",
