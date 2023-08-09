@@ -1,7 +1,6 @@
-[
   {
     "Remove QuaReduction": "Improves Quality when FPS drops.\nThis is mandatory with new DFPS.",
     "Remove DOF": "Removes Depth of Field effect.",
     "Remove Lensflare": "Removes flickering lensflare altogether.",
     "Improve LOD": "Improves the Distant objects in the game."
-  },
+  }
