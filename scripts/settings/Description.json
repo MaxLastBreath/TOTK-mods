@@ -15,6 +15,8 @@
 	"Backup": "Backups your TOTK saves.",
 	"Kofi": "If you wish to donate to support this project further,\nfeel free to check out my Kofi link.",
     "Github": "Leads to the Project page.",
+	"Apply": "Applies the selected settings!",
+	"Switch": "Switch between Yuzu and Ryujinx mode.",
 	# Dynamic Mods.
 	"Remove QuaReduction": "Improves Quality when FPS drops.\nThis is mandatory with new DFPS.",
     "Remove DOF": "Removes Depth of Field effect.",
