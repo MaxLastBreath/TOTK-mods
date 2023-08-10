@@ -7,92 +7,68 @@ import sys
 import shutil
 import json
 import requests
-import platform
 import ttkbootstrap as ttk
-import time
 from idlelib.tooltip import Hovertip
 from ttkbootstrap.constants import *
 from PIL import Image, ImageTk
 from configparser import NoOptionError
 from modules.qt_config import modify_disabled_key, write_config_file, get_config_parser
 from modules.checkpath import checkpath, DetectOS
+from configuration.settings import Hoverdelay, title_id, localconfig, textfont, style, scalingfactor
 import re
 
 class Manager:
     def __init__(self, window):
-        # Variables
-        self.config = "VisualImprovements.ini"
+
+        # Set Variables
+        self.config = localconfig
         config = configparser.ConfigParser()
-        config.read(self.config)
+        config.read(localconfig)
         self.mode = config.get("Mode", "managermode", fallback="Yuzu")
-        print(f"{self.mode}")
         self.Yuzudir = None
-        self.warnagain = "yes"
         self.root = window
         self.window = window
-        self.title_id = "72324500776771584"
-        # create the entire GUI and Canvas elements.
-        self.canvas = self.createcanvas()
-        # Switches the mod to ryujinx if it's saved in the config file.
-        self.switchmode("false")
-        selfmode = self.switchmode("Mode")
-        print(f"{self.mode}")
+        self.title_id = title_id
 
+        # Load Hover description locally.
+        self.version_description = self.load_descriptions_from_json()
+
+        # Warn for Backup File
+        self.warnagain = "yes"
+
+        # Load Canvas
+        self.Load_ImagePath()
+        self.load_canvas()
+        self.switchmode("false")
+    
+    # Canvas
     def createcanvas(self):
-        # Text Position
+        # Create Canvas
+        self.maincanvas = tk.Canvas(self.window, width=1200 * scalingfactor, height=600 * scalingfactor)
+        self.maincanvas.pack()
+
+        # Load UI Elements
+        self.load_UI_elements(self.maincanvas)
+        self.create_tab_buttons(self.maincanvas)
+
+        # Create Text Position
         row = 40
         cultex = 40
         culsel = 200
-
-        # Hover - delay
-        self.Hoverdelay = 500
-
-        # Configure Text Font. 
-        textfont = ("Arial Bold", 10)
-        self.textfont = textfont
-        style = "success"
-
+        
         # Run Scripts for checking OS and finding location
         checkpath(self, self.mode)
         DetectOS(self, self.mode)
-
         # Load options from DFPS.json
         self.dfps_options = self.load_dfps_options_from_json()
-
         # Load options from Version.json
         self.version_options = self.load_version_options_from_json()
-        self.version_description = self.load_descriptions_from_json()
-        self.scalingfactor = 1
+        
 
-        # Create the main canvas
-        canvas = tk.Canvas(self.window, width=1200 * self.scalingfactor, height=600 * self.scalingfactor)
-        canvas.pack()
 
-        # Create a transparent black background
-        UI_path = self.get_UI_path("BG_Left.png")
-        image = Image.open(UI_path)
-        image = image.resize((1200 * self.scalingfactor, 600 * self.scalingfactor))
-        self.background_UI = ImageTk.PhotoImage(image)
-        UI_path2 = self.get_UI_path("BG_Right.png")
-        image = Image.open(UI_path2)
-        image = image.resize((1200, 600))
-        self.background_UI2 = ImageTk.PhotoImage(image)
 
-        # Load and set the image as the background
-        image_path = self.get_UI_path("image.png")
-        image = Image.open(image_path)
-        image = image.resize((1200, 600))
-        self.background_image = ImageTk.PhotoImage(image)
-        canvas.create_image(0, 0, anchor="nw", image=self.background_image, tags="background")
-        canvas.create_image(0, 0, anchor="nw", image=self.background_UI, tags="overlay")
-        canvas.create_image(0, 0, anchor="nw", image=self.background_UI2, tags="overlay")
 
-        # Information text
-        file_url = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Announcements/Announcement%20Window.txt"
-        text_content = self.fetch_text_from_github(file_url)
-        text_contentoutline = self.fetch_text_from_github(file_url)
-        text_widgetoutline2 = canvas.create_text(1001, 126, text=text_content, fill="black", font=("Arial Bold", 14, "bold"), anchor="center", justify="center", width=325)
-        text_widget = canvas.create_text(1000, 125, text=text_content, fill="#FBF8F3", font=("Arial Bold", 14, "bold"), anchor="center", justify="center", width=325)
+        # Start of CANVAS options.
 
         # Create preset menu.
         presets_data = self.fetch_presets_from_github()
@@ -101,87 +77,74 @@ class Manager:
         else:
             self.presets = presets_data
         self.presets = {"Saved": {}} | self.presets
-        self.preset_label = canvas.create_text(cultex, row, text="Select Preset:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.preset_label = self.maincanvas.create_text(cultex, row, text="Select Preset:", anchor="w", fill="#D1F3FD", font=textfont)
         self.selected_preset = tk.StringVar(value="Saved")
         self.preset_dropdown = ttk.Combobox(self.window, textvariable=self.selected_preset, values=list(self.presets.keys()))
-        self.preset_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=self.preset_dropdown)
+        self.preset_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=self.preset_dropdown)
         self.preset_dropdown.bind("<<ComboboxSelected>>", self.apply_selected_preset)
-        if "Preset" in self.version_description:
-            hover = self.version_description["Preset"]
-            Hovertip(self.preset_dropdown, f"{hover}", hover_delay=self.Hoverdelay)
+        self.read_description("Presets", self.preset_dropdown)
+
 
         # Setting Preset
-        self.Settings_label = canvas.create_text(370, 40, text="Yuzu Settings:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.Settings_label = self.maincanvas.create_text(370, 40, text="Yuzu Settings:", anchor="w", fill="#D1F3FD", font=textfont)
         self.selected_settings = tk.StringVar(value="No Change")
         self.second_dropdown = ttk.Combobox(self.window, textvariable=self.selected_settings, values=["No Change", "Steamdeck", "AMD", "Nvidia", "High End Nvidia"])
-        self.second_dropdown_window = canvas.create_window(480, 40, anchor="w", window=self.second_dropdown)
+        self.second_dropdown_window = self.maincanvas.create_window(480, 40, anchor="w", window=self.second_dropdown)
         self.second_dropdown.bind("<<ComboboxSelected>>")
-        if "Switch" in self.version_description:
-            hover = self.version_description["Switch"]
-            Hovertip(self.second_dropdown, f"{hover}", hover_delay=self.Hoverdelay)
-        row += 40
+        self.read_description("Settings", self.second_dropdown)
+        
 
         # Switch mode between Ryujinx and Yuzu
-        switchtext = "Switch to Yuzu"
+        switchtext = "Switch to Ryujinx"
         self.manager_switch = ttk.Button(self.window, text=f"{switchtext}", command=self.switchmode, bootstyle=style)
-        self.manager_switch_window = canvas.create_window(270, 520, anchor="w", window=self.manager_switch)
-        self.switchhover = Hovertip(self.manager_switch, "Switch between Yuzu and Ryujinx mode.", hover_delay=500)
+        self.manager_switch_window = self.maincanvas.create_window(270, 520, anchor="w", window=self.manager_switch)
+        self.read_description("Switch", self.manager_switch)
+        row += 40
 
         # Create a label for yuzu.exe selection
         backupbutton = culsel
-        self.selectexe = canvas.create_text(cultex, row, text="Select yuzu.exe:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.selectexe = self.maincanvas.create_text(cultex, row, text="Select yuzu.exe:", anchor="w", fill="#D1F3FD", font=textfont)
         if self.os_platform == "Windows":
             yuzu_button = ttk.Button(self.window, text="Browse", command=self.select_yuzu_exe)
-            yuzu_button_window = canvas.create_window(culsel, row, anchor="w", window=yuzu_button)
-            if "Browse" in self.version_description:
-                hover = self.version_description["Browse"]
-                Hovertip(yuzu_button, f"{hover}", hover_delay=self.Hoverdelay)
+            yuzu_button_window = self.maincanvas.create_window(culsel, row, anchor="w", window=yuzu_button)
+            self.read_description("Browse", yuzu_button)
 
             # Reset to Appdata
             reset_button = ttk.Button(self.window, text="Use Appdata", command=self.yuzu_appdata)
-            reset_button_window = canvas.create_window(270, row, anchor="w", window=reset_button)
-            if "Reset" in self.version_description:
-                hover = self.version_description["Reset"]
-                Hovertip(reset_button, f"{hover}", hover_delay=self.Hoverdelay)
+            reset_button_window = self.maincanvas.create_window(270, row, anchor="w", window=reset_button)
+            self.read_description("Reset", reset_button)
             backupbutton = 370
+
         # Create a Backup button
         backup_button = ttk.Button(self.window, text="Backup", command=self.backup)
-        backup_button_window = canvas.create_window(backupbutton, row, anchor="w", window=backup_button)
-        if "Backup" in self.version_description:
-            hover = self.version_description["Backup"]
-            Hovertip(backup_button, f"{hover}", hover_delay=self.Hoverdelay)
+        backup_button_window = self.maincanvas.create_window(backupbutton, row, anchor="w", window=backup_button)
+        self.read_description("Backup", backup_button)
         row += 40
 
 
         # Create a label for resolution selection
-        canvas.create_text(cultex, row, text="Select a Resolution:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.maincanvas.create_text(cultex, row, text="Select a Resolution:", anchor="w", fill="#D1F3FD", font=textfont)
         self.resolution_var = tk.StringVar(value=self.dfps_options.get("ResolutionNames", [""])[2])  # Set the default resolution to "1080p FHD"
         resolution_dropdown = ttk.Combobox(self.window, textvariable=self.resolution_var, values=self.dfps_options.get("ResolutionNames", []))
-        resolution_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=resolution_dropdown)
+        resolution_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=resolution_dropdown)
         resolution_dropdown.bind("<<ComboboxSelected>>", lambda event: self.warning_window("Res"))
-        if "Resolution" in self.version_description:
-            hover = self.version_description["Resolution"]
-            Hovertip(resolution_dropdown, f"{hover}", hover_delay=self.Hoverdelay)
+        self.read_description("Resolution", resolution_dropdown)
         row += 40
 
         # Create a label for FPS selection
-        canvas.create_text(cultex, row, text="Select an FPS:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.maincanvas.create_text(cultex, row, text="Select an FPS:", anchor="w", fill="#D1F3FD", font=textfont)
         self.fps_var = tk.StringVar(value=str(self.dfps_options.get("FPS", [])[2]))  # Set the default FPS to 60
         fps_dropdown = ttk.Combobox(self.window, textvariable=self.fps_var, values=self.dfps_options.get("FPS", []))
-        fps_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=fps_dropdown)
-        if "FPS" in self.version_description:
-            hover = self.version_description["FPS"]
-            Hovertip(fps_dropdown, f"{hover}", hover_delay=self.Hoverdelay)
+        fps_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=fps_dropdown)
+        self.read_description("FPS", fps_dropdown)
         row += 40
 
         # Create a label for shadow resolution selection
-        canvas.create_text(40, row, text="Shadow Resolution:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.maincanvas.create_text(40, row, text="Shadow Resolution:", anchor="w", fill="#D1F3FD", font=textfont)
         self.shadow_resolution_var = tk.StringVar(value=self.dfps_options.get("ShadowResolutionNames", [""])[0])  # Set the default shadow resolution to "Auto"
         shadow_resolution_dropdown = ttk.Combobox(self.window, textvariable=self.shadow_resolution_var, values=self.dfps_options.get("ShadowResolutionNames", []))
-        shadow_resolution_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=shadow_resolution_dropdown)
-        if "Shadows" in self.version_description:
-            hover = self.version_description["Shadows"]
-            Hovertip(shadow_resolution_dropdown, f"{hover}", hover_delay=self.Hoverdelay)
+        shadow_resolution_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=shadow_resolution_dropdown)
+        self.read_description("Shadows", shadow_resolution_dropdown)
         row += 40
 
         # Make exception for camera quality
@@ -192,35 +155,29 @@ class Manager:
             elif value == "Disable" or value == "Disabled":
                 CameraQ[index] = "Off"
 
-        canvas.create_text(cultex, row, text="Camera Quality++:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.maincanvas.create_text(cultex, row, text="Camera Quality++:", anchor="w", fill="#D1F3FD", font=textfont)
         self.camera_var = tk.StringVar(value=CameraQ[0])  # Set the default camera quality to "Enable"
         camera_dropdown = ttk.Combobox(self.window, textvariable=self.camera_var, values=self.dfps_options.get("CameraQualityNames", []))
-        camera_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=camera_dropdown)
-        if "Camera Quality" in self.version_description:
-            hover = self.version_description["Camera Quality"]
-            Hovertip(camera_dropdown, f"{hover}", hover_delay=self.Hoverdelay)
+        camera_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=camera_dropdown)
+        self.read_description("Camera Quality", camera_dropdown)
         row += 40
 
         # Create a label for UI selection
-        canvas.create_text(cultex, row, text="Select a UI:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.maincanvas.create_text(cultex, row, text="Select a UI:", anchor="w", fill="#D1F3FD", font=textfont)
         ui_values = ["None", "Black Screen Fix", "PS4", "Xbox"]
         self.ui_var = tk.StringVar(value=ui_values[0])
         ui_dropdown = ttk.Combobox(self.window, textvariable=self.ui_var, values=ui_values)
-        ui_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=ui_dropdown)
-        if "UI" in self.version_description:
-            hover = self.version_description["UI"]
-            Hovertip(ui_dropdown, f"{hover}", hover_delay=self.Hoverdelay)
+        ui_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=ui_dropdown)
+        self.read_description("UI", ui_dropdown)
         row += 40
 
         # First Person and FOV
-        canvas.create_text(cultex, row, text="Enable First Person:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.maincanvas.create_text(cultex, row, text="Enable First Person:", anchor="w", fill="#D1F3FD", font=textfont)
         fp_values = ["Off", "70 FOV", "90 FOV", "110 FOV"]
         self.fp_var = tk.StringVar(value=ui_values[0])
         fp_dropdown = ttk.Combobox(self.window, textvariable=self.fp_var, values=fp_values)
-        fp_dropdown_window = canvas.create_window(culsel, row, anchor="w", window=fp_dropdown)
-        if "First Person" in self.version_description:
-            hover = self.version_description["First Person"]
-            Hovertip(fp_dropdown, f"{hover}", hover_delay=self.Hoverdelay)
+        fp_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=fp_dropdown)
+        self.read_description("First Person", fp_dropdown)
         
         # Create labels and enable/disable options for each entry
         self.selected_options = {}
@@ -231,17 +188,17 @@ class Manager:
 
             # Create label
             if version_option_name not in ["Source", "nsobid", "offset", "version"]:
-                canvas.create_text(cultex, row + 40, text=version_option_name, anchor="w", fill="#D1F3FD", font=textfont)
+                self.maincanvas.create_text(cultex, row + 40, text=version_option_name, anchor="w", fill="#D1F3FD", font=textfont)
 
 
 
             # Create enable/disable dropdown menu
             version_option_var = tk.StringVar(value="On")
             version_option_dropdown = ttk.Combobox(self.window, textvariable=version_option_var, values=["On", "Off"])
-            version_option_dropdown_window = canvas.create_window(culsel, row + 40, anchor="w", window=version_option_dropdown)
+            version_option_dropdown_window = self.maincanvas.create_window(culsel, row + 40, anchor="w", window=version_option_dropdown)
             if version_option_name in self.version_description:
                 hover = self.version_description[version_option_name]
-                self.versionhover = Hovertip(version_option_dropdown, f"{hover}", hover_delay=self.Hoverdelay)
+                self.versionhover = Hovertip(version_option_dropdown, f"{hover}", hover_delay=Hoverdelay)
 
             self.selected_options[version_option_name] = version_option_var
             row += 40
@@ -251,68 +208,204 @@ class Manager:
                 cultex = 400
                 culsel = 540
 
+        # Create a submit button
+        submit_button = ttk.Button(self.window, text="Apply", command=self.submit)
+        submit_button_window = self.maincanvas.create_window(200, 520, anchor="w", window=submit_button)
+        if "Apply" in self.version_description:
+            hover = self.version_description["Apply"]
+            Hovertip(submit_button, f"{hover}", hover_delay=Hoverdelay)
+
+        # Load Saved User Options.
+        self.load_user_choices(self.config)
+        return self.maincanvas
+
+    def createcheatcanvas(self):
+        # Create Cheat Canvas
+        self.cheatcanvas = tk.Canvas(self.window, width=1200 * scalingfactor, height=600 * scalingfactor)
+        self.cheatcanvas.pack()
+
+        # Create UI elements.
+        self.load_UI_elements(self.cheatcanvas)
+        self.create_tab_buttons(self.cheatcanvas)
+
+        # Create Positions.
+        row = 40
+        cultex = 40
+        culsel = 200
+        Hoverdelay = 500
+
+        # Load Options.
+        self.cheat_options = self.load_cheats_from_json()
+        description = self.load_descriptions_from_json()
 
 
-        # Ko-fi Button
+
+
+
+        # Create Cheat Patch.
+        self.selected_cheats = {}
+        for version_option_name, version_option_value in self.cheat_options[0].items():
+            # Exclude specific keys from being displayed
+            if version_option_name in ["Source", "nsobid", "offset", "version"]:
+                continue
+
+            # Create label
+            if version_option_name not in ["Source", "nsobid", "offset", "version"]:
+                self.cheatcanvas.create_text(cultex, row, text=version_option_name, anchor="w", fill="#D1F3FD", font=textfont)
+
+
+
+            # Create enable/disable dropdown menu
+            version_option_var = tk.StringVar(value="On")
+            version_option_dropdown = ttk.Combobox(self.window, textvariable=version_option_var, values=["On", "Off"])
+            version_option_dropdown_window = self.cheatcanvas.create_window(culsel, row, anchor="w", window=version_option_dropdown)
+            if version_option_name in description:
+                hover = description[version_option_name]
+                versionhover = Hovertip(version_option_dropdown, f"{hover}", hover_delay=Hoverdelay)
+
+            self.selected_cheats[version_option_name] = version_option_var
+            row += 40
+
+            if row == 480:
+                row = 80
+                cultex = 400
+                culsel = 540
+
+    def show_maincanvas(self):
+        self.cheatcanvas.pack_forget()
+        self.maincanvas.pack()
+
+    def show_cheatcanvas(self):
+        self.cheatcanvas.pack()
+        self.maincanvas.pack_forget()
+
+    def load_canvas(self):
+        # Main
+        self.createcanvas()
+        self.createcheatcanvas()
+        self.cheatcanvas.pack_forget()
+
+    def Load_ImagePath(self):
+        # Create a Gradiant background.
+        UI_path = self.get_UI_path("BG_Left.png")
+        image = Image.open(UI_path)
+        image = image.resize((1200 * scalingfactor, 600 * scalingfactor))
+        self.background_UI = ImageTk.PhotoImage(image)
+
+        # Create a transparent black background
+        UI_path2 = self.get_UI_path("BG_Right.png")
+        image = Image.open(UI_path2)
+        image = image.resize((1200, 600))
+        self.background_UI2 = ImageTk.PhotoImage(image)
+
+        # Load and set the image as the background
+        image_path = self.get_UI_path("image.png")
+        image = Image.open(image_path)
+        image = image.resize((1200, 600))
+        self.background_image = ImageTk.PhotoImage(image)
+
+        # Information text
+        file_url = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Announcements/Announcement%20Window.txt"
+        self.text_content = self.fetch_text_from_github(file_url)
+
+        # Kofi
         kofi_image_path = self.get_UI_path("Kofi.png")
         kofi_image = Image.open(kofi_image_path)
         kofi_image = kofi_image.resize((150, 42))
         self.kofi_image = ImageTk.PhotoImage(kofi_image)
-        kofi_button = ttk.Button(self.window, image=self.kofi_image, bootstyle="light", command=self.open_kofi)
-        kofi_button_window = canvas.create_window(1110, 550, anchor="center", window=kofi_button)
-        if "Kofi" in self.version_description:
-            hover = self.version_description["Kofi"]
-            Hovertip(kofi_button, f"{hover}", hover_delay=self.Hoverdelay)
 
-        # GitHub Button
+        # Github
         github_image_path = self.get_UI_path("github.png")
         github_image = Image.open(github_image_path)
         github_image = github_image.resize((83, 43))
         self.github_image = ImageTk.PhotoImage(github_image)
+        
+    def load_UI_elements(self, canvas):
+        # Images and Effects
+        canvas.create_image(0, 0, anchor="nw", image=self.background_image, tags="background")
+        canvas.create_image(0, 0, anchor="nw", image=self.background_UI, tags="overlay")
+        canvas.create_image(0, 0, anchor="nw", image=self.background_UI2, tags="overlay")
+
+        # Information text.
+        text_widgetoutline2 = canvas.create_text(1001, 126, text=self.text_content, fill="black", font=("Arial Bold", 14, "bold"), anchor="center", justify="center", width=325)
+        text_widget = canvas.create_text(1000, 125, text=self.text_content, fill="#FBF8F3", font=("Arial Bold", 14, "bold"), anchor="center", justify="center", width=325)
+
+    def create_tab_buttons(self, canvas):
+        # Ko-fi Button
+        kofi_button = ttk.Button(self.window, image=self.kofi_image, bootstyle="light", command=self.open_kofi)
+        kofi_button_window = canvas.create_window(1110, 550, anchor="center", window=kofi_button)
+        self.read_description("Kofi", kofi_button)
+        # GitHub Button
+
         github_button = ttk.Button(self.window, image=self.github_image, bootstyle="light", command=self.open_github)
         github_button_window = canvas.create_window(960, 550, anchor="center", window=github_button)
-        if "Github" in self.version_description:
-            hover = self.version_description["Github"]
-            Hovertip(github_button, f"{hover}", hover_delay=self.Hoverdelay)
+        self.read_description("Github", github_button)
 
-        # Create a submit button
-        submit_button = ttk.Button(self.window, text="Apply", command=self.submit)
-        submit_button_window = canvas.create_window(200, 520, anchor="w", window=submit_button)
-        if "Apply" in self.version_description:
-            hover = self.version_description["Apply"]
-            Hovertip(submit_button, f"{hover}", hover_delay=self.Hoverdelay)
+        # Create tabs
+        cul = 10
 
-        # Load Saved User Options.
-        self.load_user_choices(self.config)
-        return canvas
+        # 1
+        tab1_button = ttk.Button(self.window, text="Main", command=self.show_maincanvas)
+        tab1_button_window = canvas.create_window(50, cul, anchor="w", window=tab1_button)
+        self.read_description("Main", tab1_button)
+        # 2
+        tab2_button = ttk.Button(self.window, text="Cheats", command=self.show_cheatcanvas)
+        tab2_button_window = canvas.create_window(100, cul, anchor="w", window=tab2_button)
+        self.read_description("Cheats", tab2_button)
 
+    # Read Hover Description
+    def read_description(self, option, position):
+        if f"{option}" in self.version_description:
+            hover = self.version_description[f"{option}"]
+            Hovertip(position, f"{hover}", hover_delay=Hoverdelay)
+    # Open Kofi
+    def open_kofi(self):
+        import webbrowser
+        webbrowser.open("https://ko-fi.com/maxlastbreath#")
+    # Open Github
+    def open_github(self):
+        import webbrowser
+        webbrowser.open("https://github.com/MaxLastBreath/TOTK-mods")
+    # Handle Text Window
+    def fetch_text_from_github(self, file_url):
+        try:
+            response = requests.get(file_url)
+            if response.status_code == 200:
+                return response.text
+            else:
+                print(f"Error: Unable to fetch text from Github")
+        except requests.exceptions.RequestException as e:
+            print(f"Error occurred while fetching text: {e}")
+
+        return ""
+    # Handle Save Backups
     def switchmode(self, command="true"):
         if command == "true":
             if self.mode == "Yuzu":
                 self.mode = "Ryujinx"
                 self.manager_switch['text'] = "Switch to Yuzu"
-                self.canvas.itemconfig(self.Settings_label, text="")
-                self.canvas.itemconfig(self.selectexe, text="Select Ryujinx.exe")
+                self.maincanvas.itemconfig(self.Settings_label, text="")
+                self.maincanvas.itemconfig(self.selectexe, text="Select Ryujinx.exe")
                 self.second_dropdown.destroy()
                 return
             elif self.mode == "Ryujinx":
                 self.mode = "Yuzu"
                 # change text
                 self.manager_switch['text'] = "Switch to Ryujinx"
-                self.canvas.itemconfig(self.Settings_label, text="Yuzu Settings:")
-                self.canvas.itemconfig(self.selectexe, text="Select yuzu.exe")
+                self.maincanvas.itemconfig(self.Settings_label, text="Yuzu Settings:")
+                self.maincanvas.itemconfig(self.selectexe, text="Select yuzu.exe")
 
                 # create new labels
                 self.selected_settings = tk.StringVar(value="No Change")
                 self.second_dropdown = ttk.Combobox(self.window, textvariable=self.selected_settings, values=["No Change", "Steamdeck", "AMD", "Nvidia", "High End Nvidia"])
-                self.second_dropdown_window = self.canvas.create_window(470, 40, anchor="w", window=self.second_dropdown)
+                self.second_dropdown_window = self.maincanvas.create_window(470, 40, anchor="w", window=self.second_dropdown)
                 self.second_dropdown.bind("<<ComboboxSelected>>")
                 return
         elif command == "false":
             if self.mode == "Ryujinx":
                 self.manager_switch['text'] = "Switch to Yuzu"
-                self.canvas.itemconfig(self.Settings_label, text="")
-                self.canvas.itemconfig(self.selectexe, text="Select Ryujinx.exe")
+                self.maincanvas.itemconfig(self.Settings_label, text="")
+                self.maincanvas.itemconfig(self.selectexe, text="Select Ryujinx.exe")
                 self.second_dropdown.destroy()
                 return
         elif command == "Mode":
@@ -330,6 +423,7 @@ class Manager:
         script_dir = os.path.dirname(os.path.abspath(__file__))
         hud_folder_path = os.path.join(script_dir, "HUD")
         return os.path.abspath(os.path.join(hud_folder_path, file_name))
+
     # Handle Presets
     def apply_selected_preset(self, event=None):
         selected_preset = self.selected_preset.get()
@@ -440,6 +534,7 @@ class Manager:
             else:
                 self.dfps_options = {}
         return self.dfps_options
+
     def load_descriptions_from_json(self):
         # Check if the .presets folder exists, if not, create it
         presets_folder = "json.data"
@@ -478,6 +573,45 @@ class Manager:
                 self.description_options = []
 
         return self.description_options
+
+    def load_cheats_from_json(self):
+        # Check if the .presets folder exists, if not, create it
+        presets_folder = "json.data"
+        if not os.path.exists(presets_folder):
+            os.makedirs(presets_folder)
+        json_url = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/Cheats.json"
+        version_options_file_path = os.path.join(presets_folder, "Cheats.json")
+
+        try:
+            response = requests.get(json_url, timeout=5)
+            response.raise_for_status()
+
+            data = response.json()
+
+            if os.path.exists(version_options_file_path):
+                with open(version_options_file_path, "r") as file:
+                    local_version_options = json.load(file)
+
+                if data != local_version_options:
+                    with open(version_options_file_path, "w") as file:
+                        json.dump(data, file)
+                        self.version_options = data
+                else:
+                    self.version_options = local_version_options
+            else:
+                with open(version_options_file_path, "w") as file:
+                    json.dump(data, file)
+                    self.version_options = data
+
+        except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
+            print(f"Error occurred while fetching or parsing Version.json: {e}")
+            if os.path.exists(version_options_file_path):
+                with open(version_options_file_path, "r") as file:
+                    self.version_options = json.load(file)
+            else:
+                self.version_options = []
+
+        return self.version_options
 
     def load_version_options_from_json(self):
         # Check if the .presets folder exists, if not, create it
@@ -789,27 +923,7 @@ class Manager:
             else:
                 # If No, do nothing.
                 print(f"Turning on required settings declined!!")
-    # Open Kofi
-    def open_kofi(self):
-        import webbrowser
-        webbrowser.open("https://ko-fi.com/maxlastbreath#")
-    # Open Github
-    def open_github(self):
-        import webbrowser
-        webbrowser.open("https://github.com/MaxLastBreath/TOTK-mods")
-    # Handle Text Window
-    def fetch_text_from_github(self, file_url):
-        try:
-            response = requests.get(file_url)
-            if response.status_code == 200:
-                return response.text
-            else:
-                print(f"Error: Unable to fetch text from Github")
-        except requests.exceptions.RequestException as e:
-            print(f"Error occurred while fetching text: {e}")
 
-        return ""
-    # Handle Save Backups
     def backup(self):
         if self.mode == "Yuzu":
             # Fetch the nand_directory value from the qt-config.ini file
