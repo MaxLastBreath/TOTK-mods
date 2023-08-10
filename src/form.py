@@ -8,6 +8,7 @@ import shutil
 import json
 import requests
 import ttkbootstrap as ttk
+import time
 from idlelib.tooltip import Hovertip
 from ttkbootstrap.constants import *
 from PIL import Image, ImageTk
@@ -39,8 +40,8 @@ class Manager:
         # Load Canvas
         self.Load_ImagePath()
         self.load_canvas()
+        self.allcanvas = [self.maincanvas, self.cheatcanvas]
         self.switchmode("false")
-    
     # Canvas
     def createcanvas(self):
         # Create Canvas
@@ -92,13 +93,6 @@ class Manager:
         self.second_dropdown_window = self.maincanvas.create_window(480, 40, anchor="w", window=self.second_dropdown)
         self.second_dropdown.bind("<<ComboboxSelected>>")
         self.read_description("Settings", self.second_dropdown)
-        
-
-        # Switch mode between Ryujinx and Yuzu
-        switchtext = "Switch to Ryujinx"
-        self.manager_switch = ttk.Button(self.window, text=f"{switchtext}", command=self.switchmode, bootstyle=style)
-        self.manager_switch_window = self.maincanvas.create_window(270, 520, anchor="w", window=self.manager_switch)
-        self.read_description("Switch", self.manager_switch)
         row += 40
 
         # Create a label for yuzu.exe selection
@@ -211,9 +205,7 @@ class Manager:
         # Create a submit button
         submit_button = ttk.Button(self.window, text="Apply", command=self.submit)
         submit_button_window = self.maincanvas.create_window(200, 520, anchor="w", window=submit_button)
-        if "Apply" in self.version_description:
-            hover = self.version_description["Apply"]
-            Hovertip(submit_button, f"{hover}", hover_delay=Hoverdelay)
+        self.read_description("Apply", submit_button)
 
         # Load Saved User Options.
         self.load_user_choices(self.config)
@@ -270,6 +262,11 @@ class Manager:
                 row = 80
                 cultex = 400
                 culsel = 540
+
+        # Create a submit button
+        submit_button = ttk.Button(self.window, text="Apply", command=lambda: self.submit("Cheats"))
+        submit_button_window = self.cheatcanvas.create_window(200, 520, anchor="w", window=submit_button)
+        self.read_description("Apply", submit_button)
 
     def show_maincanvas(self):
         self.cheatcanvas.pack_forget()
@@ -344,13 +341,19 @@ class Manager:
         # Create tabs
         cul = 10
 
+        # Switch mode between Ryujinx and Yuzu
+        switchtext = "Switch to Ryujinx"
+        self.manager_switch = ttk.Button(self.window, text=f"{switchtext}", command=lambda: self.switchmode("true"), bootstyle=style)
+        self.manager_switch_window = canvas.create_window(114 + 43, cul, anchor="w", window=self.manager_switch)
+        self.read_description("Switch", self.manager_switch)
+
         # 1
         tab1_button = ttk.Button(self.window, text="Main", command=self.show_maincanvas)
-        tab1_button_window = canvas.create_window(50, cul, anchor="w", window=tab1_button)
+        tab1_button_window = canvas.create_window(0+ 43, cul, anchor="w", window=tab1_button)
         self.read_description("Main", tab1_button)
         # 2
         tab2_button = ttk.Button(self.window, text="Cheats", command=self.show_cheatcanvas)
-        tab2_button_window = canvas.create_window(100, cul, anchor="w", window=tab2_button)
+        tab2_button_window = canvas.create_window(52+ 43, cul, anchor="w", window=tab2_button)
         self.read_description("Cheats", tab2_button)
 
     # Read Hover Description
@@ -962,25 +965,75 @@ class Manager:
         except Exception as e:
             messagebox.showerror("Backup Error", f"Error creating backup: {e}")
     # Submit the results, run download manager. Open a Loading screen.
-    def submit(self):
+    def submit(self, mode=None):
         checkpath(self, self.mode)
         def timer(value):
             progress_bar["value"] = value
             self.window.update_idletasks()
         def run_tasks():
-            timer(20)
-            DownloadFP()
-            timer(40)
-            DownloadUI()
-            timer(50)
-            DownloadDFPS()
-            timer(80)
-            UpdateVisualImprovements()
-            timer(100)
-            UpdateSettings()
-            progress_window.destroy()
-        def UpdateVisualImprovements():
+            if mode== "Cheats":
+                timer(50)
+                print(f"Backing up TOTK, save file from {self.nand_dir}.")
+                self.backup()
+                time.sleep(0.3)
+                timer(100)
+                UpdateVisualImprovements("Cheats")
+                progress_window.destroy()
+                return
+            if mode== None:
+                timer(20)
+                DownloadFP()
+                timer(40)
+                DownloadUI()
+                timer(50)
+                DownloadDFPS()
+                timer(80)
+                UpdateVisualImprovements()
+                time.sleep(0.3)
+                timer(100)
+                UpdateSettings()
+                progress_window.destroy()
+                return
+
+        def UpdateVisualImprovements(mode=None):
             self.save_user_choices(self.config)
+
+            if mode == "Cheats":
+                selected_options = {}
+
+                for option_name, option_var in self.selected_cheats.items():
+                    selected_options[option_name] = option_var.get()
+                # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.
+                for version_option in self.cheat_options:
+                    version = version_option.get("version", "")
+                    mod_path = os.path.join(self.load_dir, "Cheat Manager Patch", "exefs")
+
+                    # Create the directory if it doesn't exist
+                    os.makedirs(mod_path, exist_ok=True)
+
+                    filename = os.path.join(mod_path, f"{version}.pchtxt")
+                    all_values = []
+                    with open(filename, "w") as file:
+                        file.write(version_option.get("Source", "") + "\n")
+                        file.write(version_option.get("nsobid", "") + "\n")
+                        file.write(version_option.get("offset", "") + "\n")
+                        for key, value in version_option.items():
+                            if key not in ["Source", "nsobid", "offset", "version"] and key in selected_options and selected_options[key] in ["Enable", "On"]:
+                                pattern = r"@enabled\n([\da-fA-F\s]+)\n@stop"
+                                matches = re.findall(pattern, value)
+                                for match in matches:
+                                    hex_values = match.strip().split()
+                                    all_values.extend(hex_values)
+                                    # Print @enabled and then @stop at the end.
+                        file.write("@enabled\n")
+                        for i, value in enumerate(all_values):
+                            file.write(value)
+                            if i % 2 == 1 and i != len(all_values) - 1:
+                                file.write("\n")
+                            else:
+                                file.write(" ")
+                        file.write("\n@stop\n")
+                return
 
             resolution = self.resolution_var.get()
             fps = self.fps_var.get()
