@@ -11,7 +11,7 @@ import ttkbootstrap as ttk
 import time
 from idlelib.tooltip import Hovertip
 from ttkbootstrap.constants import *
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageFilter
 from configparser import NoOptionError
 from modules.qt_config import modify_disabled_key, write_config_file, get_config_parser
 from modules.checkpath import checkpath, DetectOS
@@ -37,11 +37,16 @@ class Manager:
         # Warn for Backup File
         self.warnagain = "yes"
 
+        # Local text variable
+        self.switchtext = ttk.StringVar()
+        self.switchtext.set("Switch to Ryujinx")
+
         # Load Canvas
         self.Load_ImagePath()
         self.load_canvas()
         self.allcanvas = [self.maincanvas, self.cheatcanvas]
         self.switchmode("false")
+
     # Canvas
     def createcanvas(self):
         # Create Canvas
@@ -182,22 +187,17 @@ class Manager:
 
             # Create label
             if version_option_name not in ["Source", "nsobid", "offset", "version"]:
-                self.maincanvas.create_text(cultex, row + 40, text=version_option_name, anchor="w", fill="#D1F3FD", font=textfont)
+                if version_option_name in self.version_description:
+                    self.maincanvas.create_text(cultex+1, row+40+1, text=version_option_name, anchor="w", fill="black", font=textfont)
+                    self.maincanvas.create_text(cultex, row+40, text=version_option_name, anchor="w", fill="#D1F3FD", font=textfont)
+                    # Create enable/disable dropdown menu
+                    version_option_var = tk.StringVar(value="Off")
+                    versioncheck = ttk.Checkbutton(self.window, variable=version_option_var, onvalue="On", offvalue="Off", bootstyle="success")
+                    version_check_window = self.maincanvas.create_window(culsel, row+40, anchor="w", window=versioncheck)
+                    self.selected_options[version_option_name] = version_option_var
+                    row += 40
 
-
-
-            # Create enable/disable dropdown menu
-            version_option_var = tk.StringVar(value="On")
-            version_option_dropdown = ttk.Combobox(self.window, textvariable=version_option_var, values=["On", "Off"])
-            version_option_dropdown_window = self.maincanvas.create_window(culsel, row + 40, anchor="w", window=version_option_dropdown)
-            if version_option_name in self.version_description:
-                hover = self.version_description[version_option_name]
-                self.versionhover = Hovertip(version_option_dropdown, f"{hover}", hover_delay=Hoverdelay)
-
-            self.selected_options[version_option_name] = version_option_var
-            row += 40
-
-            if row == 480:
+            if row >= 480:
                 row = 80
                 cultex = 400
                 culsel = 540
@@ -217,7 +217,7 @@ class Manager:
         self.cheatcanvas.pack()
 
         # Create UI elements.
-        self.load_UI_elements(self.cheatcanvas)
+        self.Cheat_UI_elements(self.cheatcanvas)
         self.create_tab_buttons(self.cheatcanvas)
 
         # Create Positions.
@@ -236,36 +236,38 @@ class Manager:
 
         # Create Cheat Patch.
         self.selected_cheats = {}
-        for version_option_name, version_option_value in self.cheat_options[0].items():
+        for version_option_name, version_option_value in self.cheat_options[3].items():
             # Exclude specific keys from being displayed
             if version_option_name in ["Source", "nsobid", "offset", "version"]:
                 continue
 
             # Create label
-            if version_option_name not in ["Source", "nsobid", "offset", "version"]:
+            if version_option_name not in ["Source", "Version", "Aversion", "Cheat Example"]:
+                self.cheatcanvas.create_text(cultex+1, row+1, text=version_option_name, anchor="w", fill="black", font=textfont)
                 self.cheatcanvas.create_text(cultex, row, text=version_option_name, anchor="w", fill="#D1F3FD", font=textfont)
+                # Create enable/disable dropdown menu
+                version_option_var = tk.StringVar(value="Off")
+                versioncheck = ttk.Checkbutton(self.window, variable=version_option_var, onvalue="On", offvalue="Off", bootstyle="success")
+                version_check_window = self.cheatcanvas.create_window(culsel, row, anchor="w", window=versioncheck)
+                self.selected_cheats[version_option_name] = version_option_var
+            else:
+                continue
 
-
-
-            # Create enable/disable dropdown menu
-            version_option_var = tk.StringVar(value="On")
-            version_option_dropdown = ttk.Combobox(self.window, textvariable=version_option_var, values=["On", "Off"])
-            version_option_dropdown_window = self.cheatcanvas.create_window(culsel, row, anchor="w", window=version_option_dropdown)
             if version_option_name in description:
                 hover = description[version_option_name]
-                versionhover = Hovertip(version_option_dropdown, f"{hover}", hover_delay=Hoverdelay)
+                versionhover = Hovertip(versioncheck, f"{hover}", hover_delay=Hoverdelay)
 
-            self.selected_cheats[version_option_name] = version_option_var
+            
             row += 40
 
-            if row == 480:
-                row = 80
-                cultex = 400
-                culsel = 540
+            if row >= 520:
+                row = 40
+                cultex += 200
+                culsel += 200
 
         # Create a submit button
         submit_button = ttk.Button(self.window, text="Apply", command=lambda: self.submit("Cheats"))
-        submit_button_window = self.cheatcanvas.create_window(200, 520, anchor="w", window=submit_button)
+        submit_button_window = self.cheatcanvas.create_window(39, 520, anchor="w", window=submit_button)
         self.read_description("Apply", submit_button)
 
     def show_maincanvas(self):
@@ -289,6 +291,12 @@ class Manager:
         image = image.resize((1200 * scalingfactor, 600 * scalingfactor))
         self.background_UI = ImageTk.PhotoImage(image)
 
+        # Create Gradiant for cheats.
+        UI_path = self.get_UI_path("BG_Cheats.png")
+        image = Image.open(UI_path)
+        image = image.resize((1200 * scalingfactor, 600 * scalingfactor))
+        self.background_Cheats = ImageTk.PhotoImage(image)
+
         # Create a transparent black background
         UI_path2 = self.get_UI_path("BG_Right.png")
         image = Image.open(UI_path2)
@@ -300,6 +308,12 @@ class Manager:
         image = Image.open(image_path)
         image = image.resize((1200, 600))
         self.background_image = ImageTk.PhotoImage(image)
+
+        image_path = self.get_UI_path("image.png")
+        image = Image.open(image_path)
+        image = image.resize((1200, 600))
+        image = image.filter(ImageFilter.GaussianBlur(3))
+        self.blurbackground = ImageTk.PhotoImage(image)
 
         # Information text
         file_url = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Announcements/Announcement%20Window.txt"
@@ -321,39 +335,41 @@ class Manager:
         # Images and Effects
         canvas.create_image(0, 0, anchor="nw", image=self.background_image, tags="background")
         canvas.create_image(0, 0, anchor="nw", image=self.background_UI, tags="overlay")
-        canvas.create_image(0, 0, anchor="nw", image=self.background_UI2, tags="overlay")
-
+        canvas.create_image(0-20, 0, anchor="nw", image=self.background_UI2, tags="overlay")
         # Information text.
-        text_widgetoutline2 = canvas.create_text(1001, 126, text=self.text_content, fill="black", font=("Arial Bold", 14, "bold"), anchor="center", justify="center", width=325)
-        text_widget = canvas.create_text(1000, 125, text=self.text_content, fill="#FBF8F3", font=("Arial Bold", 14, "bold"), anchor="center", justify="center", width=325)
+        text_widgetoutline2 = canvas.create_text(1001-20, 126, text=self.text_content, fill="black", font=("Arial Bold", 14, "bold"), anchor="center", justify="center", width=325)
+        text_widget = canvas.create_text(1000-20, 125, text=self.text_content, fill="#FBF8F3", font=("Arial Bold", 14, "bold"), anchor="center", justify="center", width=325)
+
+    def Cheat_UI_elements(self, canvas):
+        canvas.create_image(0, 0, anchor="nw", image=self.blurbackground, tags="background")
+        canvas.create_image(0, 0, anchor="nw", image=self.background_Cheats, tags="overlay")
 
     def create_tab_buttons(self, canvas):
         # Ko-fi Button
-        kofi_button = ttk.Button(self.window, image=self.kofi_image, bootstyle="light", command=self.open_kofi)
-        kofi_button_window = canvas.create_window(1110, 550, anchor="center", window=kofi_button)
+        kofi_button = ttk.Button(self.window, text="Donate", bootstyle="success", command=self.open_kofi, padding=10)
+        kofi_button_window = canvas.create_window(1110+20, 520, anchor="center", window=kofi_button)
         self.read_description("Kofi", kofi_button)
         # GitHub Button
 
-        github_button = ttk.Button(self.window, image=self.github_image, bootstyle="light", command=self.open_github)
-        github_button_window = canvas.create_window(960, 550, anchor="center", window=github_button)
+        github_button = ttk.Button(self.window, text="Github", bootstyle="info", command=self.open_github, padding=10)
+        github_button_window = canvas.create_window(1046+20, 520, anchor="center", window=github_button)
         self.read_description("Github", github_button)
 
         # Create tabs
         cul = 10
 
         # Switch mode between Ryujinx and Yuzu
-        switchtext = "Switch to Ryujinx"
-        self.manager_switch = ttk.Button(self.window, text=f"{switchtext}", command=lambda: self.switchmode("true"), bootstyle=style)
-        self.manager_switch_window = canvas.create_window(114 + 43, cul, anchor="w", window=self.manager_switch)
-        self.read_description("Switch", self.manager_switch)
+        manager_switch = ttk.Button(self.window, textvariable=self.switchtext, command=self.switchmode, bootstyle=style)
+        manager_switch_window = canvas.create_window(114 + 43 - 17, cul, anchor="w", window=manager_switch)
+        self.read_description("Switch", manager_switch)
 
         # 1
         tab1_button = ttk.Button(self.window, text="Main", command=self.show_maincanvas)
-        tab1_button_window = canvas.create_window(0+ 43, cul, anchor="w", window=tab1_button)
+        tab1_button_window = canvas.create_window(0+ 43 - 17, cul, anchor="w", window=tab1_button)
         self.read_description("Main", tab1_button)
         # 2
         tab2_button = ttk.Button(self.window, text="Cheats", command=self.show_cheatcanvas)
-        tab2_button_window = canvas.create_window(52+ 43, cul, anchor="w", window=tab2_button)
+        tab2_button_window = canvas.create_window(52+ 43 - 17, cul, anchor="w", window=tab2_button)
         self.read_description("Cheats", tab2_button)
 
     # Read Hover Description
@@ -386,7 +402,7 @@ class Manager:
         if command == "true":
             if self.mode == "Yuzu":
                 self.mode = "Ryujinx"
-                self.manager_switch['text'] = "Switch to Yuzu"
+                self.switchtext.set("Switch to Yuzu")
                 self.maincanvas.itemconfig(self.Settings_label, text="")
                 self.maincanvas.itemconfig(self.selectexe, text="Select Ryujinx.exe")
                 self.second_dropdown.destroy()
@@ -394,7 +410,7 @@ class Manager:
             elif self.mode == "Ryujinx":
                 self.mode = "Yuzu"
                 # change text
-                self.manager_switch['text'] = "Switch to Ryujinx"
+                self.switchtext.set("Switch to Ryujinx")
                 self.maincanvas.itemconfig(self.Settings_label, text="Yuzu Settings:")
                 self.maincanvas.itemconfig(self.selectexe, text="Select yuzu.exe")
 
@@ -406,7 +422,7 @@ class Manager:
                 return
         elif command == "false":
             if self.mode == "Ryujinx":
-                self.manager_switch['text'] = "Switch to Yuzu"
+                self.switchtext.set("Switch to Yuzu")
                 self.maincanvas.itemconfig(self.Settings_label, text="")
                 self.maincanvas.itemconfig(self.selectexe, text="Select Ryujinx.exe")
                 self.second_dropdown.destroy()
@@ -598,23 +614,23 @@ class Manager:
                 if data != local_version_options:
                     with open(version_options_file_path, "w") as file:
                         json.dump(data, file)
-                        self.version_options = data
+                        self.cheats_options = data
                 else:
-                    self.version_options = local_version_options
+                    self.cheats_options = local_version_options
             else:
                 with open(version_options_file_path, "w") as file:
                     json.dump(data, file)
-                    self.version_options = data
+                    self.cheats_options = data
 
         except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
             print(f"Error occurred while fetching or parsing Version.json: {e}")
             if os.path.exists(version_options_file_path):
                 with open(version_options_file_path, "r") as file:
-                    self.version_options = json.load(file)
+                    self.cheats_options = json.load(file)
             else:
-                self.version_options = []
+                self.cheats_options = []
 
-        return self.version_options
+        return self.cheats_options
 
     def load_version_options_from_json(self):
         # Check if the .presets folder exists, if not, create it
@@ -947,6 +963,7 @@ class Manager:
         backup_file = "Save.rar"
         file_number = 1
         while os.path.exists(os.path.join(backup_folder_path, backup_file)):
+            print(f"{backup_folder_path}")
             backup_file = f"Save_{file_number}.rar"
             file_number += 1
 
@@ -999,40 +1016,25 @@ class Manager:
             self.save_user_choices(self.config)
 
             if mode == "Cheats":
-                selected_options = {}
-
                 for option_name, option_var in self.selected_cheats.items():
-                    selected_options[option_name] = option_var.get()
+                    if option_name not in ["Source", "nsobid", "offset", "Version", "Aversion", "Cheat Example"]:
+                        self.selected_cheats[option_name] = option_var.get()
                 # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.
-                for version_option in self.cheat_options:
-                    version = version_option.get("version", "")
-                    mod_path = os.path.join(self.load_dir, "Cheat Manager Patch", "exefs")
+                for version_option in self.cheats_options:
+                    version = version_option.get("Version", "")
+                    mod_path = os.path.join(self.load_dir, "Cheat Manager Patch", "cheats")
 
                     # Create the directory if it doesn't exist
                     os.makedirs(mod_path, exist_ok=True)
 
-                    filename = os.path.join(mod_path, f"{version}.pchtxt")
+                    filename = os.path.join(mod_path, f"{version}.txt")
                     all_values = []
                     with open(filename, "w") as file:
                         file.write(version_option.get("Source", "") + "\n")
-                        file.write(version_option.get("nsobid", "") + "\n")
-                        file.write(version_option.get("offset", "") + "\n")
                         for key, value in version_option.items():
-                            if key not in ["Source", "nsobid", "offset", "version"] and key in selected_options and selected_options[key] in ["Enable", "On"]:
-                                pattern = r"@enabled\n([\da-fA-F\s]+)\n@stop"
-                                matches = re.findall(pattern, value)
-                                for match in matches:
-                                    hex_values = match.strip().split()
-                                    all_values.extend(hex_values)
-                                    # Print @enabled and then @stop at the end.
-                        file.write("@enabled\n")
-                        for i, value in enumerate(all_values):
-                            file.write(value)
-                            if i % 2 == 1 and i != len(all_values) - 1:
-                                file.write("\n")
-                            else:
-                                file.write(" ")
-                        file.write("\n@stop\n")
+                            if key in self.selected_cheats:
+                                if key not in ["Source", "nsobid", "offset", "Version", "Aversion", "Cheat Example"] and self.selected_cheats[key] == "On":
+                                    file.write(f"{value}\n")
                 return
 
             resolution = self.resolution_var.get()
@@ -1085,7 +1087,7 @@ class Manager:
                     file.write(version_option.get("nsobid", "") + "\n")
                     file.write(version_option.get("offset", "") + "\n")
                     for key, value in version_option.items():
-                        if key not in ["Source", "nsobid", "offset", "version"] and key in selected_options and selected_options[key] in ["Enable", "On"]:
+                        if key not in ["Source", "nsobid", "offset", "version", "Version"] and self.selected_options[key].get() == "On":
                             pattern = r"@enabled\n([\da-fA-F\s]+)\n@stop"
                             matches = re.findall(pattern, value)
                             for match in matches:
