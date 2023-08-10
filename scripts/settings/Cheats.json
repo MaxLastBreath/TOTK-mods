@@ -56,7 +56,7 @@
     "No Charge Stamina": "[#15. No Stamina Cost For Weapon Charge]\n080E0000 02B28F58 17AB0D48 1E2703E0\n080E0000 02B28F50 54000040 7100041F\n040E0000 02B28F4C 1E201C20\n040E0000 015EC478 1454F2B5\n",
     "No Fall Damage": "[#08. Ignore Fall Damage & Reaction]\n040E0000 0072E1B0 17FFFF86\n",
     "Movement speed 3x": "[#26d Movement Speed (3x)]\n040E0000 03885520 40400000\n",
-    "Movement speed 2x": "[#26c Movement Speed (2x) ★]\n040E0000 03885520 40000000\n",
+    "Movement speed 2x": "[#26c Movement Speed (2x)]\n040E0000 03885520 40000000\n",
     "Movement speed 1x": "[#26a Movement Speed (1x)]\n040E0000 03885520 3F800000\n",
     "Sword Beam Upgrade": "[#20. Master Sword Beam Upgrade]\n040E0000 01E3EC58 1E201000\n",
     "Jump Boost": "[#28. Jump Higher]\n040E0000 010C490C 1E209001\n",
@@ -86,7 +86,7 @@
     "Climb Speed 2x": "[#24. Climbing Speed (2x)]\n040E0000 009AE978 1E209008\n",
     "Dive Boost": "[#27. Dive Boost]\n040E0000 01D6C698 1E211000\n",
     "Damage 2x": "[#19a Damage Multiplier (2x)]\n040E0000 00753A14 1E201008\n040E0000 00753A50 1E201000\n",
-    "Damage 4x": "[#19b Damage Multiplier (4x) ★]\n040E0000 00753A14 1E221008\n040E0000 00753A50 1E221000\n",
+    "Damage 4x": "[#19b Damage Multiplier (4x)]\n040E0000 00753A14 1E221008\n040E0000 00753A50 1E221000\n",
     "Cheat Example": "\n"
   },
   {
@@ -106,7 +106,7 @@
     "No Charge Stamina": "[#15. No Stamina Cost For Weapon Charge]\n080E0000 02B17F48 17AB1746 1E2703E0\n080E0000 02B17F40 54000040 7100041F\n040E0000 02B17F3C 1E201C20\n040E0000 015DDC60 1454E8B7\n",
     "No Fall Damage": "[#08. Ignore Fall Damage & Reaction]\n040E0000 00816008 17FFFF4E\n",
     "Movement speed 3x": "[#26d Movement Speed (3x)]\n040E0000 03875058 40400000\n",
-    "Movement speed 2x": "[#26c Movement Speed (2x) ★]\n040E0000 03875058 40000000\n",
+    "Movement speed 2x": "[#26c Movement Speed (2x)]\n040E0000 03875058 40000000\n",
     "Movement speed 1x": "[#26a Movement Speed (1x)]\n040E0000 03875058 3F800000\n",
     "Sword Beam Upgrade": "[#20. Master Sword Beam Upgrade]\n040E0000 01E37248 1E201000\n",
     "Jump Boost": "[#28. Jump Higher]\n040E0000 0109F660 1E209001\n",
@@ -135,7 +135,7 @@
     "Climb Speed 2x": "[#24. Climbing Speed (2x)]\n040E0000 006BA348 1E209008\n",
     "Dive Boost": "[#27. Dive Boost]\n040E0000 01D665C8 1E211000\n",
     "Damage 2x": "[#19a Damage Multiplier (2x)]\n040E0000 00838800 1E201008\n040E0000 0083883C 1E201000\n",
-    "Damage 4x": "[#19b Damage Multiplier (4x) ★]\n040E0000 00838800 1E221008\n040E0000 0083883C 1E221000\n",
+    "Damage 4x": "[#19b Damage Multiplier (4x)]\n040E0000 00838800 1E221008\n040E0000 0083883C 1E221000\n",
     "Infinite Health": "[#02. Inf. Health]\n080E0000 02B17FC8 176E30E5 F9400008\n080E0000 02B17FC0 B9000808 34000048\n040E0000 02B17FBC B9401808\n040E0000 006A435C 1491CF18\n",
     "Cheat Example": "\n"
   },
@@ -156,7 +156,7 @@
     "No Charge Stamina": "[♯15. No Stamina Cost For Weapon Charge]\n080E0000 02B0AF48 17AAFE76 1E2703E0\n080E0000 02B0AF40 54000040 7100041F\n040E0000 02B0AF3C 1E201C20\n040E0000 015CA920 14550187\n",
     "No Fall Damage": "[♯ 8. Ignore Fall Damage & Reaction]\n040E0000 0094F0DC 17FFFF6C\n",
     "Movement speed 3x": "[♯29d Movement Speed (3x)]\n040E0000 03868B4C 40400000\n",
-    "Movement speed 2x": "[♯29c Movement Speed (2x) ★]\n040E0000 03868B4C 40000000\n",
+    "Movement speed 2x": "[♯29c Movement Speed (2x)]\n040E0000 03868B4C 40000000\n",
     "Movement speed 1x": "[♯29a Movement Speed (1x)]\n040E0000 03868B4C 3F800000\n",
     "Sword Beam Upgrade": "[♯20. Master Sword Beam Upgrade]\n040E0000 01E2A1EC 1E201000\n",
     "Jump Boost": "[♯31. Jump Higher]\n040E0000 0109EA0C 1E209001\n",
@@ -186,7 +186,7 @@
     "Dive Boost": "[♯30. Dive Boost]\n040E0000 01D585F8 1E211000\n",
     "Infinite Health": "[♯ 2. Inf. Health]\n080E0000 02B0AFC8 176D734F F9400008\n080E0000 02B0AFC0 B9000808 34000048\n040E0000 02B0AFBC B9401808\n040E0000 00667D04 14928CAE\n",
     "Damage 2x": "[♯19a Damage Multiplier (2x)]\n040E0000 00968D80 1E201008\n040E0000 00968DBC 1E201000\n",
-    "Damage 4x": "[♯19b Damage Multiplier (4x) ★]\n040E0000 00968D80 1E221008\n040E0000 00968DBC 1E221000\n",
+    "Damage 4x": "[♯19b Damage Multiplier (4x)]\n040E0000 00968D80 1E221008\n040E0000 00968DBC 1E221000\n",
     "Cheat Example": "\n"
   }
 ]
