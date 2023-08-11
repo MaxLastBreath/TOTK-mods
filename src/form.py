@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox, Toplevel
+from tkinter import Event, ttk, filedialog, messagebox, Toplevel
 import configparser
 import threading
 import os
@@ -15,12 +15,11 @@ from PIL import Image, ImageTk, ImageFilter
 from configparser import NoOptionError
 from modules.qt_config import modify_disabled_key, write_config_file, get_config_parser
 from modules.checkpath import checkpath, DetectOS
-from configuration.settings import Hoverdelay, title_id, localconfig, textfont, style, scalingfactor
+from configuration.settings import Hoverdelay, title_id, localconfig, textfont, style, scalingfactor, textcolor, outlinecolor, dfpsurl, cheatsurl, versionurl, presetsurl, descurl
 import re
 
 class Manager:
     def __init__(self, window):
-
         # Set Variables
         self.config = localconfig
         config = configparser.ConfigParser()
@@ -31,9 +30,15 @@ class Manager:
         self.root = window
         self.window = window
         self.title_id = title_id
+        self.old_cheats = {}
+        self.cheat_version = tk.StringVar(value="Version - 1.1.2")
 
         # Load Hover description locally.
-        self.version_description = self.load_descriptions_from_json()
+        self.dfps_options = self.load_json("DFPS.json", dfpsurl)
+        self.description = self.load_json("Description.json", descurl)
+        self.presets = self.load_json("preset.json", presetsurl)
+        self.version_options = self.load_json("Version.json", versionurl)
+        self.cheat_options = self.load_json("Cheats.json", cheatsurl)
 
         # Warn for Backup File
         self.warnagain = "yes"
@@ -47,6 +52,8 @@ class Manager:
         self.load_canvas()
         self.allcanvas = [self.maincanvas, self.cheatcanvas]
         self.switchmode("false")
+        # close existing threads.
+        self.root.protocol("WM_DLETE_WINDOW", self.on_closing)
 
     # Canvas
     def createcanvas(self):
@@ -66,11 +73,6 @@ class Manager:
         # Run Scripts for checking OS and finding location
         checkpath(self, self.mode)
         DetectOS(self, self.mode)
-        # Load options from DFPS.json
-        self.dfps_options = self.load_dfps_options_from_json()
-        # Load options from Version.json
-        self.version_options = self.load_version_options_from_json()
-        description = self.load_descriptions_from_json()
         
 
 
@@ -78,15 +80,10 @@ class Manager:
 
         # Start of CANVAS options.
 
-        # Create preset menu.
-        presets_data = self.fetch_presets_from_github()
-        if presets_data is None:
-            self.presets = self.get_local_presets()
-        else:
-            self.presets = presets_data
+        # Create preset menu. 
         self.presets = {"Saved": {}} | self.presets
-        self.preset_label = self.maincanvas.create_text(cultex+1, row+1, text="Select Preset:", anchor="w", fill="black", font=textfont)
-        self.preset_label = self.maincanvas.create_text(cultex, row, text="Select Preset:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.preset_label = self.maincanvas.create_text(cultex+1, row+1, text="Select Preset:", anchor="w", fill=outlinecolor, font=textfont)
+        self.preset_label = self.maincanvas.create_text(cultex, row, text="Select Preset:", anchor="w", fill=textcolor, font=textfont)
         self.selected_preset = tk.StringVar(value="Saved")
         self.preset_dropdown = ttk.Combobox(self.window, textvariable=self.selected_preset, values=list(self.presets.keys()))
         self.preset_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=self.preset_dropdown)
@@ -95,8 +92,8 @@ class Manager:
 
 
         # Setting Preset
-        self.Settings_label_outline = self.maincanvas.create_text(370+1, 40+1, text="Yuzu Settings:", anchor="w", fill="black", font=textfont)
-        self.Settings_label = self.maincanvas.create_text(370, 40, text="Yuzu Settings:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.Settings_label_outline = self.maincanvas.create_text(370+1, 40+1, text="Yuzu Settings:", anchor="w", fill=outlinecolor, font=textfont)
+        self.Settings_label = self.maincanvas.create_text(370, 40, text="Yuzu Settings:", anchor="w", fill=textcolor, font=textfont)
         self.selected_settings = tk.StringVar(value="No Change")
         self.second_dropdown = ttk.Combobox(self.window, textvariable=self.selected_settings, values=["No Change", "Steamdeck", "AMD", "Nvidia", "High End Nvidia"])
         self.second_dropdown_window = self.maincanvas.create_window(480, 40, anchor="w", window=self.second_dropdown)
@@ -106,8 +103,8 @@ class Manager:
 
         # Create a label for yuzu.exe selection
         backupbutton = culsel
-        self.selectexe_outline = self.maincanvas.create_text(cultex+1, row+1, text="Select yuzu.exe:", anchor="w", fill="black", font=textfont)
-        self.selectexe = self.maincanvas.create_text(cultex, row, text="Select yuzu.exe:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.selectexe_outline = self.maincanvas.create_text(cultex+1, row+1, text="Select yuzu.exe:", anchor="w", fill=outlinecolor, font=textfont)
+        self.selectexe = self.maincanvas.create_text(cultex, row, text="Select yuzu.exe:", anchor="w", fill=textcolor, font=textfont)
         if self.os_platform == "Windows":
             yuzu_button = ttk.Button(self.window, text="Browse", command=self.select_yuzu_exe)
             yuzu_button_window = self.maincanvas.create_window(culsel, row, anchor="w", window=yuzu_button)
@@ -127,8 +124,8 @@ class Manager:
 
 
         # Create a label for resolution selection
-        self.maincanvas.create_text(cultex+1, row+1, text="Select a Resolution:", anchor="w", fill="black", font=textfont)
-        self.maincanvas.create_text(cultex, row, text="Select a Resolution:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.maincanvas.create_text(cultex+1, row+1, text="Select a Resolution:", anchor="w", fill=outlinecolor, font=textfont)
+        self.maincanvas.create_text(cultex, row, text="Select a Resolution:", anchor="w", fill=textcolor, font=textfont)
         self.resolution_var = tk.StringVar(value=self.dfps_options.get("ResolutionNames", [""])[2])  # Set the default resolution to "1080p FHD"
         resolution_dropdown = ttk.Combobox(self.window, textvariable=self.resolution_var, values=self.dfps_options.get("ResolutionNames", []))
         resolution_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=resolution_dropdown)
@@ -137,8 +134,8 @@ class Manager:
         row += 40
 
         # Create a label for FPS selection
-        self.maincanvas.create_text(cultex+1, row+1, text="Select an FPS:", anchor="w", fill="black", font=textfont)
-        self.maincanvas.create_text(cultex, row, text="Select an FPS:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.maincanvas.create_text(cultex+1, row+1, text="Select an FPS:", anchor="w", fill=outlinecolor, font=textfont)
+        self.maincanvas.create_text(cultex, row, text="Select an FPS:", anchor="w", fill=textcolor, font=textfont)
         self.fps_var = tk.StringVar(value=str(self.dfps_options.get("FPS", [])[2]))  # Set the default FPS to 60
         fps_dropdown = ttk.Combobox(self.window, textvariable=self.fps_var, values=self.dfps_options.get("FPS", []))
         fps_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=fps_dropdown)
@@ -146,8 +143,8 @@ class Manager:
         row += 40
 
         # Create a label for shadow resolution selection
-        self.maincanvas.create_text(40+1, row+1, text="Shadow Resolution:", anchor="w", fill="black", font=textfont)
-        self.maincanvas.create_text(40, row, text="Shadow Resolution:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.maincanvas.create_text(40+1, row+1, text="Shadow Resolution:", anchor="w", fill=outlinecolor, font=textfont)
+        self.maincanvas.create_text(40, row, text="Shadow Resolution:", anchor="w", fill=textcolor, font=textfont)
         self.shadow_resolution_var = tk.StringVar(value=self.dfps_options.get("ShadowResolutionNames", [""])[0])  # Set the default shadow resolution to "Auto"
         shadow_resolution_dropdown = ttk.Combobox(self.window, textvariable=self.shadow_resolution_var, values=self.dfps_options.get("ShadowResolutionNames", []))
         shadow_resolution_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=shadow_resolution_dropdown)
@@ -162,8 +159,8 @@ class Manager:
             elif value == "Disable" or value == "Disabled":
                 CameraQ[index] = "Off"
 
-        self.maincanvas.create_text(cultex+1, row+1, text="Camera Quality++:", anchor="w", fill="black", font=textfont)
-        self.maincanvas.create_text(cultex, row, text="Camera Quality++:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.maincanvas.create_text(cultex+1, row+1, text="Camera Quality++:", anchor="w", fill=outlinecolor, font=textfont)
+        self.maincanvas.create_text(cultex, row, text="Camera Quality++:", anchor="w", fill=textcolor, font=textfont)
         self.camera_var = tk.StringVar(value=CameraQ[0])  # Set the default camera quality to "Enable"
         camera_dropdown = ttk.Combobox(self.window, textvariable=self.camera_var, values=self.dfps_options.get("CameraQualityNames", []))
         camera_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=camera_dropdown)
@@ -172,8 +169,8 @@ class Manager:
 
         # Create a label for UI selection
         
-        self.maincanvas.create_text(cultex+1, row+1, text="Select a UI:", anchor="w", fill="black", font=textfont)
-        self.maincanvas.create_text(cultex, row, text="Select a UI:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.maincanvas.create_text(cultex+1, row+1, text="Select a UI:", anchor="w", fill=outlinecolor, font=textfont)
+        self.maincanvas.create_text(cultex, row, text="Select a UI:", anchor="w", fill=textcolor, font=textfont)
         ui_values = ["None", "Black Screen Fix", "PS4", "Xbox"]
         self.ui_var = tk.StringVar(value=ui_values[0])
         ui_dropdown = ttk.Combobox(self.window, textvariable=self.ui_var, values=ui_values)
@@ -182,8 +179,8 @@ class Manager:
         row += 40
 
         # First Person and FOV
-        self.maincanvas.create_text(cultex+1, row+1, text="Enable First Person:", anchor="w", fill="black", font=textfont)
-        self.maincanvas.create_text(cultex, row, text="Enable First Person:", anchor="w", fill="#D1F3FD", font=textfont)
+        self.maincanvas.create_text(cultex+1, row+1, text="Enable First Person:", anchor="w", fill=outlinecolor, font=textfont)
+        self.maincanvas.create_text(cultex, row, text="Enable First Person:", anchor="w", fill=textcolor, font=textfont)
         fp_values = ["Off", "70 FOV", "90 FOV", "110 FOV"]
         self.fp_var = tk.StringVar(value=ui_values[0])
         fp_dropdown = ttk.Combobox(self.window, textvariable=self.fp_var, values=fp_values)
@@ -200,9 +197,9 @@ class Manager:
 
             # Create label
             if version_option_name not in ["Source", "nsobid", "offset", "version"]:
-                if version_option_name in self.version_description:
-                    self.maincanvas.create_text(cultex+1, row+40+1, text=version_option_name, anchor="w", fill="black", font=textfont)
-                    self.maincanvas.create_text(cultex, row+40, text=version_option_name, anchor="w", fill="#D1F3FD", font=textfont)
+                if version_option_name in self.description:
+                    self.maincanvas.create_text(cultex+1, row+40+1, text=version_option_name, anchor="w", fill=outlinecolor, font=textfont)
+                    self.maincanvas.create_text(cultex, row+40, text=version_option_name, anchor="w", fill=textcolor, font=textfont)
                     
 
                     # Create checkbox
@@ -219,8 +216,8 @@ class Manager:
                 culsel = 540
 
         # Create a submit button
-        submit_button = ttk.Button(self.window, text="Apply", command=self.submit)
-        submit_button_window = self.maincanvas.create_window(200, 520, anchor="w", window=submit_button)
+        submit_button = ttk.Button(self.window, text="Apply Mods", command=self.submit, padding=5)
+        submit_button_window = self.maincanvas.create_window(39, 520, anchor="w", window=submit_button)
         self.read_description("Apply", submit_button)
 
         # Load Saved User Options.
@@ -242,50 +239,104 @@ class Manager:
         culsel = 200
         Hoverdelay = 500
 
-        # Load Options.
-        self.cheat_options = self.load_cheats_from_json()
-        description = self.load_descriptions_from_json()
+        # Push every version in combobox
+        versionvalues = []
+        for each in self.cheat_options:
+            for key, value in each.items():
+                if key == "Aversion":
+                    versionvalues.append("Version - " + value)
+        
+        self.cheat_version_dropdown = ttk.Combobox(self.window, textvariable=self.cheat_version, values=versionvalues)
+        self.cheat_version_dropdown_window = self.cheatcanvas.create_window(130, 520, anchor="w", window=self.cheat_version_dropdown)
+        self.cheat_version_dropdown.bind("<<ComboboxSelected>>", lambda event: loadCheats())
 
 
-
-
-
-        # Create Cheat Patch.
-        self.selected_cheats = {}
-        for version_option_name, version_option_value in self.cheat_options[3].items():
-            # Exclude specific keys from being displayed
-            if version_option_name in ["Source", "nsobid", "offset", "version"]:
-                continue
-
-            # Create label
-            if version_option_name not in ["Source", "Version", "Aversion", "Cheat Example"]:
-                self.cheatcanvas.create_text(cultex+1, row+1, text=version_option_name, anchor="w", fill="black", font=textfont)
-                self.cheatcanvas.create_text(cultex, row, text=version_option_name, anchor="w", fill="#D1F3FD", font=textfont)
-                # Create enable/disable dropdown menu
-                version_option_var = tk.StringVar(value="Off")
-                versioncheck = ttk.Checkbutton(self.window, variable=version_option_var, onvalue="On", offvalue="Off", bootstyle="success")
-                version_check_window = self.cheatcanvas.create_window(culsel, row, anchor="w", window=versioncheck)
-                self.selected_cheats[version_option_name] = version_option_var
-            else:
-                continue
-
-            if version_option_name in description:
-                hover = description[version_option_name]
-                versionhover = Hovertip(versioncheck, f"{hover}", hover_delay=Hoverdelay)
-
+        def loadCheats():
             
-            row += 40
+            row = 40
+            cultex = 40
+            culsel = 200
+            Hoverdelay = 500
+            
+            corrent_cheats = self.cheat_options[versionvalues.index(self.cheat_version.get())].items()
+            corrent_cheats_dict = dict(corrent_cheats)
+            sorted_cheats = dict(sorted(corrent_cheats_dict.items(), key=lambda item: item[0]))
+            try:
+                for key_var, value in self.selected_cheats.items():
+                    value = value.get()
+                    self.old_cheats[key_var] = value
+            except AttributeError as e:
+                self.old_cheats = {}
 
-            if row >= 520:
-                row = 40
-                cultex += 200
-                culsel += 200
+            self.selected_cheats = {}
 
+            self.cheatcanvas.delete("cheats")
+
+            for version_option_name, version_option_value in sorted_cheats.items():
+                # Exclude specific keys from being displayed
+                if version_option_name in ["Source", "nsobid", "offset", "version"]:
+                    continue
+
+                # Create label
+                if version_option_name not in ["Source", "Version", "Aversion", "Cheat Example"]:
+                    self.cheatcanvas.create_text(cultex+1, row+1, text=version_option_name, anchor="w", fill=outlinecolor, font=textfont, tags="cheats")
+                    self.cheatcanvas.create_text(cultex, row, text=version_option_name, anchor="w", fill=textcolor, font=textfont, tags="cheats")
+                    # Create enable/disable dropdown menu
+                    version_option_var = tk.StringVar(value="Off")
+                    try:
+                        if self.old_cheats.get(version_option_name) == "On":
+                            version_option_var.set("On")
+                    except AttributeError as e:
+                        self.old_cheats = {}
+
+                    versioncheck = ttk.Checkbutton(self.window, variable=version_option_var, onvalue="On", offvalue="Off", bootstyle="success")
+                    version_check_window = self.cheatcanvas.create_window(culsel, row, anchor="w", window=versioncheck, tags="cheats")
+
+                    self.selected_cheats[version_option_name] = version_option_var
+
+                else:
+                    continue
+
+                if version_option_name in self.description:
+                    hover = self.description[version_option_name]
+                    versionhover = Hovertip(versioncheck, f"{hover}", hover_delay=Hoverdelay)
+
+                row += 40
+
+                if row >= 520:
+                    row = 40
+                    cultex += 200
+                    culsel += 200
+        def ResetCheats():
+            try:
+                for key, value in self.selected_cheats.items():
+                    value.set("Off")
+            except AttributeError as e:
+                print(e)
+                print("Error found from ResetCheats, the script will continue.")
+
+        
         # Create a submit button
-        submit_button = ttk.Button(self.window, text="Apply", command=lambda: self.submit("Cheats"))
+        submit_button = ttk.Button(self.window, text="Apply Cheats", command=lambda: self.submit("Cheats"), padding=5)
         submit_button_window = self.cheatcanvas.create_window(39, 520, anchor="w", window=submit_button)
         self.read_description("Apply", submit_button)
 
+        # Create a submit button
+        resetcheats_button = ttk.Button(self.window, text="Reset Cheats", command=lambda: ResetCheats(), padding=5)
+        resetcheats_button_window = self.cheatcanvas.create_window(280+6, 520, anchor="w", window=resetcheats_button)
+        self.read_description("Reset Cheats", submit_button)
+        # Read Cheats
+
+        readcheats_button = ttk.Button(self.window, text="Read Saved Cheats", command=lambda: self.load_user_choices(self.config, "Cheats"), padding=5)
+        readcheats_button_window = self.cheatcanvas.create_window(370+6, 520, anchor="w", window=readcheats_button)
+        self.read_description("Read Cheats", submit_button)
+
+        #Backup
+        backup_button = ttk.Button(self.window, text="Backup", command=self.backup)
+        backup_button_window = self.cheatcanvas.create_window(490+8, 520, anchor="w", window=backup_button)
+        self.read_description("Backup", backup_button)
+
+        loadCheats()
         self.load_user_choices(self.config)
 
     def show_maincanvas(self):
@@ -305,21 +356,27 @@ class Manager:
         self.cheatcanvas.pack()
         self.maincanvas.pack_forget()
         def canvasanimation():
+            if not self.is_Ani_running == True:
+                return
             for x in range(1000):
                 self.cheatcanvas.move(self.cheatbg, -1, 0)
                 time.sleep(0.05)
+                if not self.is_Ani_running == True:
+                    return
             else:
                 self.cheatcanvas.move(self.cheatbg, 200, 200)
                 for y in range(250):
                     self.cheatcanvas.move(self.cheatbg, 0, -1)
                     time.sleep(0.05)
+                    if not self.is_Ani_running == True:
+                        return
                 else:
                     self.cheatcanvas.move(self.cheatbg, 800, 50)
                     canvasanimation()
-        ani = threading.Thread(name="cheatbackground", target=canvasanimation)
+        self.ani = threading.Thread(name="cheatbackground", target=canvasanimation)
         if not self.is_Ani_running == True:
             self.is_Ani_running = True
-            ani.start()
+            self.ani.start()
 
     def load_canvas(self):
         # Main
@@ -328,6 +385,16 @@ class Manager:
         self.cheatcanvas.pack_forget()
 
     def Load_ImagePath(self):
+        # Create a Gradiant for Yuzu.
+        UI_path = self.get_UI_path("Yuzu_BG.png")
+        image = Image.open(UI_path)
+        image = image.resize((1200 * scalingfactor, 600 * scalingfactor))
+        self.background_YuzuBG = ImageTk.PhotoImage(image)
+        # Create a Gradiant for Yuzu.
+        UI_path = self.get_UI_path("Ryujinx_BG.png")
+        image = Image.open(UI_path)
+        image = image.resize((1200 * scalingfactor, 600 * scalingfactor))
+        self.background_RyuBG = ImageTk.PhotoImage(image)
         # Create a Gradiant background.
         UI_path = self.get_UI_path("BG_Left.png")
         image = Image.open(UI_path)
@@ -376,8 +443,12 @@ class Manager:
         
     def load_UI_elements(self, canvas):
         # Images and Effects
+        
         canvas.create_image(0, 0, anchor="nw", image=self.background_image, tags="background")
+        canvas.create_image(0, 0, anchor="nw", image=self.background_YuzuBG, tags="overlay-1")
         canvas.create_image(0, 0, anchor="nw", image=self.background_UI, tags="overlay")
+
+        # Info text BG
         canvas.create_image(0-20, 0, anchor="nw", image=self.background_UI2, tags="overlay")
         # Information text.
         text_widgetoutline2 = canvas.create_text(1001-20, 126, text=self.text_content, fill="black", font=("Arial Bold", 14, "bold"), anchor="center", justify="center", width=325)
@@ -385,7 +456,8 @@ class Manager:
 
     def Cheat_UI_elements(self, canvas):
         self.cheatbg = canvas.create_image(0, -300, anchor="nw", image=self.blurbackground, tags="background")
-        canvas.create_image(0, 0, anchor="nw", image=self.background_Cheats, tags="overlay")
+        canvas.create_image(0, 0, anchor="nw", image=self.background_YuzuBG, tags="overlay-1")
+        canvas.create_image(0, 0, anchor="nw", image=self.background_UI, tags="overlay")
 
     def create_tab_buttons(self, canvas):
         # Ko-fi Button
@@ -432,8 +504,8 @@ class Manager:
 
     # Read Hover Description
     def read_description(self, option, position):
-        if f"{option}" in self.version_description:
-            hover = self.version_description[f"{option}"]
+        if f"{option}" in self.description:
+            hover = self.description[f"{option}"]
             Hovertip(position, f"{hover}", hover_delay=Hoverdelay)
     # Open Kofi
     def open_kofi(self):
@@ -460,6 +532,8 @@ class Manager:
         if command == "true":
             if self.mode == "Yuzu":
                 self.mode = "Ryujinx"
+                for canvas in self.allcanvas:
+                    canvas.itemconfig("overlay-1", image=self.background_RyuBG)
                 self.switchtext.set("Switch to Yuzu")
                 self.maincanvas.itemconfig(self.Settings_label_outline, text="")
                 self.maincanvas.itemconfig(self.Settings_label, text="")
@@ -469,6 +543,8 @@ class Manager:
                 return
             elif self.mode == "Ryujinx":
                 self.mode = "Yuzu"
+                for canvas in self.allcanvas:
+                    canvas.itemconfig("overlay-1", image=self.background_YuzuBG)
                 # change text
                 self.switchtext.set("Switch to Ryujinx")
                 self.maincanvas.itemconfig(self.Settings_label_outline, text="Yuzu Settings:")
@@ -484,6 +560,8 @@ class Manager:
                 return
         elif command == "false":
             if self.mode == "Ryujinx":
+                for canvas in self.allcanvas:
+                    canvas.itemconfig("overlay-1", image=self.background_RyuBG)
                 self.switchtext.set("Switch to Yuzu")
                 self.maincanvas.itemconfig(self.Settings_label_outline, text="")
                 self.maincanvas.itemconfig(self.Settings_label, text="")
@@ -494,6 +572,9 @@ class Manager:
         elif command == "Mode":
             return self.mode
 
+    def on_closing(self):
+        self.is_Ani_running = False
+        self.window.destroy()
     # run UI properly as executable
     def get_UI_path(self, file_name):
         if getattr(sys, 'frozen', False):
@@ -507,7 +588,46 @@ class Manager:
         hud_folder_path = os.path.join(script_dir, "HUD")
         return os.path.abspath(os.path.join(hud_folder_path, file_name))
 
-    # Handle Presets
+    def load_json(self, name, url):
+        # Check if the .presets folder exists, if not, create it
+        presets_folder = "json.data"
+        if not os.path.exists(presets_folder):
+            os.makedirs(presets_folder)
+        json_url = url
+        json_options_file_path = os.path.join(presets_folder, name)
+
+        try:
+            response = requests.get(json_url, timeout=5)
+            response.raise_for_status()
+
+            data = response.json()
+
+            if os.path.exists(json_options_file_path):
+                with open(json_options_file_path, "r") as file:
+                    local_json_options = json.load(file)
+
+                if data != local_json_options:
+                    with open(json_options_file_path, "w") as file:
+                        json.dump(data, file)
+                        self.json_options_options = data
+                else:
+                    self.json_options = local_json_options
+            else:
+                with open(json_options_file_path, "w") as file:
+                    json.dump(data, file)
+                    self.json_options = data
+
+        except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
+            print(f"Error occurred while fetching or parsing Description.json: {e}")
+            if os.path.exists(json_options_file_path):
+                with open(json_options_file_path, "r") as file:
+                    self.json_options = json.load(file)
+            else:
+                self.json_options = []
+
+        return self.json_options
+
+    # Apply Presets
     def apply_selected_preset(self, event=None):
         selected_preset = self.selected_preset.get()
 
@@ -524,8 +644,8 @@ class Manager:
                 self.load_user_choices(self.config)
             else:
                 messagebox.showinfo("Saved Preset", "No saved preset found. Please save your current settings first.")
-        elif selected_preset in self.presets_data:
-            preset_to_apply = self.presets_data[selected_preset]
+        elif selected_preset in self.presets:
+            preset_to_apply = self.presets[selected_preset]
             for key, value in preset_to_apply.items():
                 if value == "Enable":
                     preset_to_apply[key] = "On"
@@ -537,204 +657,7 @@ class Manager:
                     preset_to_apply[key] = "Off"
             # Apply the selected preset from the online presets
             self.apply_preset(self.presets[selected_preset])
-    #fetch presets
-    def fetch_presets_from_github(self):
-        presets_folder = "json.data"
-        if not os.path.exists(presets_folder):
-            os.makedirs(presets_folder)
-        github_raw_url = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/presets.json"
-        presets_file_path = os.path.join(presets_folder, "presets.json")
-
-        try:
-            response = requests.get(github_raw_url)
-            if response.status_code == 200:
-                github_presets_data = response.json()
-
-                if os.path.exists(presets_file_path):
-                    with open(presets_file_path, "r") as file:
-                        local_presets_data = json.load(file)
-
-                    if github_presets_data != local_presets_data:
-                        with open(presets_file_path, "w") as file:
-                            json.dump(github_presets_data, file)
-                            self.presets_data = github_presets_data
-                    else:
-                        self.presets_data = local_presets_data
-                else:
-                    with open(presets_file_path, "w") as file:
-                        json.dump(github_presets_data, file)
-                        self.presets_data = github_presets_data
-            else:
-                if os.path.exists(presets_file_path):
-                    with open(presets_file_path, "r") as file:
-                        self.presets_data = json.load(file)
-                else:
-                    self.presets_data = {}
-
-        except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
-            # If fetching or parsing fails, use the local file if available
-            print(f"Error occurred while fetching or parsing presets.json from GitHub: {e}")
-            if os.path.exists(presets_file_path):
-                with open(presets_file_path, "r") as file:
-                    self.presets_data = json.load(file)
-            else:
-                # If both GitHub and local presets are not available, set to empty dictionary
-                self.presets_data = {}
-
-        return self.presets_data
-
-    def load_dfps_options_from_json(self):
-        # Check if the .presets folder exists, if not, create it
-        presets_folder = "json.data"
-        if not os.path.exists(presets_folder):
-            os.makedirs(presets_folder)
-        json_url = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/DFPS.json"
-        dfps_options_file_path = os.path.join(presets_folder, "DFPS.json")
-
-        try:
-            response = requests.get(json_url)
-            data = response.json()
-
-            if os.path.exists(dfps_options_file_path):
-                with open(dfps_options_file_path, "r") as file:
-                    local_dfps_options = json.load(file)
-
-                if data != local_dfps_options:
-                    with open(dfps_options_file_path, "w") as file:
-                        json.dump(data, file)
-                        self.dfps_options = data
-                else:
-                    self.dfps_options = local_dfps_options
-            else:
-                with open(dfps_options_file_path, "w") as file:
-                    json.dump(data, file)
-                    self.dfps_options = data
-        except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
-            print(f"Error occurred while fetching or parsing DFPS.json: {e}")
-            if os.path.exists(dfps_options_file_path):
-                with open(dfps_options_file_path, "r") as file:
-                    self.dfps_options = json.load(file)
-            else:
-                self.dfps_options = {}
-        return self.dfps_options
-
-    def load_descriptions_from_json(self):
-        # Check if the .presets folder exists, if not, create it
-        presets_folder = "json.data"
-        if not os.path.exists(presets_folder):
-            os.makedirs(presets_folder)
-        json_url = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/Description.json"
-        description_options_file_path = os.path.join(presets_folder, "Description.json")
-
-        try:
-            response = requests.get(json_url, timeout=5)
-            response.raise_for_status()
-
-            data = response.json()
-
-            if os.path.exists(description_options_file_path):
-                with open(description_options_file_path, "r") as file:
-                    local_description_options = json.load(file)
-
-                if data != local_description_options:
-                    with open(description_options_file_path, "w") as file:
-                        json.dump(data, file)
-                        self.description_options = data
-                else:
-                    self.description_options = local_description_options
-            else:
-                with open(description_options_file_path, "w") as file:
-                    json.dump(data, file)
-                    self.description_options = data
-
-        except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
-            print(f"Error occurred while fetching or parsing Description.json: {e}")
-            if os.path.exists(description_options_file_path):
-                with open(description_options_file_path, "r") as file:
-                    self.description_options = json.load(file)
-            else:
-                self.description_options = []
-
-        return self.description_options
-
-    def load_cheats_from_json(self):
-        # Check if the .presets folder exists, if not, create it
-        presets_folder = "json.data"
-        if not os.path.exists(presets_folder):
-            os.makedirs(presets_folder)
-        json_url = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/Cheats.json"
-        version_options_file_path = os.path.join(presets_folder, "Cheats.json")
-
-        try:
-            response = requests.get(json_url, timeout=5)
-            response.raise_for_status()
-
-            data = response.json()
-
-            if os.path.exists(version_options_file_path):
-                with open(version_options_file_path, "r") as file:
-                    local_version_options = json.load(file)
-
-                if data != local_version_options:
-                    with open(version_options_file_path, "w") as file:
-                        json.dump(data, file)
-                        self.cheats_options = data
-                else:
-                    self.cheats_options = local_version_options
-            else:
-                with open(version_options_file_path, "w") as file:
-                    json.dump(data, file)
-                    self.cheats_options = data
-
-        except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
-            print(f"Error occurred while fetching or parsing Version.json: {e}")
-            if os.path.exists(version_options_file_path):
-                with open(version_options_file_path, "r") as file:
-                    self.cheats_options = json.load(file)
-            else:
-                self.cheats_options = []
-
-        return self.cheats_options
-
-    def load_version_options_from_json(self):
-        # Check if the .presets folder exists, if not, create it
-        presets_folder = "json.data"
-        if not os.path.exists(presets_folder):
-            os.makedirs(presets_folder)
-        json_url = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/Version.json"
-        version_options_file_path = os.path.join(presets_folder, "Version.json")
-
-        try:
-            response = requests.get(json_url, timeout=5)
-            response.raise_for_status()
-
-            data = response.json()
-
-            if os.path.exists(version_options_file_path):
-                with open(version_options_file_path, "r") as file:
-                    local_version_options = json.load(file)
-
-                if data != local_version_options:
-                    with open(version_options_file_path, "w") as file:
-                        json.dump(data, file)
-                        self.version_options = data
-                else:
-                    self.version_options = local_version_options
-            else:
-                with open(version_options_file_path, "w") as file:
-                    json.dump(data, file)
-                    self.version_options = data
-
-        except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
-            print(f"Error occurred while fetching or parsing Version.json: {e}")
-            if os.path.exists(version_options_file_path):
-                with open(version_options_file_path, "r") as file:
-                    self.version_options = json.load(file)
-            else:
-                self.version_options = []
-
-        return self.version_options
-    # Apply Presets
+    
     def apply_preset(self, preset_options):
         self.resolution_var.set(preset_options.get("Resolution", ""))
         self.fps_var.set(preset_options.get("FPS", ""))
@@ -847,8 +770,11 @@ class Manager:
             for option_name, option_var in self.selected_cheats.items():
                 config['Cheats'][option_name] = option_var.get()
             with open(config_file, 'w') as file:
+                config["Manager"] = {}
+                config["Manager"]["Cheat_Version"] = self.cheat_version.get()
                 config.write(file)
-        return
+
+            return
 
         # Save the selected options
         config['Options'] = {}
@@ -861,7 +787,7 @@ class Manager:
 
         # Save the enable/disable choices
         for option_name, option_var in self.selected_options.items():
-            config['Options'][option_name] = option_var.get
+            config['Options'][option_name] = option_var.get()
 
         # Save the yuzu.exe path if provided
         if self.mode == "Yuzu":
@@ -878,11 +804,22 @@ class Manager:
         with open(config_file, 'w') as file:
             config.write(file)
 
-    def load_user_choices(self, config_file):
+    def load_user_choices(self, config_file, mode=None):
         config = configparser.ConfigParser()
         config.read(config_file)
 
+        if mode == "Cheats":
+            self.cheat_version.set(config.get("Manager", "Cheat_Version", fallback="Version - 1.2.0"))
+            try:
+                for option_name, option_var in self.selected_cheats.items():
+                    option_value = config.get('Cheats', option_name, fallback="Off")
+                    option_var.set(option_value)
+            except AttributeError as e:
+                print("")
+            return
+
         # Load the selected options
+        self.cheat_version.set(config.get("Manager", "Cheat_Version", fallback="Version - 1.2.0"))
         self.resolution_var.set(config.get('Options', 'Resolution', fallback=self.dfps_options.get("ResolutionNames", [""])[2]))
         self.fps_var.set(config.get('Options', 'FPS', fallback=str(self.dfps_options.get("FPS", [])[2])))
         self.shadow_resolution_var.set(config.get('Options', 'ShadowResolution', fallback=self.dfps_options.get("ShadowResolutionNames", [""])[0])) # Shadow Auto
@@ -1042,7 +979,6 @@ class Manager:
         backup_file = "Save.rar"
         file_number = 1
         while os.path.exists(os.path.join(backup_folder_path, backup_file)):
-            print(f"{backup_folder_path}")
             backup_file = f"Save_{file_number}.rar"
             file_number += 1
 
@@ -1100,7 +1036,7 @@ class Manager:
                 for option_name, option_var in self.selected_cheats.items():
                     selected_cheats[option_name] = option_var.get()
                 # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.
-                for version_option in self.cheats_options:
+                for version_option in self.cheat_options:
                     version = version_option.get("Version", "")
                     mod_path = os.path.join(self.load_dir, "Cheat Manager Patch", "cheats")
 
@@ -1112,10 +1048,12 @@ class Manager:
                     with open(filename, "w") as file:
                         file.write(version_option.get("Source", "") + "\n")
                         for key, value in version_option.items():
+                            print(key)
                             if key in selected_cheats:
-                                if key not in ["Source", "nsobid", "offset", "Version", "Aversion", "Cheat Example"] and self.selected_cheats[key] == "On":
+                                if key not in ["Source", "Aversion", "Version"] and selected_cheats[key] == "On":
+                                    print(value)
                                     file.write(value + "\n")
-            return
+                return
 
             resolution = self.resolution_var.get()
             fps = self.fps_var.get()
@@ -1136,13 +1074,13 @@ class Manager:
             config.optionxform = lambda option: option
 
             # Add the selected resolution, FPS, shadow resolution, and camera quality
-            self.Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
+            Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
             ShadowIndex = self.dfps_options.get("ShadowResolutionNames").index(shadow_resolution)
             CameraIndex = self.dfps_options.get("CameraQualityNames").index(camera_quality)
 
             config['Graphics'] = {
-                'ResolutionWidth': self.dfps_options.get("ResolutionValues", [""])[self.Resindex].split("x")[0],
-                'ResolutionHeight': self.dfps_options.get("ResolutionValues", [""])[self.Resindex].split("x")[1],
+                'ResolutionWidth': self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[0],
+                'ResolutionHeight': self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1],
                 'ResolutionShadows': self.dfps_options.get("ShadowResolutionValues", [""])[ShadowIndex]
             }
             config['dFPS'] = {'MaxFramerate': fps}
@@ -1231,7 +1169,9 @@ class Manager:
                         with open(Setting_directory, "wb") as file:
                             file.write(response.content)
                         print("Successfully Installed TOTK Yuzu preset settings!")
-                        current_res = self.dfps_options.get("ResolutionValues", [""])[self.Resindex].split("x")[1]
+                        resolution = self.resolution_var.get()
+                        Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
+                        current_res = self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1]
                         proper_res = float(current_res)
                     else:
                         print(f"Failed to download file from {raw_url}. Status code: {response.status_code}")
@@ -1438,6 +1378,7 @@ class Manager:
                 modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 90 FOV", action="add")
                 modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 70 FOV", action="add")
                 print("Selected Third Person, removing ALL First Person Mods!")
+
             elif FP_selection == "70 FOV":
                     FP_mod_folder = "First Person 70 FOV"
                     FPCurrentFolder = "scripts/UI/First%20Person%20FOV%2070/"
@@ -1449,6 +1390,7 @@ class Manager:
                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 110 FOV", action="add")
                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 90 FOV", action="add")
                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 70 FOV", action="remove")
+
             elif FP_selection == "90 FOV":
                     FP_mod_folder = "First Person 90 FOV"
                     FPCurrentFolder = 'scripts/UI/First%20Person%20FOV%2090/'
@@ -1460,6 +1402,7 @@ class Manager:
                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 110 FOV", action="add")
                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 70 FOV", action="add")
                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 90 FOV", action="remove")
+
             elif FP_selection == "110 FOV":
                     FP_mod_folder = "First Person 110 FOV"
                     FPCurrentFolder = 'scripts/UI/First%20Person%20FOV%20110/'
@@ -1471,6 +1414,7 @@ class Manager:
                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 70 FOV", action="add")
                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 90 FOV", action="add")
                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 100 FOV", action="remove")
+
             if FP_mod_folder is not None:
                     repo_url = 'https://api.github.com/repos/MaxLastBreath/TOTK-mods'
                     FPfolder_path = f'{FPCurrentFolder}'
