@@ -2,9 +2,12 @@ import ttkbootstrap as ttk
 import threading
 from ttkbootstrap.constants import *
 from form import Manager
-from modules.update import textver, check_for_updates
+from modules.update import textver, check_for_updates, delete_old_exe
 
 if __name__ == "__main__":
+    # Delete any old executables
+    delete_old_exe()
+
     window = ttk.Window(themename="flatly")
     window.title(f"TOTK Mod Manager {textver}")
     main = Manager(window)

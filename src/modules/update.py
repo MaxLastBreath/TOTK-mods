@@ -4,6 +4,7 @@ import shutil
 from packaging.version import Version, parse
 import platform
 import sys
+import glob
 import subprocess
 import tkinter as tk
 from tkinter import messagebox
@@ -88,8 +89,13 @@ def apply_update(assets):
         return
 
     try:
+        old_executable = sys.argv[0]
+        if os.path.exists(old_executable):
+            os.rename(old_executable, f"{old_executable}.tmp")
+            print("Old executable deleted.")
+
         if sys.platform.startswith("linux"):
-            subprocess.Popen(["chmod", "+x", updated_executable])
+            os.chmod(updated_executable, 0o755)
         elif sys.platform.startswith("win"):
             pass 
 
@@ -99,9 +105,30 @@ def apply_update(assets):
         return
 
     print("Update Applied. Exiting...")
-    time.sleep(2)
     sys.exit()
 
+def delete_old_exe():
+    executable_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
+    current_platform = platform.system()
+    try:
+        # Remove old versions of manager
+        matching_files = glob.glob(os.path.join(executable_directory, "*.exe.tmp"))
+        matching_files += glob.glob(os.path.join(executable_directory, "*1.1.3.exe"))
+        matching_files += glob.glob(os.path.join(executable_directory, "*1.1.2.exe"))
+        matching_files += glob.glob(os.path.join(executable_directory, "*1.1.1.exe"))
+        matching_files += glob.glob(os.path.join(executable_directory, "*1.1.0.exe"))
+        matching_files += glob.glob(os.path.join(executable_directory, "*appimage.tmp"))
+        matching_files += glob.glob(os.path.join(executable_directory, "*1.1.3.appimage.tmp"))
+        matching_files += glob.glob(os.path.join(executable_directory, "*1.1.2.appimage.tmp"))
+        matching_files += glob.glob(os.path.join(executable_directory, "*1.1.1.appimage.tmp"))
+        matching_files += glob.glob(os.path.join(executable_directory, "*1.1.0.appimage.tmp"))
 
+        for file_path in matching_files:
+            print("Removing old exe:", file_path)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
 
-
+    except Exception as e:
+        print("Error:", e)
