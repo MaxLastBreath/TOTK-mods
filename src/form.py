@@ -27,6 +27,7 @@ class Manager:
         config.read(localconfig)
         self.mode = config.get("Mode", "managermode", fallback="Yuzu")
         self.Yuzudir = None
+        self.is_Ani_running = False
         self.root = window
         self.window = window
         self.title_id = title_id
@@ -69,6 +70,7 @@ class Manager:
         self.dfps_options = self.load_dfps_options_from_json()
         # Load options from Version.json
         self.version_options = self.load_version_options_from_json()
+        description = self.load_descriptions_from_json()
         
 
 
@@ -83,6 +85,7 @@ class Manager:
         else:
             self.presets = presets_data
         self.presets = {"Saved": {}} | self.presets
+        self.preset_label = self.maincanvas.create_text(cultex+1, row+1, text="Select Preset:", anchor="w", fill="black", font=textfont)
         self.preset_label = self.maincanvas.create_text(cultex, row, text="Select Preset:", anchor="w", fill="#D1F3FD", font=textfont)
         self.selected_preset = tk.StringVar(value="Saved")
         self.preset_dropdown = ttk.Combobox(self.window, textvariable=self.selected_preset, values=list(self.presets.keys()))
@@ -92,6 +95,7 @@ class Manager:
 
 
         # Setting Preset
+        self.Settings_label_outline = self.maincanvas.create_text(370+1, 40+1, text="Yuzu Settings:", anchor="w", fill="black", font=textfont)
         self.Settings_label = self.maincanvas.create_text(370, 40, text="Yuzu Settings:", anchor="w", fill="#D1F3FD", font=textfont)
         self.selected_settings = tk.StringVar(value="No Change")
         self.second_dropdown = ttk.Combobox(self.window, textvariable=self.selected_settings, values=["No Change", "Steamdeck", "AMD", "Nvidia", "High End Nvidia"])
@@ -102,6 +106,7 @@ class Manager:
 
         # Create a label for yuzu.exe selection
         backupbutton = culsel
+        self.selectexe_outline = self.maincanvas.create_text(cultex+1, row+1, text="Select yuzu.exe:", anchor="w", fill="black", font=textfont)
         self.selectexe = self.maincanvas.create_text(cultex, row, text="Select yuzu.exe:", anchor="w", fill="#D1F3FD", font=textfont)
         if self.os_platform == "Windows":
             yuzu_button = ttk.Button(self.window, text="Browse", command=self.select_yuzu_exe)
@@ -122,6 +127,7 @@ class Manager:
 
 
         # Create a label for resolution selection
+        self.maincanvas.create_text(cultex+1, row+1, text="Select a Resolution:", anchor="w", fill="black", font=textfont)
         self.maincanvas.create_text(cultex, row, text="Select a Resolution:", anchor="w", fill="#D1F3FD", font=textfont)
         self.resolution_var = tk.StringVar(value=self.dfps_options.get("ResolutionNames", [""])[2])  # Set the default resolution to "1080p FHD"
         resolution_dropdown = ttk.Combobox(self.window, textvariable=self.resolution_var, values=self.dfps_options.get("ResolutionNames", []))
@@ -131,6 +137,7 @@ class Manager:
         row += 40
 
         # Create a label for FPS selection
+        self.maincanvas.create_text(cultex+1, row+1, text="Select an FPS:", anchor="w", fill="black", font=textfont)
         self.maincanvas.create_text(cultex, row, text="Select an FPS:", anchor="w", fill="#D1F3FD", font=textfont)
         self.fps_var = tk.StringVar(value=str(self.dfps_options.get("FPS", [])[2]))  # Set the default FPS to 60
         fps_dropdown = ttk.Combobox(self.window, textvariable=self.fps_var, values=self.dfps_options.get("FPS", []))
@@ -139,6 +146,7 @@ class Manager:
         row += 40
 
         # Create a label for shadow resolution selection
+        self.maincanvas.create_text(40+1, row+1, text="Shadow Resolution:", anchor="w", fill="black", font=textfont)
         self.maincanvas.create_text(40, row, text="Shadow Resolution:", anchor="w", fill="#D1F3FD", font=textfont)
         self.shadow_resolution_var = tk.StringVar(value=self.dfps_options.get("ShadowResolutionNames", [""])[0])  # Set the default shadow resolution to "Auto"
         shadow_resolution_dropdown = ttk.Combobox(self.window, textvariable=self.shadow_resolution_var, values=self.dfps_options.get("ShadowResolutionNames", []))
@@ -154,6 +162,7 @@ class Manager:
             elif value == "Disable" or value == "Disabled":
                 CameraQ[index] = "Off"
 
+        self.maincanvas.create_text(cultex+1, row+1, text="Camera Quality++:", anchor="w", fill="black", font=textfont)
         self.maincanvas.create_text(cultex, row, text="Camera Quality++:", anchor="w", fill="#D1F3FD", font=textfont)
         self.camera_var = tk.StringVar(value=CameraQ[0])  # Set the default camera quality to "Enable"
         camera_dropdown = ttk.Combobox(self.window, textvariable=self.camera_var, values=self.dfps_options.get("CameraQualityNames", []))
@@ -162,6 +171,8 @@ class Manager:
         row += 40
 
         # Create a label for UI selection
+        
+        self.maincanvas.create_text(cultex+1, row+1, text="Select a UI:", anchor="w", fill="black", font=textfont)
         self.maincanvas.create_text(cultex, row, text="Select a UI:", anchor="w", fill="#D1F3FD", font=textfont)
         ui_values = ["None", "Black Screen Fix", "PS4", "Xbox"]
         self.ui_var = tk.StringVar(value=ui_values[0])
@@ -171,12 +182,14 @@ class Manager:
         row += 40
 
         # First Person and FOV
+        self.maincanvas.create_text(cultex+1, row+1, text="Enable First Person:", anchor="w", fill="black", font=textfont)
         self.maincanvas.create_text(cultex, row, text="Enable First Person:", anchor="w", fill="#D1F3FD", font=textfont)
         fp_values = ["Off", "70 FOV", "90 FOV", "110 FOV"]
         self.fp_var = tk.StringVar(value=ui_values[0])
         fp_dropdown = ttk.Combobox(self.window, textvariable=self.fp_var, values=fp_values)
         fp_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=fp_dropdown)
         self.read_description("First Person", fp_dropdown)
+        
         
         # Create labels and enable/disable options for each entry
         self.selected_options = {}
@@ -190,10 +203,13 @@ class Manager:
                 if version_option_name in self.version_description:
                     self.maincanvas.create_text(cultex+1, row+40+1, text=version_option_name, anchor="w", fill="black", font=textfont)
                     self.maincanvas.create_text(cultex, row+40, text=version_option_name, anchor="w", fill="#D1F3FD", font=textfont)
-                    # Create enable/disable dropdown menu
+                    
+
+                    # Create checkbox
                     version_option_var = tk.StringVar(value="Off")
                     versioncheck = ttk.Checkbutton(self.window, variable=version_option_var, onvalue="On", offvalue="Off", bootstyle="success")
                     version_check_window = self.maincanvas.create_window(culsel, row+40, anchor="w", window=versioncheck)
+                    self.read_description(f"{version_option_name}", versioncheck)
                     self.selected_options[version_option_name] = version_option_var
                     row += 40
 
@@ -214,7 +230,7 @@ class Manager:
     def createcheatcanvas(self):
         # Create Cheat Canvas
         self.cheatcanvas = tk.Canvas(self.window, width=1200 * scalingfactor, height=600 * scalingfactor)
-        self.cheatcanvas.pack()
+        self.cheatcanvas.pack(expand=1, fill=BOTH)
 
         # Create UI elements.
         self.Cheat_UI_elements(self.cheatcanvas)
@@ -270,13 +286,40 @@ class Manager:
         submit_button_window = self.cheatcanvas.create_window(39, 520, anchor="w", window=submit_button)
         self.read_description("Apply", submit_button)
 
+        self.load_user_choices(self.config)
+
     def show_maincanvas(self):
         self.cheatcanvas.pack_forget()
         self.maincanvas.pack()
+        def canvasanimation():
+            for x in range(1000):
+                self.cheatcanvas.move(self.cheatbg, -0.5, 0)
+                time.sleep(0.02)
+            else:
+                self.cheatcanvas.move(self.cheatbg, 200, 200)
+                for y in range(250):
+                    self.cheatcanvas.move(self.cheatbg, 0, -0.5)
+                    time.sleep(0.02)
 
     def show_cheatcanvas(self):
         self.cheatcanvas.pack()
         self.maincanvas.pack_forget()
+        def canvasanimation():
+            for x in range(1000):
+                self.cheatcanvas.move(self.cheatbg, -1, 0)
+                time.sleep(0.05)
+            else:
+                self.cheatcanvas.move(self.cheatbg, 200, 200)
+                for y in range(250):
+                    self.cheatcanvas.move(self.cheatbg, 0, -1)
+                    time.sleep(0.05)
+                else:
+                    self.cheatcanvas.move(self.cheatbg, 800, 50)
+                    canvasanimation()
+        ani = threading.Thread(name="cheatbackground", target=canvasanimation)
+        if not self.is_Ani_running == True:
+            self.is_Ani_running = True
+            ani.start()
 
     def load_canvas(self):
         # Main
@@ -311,7 +354,7 @@ class Manager:
 
         image_path = self.get_UI_path("image.png")
         image = Image.open(image_path)
-        image = image.resize((1200, 600))
+        image = image.resize((2400, 1200))
         image = image.filter(ImageFilter.GaussianBlur(3))
         self.blurbackground = ImageTk.PhotoImage(image)
 
@@ -341,7 +384,7 @@ class Manager:
         text_widget = canvas.create_text(1000-20, 125, text=self.text_content, fill="#FBF8F3", font=("Arial Bold", 14, "bold"), anchor="center", justify="center", width=325)
 
     def Cheat_UI_elements(self, canvas):
-        canvas.create_image(0, 0, anchor="nw", image=self.blurbackground, tags="background")
+        self.cheatbg = canvas.create_image(0, -300, anchor="nw", image=self.blurbackground, tags="background")
         canvas.create_image(0, 0, anchor="nw", image=self.background_Cheats, tags="overlay")
 
     def create_tab_buttons(self, canvas):
@@ -363,14 +406,29 @@ class Manager:
         manager_switch_window = canvas.create_window(114 + 43 - 17, cul, anchor="w", window=manager_switch)
         self.read_description("Switch", manager_switch)
 
+        # Make the button active for current canvas.
+        button1style = "default"
+        button2style = "default"
+        active_button_style = "secondary"
+        try:
+            if canvas == self.maincanvas:
+                button1style = active_button_style
+        except AttributeError as e:
+            print("")
+        try:
+            if canvas == self.cheatcanvas:
+                button2style = active_button_style
+        except AttributeError as e:
+            print("")
+
         # 1
-        tab1_button = ttk.Button(self.window, text="Main", command=self.show_maincanvas)
-        tab1_button_window = canvas.create_window(0+ 43 - 17, cul, anchor="w", window=tab1_button)
-        self.read_description("Main", tab1_button)
+        self.tab1_button = ttk.Button(self.window, text="Main", bootstyle=f"{button1style}", command=self.show_maincanvas)
+        tab1_button_window = canvas.create_window(0+ 43 - 17, cul, anchor="w", window=self.tab1_button)
+        self.read_description("Main", self.tab1_button)
         # 2
-        tab2_button = ttk.Button(self.window, text="Cheats", command=self.show_cheatcanvas)
-        tab2_button_window = canvas.create_window(52+ 43 - 17, cul, anchor="w", window=tab2_button)
-        self.read_description("Cheats", tab2_button)
+        self.tab2_button = ttk.Button(self.window, text="Cheats", bootstyle=f"{button2style}", command=self.show_cheatcanvas)
+        tab2_button_window = canvas.create_window(52+ 43 - 17, cul, anchor="w", window=self.tab2_button)
+        self.read_description("Cheats", self.tab2_button)
 
     # Read Hover Description
     def read_description(self, option, position):
@@ -403,7 +461,9 @@ class Manager:
             if self.mode == "Yuzu":
                 self.mode = "Ryujinx"
                 self.switchtext.set("Switch to Yuzu")
+                self.maincanvas.itemconfig(self.Settings_label_outline, text="")
                 self.maincanvas.itemconfig(self.Settings_label, text="")
+                self.maincanvas.itemconfig(self.selectexe_outline, text="Select Ryujinx.exe")
                 self.maincanvas.itemconfig(self.selectexe, text="Select Ryujinx.exe")
                 self.second_dropdown.destroy()
                 return
@@ -411,7 +471,9 @@ class Manager:
                 self.mode = "Yuzu"
                 # change text
                 self.switchtext.set("Switch to Ryujinx")
+                self.maincanvas.itemconfig(self.Settings_label_outline, text="Yuzu Settings:")
                 self.maincanvas.itemconfig(self.Settings_label, text="Yuzu Settings:")
+                self.maincanvas.itemconfig(self.selectexe_outline, text="Select yuzu.exe")
                 self.maincanvas.itemconfig(self.selectexe, text="Select yuzu.exe")
 
                 # create new labels
@@ -423,7 +485,9 @@ class Manager:
         elif command == "false":
             if self.mode == "Ryujinx":
                 self.switchtext.set("Switch to Yuzu")
+                self.maincanvas.itemconfig(self.Settings_label_outline, text="")
                 self.maincanvas.itemconfig(self.Settings_label, text="")
+                self.maincanvas.itemconfig(self.selectexe_outline, text="Select Ryujinx.exe")
                 self.maincanvas.itemconfig(self.selectexe, text="Select Ryujinx.exe")
                 self.second_dropdown.destroy()
                 return
@@ -773,10 +837,18 @@ class Manager:
         if response.status_code == 200:
            return response.json()
 
-    def save_user_choices(self, config_file, yuzu_path=None):
+    def save_user_choices(self, config_file, yuzu_path=None, mode=None):
         config = configparser.ConfigParser()
         if os.path.exists(config_file):
             config.read(config_file)
+
+        if mode == "Cheats":
+            config["Cheats"] = {}
+            for option_name, option_var in self.selected_cheats.items():
+                config['Cheats'][option_name] = option_var.get()
+            with open(config_file, 'w') as file:
+                config.write(file)
+        return
 
         # Save the selected options
         config['Options'] = {}
@@ -789,7 +861,7 @@ class Manager:
 
         # Save the enable/disable choices
         for option_name, option_var in self.selected_options.items():
-            config['Options'][option_name] = option_var.get()
+            config['Options'][option_name] = option_var.get
 
         # Save the yuzu.exe path if provided
         if self.mode == "Yuzu":
@@ -831,6 +903,13 @@ class Manager:
         for option_name, option_var in self.selected_options.items():
             option_value = config.get('Options', option_name, fallback="On")
             option_var.set(option_value)
+        # Load the enable/disabled cheats
+        try:
+            for option_name, option_var in self.selected_cheats.items():
+                option_value = config.get('Cheats', option_name, fallback="Off")
+                option_var.set(option_value)
+        except AttributeError as e:
+            print("")
 
         self.yuzu_path = self.load_yuzu_path(config_file)
 
@@ -1016,9 +1095,10 @@ class Manager:
             self.save_user_choices(self.config)
 
             if mode == "Cheats":
+                self.save_user_choices(self.config, None, "Cheats")
+                selected_cheats = {}
                 for option_name, option_var in self.selected_cheats.items():
-                    if option_name not in ["Source", "nsobid", "offset", "Version", "Aversion", "Cheat Example"]:
-                        self.selected_cheats[option_name] = option_var.get()
+                    selected_cheats[option_name] = option_var.get()
                 # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.
                 for version_option in self.cheats_options:
                     version = version_option.get("Version", "")
@@ -1032,10 +1112,10 @@ class Manager:
                     with open(filename, "w") as file:
                         file.write(version_option.get("Source", "") + "\n")
                         for key, value in version_option.items():
-                            if key in self.selected_cheats:
+                            if key in selected_cheats:
                                 if key not in ["Source", "nsobid", "offset", "Version", "Aversion", "Cheat Example"] and self.selected_cheats[key] == "On":
-                                    file.write(f"{value}\n")
-                return
+                                    file.write(value + "\n")
+            return
 
             resolution = self.resolution_var.get()
             fps = self.fps_var.get()
