@@ -9,12 +9,16 @@ import json
 import requests
 import ttkbootstrap as ttk
 import time
+import webbrowser
 from idlelib.tooltip import Hovertip
 from ttkbootstrap.constants import *
 from PIL import Image, ImageTk, ImageFilter
 from configparser import NoOptionError
 from modules.qt_config import modify_disabled_key, write_config_file, get_config_parser
 from modules.checkpath import checkpath, DetectOS
+from modules.json import load_json
+from modules.backup import backup
+from modules.config import save_user_choices, load_user_choices
 from configuration.settings import Hoverdelay, title_id, localconfig, textfont, style, scalingfactor, textcolor, outlinecolor, dfpsurl, cheatsurl, versionurl, presetsurl, descurl
 import re
 
@@ -34,11 +38,11 @@ class Manager:
         self.cheat_version = tk.StringVar(value="Version - 1.1.2")
 
         # Load Hover description locally.
-        self.dfps_options = self.load_json("DFPS.json", dfpsurl)
-        self.description = self.load_json("Description.json", descurl)
-        self.presets = self.load_json("preset.json", presetsurl)
-        self.version_options = self.load_json("Version.json", versionurl)
-        self.cheat_options = self.load_json("Cheats.json", cheatsurl)
+        self.dfps_options = load_json("DFPS.json", dfpsurl)
+        self.description = load_json("Description.json", descurl)
+        self.presets = load_json("preset.json", presetsurl)
+        self.version_options = load_json("Version.json", versionurl)
+        self.cheat_options = load_json("Cheats.json", cheatsurl)
 
         # Warn for Backup File
         self.warnagain = "yes"
@@ -111,13 +115,17 @@ class Manager:
             self.read_description("Browse", yuzu_button)
 
             # Reset to Appdata
-            reset_button = ttk.Button(self.window, text="Use Appdata", command=self.yuzu_appdata)
+            def yuzu_appdata():
+                checkpath(self, self.mode)
+                print("Successfully Defaulted to Appdata!")
+                save_user_choices(self, self.config, "appdata", None)
+            reset_button = ttk.Button(self.window, text="Use Appdata", command=yuzu_appdata)
             reset_button_window = self.maincanvas.create_window(270, row, anchor="w", window=reset_button)
             self.read_description("Reset", reset_button)
             backupbutton = 370
 
         # Create a Backup button
-        backup_button = ttk.Button(self.window, text="Backup", command=self.backup)
+        backup_button = ttk.Button(self.window, text="Backup", command=lambda: backup(self))
         backup_button_window = self.maincanvas.create_window(backupbutton, row, anchor="w", window=backup_button)
         self.read_description("Backup", backup_button)
         row += 40
@@ -221,7 +229,7 @@ class Manager:
         self.read_description("Apply", submit_button)
 
         # Load Saved User Options.
-        self.load_user_choices(self.config)
+        load_user_choices(self, self.config)
         return self.maincanvas
 
     def createcheatcanvas(self):
@@ -327,17 +335,17 @@ class Manager:
         self.read_description("Reset Cheats", submit_button)
         # Read Cheats
 
-        readcheats_button = ttk.Button(self.window, text="Read Saved Cheats", command=lambda: self.load_user_choices(self.config, "Cheats"), padding=5)
+        readcheats_button = ttk.Button(self.window, text="Read Saved Cheats", command=lambda: load_user_choices(self, self.config, "Cheats"), padding=5)
         readcheats_button_window = self.cheatcanvas.create_window(370+6, 520, anchor="w", window=readcheats_button)
         self.read_description("Read Cheats", submit_button)
 
         #Backup
-        backup_button = ttk.Button(self.window, text="Backup", command=self.backup)
+        backup_button = ttk.Button(self.window, text="Backup", command=lambda: backup(self))
         backup_button_window = self.cheatcanvas.create_window(490+8, 520, anchor="w", window=backup_button)
         self.read_description("Backup", backup_button)
 
         loadCheats()
-        self.load_user_choices(self.config)
+        load_user_choices(self, self.config)
 
     def show_maincanvas(self):
         self.cheatcanvas.pack_forget()
@@ -377,6 +385,18 @@ class Manager:
         if not self.is_Ani_running == True:
             self.is_Ani_running = True
             self.ani.start()
+
+    def get_UI_path(self, file_name):
+        if getattr(sys, 'frozen', False):
+            # Look for the 'HUD' folder next to the executable
+            executable_dir = os.path.dirname(sys.executable)
+            hud_folder_path = os.path.join(executable_dir, "HUD")
+            if os.path.exists(hud_folder_path):
+                return os.path.abspath(os.path.join(hud_folder_path, file_name))
+        # If not running as an executable or 'HUD' folder not found, assume it's in the same directory as the script
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        hud_folder_path = os.path.join(script_dir, "HUD")
+        return os.path.abspath(os.path.join(hud_folder_path, file_name))
 
     def load_canvas(self):
         # Main
@@ -425,9 +445,21 @@ class Manager:
         image = image.filter(ImageFilter.GaussianBlur(3))
         self.blurbackground = ImageTk.PhotoImage(image)
 
+        # Handle Text Window
+        def fetch_text_from_github(file_url):
+            try:
+                response = requests.get(file_url)
+                if response.status_code == 200:
+                    return response.text
+                else:
+                    print(f"Error: Unable to fetch text from Github")
+            except requests.exceptions.RequestException as e:
+                print(f"Error occurred while fetching text: {e}")
+
+            return ""
         # Information text
         file_url = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Announcements/Announcement%20Window.txt"
-        self.text_content = self.fetch_text_from_github(file_url)
+        self.text_content = fetch_text_from_github(file_url)
 
         # Kofi
         kofi_image_path = self.get_UI_path("Kofi.png")
@@ -440,7 +472,7 @@ class Manager:
         github_image = Image.open(github_image_path)
         github_image = github_image.resize((83, 43))
         self.github_image = ImageTk.PhotoImage(github_image)
-        
+
     def load_UI_elements(self, canvas):
         # Images and Effects
         
@@ -461,14 +493,19 @@ class Manager:
 
     def create_tab_buttons(self, canvas):
         # Ko-fi Button
-        kofi_button = ttk.Button(self.window, text="Donate", bootstyle="success", command=self.open_kofi, padding=10)
+        def open_kofi():
+            webbrowser.open("https://ko-fi.com/maxlastbreath#")
+        kofi_button = ttk.Button(self.window, text="Donate", bootstyle="success", command=open_kofi, padding=10)
         kofi_button_window = canvas.create_window(1110+20, 520, anchor="center", window=kofi_button)
         self.read_description("Kofi", kofi_button)
-        # GitHub Button
 
-        github_button = ttk.Button(self.window, text="Github", bootstyle="info", command=self.open_github, padding=10)
+        # GitHub Button
+        def open_github():
+            webbrowser.open("https://github.com/MaxLastBreath/TOTK-mods")
+        github_button = ttk.Button(self.window, text="Github", bootstyle="info", command=open_github, padding=10)
         github_button_window = canvas.create_window(1046+20, 520, anchor="center", window=github_button)
         self.read_description("Github", github_button)
+
 
         # Create tabs
         cul = 10
@@ -502,32 +539,6 @@ class Manager:
         tab2_button_window = canvas.create_window(52+ 43 - 17, cul, anchor="w", window=self.tab2_button)
         self.read_description("Cheats", self.tab2_button)
 
-    # Read Hover Description
-    def read_description(self, option, position):
-        if f"{option}" in self.description:
-            hover = self.description[f"{option}"]
-            Hovertip(position, f"{hover}", hover_delay=Hoverdelay)
-    # Open Kofi
-    def open_kofi(self):
-        import webbrowser
-        webbrowser.open("https://ko-fi.com/maxlastbreath#")
-    # Open Github
-    def open_github(self):
-        import webbrowser
-        webbrowser.open("https://github.com/MaxLastBreath/TOTK-mods")
-    # Handle Text Window
-    def fetch_text_from_github(self, file_url):
-        try:
-            response = requests.get(file_url)
-            if response.status_code == 200:
-                return response.text
-            else:
-                print(f"Error: Unable to fetch text from Github")
-        except requests.exceptions.RequestException as e:
-            print(f"Error occurred while fetching text: {e}")
-
-        return ""
-    # Handle Save Backups
     def switchmode(self, command="true"):
         if command == "true":
             if self.mode == "Yuzu":
@@ -571,69 +582,18 @@ class Manager:
                 return
         elif command == "Mode":
             return self.mode
+    # Read Hover Description
+    def read_description(self, option, position):
+        if f"{option}" in self.description:
+            hover = self.description[f"{option}"]
+            Hovertip(position, f"{hover}", hover_delay=Hoverdelay)
 
-    def on_closing(self):
-        self.is_Ani_running = False
-        self.window.destroy()
-    # run UI properly as executable
-    def get_UI_path(self, file_name):
-        if getattr(sys, 'frozen', False):
-            # Look for the 'HUD' folder next to the executable
-            executable_dir = os.path.dirname(sys.executable)
-            hud_folder_path = os.path.join(executable_dir, "HUD")
-            if os.path.exists(hud_folder_path):
-                return os.path.abspath(os.path.join(hud_folder_path, file_name))
-        # If not running as an executable or 'HUD' folder not found, assume it's in the same directory as the script
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        hud_folder_path = os.path.join(script_dir, "HUD")
-        return os.path.abspath(os.path.join(hud_folder_path, file_name))
-
-    def load_json(self, name, url):
-        # Check if the .presets folder exists, if not, create it
-        presets_folder = "json.data"
-        if not os.path.exists(presets_folder):
-            os.makedirs(presets_folder)
-        json_url = url
-        json_options_file_path = os.path.join(presets_folder, name)
-
-        try:
-            response = requests.get(json_url, timeout=5)
-            response.raise_for_status()
-
-            data = response.json()
-
-            if os.path.exists(json_options_file_path):
-                with open(json_options_file_path, "r") as file:
-                    local_json_options = json.load(file)
-
-                if data != local_json_options:
-                    with open(json_options_file_path, "w") as file:
-                        json.dump(data, file)
-                        self.json_options_options = data
-                else:
-                    self.json_options = local_json_options
-            else:
-                with open(json_options_file_path, "w") as file:
-                    json.dump(data, file)
-                    self.json_options = data
-
-        except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
-            print(f"Error occurred while fetching or parsing Description.json: {e}")
-            if os.path.exists(json_options_file_path):
-                with open(json_options_file_path, "r") as file:
-                    self.json_options = json.load(file)
-            else:
-                self.json_options = []
-
-        return self.json_options
-
-    # Apply Presets
     def apply_selected_preset(self, event=None):
         selected_preset = self.selected_preset.get()
 
         if selected_preset == "None":
             if os.path.exists(self.config):
-                self.load_user_choices(self.config)
+                load_user_choices(self, self.config)
             else:
                 # Fallback to the default preset
                 default_preset = self.get_local_presets().get("Default", {})
@@ -641,7 +601,7 @@ class Manager:
         
         elif selected_preset == "Saved":
             if os.path.exists(self.config):
-                self.load_user_choices(self.config)
+                load_user_choices(self, self.config)
             else:
                 messagebox.showinfo("Saved Preset", "No saved preset found. Please save your current settings first.")
         elif selected_preset in self.presets:
@@ -693,7 +653,7 @@ class Manager:
                     self.switchmode("true")
             if yuzu_path:
                 # Save the selected yuzu.exe path to a configuration file
-                self.save_user_choices(self.config, yuzu_path)
+                save_user_choices(self, self.config, yuzu_path)
                 home_directory = os.path.dirname(yuzu_path)
                 if os.path.exists(Default_Yuzu_Directory) or os.path.exists(Default_Ryujinx_Directory):
                     print(f"Successfully selected {self.mode}.exe! And a portable folder was found at {home_directory}!")
@@ -707,13 +667,9 @@ class Manager:
             else:
                 checkpath(self, self.mode)
             # Save the selected yuzu.exe path to a configuration file
-            self.save_user_choices(self.config, yuzu_path) 
+            save_user_choices(self, self.config, yuzu_path) 
         return
 
-    def yuzu_appdata(self):
-        checkpath(self, self.mode)
-        print("Successfully Defaulted to Appdata!")
-        self.save_user_choices(self.config, "appdata")
     # Load Yuzu Dir
     def load_yuzu_path(self, config_file):
         if self.mode == "Yuzu":
@@ -759,116 +715,6 @@ class Manager:
         response = requests.get(api_url)
         if response.status_code == 200:
            return response.json()
-
-    def save_user_choices(self, config_file, yuzu_path=None, mode=None):
-        config = configparser.ConfigParser()
-        if os.path.exists(config_file):
-            config.read(config_file)
-
-        if mode == "Cheats":
-            config["Cheats"] = {}
-            for option_name, option_var in self.selected_cheats.items():
-                config['Cheats'][option_name] = option_var.get()
-            with open(config_file, 'w') as file:
-                config["Manager"] = {}
-                config["Manager"]["Cheat_Version"] = self.cheat_version.get()
-                config.write(file)
-
-            return
-
-        # Save the selected options
-        config['Options'] = {}
-        config['Options']['Resolution'] = self.resolution_var.get()
-        config['Options']['FPS'] = self.fps_var.get()
-        config['Options']['ShadowResolution'] = self.shadow_resolution_var.get()
-        config['Options']['CameraQuality'] = self.camera_var.get()
-        config['Options']['UI'] = self.ui_var.get()
-        config['Options']['First Person'] = self.fp_var.get()
-
-        # Save the enable/disable choices
-        for option_name, option_var in self.selected_options.items():
-            config['Options'][option_name] = option_var.get()
-
-        # Save the yuzu.exe path if provided
-        if self.mode == "Yuzu":
-            if yuzu_path:
-                config['Paths']['YuzuPath'] = yuzu_path
-        if self.mode == "Ryujinx":
-            if yuzu_path:
-                config['Paths']['RyujinxPath'] = yuzu_path
-
-        # Save the manager selected mode I.E Ryujinx/Yuzu
-        config["Mode"] = {"ManagerMode": self.mode}
-
-        # Write the updated configuration back to the file
-        with open(config_file, 'w') as file:
-            config.write(file)
-
-    def load_user_choices(self, config_file, mode=None):
-        config = configparser.ConfigParser()
-        config.read(config_file)
-
-        if mode == "Cheats":
-            self.cheat_version.set(config.get("Manager", "Cheat_Version", fallback="Version - 1.2.0"))
-            try:
-                for option_name, option_var in self.selected_cheats.items():
-                    option_value = config.get('Cheats', option_name, fallback="Off")
-                    option_var.set(option_value)
-            except AttributeError as e:
-                print("")
-            return
-
-        # Load the selected options
-        self.cheat_version.set(config.get("Manager", "Cheat_Version", fallback="Version - 1.2.0"))
-        self.resolution_var.set(config.get('Options', 'Resolution', fallback=self.dfps_options.get("ResolutionNames", [""])[2]))
-        self.fps_var.set(config.get('Options', 'FPS', fallback=str(self.dfps_options.get("FPS", [])[2])))
-        self.shadow_resolution_var.set(config.get('Options', 'ShadowResolution', fallback=self.dfps_options.get("ShadowResolutionNames", [""])[0])) # Shadow Auto
-        self.camera_var.set(config.get('Options', 'CameraQuality', fallback=self.dfps_options.get("CameraQualityNames", [""])[0]))
-        ui_selection = config.get('Options', 'UI', fallback="None")
-        fp_selection = config.get('Options', 'First Person', fallback="Off")
-        # Neccessary to FIX ui, won't download otherwise.
-        if fp_selection in ["Off", "70 FOV", "90 FOV", "110 FOV"]:
-           self.fp_var.set(fp_selection)
-        else:
-           self.fp_var.set("Off")
-        # Neccessary to FIX ui, won't download otherwise.
-        if ui_selection in ["None", "Black Screen Fix", "PS4", "Xbox"]:
-           self.ui_var.set(ui_selection)
-        else:
-           self.ui_var.set("None")
-        # Load the enable/disable choices
-        for option_name, option_var in self.selected_options.items():
-            option_value = config.get('Options', option_name, fallback="On")
-            option_var.set(option_value)
-        # Load the enable/disabled cheats
-        try:
-            for option_name, option_var in self.selected_cheats.items():
-                option_value = config.get('Cheats', option_name, fallback="Off")
-                option_var.set(option_value)
-        except AttributeError as e:
-            print("")
-
-        self.yuzu_path = self.load_yuzu_path(config_file)
-
-        if self.yuzu_path:
-            home_directory = os.path.dirname(self.yuzu_path)
-            Default_Directory = os.path.join(home_directory, "user")
-            Default_Directory = os.path.join(home_directory, "portable")
-            if self.mode == "Yuzu":
-                if os.path.exists(Default_Directory):
-                    self.Yuzudir = os.path.join(home_directory, "user", "load", "0100F2C0115B6000")
-                    print(f"User Folder Found! New mod path! {self.Yuzudir}")
-            elif self.mode == "Ryujinx":
-                if os.path.exists(Default_Directory):
-                    self.Yuzudir = os.path.join(home_directory, "portable", "mods", "contents", "0100f2c0115b6000")
-                    print(f"Portable Folder Found! New mod path! {self.Yuzudir}")
-            
-            else:
-                print("User Folder not Found defaulting to Default Dir!")
-                checkpath(self, self.mode)
-        else:
-            print("Yuzu path not found in the config file - Defaulting to Default Dir!")
-            checkpath(self, self.mode)
  
     def warning_window(self, setting_type):
         warning_message = None
@@ -959,43 +805,9 @@ class Manager:
                 # If No, do nothing.
                 print(f"Turning on required settings declined!!")
 
-    def backup(self):
-        if self.mode == "Yuzu":
-            # Fetch the nand_directory value from the qt-config.ini file
-            testforuserdir = os.path.join(self.nand_dir, "user", "save", "0000000000000000")
-            testforuser = os.listdir(testforuserdir)
-            target_folder = "0100F2C0115B6000"
-            # checks each individual folder ID for each user and finds the ones with saves for TOTK. Then backups the TOTK saves!
-            for root, dirs, files in os.walk(testforuserdir):
-                if target_folder in dirs:
-                    folder_to_backup = os.path.join(root, target_folder)
-            print(f"Attemping to backup {folder_to_backup}")
-        # Create the 'backup' folder inside the mod manager directory if it doesn't exist
-        elif self.mode == "Ryujinx":
-            folder_to_backup = self.nand_dir
-        script_dir = os.path.dirname(os.path.abspath(sys.executable))
-        backup_folder_path = os.path.join(script_dir, "backup")
-        os.makedirs(backup_folder_path, exist_ok=True)
-        backup_file = "Save.rar"
-        file_number = 1
-        while os.path.exists(os.path.join(backup_folder_path, backup_file)):
-            backup_file = f"Save_{file_number}.rar"
-            file_number += 1
-
-        # Construct the full path for the backup file inside the 'backup' folder
-        backup_file_path = os.path.join(backup_folder_path, backup_file)
-
-        try:
-            # Check if the folder exists before creating the backup
-            if os.path.exists(folder_to_backup):
-                shutil.make_archive(backup_file_path, "zip", folder_to_backup)
-                os.rename(backup_file_path + ".zip", backup_file_path)
-                messagebox.showinfo("Backup", f"Backup created successfully: {backup_file}")
-            else:
-                messagebox.showerror("Backup Error", "Folder to backup not found.")
-
-        except Exception as e:
-            messagebox.showerror("Backup Error", f"Error creating backup: {e}")
+    def on_closing(self):
+        self.is_Ani_running = False
+        self.window.destroy()
     # Submit the results, run download manager. Open a Loading screen.
     def submit(self, mode=None):
         checkpath(self, self.mode)
@@ -1006,7 +818,7 @@ class Manager:
             if mode== "Cheats":
                 timer(50)
                 print(f"Backing up TOTK, save file from {self.nand_dir}.")
-                self.backup()
+                backup(self)
                 time.sleep(0.3)
                 timer(100)
                 UpdateVisualImprovements("Cheats")
@@ -1028,10 +840,10 @@ class Manager:
                 return
 
         def UpdateVisualImprovements(mode=None):
-            self.save_user_choices(self.config)
+            save_user_choices(self, self.config)
 
             if mode == "Cheats":
-                self.save_user_choices(self.config, None, "Cheats")
+                save_user_choices(self, self.config, None, "Cheats")
                 selected_cheats = {}
                 for option_name, option_var in self.selected_cheats.items():
                     selected_cheats[option_name] = option_var.get()
