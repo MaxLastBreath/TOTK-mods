@@ -10,17 +10,18 @@ import requests
 import ttkbootstrap as ttk
 import time
 import webbrowser
+import re
 from idlelib.tooltip import Hovertip
 from ttkbootstrap.constants import *
-from PIL import Image, ImageTk, ImageFilter
+from PIL import Image, ImageTk, ImageFilter, ImageOps
 from configparser import NoOptionError
-from modules.qt_config import modify_disabled_key, write_config_file, get_config_parser
+from modules.qt_config import modify_disabled_key, get_config_parser
 from modules.checkpath import checkpath, DetectOS
 from modules.json import load_json
 from modules.backup import backup
 from modules.config import save_user_choices, load_user_choices
 from configuration.settings import Hoverdelay, title_id, localconfig, textfont, style, scalingfactor, textcolor, outlinecolor, dfpsurl, cheatsurl, versionurl, presetsurl, descurl
-import re
+
 
 class Manager:
     def __init__(self, window):
@@ -58,7 +59,6 @@ class Manager:
         self.switchmode("false")
         # close existing threads.
         self.root.protocol("WM_DLETE_WINDOW", self.on_closing)
-
     # Canvas
     def createcanvas(self):
         # Create Canvas
@@ -77,17 +77,18 @@ class Manager:
         # Run Scripts for checking OS and finding location
         checkpath(self, self.mode)
         DetectOS(self, self.mode)
-        
-
-
-
-
+        # DEBUG purpose
+        def onCanvasClick(event):
+            print (f"CRODS = X={event.x} + Y={event.y} + {event.widget}")
+        self.maincanvas.bind("<Button-3>", onCanvasClick)
         # Start of CANVAS options.
 
+
+ 
         # Create preset menu. 
         self.presets = {"Saved": {}} | self.presets
         self.preset_label = self.maincanvas.create_text(cultex+1, row+1, text="Select Preset:", anchor="w", fill=outlinecolor, font=textfont)
-        self.preset_label = self.maincanvas.create_text(cultex, row, text="Select Preset:", anchor="w", fill=textcolor, font=textfont)
+        self.preset_label2 = self.maincanvas.create_text(cultex, row, text="Select Preset:", anchor="w", fill=textcolor, font=textfont)
         self.selected_preset = tk.StringVar(value="Saved")
         self.preset_dropdown = ttk.Combobox(self.window, textvariable=self.selected_preset, values=list(self.presets.keys()))
         self.preset_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=self.preset_dropdown)
@@ -386,6 +387,20 @@ class Manager:
             self.is_Ani_running = True
             self.ani.start()
 
+    def open_browser(self, web, event=None):
+
+        url = "https://ko-fi.com/maxlastbreath#"
+
+        if web == "Kofi":
+            url = "https://ko-fi.com/maxlastbreath#"
+        elif web == "Github":
+            url = "https://github.com/MaxLastBreath/TOTK-mods"
+        elif web == "Discord":
+            url = "https://discord.gg/7MMv4yGfhM"
+
+        webbrowser.open(url)
+        return
+
     def get_UI_path(self, file_name):
         if getattr(sys, 'frozen', False):
             # Look for the 'HUD' folder next to the executable
@@ -410,11 +425,47 @@ class Manager:
         image = Image.open(UI_path)
         image = image.resize((1200 * scalingfactor, 600 * scalingfactor))
         self.background_YuzuBG = ImageTk.PhotoImage(image)
-        # Create a Gradiant for Yuzu.
+        # Create a Gradiant for Ryujinx.
         UI_path = self.get_UI_path("Ryujinx_BG.png")
         image = Image.open(UI_path)
         image = image.resize((1200 * scalingfactor, 600 * scalingfactor))
         self.background_RyuBG = ImageTk.PhotoImage(image)
+        # Elements
+        UI_path = self.get_UI_path("Master_Sword.png")
+        image = Image.open(UI_path)
+        image = image.resize((155 * scalingfactor, 88 * scalingfactor))
+        self.master_sword_element = ImageTk.PhotoImage(image)
+
+        # Elements
+        UI_path = self.get_UI_path("Master_Sword_active.png")
+        image = Image.open(UI_path)
+        image = image.resize((155 * scalingfactor, 88 * scalingfactor))
+        self.master_sword_element_active = ImageTk.PhotoImage(image)
+
+        # Flip Sword 2
+        UI_path = self.get_UI_path("Master_Sword2.png")
+        image = Image.open(UI_path)
+        image = ImageOps.mirror(image)
+        image = image.resize((155 * scalingfactor, 88 * scalingfactor))
+        self.master_sword_element2 = ImageTk.PhotoImage(image)
+
+        UI_path = self.get_UI_path("Master_Sword_active2.png")
+        image = Image.open(UI_path)
+        image = ImageOps.mirror(image)
+        image = image.resize((155 * scalingfactor, 88 * scalingfactor))
+        self.master_sword_element2_active = ImageTk.PhotoImage(image)
+
+        UI_path = self.get_UI_path("Hylian_Shield.png")
+        image = Image.open(UI_path)
+        image = image.resize((72 * scalingfactor, 114 * scalingfactor))
+        self.hylian_element = ImageTk.PhotoImage(image)
+
+        UI_path = self.get_UI_path("Hylian_Shield_active.png")
+        image = Image.open(UI_path)
+        image = image.resize((72 * scalingfactor, 114 * scalingfactor))
+        self.hylian_element_active = ImageTk.PhotoImage(image)
+
+
         # Create a Gradiant background.
         UI_path = self.get_UI_path("BG_Left.png")
         image = Image.open(UI_path)
@@ -432,6 +483,12 @@ class Manager:
         image = Image.open(UI_path2)
         image = image.resize((1200, 600))
         self.background_UI2 = ImageTk.PhotoImage(image)
+
+        # Create a transparent black background
+        UI_path2 = self.get_UI_path("BG_Right_UI.png")
+        image = Image.open(UI_path2)
+        image = image.resize((1200, 600))
+        self.background_UI3 = ImageTk.PhotoImage(image)
 
         # Load and set the image as the background
         image_path = self.get_UI_path("image.png")
@@ -472,6 +529,29 @@ class Manager:
         github_image = Image.open(github_image_path)
         github_image = github_image.resize((83, 43))
         self.github_image = ImageTk.PhotoImage(github_image)
+        # Info Element
+    def hoveranimation(self, canvas, mode, element, event):
+        if mode.lower() == "enter":
+            if element.lower() == "kofi":
+                canvas.itemconfig(self.mastersword, state="hidden")
+                canvas.itemconfig(self.mastersword_active, state="normal")
+            if element.lower() == "github":
+                canvas.itemconfig(self.mastersword1, state="hidden")
+                canvas.itemconfig(self.mastersword1_active, state="normal")
+            if element.lower() == "discord":
+                canvas.itemconfig(self.hylian, state="hidden")
+                canvas.itemconfig(self.hylian_active, state="normal")
+
+        if mode.lower() == "leave":
+            if element.lower() == "kofi":
+                canvas.itemconfig(self.mastersword, state="normal")
+                canvas.itemconfig(self.mastersword_active, state="hidden")
+            if element.lower() == "github":
+                canvas.itemconfig(self.mastersword1, state="normal")
+                canvas.itemconfig(self.mastersword1_active, state="hidden")
+            if element.lower() == "discord":
+                canvas.itemconfig(self.hylian, state="normal")
+                canvas.itemconfig(self.hylian_active, state="hidden")
 
     def load_UI_elements(self, canvas):
         # Images and Effects
@@ -479,9 +559,36 @@ class Manager:
         canvas.create_image(0, 0, anchor="nw", image=self.background_image, tags="background")
         canvas.create_image(0, 0, anchor="nw", image=self.background_YuzuBG, tags="overlay-1")
         canvas.create_image(0, 0, anchor="nw", image=self.background_UI, tags="overlay")
-
         # Info text BG
         canvas.create_image(0-20, 0, anchor="nw", image=self.background_UI2, tags="overlay")
+        canvas.create_image(0-20, 0, anchor="nw", image=self.background_UI3, tags="overlay")
+
+        # Trigger Animation
+        self.mastersword = canvas.create_image(794, 222-40, anchor="nw", image=self.master_sword_element, tags="overlay-sword1")
+        self.mastersword_active = canvas.create_image(794, 222-40, anchor="nw", image=self.master_sword_element_active, tags="overlay-sword1")
+        self.maincanvas.itemconfig(self.mastersword_active, state="hidden")
+
+        canvas.tag_bind(self.mastersword, "<Enter>", lambda event: self.hoveranimation(canvas, "Enter", "Kofi", event))
+        canvas.tag_bind(self.mastersword_active, "<Leave>", lambda event: self.hoveranimation(canvas, "Leave", "Kofi", event))
+        canvas.tag_bind(self.mastersword_active, "<Button-1>", lambda event: self.open_browser("Kofi"))
+
+        # Trigger Animation
+        self.mastersword1 = canvas.create_image(1007, 222-40, anchor="nw", image=self.master_sword_element2, tags="overlay-sword2")
+        self.mastersword1_active = canvas.create_image(1007, 222-40, anchor="nw", image=self.master_sword_element2_active, tags="overlay-sword2")
+        self.maincanvas.itemconfig(self.mastersword1_active, state="hidden")
+
+        canvas.tag_bind(self.mastersword1, "<Enter>", lambda event: self.hoveranimation(canvas, "Enter", "Github", event))
+        canvas.tag_bind(self.mastersword1_active, "<Leave>", lambda event: self.hoveranimation(canvas, "Leave", "Github", event))
+        canvas.tag_bind(self.mastersword1_active, "<Button-1>", lambda event: self.open_browser("Github"))
+
+        # Hylian Shield
+        self.hylian = canvas.create_image(978, 240, anchor="c", image=self.hylian_element, tags="overlay-hylian")
+        self.hylian_active = canvas.create_image(978, 240, anchor="c", image=self.hylian_element_active, tags="overlay")
+        self.maincanvas.itemconfig(self.hylian_active, state="hidden")
+        canvas.tag_bind(self.hylian, "<Enter>", lambda event: self.hoveranimation(canvas, "Enter", "discord", event))
+        canvas.tag_bind(self.hylian_active, "<Leave>", lambda event: self.hoveranimation(canvas, "Leave", "discord", event))
+        canvas.tag_bind(self.hylian_active, "<Button-1>", lambda event: self.open_browser("Discord"))
+
         # Information text.
         text_widgetoutline2 = canvas.create_text(1001-20, 126, text=self.text_content, fill="black", font=("Arial Bold", 14, "bold"), anchor="center", justify="center", width=325)
         text_widget = canvas.create_text(1000-20, 125, text=self.text_content, fill="#FBF8F3", font=("Arial Bold", 14, "bold"), anchor="center", justify="center", width=325)
@@ -492,19 +599,22 @@ class Manager:
         canvas.create_image(0, 0, anchor="nw", image=self.background_UI, tags="overlay")
 
     def create_tab_buttons(self, canvas):
-        # Ko-fi Button
-        def open_kofi():
-            webbrowser.open("https://ko-fi.com/maxlastbreath#")
-        kofi_button = ttk.Button(self.window, text="Donate", bootstyle="success", command=open_kofi, padding=10)
-        kofi_button_window = canvas.create_window(1110+20, 520, anchor="center", window=kofi_button)
-        self.read_description("Kofi", kofi_button)
-
         # GitHub Button
-        def open_github():
-            webbrowser.open("https://github.com/MaxLastBreath/TOTK-mods")
-        github_button = ttk.Button(self.window, text="Github", bootstyle="info", command=open_github, padding=10)
-        github_button_window = canvas.create_window(1046+20, 520, anchor="center", window=github_button)
-        self.read_description("Github", github_button)
+
+        # Ko-fi Button
+        def enter(event, tag):
+            self.maincanvas.itemconfigure(tag, fill="red")
+        def leave(event, tag):
+            self.maincanvas.itemconfigure(tag, fill=textcolor)
+
+        if not canvas == self.maincanvas:
+            kofi_button = ttk.Button(self.window, text="Donate", bootstyle="success", command=lambda: self.open_browser("Kofi"), padding=10)
+            kofi_button_window = canvas.create_window(1110+20, 520, anchor="center", window=kofi_button)
+            self.read_description("Kofi", kofi_button)
+            github_button = ttk.Button(self.window, text="Github", bootstyle="info", command=lambda: self.open_browser("Github"), padding=10)
+            github_button_window = canvas.create_window(1046+20, 520, anchor="center", window=github_button)
+            self.read_description("Github", github_button)
+
 
 
         # Create tabs
@@ -617,7 +727,7 @@ class Manager:
                     preset_to_apply[key] = "Off"
             # Apply the selected preset from the online presets
             self.apply_preset(self.presets[selected_preset])
-    
+
     def apply_preset(self, preset_options):
         self.resolution_var.set(preset_options.get("Resolution", ""))
         self.fps_var.set(preset_options.get("FPS", ""))
