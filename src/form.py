@@ -20,7 +20,7 @@ from modules.checkpath import checkpath, DetectOS
 from modules.json import load_json
 from modules.backup import backup
 from modules.config import save_user_choices, load_user_choices
-from configuration.settings import Hoverdelay, title_id, localconfig, textfont, style, scalingfactor, textcolor, outlinecolor, dfpsurl, cheatsurl, versionurl, presetsurl, descurl
+from configuration.settings import Hoverdelay, title_id, localconfig, textfont, style, scalingfactor, textcolor, outlinecolor, dfpsurl, cheatsurl, versionurl, presetsurl, descurl, bigfont, BigTextcolor
 
 
 class Manager:
@@ -58,7 +58,7 @@ class Manager:
         self.allcanvas = [self.maincanvas, self.cheatcanvas]
         self.switchmode("false")
         # close existing threads.
-        self.root.protocol("WM_DLETE_WINDOW", self.on_closing)
+        self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
     # Canvas
     def createcanvas(self):
         # Create Canvas
@@ -72,7 +72,7 @@ class Manager:
         # Create Text Position
         row = 40
         cultex = 40
-        culsel = 200
+        culsel = 180
         
         # Run Scripts for checking OS and finding location
         checkpath(self, self.mode)
@@ -82,8 +82,6 @@ class Manager:
             print (f"CRODS = X={event.x} + Y={event.y} + {event.widget}")
         self.maincanvas.bind("<Button-3>", onCanvasClick)
         # Start of CANVAS options.
-
-
  
         # Create preset menu. 
         self.presets = {"Saved": {}} | self.presets
@@ -121,16 +119,27 @@ class Manager:
                 print("Successfully Defaulted to Appdata!")
                 save_user_choices(self, self.config, "appdata", None)
             reset_button = ttk.Button(self.window, text="Use Appdata", command=yuzu_appdata)
-            reset_button_window = self.maincanvas.create_window(270, row, anchor="w", window=reset_button)
+            reset_button_window = self.maincanvas.create_window(culsel+70, row, anchor="w", window=reset_button)
             self.read_description("Reset", reset_button)
-            backupbutton = 370
+            backupbutton = culsel + 170
 
         # Create a Backup button
         backup_button = ttk.Button(self.window, text="Backup", command=lambda: backup(self))
         backup_button_window = self.maincanvas.create_window(backupbutton, row, anchor="w", window=backup_button)
         self.read_description("Backup", backup_button)
         row += 40
+        # Create line
+        # self.maincanvas.create_line(cultex, row+15+1, cultex+710, row+15+1, fill=outlinecolor)
+        # self.maincanvas.create_line(cultex, row+15, cultex+710, row+15, fill=BigTextcolor)
 
+        # Create big TEXT label.
+        self.preset_label = self.maincanvas.create_text(cultex+101, row+1, text="Dynamic FPS", anchor="w", fill=outlinecolor, font=bigfont)
+        self.preset_label2 = self.maincanvas.create_text(cultex+100, row, text="Dynamic FPS", anchor="w", fill=BigTextcolor, font=bigfont)
+        # Create big TEXT label.
+        self.preset_label = self.maincanvas.create_text(400+101, row+1, text="Mod Improvements", anchor="w", fill=outlinecolor, font=bigfont)
+        self.preset_label2 = self.maincanvas.create_text(400+100, row, text="Mod Improvements", anchor="w", fill=BigTextcolor, font=bigfont)
+
+        row += 40
 
         # Create a label for resolution selection
         self.maincanvas.create_text(cultex+1, row+1, text="Select a Resolution:", anchor="w", fill=outlinecolor, font=textfont)
@@ -178,8 +187,8 @@ class Manager:
 
         # Create a label for UI selection
         
-        self.maincanvas.create_text(cultex+1, row+1, text="Select a UI:", anchor="w", fill=outlinecolor, font=textfont)
-        self.maincanvas.create_text(cultex, row, text="Select a UI:", anchor="w", fill=textcolor, font=textfont)
+        self.maincanvas.create_text(cultex+1, row+1, text="Select an UI:", anchor="w", fill=outlinecolor, font=textfont)
+        self.maincanvas.create_text(cultex, row, text="Select an UI:", anchor="w", fill=textcolor, font=textfont)
         ui_values = ["None", "Black Screen Fix", "PS4", "Xbox"]
         self.ui_var = tk.StringVar(value=ui_values[0])
         ui_dropdown = ttk.Combobox(self.window, textvariable=self.ui_var, values=ui_values)
@@ -196,7 +205,11 @@ class Manager:
         fp_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=fp_dropdown)
         self.read_description("First Person", fp_dropdown)
         
-        
+        # XYZ to generate patch.
+
+        row = 120
+        cultex = 400
+        culsel = 550
         # Create labels and enable/disable options for each entry
         self.selected_options = {}
         for version_option_name, version_option_value in self.version_options[0].items():
@@ -221,11 +234,11 @@ class Manager:
 
             if row >= 480:
                 row = 80
-                cultex = 400
-                culsel = 540
+                cultex = 580
+                culsel = 730
 
         # Create a submit button
-        submit_button = ttk.Button(self.window, text="Apply Mods", command=self.submit, padding=5)
+        submit_button = ttk.Button(self.window, text="Apply Mods", command=self.submit, padding=5, bootstyle="success")
         submit_button_window = self.maincanvas.create_window(39, 520, anchor="w", window=submit_button)
         self.read_description("Apply", submit_button)
 
@@ -425,24 +438,23 @@ class Manager:
         image = Image.open(UI_path)
         image = image.resize((1200 * scalingfactor, 600 * scalingfactor))
         self.background_YuzuBG = ImageTk.PhotoImage(image)
+
         # Create a Gradiant for Ryujinx.
         UI_path = self.get_UI_path("Ryujinx_BG.png")
         image = Image.open(UI_path)
         image = image.resize((1200 * scalingfactor, 600 * scalingfactor))
         self.background_RyuBG = ImageTk.PhotoImage(image)
-        # Elements
+        # UI Elements
         UI_path = self.get_UI_path("Master_Sword.png")
         image = Image.open(UI_path)
         image = image.resize((155 * scalingfactor, 88 * scalingfactor))
         self.master_sword_element = ImageTk.PhotoImage(image)
 
-        # Elements
         UI_path = self.get_UI_path("Master_Sword_active.png")
         image = Image.open(UI_path)
         image = image.resize((155 * scalingfactor, 88 * scalingfactor))
         self.master_sword_element_active = ImageTk.PhotoImage(image)
 
-        # Flip Sword 2
         UI_path = self.get_UI_path("Master_Sword2.png")
         image = Image.open(UI_path)
         image = ImageOps.mirror(image)
@@ -472,6 +484,11 @@ class Manager:
         image = image.resize((1200 * scalingfactor, 600 * scalingfactor))
         self.background_UI = ImageTk.PhotoImage(image)
 
+        UI_path = self.get_UI_path("BG_Left_2.png")
+        image = Image.open(UI_path)
+        image = image.resize((1200 * scalingfactor, 600 * scalingfactor))
+        self.background_UI_element = ImageTk.PhotoImage(image)
+
         # Create Gradiant for cheats.
         UI_path = self.get_UI_path("BG_Cheats.png")
         image = Image.open(UI_path)
@@ -494,6 +511,7 @@ class Manager:
         image_path = self.get_UI_path("image.png")
         image = Image.open(image_path)
         image = image.resize((1200, 600))
+        image = image.filter(ImageFilter.GaussianBlur(1))
         self.background_image = ImageTk.PhotoImage(image)
 
         image_path = self.get_UI_path("image.png")
@@ -517,19 +535,8 @@ class Manager:
         # Information text
         file_url = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Announcements/Announcement%20Window.txt"
         self.text_content = fetch_text_from_github(file_url)
-
-        # Kofi
-        kofi_image_path = self.get_UI_path("Kofi.png")
-        kofi_image = Image.open(kofi_image_path)
-        kofi_image = kofi_image.resize((150, 42))
-        self.kofi_image = ImageTk.PhotoImage(kofi_image)
-
-        # Github
-        github_image_path = self.get_UI_path("github.png")
-        github_image = Image.open(github_image_path)
-        github_image = github_image.resize((83, 43))
-        self.github_image = ImageTk.PhotoImage(github_image)
         # Info Element
+
     def hoveranimation(self, canvas, mode, element, event):
         if mode.lower() == "enter":
             if element.lower() == "kofi":
@@ -559,6 +566,7 @@ class Manager:
         canvas.create_image(0, 0, anchor="nw", image=self.background_image, tags="background")
         canvas.create_image(0, 0, anchor="nw", image=self.background_YuzuBG, tags="overlay-1")
         canvas.create_image(0, 0, anchor="nw", image=self.background_UI, tags="overlay")
+        canvas.create_image(0, 0, anchor="nw", image=self.background_UI_element, tags="overlay")
         # Info text BG
         canvas.create_image(0-20, 0, anchor="nw", image=self.background_UI2, tags="overlay")
         canvas.create_image(0-20, 0, anchor="nw", image=self.background_UI3, tags="overlay")
@@ -779,7 +787,6 @@ class Manager:
             # Save the selected yuzu.exe path to a configuration file
             save_user_choices(self, self.config, yuzu_path) 
         return
-
     # Load Yuzu Dir
     def load_yuzu_path(self, config_file):
         if self.mode == "Yuzu":
@@ -825,7 +832,7 @@ class Manager:
         response = requests.get(api_url)
         if response.status_code == 200:
            return response.json()
- 
+
     def warning_window(self, setting_type):
         warning_message = None
         configfile = self.TOTKconfig
@@ -916,6 +923,7 @@ class Manager:
                 print(f"Turning on required settings declined!!")
 
     def on_closing(self):
+        print("Closing Window")
         self.is_Ani_running = False
         self.window.destroy()
     # Submit the results, run download manager. Open a Loading screen.
@@ -968,7 +976,7 @@ class Manager:
                     filename = os.path.join(mod_path, f"{version}.txt")
                     all_values = []
                     with open(filename, "w") as file:
-                        file.write(version_option.get("Source", "") + "\n")
+                        # file.write(version_option.get("Source", "") + "\n") - makes cheats not work
                         for key, value in version_option.items():
                             print(key)
                             if key in selected_cheats:
