@@ -23,6 +23,8 @@ def checkpath(self, mode):
             self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{self.Globaldir}/nand'))
             self.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{self.Globaldir}/load')), "0100F2C0115B6000")
             self.Yuzudir = os.path.join(home_directory, ".local", "share", "yuzu", "load", "0100F2C0115B6000")
+            return
+
         if mode == "Ryujinx":
             self.Globaldir = os.path.join(home_directory, ".config", "Ryujinx")
             self.configdir = None
@@ -30,15 +32,17 @@ def checkpath(self, mode):
             self.nand_dir = os.path.join(f"{self.Globaldir}", "bis", "user", "save")
             self.load_dir = os.path.join(f"{self.Globaldir}", "mods", "contents", "0100f2C0115b6000")
             self.Yuzudir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents", "0100f2C0115b6000")
+            return
     # Default Dir for Windows or user folder.
     elif self.os_platform == "Windows":
-        config = "VisualImprovements.ini"
+        config = "Manager_Config.ini"
         yuzupath = self.load_yuzu_path(config)
         userfolder = os.path.join(yuzupath, "../user/")
         portablefolder = os.path.join(yuzupath, "../portable/")
         # Check for user folder
         if mode == "Yuzu":
             if os.path.exists(userfolder):
+                print("WORKING")
                 self.configdir = os.path.join(yuzupath, "../user/config/qt-config.ini")
                 self.TOTKconfig = os.path.join(self.configdir, "../custom/0100F2C0115B6000.ini")
                 config_parser = configparser.ConfigParser()
@@ -66,6 +70,7 @@ def checkpath(self, mode):
                     else:
                         self.warnagain = "no"
                         print("Warning has been declined!")
+                return
             # Default to Appdata
             else:
                 self.Globaldir = os.path.join(home_directory, "AppData", "Roaming", "yuzu")
@@ -84,6 +89,7 @@ def checkpath(self, mode):
                 self.nand_dir = os.path.join(f"{portablefolder}", "bis", "user", "save")
                 self.load_dir = os.path.join(f"{portablefolder}", "mods", "contents", "0100f2C0115b6000")
                 self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", "0100f2C0115b6000")
+                return
             else:
                 self.Globaldir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx")
                 self.configdir = None
@@ -91,6 +97,7 @@ def checkpath(self, mode):
                 self.nand_dir = os.path.join(f"{self.Globaldir}", "bis", "user", "save")
                 self.load_dir = os.path.join(f"{self.Globaldir}", "mods", "contents", "0100f2C0115b6000")
                 self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", "0100f2C0115b6000")
+                return
     # Ensure the path exists.
     if self.os_platform == "Windows":
         # Ensure directories exist for windows, skip for linux (gives off permission errors.)

@@ -1,6 +1,7 @@
 import tkinter as ttk
 import ctypes
 import platform
+
 if platform.system() == "Windows":
     ctypes.windll.shcore.SetProcessDpiAwareness(2)
 

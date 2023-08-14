@@ -798,12 +798,13 @@ class Manager:
         if self.mode == "Yuzu":
             config = configparser.ConfigParser()
             config.read(config_file)
-            yuzu_path = config.get('Paths', 'YuzuPath', fallback="Appdata")
+            yuzu_path = config.get('Paths', 'yuzupath', fallback="Appdata")
+            print(yuzu_path)
             return yuzu_path
         if self.mode == "Ryujinx":
             config = configparser.ConfigParser()
             config.read(config_file)
-            ryujinx_path = config.get('Paths', 'RyujinxPath', fallback="Appdata")
+            ryujinx_path = config.get('Paths', 'ryujinxpath', fallback="Appdata")
             return ryujinx_path
     # Download Manager
     @staticmethod
