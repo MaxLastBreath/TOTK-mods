@@ -598,8 +598,8 @@ class Manager:
             biggyfont = ("Arial Bold", 11, "bold")
 
         # Information text.
-        text_widgetoutline2 = canvas.create_text(1001* sf-20* sf, 126* sf -80* sf, text=f"{self.mode} TOTK Optimiser", tags="information", fill="black", font=biggyfont, anchor="center", justify="center", width=325* sf)
-        text_widget2 = canvas.create_text(1000* sf-20* sf, 126* sf-80 * sf, text=f"{self.mode} TOTK Optimiser", tags="information", fill="#FBF8F3", font=biggyfont, anchor="center", justify="center", width=325* sf)
+        text_widgetoutline2 = canvas.create_text(1001* sf-20* sf, 126* sf -80* sf, text=f"{self.mode} TOTK Optimizer", tags="information", fill="black", font=biggyfont, anchor="center", justify="center", width=325* sf)
+        text_widget2 = canvas.create_text(1000* sf-20* sf, 126* sf-80 * sf, text=f"{self.mode} TOTK Optimizer", tags="information", fill="#FBF8F3", font=biggyfont, anchor="center", justify="center", width=325* sf)
  
         text_widgetoutline1 = canvas.create_text(1001 * sf -20 * sf-10 * sf, 126 * sf +10 * sf, text=self.text_content, fill="black", font=biggyfont, anchor="center", justify="center", width=325* sf)
         text_widget1 = canvas.create_text(1000 * sf-20* sf-10* sf, 125* sf +10 * sf, text=self.text_content, fill="#FBF8F3", font=biggyfont, anchor="center", justify="center", width=325* sf)
@@ -666,7 +666,7 @@ class Manager:
                 self.mode = "Ryujinx"
                 for canvas in self.allcanvas:
                     canvas.itemconfig("overlay-1", image=self.background_RyuBG)
-                    canvas.itemconfig("information", text=f"{self.mode} TOTK Optimiser")
+                    canvas.itemconfig("information", text=f"{self.mode} TOTK Optimizer")
                 self.switchtext.set("Switch to Yuzu")
                 self.maincanvas.itemconfig(self.Settings_label_outline, text="")
                 self.maincanvas.itemconfig(self.Settings_label, text="")
@@ -678,7 +678,7 @@ class Manager:
                 self.mode = "Yuzu"
                 for canvas in self.allcanvas:
                     canvas.itemconfig("overlay-1", image=self.background_YuzuBG)
-                    canvas.itemconfig("information", text=f"{self.mode} TOTK Optimiser")
+                    canvas.itemconfig("information", text=f"{self.mode} TOTK Optimizer")
                 # change text
                 self.switchtext.set("Switch to Ryujinx")
                 self.maincanvas.itemconfig(self.Settings_label_outline, text="Yuzu Settings:")
@@ -696,7 +696,7 @@ class Manager:
             if self.mode == "Ryujinx":
                 for canvas in self.allcanvas:
                     canvas.itemconfig("overlay-1", image=self.background_RyuBG)
-                    canvas.itemconfig("information", text=f"{self.mode} TOTK Optimiser")
+                    canvas.itemconfig("information", text=f"{self.mode} TOTK Optimizer")
                 self.switchtext.set("Switch to Yuzu")
                 self.maincanvas.itemconfig(self.Settings_label_outline, text="")
                 self.maincanvas.itemconfig(self.Settings_label, text="")

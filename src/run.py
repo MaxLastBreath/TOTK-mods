@@ -10,7 +10,7 @@ if __name__ == "__main__":
     # Delete any old executables
     delete_old_exe()
     window = ttk.Window(themename="flatly")
-    window.title(f"TOTK Optimiser {textver}")
+    window.title(f"TOTK Optimizer {textver}")
     main = Manager(window)
     window_width = int(1200* sf)
     window_height = int(600* sf)

@@ -1,6 +1,8 @@
 import tkinter as ttk
 import ctypes
-ctypes.windll.shcore.SetProcessDpiAwareness(2)
+import platform
+if platform.system() == "Windows":
+    ctypes.windll.shcore.SetProcessDpiAwareness(2)
 
 def scalingfactor(baseline_resolution=(1920, 1080)):
     window = ttk.Tk()
