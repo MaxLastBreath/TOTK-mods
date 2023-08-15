@@ -814,7 +814,6 @@ class Manager:
             config = configparser.ConfigParser()
             config.read(config_file)
             yuzu_path = config.get('Paths', 'yuzupath', fallback="Appdata")
-            print(yuzu_path)
             return yuzu_path
         if self.mode == "Ryujinx":
             config = configparser.ConfigParser()
@@ -858,7 +857,6 @@ class Manager:
     def warning_window(self, setting_type):
         warning_message = None
         configfile = self.TOTKconfig
-        print(f"{configfile}")
         config = configparser.ConfigParser()
         config.read(configfile)
 
@@ -1127,7 +1125,6 @@ class Manager:
                         return
                     if proper_res > 1080:
                         configfile = self.TOTKconfig
-                        print(f"{configfile}")
                         config = configparser.ConfigParser()
                         config.read(configfile)
                         if config.has_option("Renderer", "resolution_setup\\use_global"):
@@ -1236,7 +1233,6 @@ class Manager:
             ui_mod_folder = None
             CurrentFolder = None
             ui_selection = self.ui_var.get()
-            print(f"{self.fp_var.get()}")
             if ui_selection == "None":
                 modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Xbox UI", action="add")
                 modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Playstation UI", action="add")
