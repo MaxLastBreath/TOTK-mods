@@ -9,7 +9,7 @@ import subprocess
 import tkinter as tk
 from tkinter import messagebox
 
-Version = "manager-1.2.1"
+Version = "manager-1.2.3"
 textver = Version.strip("manager-")
 GITHUB = "TOTK-mods"
 OWNER = "MaxLastBreath"
