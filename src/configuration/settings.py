@@ -1,26 +1,35 @@
 from modules.colors import Color
-from modules.scaling import scalingfactor
-
-sf = int(scalingfactor())
-if sf == 0:
-    sf = 1
-fs = 10
-if sf > 1:
-    fs = 9
+from modules.scaling import scale, sf
 
 
+fontsize = 13
+bigfontsize = 18
+CH = 26
+FPS = 0.05
+
+# SET animation FPS to lower if higher resolution.
+if sf > 1.0:
+    FPS = 0.1
+    CH +=5
+if sf > 1.5:
+    CH +=5
+
+CBHEIGHT = CH
 html_color = Color()
 # Settings for the manager.
 Hoverdelay = 500
 title_id = "72324500776771584"
 localconfig = "Manager_Config.ini"
 font = "Arial Bold"
-textfont = (font, fs)
-bigfont = ("Triforce", 15)
+textfont = (font, fontsize)
+btnfont = ("Arial Bolds", fontsize - 3)
+bigfont = ("Triforce", bigfontsize)
+biggyfont = ("Arial Bold", bigfontsize, "bold")
 textcolor = html_color["light-cyan"]
 BigTextcolor = html_color["light-green"]
 outlinecolor = html_color["purple"]
 style = "danger"
+
 
 # URLS
 dfpsurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/DFPS.json"

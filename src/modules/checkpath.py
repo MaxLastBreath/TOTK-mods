@@ -1,6 +1,7 @@
 import os
 import platform
 import configparser
+from configuration.settings import localconfig
 from tkinter import messagebox
 
 
@@ -35,8 +36,7 @@ def checkpath(self, mode):
             return
     # Default Dir for Windows or user folder.
     elif self.os_platform == "Windows":
-        config = "Manager_Config.ini"
-        yuzupath = self.load_yuzu_path(config)
+        yuzupath = self.load_yuzu_path(localconfig)
         userfolder = os.path.join(yuzupath, "../user/")
         portablefolder = os.path.join(yuzupath, "../portable/")
         # Check for user folder

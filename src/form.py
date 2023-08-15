@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import Event, ttk, filedialog, messagebox, Toplevel
+from tkinter import Event, filedialog, messagebox, Toplevel
 import configparser
 import threading
 import os
@@ -11,6 +11,7 @@ import ttkbootstrap as ttk
 import time
 import webbrowser
 import re
+from ttkbootstrap import Style
 from idlelib.tooltip import Hovertip
 from ttkbootstrap.constants import *
 from PIL import Image, ImageTk, ImageFilter, ImageOps
@@ -20,12 +21,15 @@ from modules.checkpath import checkpath, DetectOS
 from modules.json import load_json
 from modules.backup import backup
 from modules.config import save_user_choices, load_user_choices
-from configuration.settings import Hoverdelay, title_id, localconfig, textfont, style, sf, textcolor, outlinecolor, dfpsurl, cheatsurl, versionurl, presetsurl, descurl, bigfont, BigTextcolor
+from modules.scaling import scale
+from configuration.settings import Hoverdelay, title_id, localconfig, textfont, style, sf, textcolor, outlinecolor, dfpsurl, cheatsurl, versionurl, presetsurl, descurl, bigfont, BigTextcolor, biggyfont, CBHEIGHT, FPS, btnfont
 
 
 class Manager:
     
     def __init__(self, window):
+        constyle = Style(theme="flatly")
+        constyle.configure("TButton", font=btnfont)
         # Set Variables
         self.config = localconfig
         config = configparser.ConfigParser()
@@ -33,6 +37,7 @@ class Manager:
         self.mode = config.get("Mode", "managermode", fallback="Yuzu")
         self.Yuzudir = None
         self.is_Ani_running = False
+        self.is_Ani_Paused = False
         self.root = window
         self.window = window
         self.title_id = title_id
@@ -60,11 +65,22 @@ class Manager:
         self.switchmode("false")
         # close existing threads.
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.window.bind("<FocusIn>", self.focus)
+        self.window.bind("<FocusOut>", self.unfocus)
+
+
+
+
+    def focus(self, event):
+        self.is_Ani_Paused = False
+    def unfocus(self, event):
+        self.is_Ani_Paused = True
+
     # Canvas
 
     def createcanvas(self):
         # Create Canvas
-        self.maincanvas = tk.Canvas(self.window, width= int(1200 * sf), height=int(600 * sf))
+        self.maincanvas = tk.Canvas(self.window, width= scale(1200), height=scale(600))
         self.maincanvas.pack()
 
         # Load UI Elements
@@ -72,9 +88,9 @@ class Manager:
         self.create_tab_buttons(self.maincanvas)
 
         # Create Text Position
-        row = 40 * sf
-        cultex = 40 * sf
-        culsel = 180 * sf
+        row = scale(40)
+        cultex = scale(40)
+        culsel = scale(180)
         
         # Run Scripts for checking OS and finding location
         checkpath(self, self.mode)
@@ -84,27 +100,27 @@ class Manager:
             print (f"CRODS = X={event.x} + Y={event.y} + {event.widget}")
         self.maincanvas.bind("<Button-3>", onCanvasClick)
         # Start of CANVAS options.
- 
+        
         # Create preset menu. 
         self.presets = {"Saved": {}} | self.presets
         self.preset_label = self.maincanvas.create_text(cultex+1, row+1, text="Select Preset:", anchor="w", fill=outlinecolor, font=textfont)
         self.preset_label2 = self.maincanvas.create_text(cultex, row, text="Select Preset:", anchor="w", fill=textcolor, font=textfont)
         self.selected_preset = tk.StringVar(value="Saved")
         self.preset_dropdown = ttk.Combobox(self.window, textvariable=self.selected_preset, values=list(self.presets.keys()))
-        self.preset_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=self.preset_dropdown)
+        self.preset_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=self.preset_dropdown, width=scale(150), height=CBHEIGHT)
         self.preset_dropdown.bind("<<ComboboxSelected>>", self.apply_selected_preset)
         self.read_description("Presets", self.preset_dropdown)
 
 
         # Setting Preset
-        self.Settings_label_outline = self.maincanvas.create_text(370* sf+1, 40* sf+1, text="Yuzu Settings:", anchor="w", fill=outlinecolor, font=textfont)
-        self.Settings_label = self.maincanvas.create_text(370* sf, 40* sf , text="Yuzu Settings:", anchor="w", fill=textcolor, font=textfont)
+        self.Settings_label_outline = self.maincanvas.create_text(scale(370)+1, scale(40)+1, text="Yuzu Settings:", anchor="w", fill=outlinecolor, font=textfont)
+        self.Settings_label = self.maincanvas.create_text(scale(370), scale(40) , text="Yuzu Settings:", anchor="w", fill=textcolor, font=textfont)
         self.selected_settings = tk.StringVar(value="No Change")
         self.second_dropdown = ttk.Combobox(self.window, textvariable=self.selected_settings, values=["No Change", "Steamdeck", "AMD", "Nvidia", "High End Nvidia"])
-        self.second_dropdown_window = self.maincanvas.create_window(480* sf, 40 * sf, anchor="w", window=self.second_dropdown)
+        self.second_dropdown_window = self.maincanvas.create_window(scale(480), scale(40), anchor="w", window=self.second_dropdown, width=scale(150), height=CBHEIGHT)
         self.second_dropdown.bind("<<ComboboxSelected>>")
         self.read_description("Settings", self.second_dropdown)
-        row += 40* sf
+        row += scale(40)
 
         # Create a label for yuzu.exe selection
         backupbutton = culsel
@@ -112,7 +128,7 @@ class Manager:
         self.selectexe = self.maincanvas.create_text(cultex, row, text="Select yuzu.exe:", anchor="w", fill=textcolor, font=textfont)
         if self.os_platform == "Windows":
             yuzu_button = ttk.Button(self.window, text="Browse", command=self.select_yuzu_exe)
-            yuzu_button_window = self.maincanvas.create_window(culsel, row, anchor="w", window=yuzu_button)
+            yuzu_button_window = self.maincanvas.create_window(culsel, row, anchor="w", window=yuzu_button, width= scale(65), height= scale(28))       
             self.read_description("Browse", yuzu_button)
 
             # Reset to Appdata
@@ -121,52 +137,52 @@ class Manager:
                 print("Successfully Defaulted to Appdata!")
                 save_user_choices(self, self.config, "appdata", None)
             reset_button = ttk.Button(self.window, text="Use Appdata", command=yuzu_appdata)
-            reset_button_window = self.maincanvas.create_window(culsel+70 * sf, row, anchor="w", window=reset_button)
+            reset_button_window = self.maincanvas.create_window(culsel+scale(70), row, anchor="w", window=reset_button, width= scale(95), height= scale(28))
             self.read_description("Reset", reset_button)
-            backupbutton = culsel + 170* sf
+            backupbutton = culsel + scale(170)
 
         # Create a Backup button
         backup_button = ttk.Button(self.window, text="Backup", command=lambda: backup(self))
-        backup_button_window = self.maincanvas.create_window(backupbutton, row, anchor="w", window=backup_button)
+        backup_button_window = self.maincanvas.create_window(backupbutton, row, anchor="w", window=backup_button, width=scale(65), height=scale(28))
         self.read_description("Backup", backup_button)
-        row += 40* sf
+        row += scale(40)
 
         # Create big TEXT label.
-        self.preset_label = self.maincanvas.create_text(cultex+101* sf, row+1, text="Display Settings", anchor="w", fill=outlinecolor, font=bigfont)
-        self.preset_label2 = self.maincanvas.create_text(cultex+100* sf, row, text="Display Settings", anchor="w", fill=BigTextcolor, font=bigfont)
+        self.preset_label = self.maincanvas.create_text(cultex+scale(101), row+1, text="Display Settings", anchor="w", fill=outlinecolor, font=bigfont)
+        self.preset_label2 = self.maincanvas.create_text(cultex+scale(100), row, text="Display Settings", anchor="w", fill=BigTextcolor, font=bigfont)
         # Create big TEXT label.
-        self.preset_label = self.maincanvas.create_text(400* sf+101* sf, row+1, text="Mod Improvements", anchor="w", fill=outlinecolor, font=bigfont)
-        self.preset_label2 = self.maincanvas.create_text(400* sf+100* sf, row, text="Mod Improvements", anchor="w", fill=BigTextcolor, font=bigfont)
+        self.preset_label = self.maincanvas.create_text(scale(400)+ scale(101), row+1, text="Mod Improvements", anchor="w", fill=outlinecolor, font=bigfont)
+        self.preset_label2 = self.maincanvas.create_text(scale(400)+ scale(100), row, text="Mod Improvements", anchor="w", fill=BigTextcolor, font=bigfont)
 
-        row += 40* sf
+        row += scale(40)
 
         # Create a label for resolution selection
         self.maincanvas.create_text(cultex+1, row+1, text="Select a Resolution:", anchor="w", fill=outlinecolor, font=textfont)
         self.maincanvas.create_text(cultex, row, text="Select a Resolution:", anchor="w", fill=textcolor, font=textfont)
         self.resolution_var = tk.StringVar(value=self.dfps_options.get("ResolutionNames", [""])[2])  # Set the default resolution to "1080p FHD"
         resolution_dropdown = ttk.Combobox(self.window, textvariable=self.resolution_var, values=self.dfps_options.get("ResolutionNames", []))
-        resolution_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=resolution_dropdown)
+        resolution_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=resolution_dropdown, width=scale(150), height=CBHEIGHT)
         resolution_dropdown.bind("<<ComboboxSelected>>", lambda event: self.warning_window("Res"))
         self.read_description("Resolution", resolution_dropdown)
-        row += 40* sf
+        row += scale(40)
 
         # Create a label for FPS selection
         self.maincanvas.create_text(cultex+1, row+1, text="Select an FPS:", anchor="w", fill=outlinecolor, font=textfont)
         self.maincanvas.create_text(cultex, row, text="Select an FPS:", anchor="w", fill=textcolor, font=textfont)
         self.fps_var = tk.StringVar(value=str(self.dfps_options.get("FPS", [])[2]))  # Set the default FPS to 60
         fps_dropdown = ttk.Combobox(self.window, textvariable=self.fps_var, values=self.dfps_options.get("FPS", []))
-        fps_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=fps_dropdown)
+        fps_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=fps_dropdown, width=scale(150), height=CBHEIGHT)
         self.read_description("FPS", fps_dropdown)
-        row += 40* sf
+        row += scale(40)
 
         # Create a label for shadow resolution selection
         self.maincanvas.create_text(cultex+1, row+1, text="Shadow Resolution:", anchor="w", fill=outlinecolor, font=textfont)
         self.maincanvas.create_text(cultex, row, text="Shadow Resolution:", anchor="w", fill=textcolor, font=textfont)
         self.shadow_resolution_var = tk.StringVar(value=self.dfps_options.get("ShadowResolutionNames", [""])[0])  # Set the default shadow resolution to "Auto"
         shadow_resolution_dropdown = ttk.Combobox(self.window, textvariable=self.shadow_resolution_var, values=self.dfps_options.get("ShadowResolutionNames", []))
-        shadow_resolution_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=shadow_resolution_dropdown)
+        shadow_resolution_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=shadow_resolution_dropdown, width=scale(150), height=CBHEIGHT)
         self.read_description("Shadows", shadow_resolution_dropdown)
-        row += 40* sf
+        row += scale(40)
 
         # Make exception for camera quality
         CameraQ = self.dfps_options.get("CameraQualityNames", [""])
@@ -180,9 +196,9 @@ class Manager:
         self.maincanvas.create_text(cultex, row, text="Camera Quality++:", anchor="w", fill=textcolor, font=textfont)
         self.camera_var = tk.StringVar(value=CameraQ[0])  # Set the default camera quality to "Enable"
         camera_dropdown = ttk.Combobox(self.window, textvariable=self.camera_var, values=self.dfps_options.get("CameraQualityNames", []))
-        camera_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=camera_dropdown)
+        camera_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=camera_dropdown, width=scale(150), height=CBHEIGHT)
         self.read_description("Camera Quality", camera_dropdown)
-        row += 40* sf
+        row += scale(40)
 
         # Create a label for UI selection
         
@@ -191,9 +207,9 @@ class Manager:
         ui_values = ["None", "Black Screen Fix", "PS4", "Xbox"]
         self.ui_var = tk.StringVar(value=ui_values[0])
         ui_dropdown = ttk.Combobox(self.window, textvariable=self.ui_var, values=ui_values)
-        ui_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=ui_dropdown)
+        ui_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=ui_dropdown, width=scale(150), height=CBHEIGHT)
         self.read_description("UI", ui_dropdown)
-        row += 40* sf
+        row += scale(40)
 
         # First Person and FOV
         self.maincanvas.create_text(cultex+1, row+1, text="Enable First Person:", anchor="w", fill=outlinecolor, font=textfont)
@@ -201,14 +217,14 @@ class Manager:
         fp_values = ["Off", "70 FOV", "90 FOV", "110 FOV"]
         self.fp_var = tk.StringVar(value=ui_values[0])
         fp_dropdown = ttk.Combobox(self.window, textvariable=self.fp_var, values=fp_values)
-        fp_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=fp_dropdown)
+        fp_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=fp_dropdown, width=scale(150), height=CBHEIGHT)
         self.read_description("First Person", fp_dropdown)
         
         # XYZ to generate patch.
 
-        row = 120 * sf
-        cultex = 400 * sf
-        culsel = 550 * sf
+        row = scale(120)
+        cultex = scale(400)
+        culsel = scale(550)
 
         # Create labels and enable/disable options for each entry
         self.selected_options = {}
@@ -216,26 +232,26 @@ class Manager:
 
             # Create label
             if version_option_name not in ["Source", "nsobid", "offset", "version"]:
-                self.maincanvas.create_text(cultex+1, row+40 * sf+1, text=version_option_name, anchor="w", fill=outlinecolor, font=textfont)
-                self.maincanvas.create_text(cultex, row+40 * sf, text=version_option_name, anchor="w", fill=textcolor, font=textfont)
+                self.maincanvas.create_text(cultex+1, row+scale(40)+1, text=version_option_name, anchor="w", fill=outlinecolor, font=textfont)
+                self.maincanvas.create_text(cultex, row+scale(40), text=version_option_name, anchor="w", fill=textcolor, font=textfont)
                     
 
                 # Create checkbox
                 version_option_var = tk.StringVar(value="Off")
                 versioncheck = ttk.Checkbutton(self.window, variable=version_option_var, onvalue="On", offvalue="Off", bootstyle="success")
-                version_check_window = self.maincanvas.create_window(culsel, row+40 * sf, anchor="w", window=versioncheck)
+                version_check_window = self.maincanvas.create_window(culsel, row+ scale(40), anchor="w", window=versioncheck)
                 self.read_description(f"{version_option_name}", versioncheck)
                 self.selected_options[version_option_name] = version_option_var
-                row += 40 * sf
+                row += scale(40)
 
-            if row >= 480 * sf:
-                row = 120 * sf
-                cultex += 180 * sf
-                culsel += 180 * sf
+            if row >= scale(480):
+                row = scale(120)
+                cultex += scale(180)
+                culsel += scale(180)
 
         # Create a submit button
         submit_button = ttk.Button(self.window, text="Apply Mods", command=self.submit, padding=5, bootstyle="success")
-        submit_button_window = self.maincanvas.create_window(39 * sf, 520 * sf, anchor="w", window=submit_button)
+        submit_button_window = self.maincanvas.create_window(scale(39), scale(520), anchor="w", window=submit_button, width=scale(90), height=scale(30))
         self.read_description("Apply", submit_button)
 
         # Load Saved User Options.
@@ -244,7 +260,7 @@ class Manager:
 
     def createcheatcanvas(self):
         # Create Cheat Canvas
-        self.cheatcanvas = tk.Canvas(self.window, width=1200 * sf, height=600 * sf)
+        self.cheatcanvas = tk.Canvas(self.window, width=scale(1200), height=scale(600))
         self.cheatcanvas.pack(expand=1, fill=BOTH)
 
         # Create UI elements.
@@ -252,10 +268,10 @@ class Manager:
         self.create_tab_buttons(self.cheatcanvas)
 
         # Create Positions.
-        row = 40 * sf
-        cultex = 40 * sf
-        culsel = 200 * sf
-        Hoverdelay = 500 * sf
+        row = scale(40)
+        cultex = scale(40)
+        culsel = scale(200)
+        Hoverdelay = scale(500)
 
         # Push every version in combobox
         versionvalues = []
@@ -265,16 +281,16 @@ class Manager:
                     versionvalues.append("Version - " + value)
         
         self.cheat_version_dropdown = ttk.Combobox(self.window, textvariable=self.cheat_version, values=versionvalues)
-        self.cheat_version_dropdown_window = self.cheatcanvas.create_window(130 * sf, 520 * sf, anchor="w", window=self.cheat_version_dropdown)
+        self.cheat_version_dropdown_window = self.cheatcanvas.create_window(scale(130), scale(520), anchor="w", window=self.cheat_version_dropdown, width=scale(150), height=CBHEIGHT)
         self.cheat_version_dropdown.bind("<<ComboboxSelected>>", lambda event: loadCheats())
 
 
         def loadCheats():
             
-            row = 40 * sf
-            cultex = 40 * sf
-            culsel = 200 * sf
-            Hoverdelay = 500 * sf
+            row = scale(40)
+            cultex = scale(40)
+            culsel = scale(200)
+            Hoverdelay = scale(500)
             
             corrent_cheats = self.cheat_options[versionvalues.index(self.cheat_version.get())].items()
             corrent_cheats_dict = dict(corrent_cheats)
@@ -319,12 +335,13 @@ class Manager:
                     hover = self.description[version_option_name]
                     versionhover = Hovertip(versioncheck, f"{hover}", hover_delay=Hoverdelay)
 
-                row += 40 * sf
+                row += scale(40)
 
-                if row >= 520 * sf:
-                    row = 40 * sf
-                    cultex += 200 * sf
-                    culsel += 200 * sf
+                if row > scale(480):
+                    row = scale(40)
+                    cultex += scale(200)
+                    culsel += scale(200)
+
         def ResetCheats():
             try:
                 for key, value in self.selected_cheats.items():
@@ -335,23 +352,23 @@ class Manager:
 
         
         # Create a submit button
-        submit_button = ttk.Button(self.window, text="Apply Cheats", command=lambda: self.submit("Cheats"), padding=5)
-        submit_button_window = self.cheatcanvas.create_window(39 * sf, 520 * sf, anchor="w", window=submit_button)
+        submit_button = ttk.Button(self.window, text="Apply Cheats", command=lambda: self.submit("Cheats"), padding=5, bootstyle="success")
+        submit_button_window = self.cheatcanvas.create_window(scale(39), scale(520), anchor="w", window=submit_button, width=scale(85), height=scale(30))
         self.read_description("Apply", submit_button)
 
         # Create a submit button
         resetcheats_button = ttk.Button(self.window, text="Reset Cheats", command=lambda: ResetCheats(), padding=5)
-        resetcheats_button_window = self.cheatcanvas.create_window(280* sf+ 6 * sf, 520* sf, anchor="w", window=resetcheats_button)
+        resetcheats_button_window = self.cheatcanvas.create_window(scale(277) + scale(6), scale(520), anchor="w", window=resetcheats_button, width=scale(85), height=scale(30))
         self.read_description("Reset Cheats", submit_button)
         # Read Cheats
 
         readcheats_button = ttk.Button(self.window, text="Read Saved Cheats", command=lambda: load_user_choices(self, self.config, "Cheats"), padding=5)
-        readcheats_button_window = self.cheatcanvas.create_window(370* sf +6 * sf, 520* sf, anchor="w", window=readcheats_button)
+        readcheats_button_window = self.cheatcanvas.create_window(scale(367) + scale(6), scale(520), anchor="w", window=readcheats_button, width=scale(115), height=scale(30))
         self.read_description("Read Cheats", submit_button)
 
         #Backup
         backup_button = ttk.Button(self.window, text="Backup", command=lambda: backup(self))
-        backup_button_window = self.cheatcanvas.create_window(490* sf+8* sf, 520* sf, anchor="w", window=backup_button)
+        backup_button_window = self.cheatcanvas.create_window(scale(485)+ scale(8), scale(520), anchor="w", window=backup_button, width=scale(70), height=scale(30))
         self.read_description("Backup", backup_button)
 
         loadCheats()
@@ -360,37 +377,38 @@ class Manager:
     def show_maincanvas(self):
         self.cheatcanvas.pack_forget()
         self.maincanvas.pack()
-        def canvasanimation():
-            for x in range(1000):
-                self.cheatcanvas.move(self.cheatbg, -0.5* sf, 0)
-                time.sleep(0.02)
-            else:
-                self.cheatcanvas.move(self.cheatbg, 200* sf, 200* sf)
-                for y in range(250):
-                    self.cheatcanvas.move(self.cheatbg, 0, -0.5* sf)
-                    time.sleep(0.02)
 
     def show_cheatcanvas(self):
         self.cheatcanvas.pack()
         self.maincanvas.pack_forget()
         def canvasanimation():
-            if not self.is_Ani_running == True:
-                return
-            for x in range(1000):
-                self.cheatcanvas.move(self.cheatbg, -1* sf, 0)
-                time.sleep(0.05)
+            x = 0
+            y = 0
+            m = 1
+            if FPS == 0.1:
+                m = 2
+            a = scale(m)
+            while True:
                 if not self.is_Ani_running == True:
+                    print("Stopping Animation")
                     return
-            else:
-                self.cheatcanvas.move(self.cheatbg, 200* sf, 200* sf)
-                for y in range(250):
-                    self.cheatcanvas.move(self.cheatbg, 0, -1)
-                    time.sleep(0.05)
-                    if not self.is_Ani_running == True:
-                        return
+                if self.is_Ani_Paused == False:
+                    x += m
+                    self.cheatcanvas.move(self.cheatbg, -a, 0)
+                    time.sleep(FPS)
+                    if x == 1000:
+                        self.cheatcanvas.move(self.cheatbg, scale(200), scale(200))
+                        if y <= 250:
+                            y += m
+                            self.cheatcanvas.move(self.cheatbg, 0, -a)
+                            time.sleep(FPS)
+                        else:
+                            x = 0
+                            y = 0
+                            self.cheatcanvas.move(self.cheatbg, scale(800), scale(50))
                 else:
-                    self.cheatcanvas.move(self.cheatbg, 800* sf, 50* sf)
-                    canvasanimation()
+                    time.sleep(1)
+
         self.ani = threading.Thread(name="cheatbackground", target=canvasanimation)
         if not self.is_Ani_running == True:
             self.is_Ani_running = True
@@ -432,87 +450,87 @@ class Manager:
         # Create a Gradiant for Yuzu.
         UI_path = self.get_UI_path("Yuzu_BG.png")
         image = Image.open(UI_path)
-        image = image.resize((1200 * sf, 600 * sf))
+        image = image.resize((scale(1200), scale(600)))
         self.background_YuzuBG = ImageTk.PhotoImage(image)
 
         # Create a Gradiant for Ryujinx.
         UI_path = self.get_UI_path("Ryujinx_BG.png")
         image = Image.open(UI_path)
-        image = image.resize((1200 * sf, 600 * sf))
+        image = image.resize((scale(1200), scale(600)))
         self.background_RyuBG = ImageTk.PhotoImage(image)
         # UI Elements
         UI_path = self.get_UI_path("Master_Sword.png")
         image = Image.open(UI_path)
-        image = image.resize((155 * sf, 88 * sf))
+        image = image.resize((scale(150), scale(88)))
         self.master_sword_element = ImageTk.PhotoImage(image)
 
         UI_path = self.get_UI_path("Master_Sword_active.png")
         image = Image.open(UI_path)
-        image = image.resize((155 * sf, 88 * sf))
+        image = image.resize((scale(155), scale(88)))
         self.master_sword_element_active = ImageTk.PhotoImage(image)
 
         UI_path = self.get_UI_path("Master_Sword2.png")
         image = Image.open(UI_path)
         image = ImageOps.mirror(image)
-        image = image.resize((155 * sf, 88 * sf))
+        image = image.resize((scale(155), scale(88)))
         self.master_sword_element2 = ImageTk.PhotoImage(image)
 
         UI_path = self.get_UI_path("Master_Sword_active2.png")
         image = Image.open(UI_path)
         image = ImageOps.mirror(image)
-        image = image.resize((155 * sf, 88 * sf))
+        image = image.resize((scale(155), scale(88)))
         self.master_sword_element2_active = ImageTk.PhotoImage(image)
 
         UI_path = self.get_UI_path("Hylian_Shield.png")
         image = Image.open(UI_path)
-        image = image.resize((72 * sf, 114 * sf))
+        image = image.resize((scale(72), scale(114)))
         self.hylian_element = ImageTk.PhotoImage(image)
 
         UI_path = self.get_UI_path("Hylian_Shield_active.png")
         image = Image.open(UI_path)
-        image = image.resize((72 * sf, 114 * sf))
+        image = image.resize((scale(72), scale(114)))
         self.hylian_element_active = ImageTk.PhotoImage(image)
 
 
         # Create a Gradiant background.
         UI_path = self.get_UI_path("BG_Left.png")
         image = Image.open(UI_path)
-        image = image.resize((1200 * sf, 600 * sf))
+        image = image.resize((scale(1200), scale(600)))
         self.background_UI = ImageTk.PhotoImage(image)
 
         UI_path = self.get_UI_path("BG_Left_2.png")
         image = Image.open(UI_path)
-        image = image.resize((1200 * sf, 600 * sf))
+        image = image.resize((scale(1200), scale(600)))
         self.background_UI_element = ImageTk.PhotoImage(image)
 
         # Create Gradiant for cheats.
         UI_path = self.get_UI_path("BG_Cheats.png")
         image = Image.open(UI_path)
-        image = image.resize((1200 * sf, 600 * sf))
+        image = image.resize((scale(1200), scale(600)))
         self.background_Cheats = ImageTk.PhotoImage(image)
 
         # Create a transparent black background
         UI_path2 = self.get_UI_path("BG_Right.png")
         image = Image.open(UI_path2)
-        image = image.resize((1200 * sf, 600 * sf))
+        image = image.resize((scale(1200), scale(600)))
         self.background_UI2 = ImageTk.PhotoImage(image)
 
         # Create a transparent black background
         UI_path2 = self.get_UI_path("BG_Right_UI.png")
         image = Image.open(UI_path2)
-        image = image.resize((1200 * sf, 600 * sf))
+        image = image.resize((scale(1200), scale(600)))
         self.background_UI3 = ImageTk.PhotoImage(image)
 
         # Load and set the image as the background
         image_path = self.get_UI_path("image.png")
         image = Image.open(image_path)
-        image = image.resize((1200 * sf, 600 * sf))
+        image = image.resize((scale(1200), scale(600)))
         image = image.filter(ImageFilter.GaussianBlur(1))
         self.background_image = ImageTk.PhotoImage(image)
 
         image_path = self.get_UI_path("image.png")
         image = Image.open(image_path)
-        image = image.resize((2400 * sf, 1200 * sf))
+        image = image.resize((scale(2400), scale(1200)))
         image = image.filter(ImageFilter.GaussianBlur(3))
         self.blurbackground = ImageTk.PhotoImage(image)
 
@@ -564,12 +582,12 @@ class Manager:
         canvas.create_image(0, 0, anchor="nw", image=self.background_UI, tags="overlay")
         canvas.create_image(0, 0, anchor="nw", image=self.background_UI_element, tags="overlay")
         # Info text BG
-        canvas.create_image(0-20* sf, 0, anchor="nw", image=self.background_UI2, tags="overlay")
-        canvas.create_image(0-20* sf, 0, anchor="nw", image=self.background_UI3, tags="overlay")
+        canvas.create_image(0-scale(20), 0, anchor="nw", image=self.background_UI2, tags="overlay")
+        canvas.create_image(0-scale(20), 0, anchor="nw", image=self.background_UI3, tags="overlay")
 
         # Trigger Animation
-        self.mastersword = canvas.create_image(794* sf, 222* sf-40* sf, anchor="nw", image=self.master_sword_element, tags="overlay-sword1")
-        self.mastersword_active = canvas.create_image(794* sf, 222* sf-40* sf, anchor="nw", image=self.master_sword_element_active, tags="overlay-sword1")
+        self.mastersword = canvas.create_image(scale(794), scale(222) - scale(40), anchor="nw", image=self.master_sword_element, tags="overlay-sword1")
+        self.mastersword_active = canvas.create_image(scale(794), scale(222) - scale(40), anchor="nw", image=self.master_sword_element_active, tags="overlay-sword1")
         self.maincanvas.itemconfig(self.mastersword_active, state="hidden")
 
         canvas.tag_bind(self.mastersword, "<Enter>", lambda event: self.hoveranimation(canvas, "Enter", "Kofi", event))
@@ -577,8 +595,8 @@ class Manager:
         canvas.tag_bind(self.mastersword_active, "<Button-1>", lambda event: self.open_browser("Kofi"))
 
         # Trigger Animation
-        self.mastersword1 = canvas.create_image(1007* sf, 222* sf-40* sf, anchor="nw", image=self.master_sword_element2, tags="overlay-sword2")
-        self.mastersword1_active = canvas.create_image(1007* sf, 222* sf-40* sf, anchor="nw", image=self.master_sword_element2_active, tags="overlay-sword2")
+        self.mastersword1 = canvas.create_image(scale(1007), scale(222) - scale(40), anchor="nw", image=self.master_sword_element2, tags="overlay-sword2")
+        self.mastersword1_active = canvas.create_image(scale(1007), scale(222) - scale(40), anchor="nw", image=self.master_sword_element2_active, tags="overlay-sword2")
         self.maincanvas.itemconfig(self.mastersword1_active, state="hidden")
 
         canvas.tag_bind(self.mastersword1, "<Enter>", lambda event: self.hoveranimation(canvas, "Enter", "Github", event))
@@ -586,26 +604,23 @@ class Manager:
         canvas.tag_bind(self.mastersword1_active, "<Button-1>", lambda event: self.open_browser("Github"))
 
         # Hylian Shield
-        self.hylian = canvas.create_image(978* sf, 240* sf, anchor="c", image=self.hylian_element, tags="overlay-hylian")
-        self.hylian_active = canvas.create_image(978* sf, 240* sf, anchor="c", image=self.hylian_element_active, tags="overlay")
+        self.hylian = canvas.create_image(scale(978), scale(240), anchor="c", image=self.hylian_element, tags="overlay-hylian")
+        self.hylian_active = canvas.create_image(scale(978), scale(240), anchor="c", image=self.hylian_element_active, tags="overlay")
         self.maincanvas.itemconfig(self.hylian_active, state="hidden")
         canvas.tag_bind(self.hylian, "<Enter>", lambda event: self.hoveranimation(canvas, "Enter", "discord", event))
         canvas.tag_bind(self.hylian_active, "<Leave>", lambda event: self.hoveranimation(canvas, "Leave", "discord", event))
         canvas.tag_bind(self.hylian_active, "<Button-1>", lambda event: self.open_browser("Discord"))
 
-        biggyfont = ("Arial Bold", 14, "bold")
-        if sf > 1:
-            biggyfont = ("Arial Bold", 11, "bold")
 
         # Information text.
-        text_widgetoutline2 = canvas.create_text(1001* sf-20* sf, 126* sf -80* sf, text=f"{self.mode} TOTK Optimizer", tags="information", fill="black", font=biggyfont, anchor="center", justify="center", width=325* sf)
-        text_widget2 = canvas.create_text(1000* sf-20* sf, 126* sf-80 * sf, text=f"{self.mode} TOTK Optimizer", tags="information", fill="#FBF8F3", font=biggyfont, anchor="center", justify="center", width=325* sf)
+        text_widgetoutline2 = canvas.create_text(scale(1001) - scale(20), scale(126) -scale(80), text=f"{self.mode} TOTK Optimizer", tags="information", fill="black", font=biggyfont, anchor="center", justify="center", width=scale(325))
+        text_widget2 = canvas.create_text(scale(1000)-scale(20), scale(126)-scale(80), text=f"{self.mode} TOTK Optimizer", tags="information", fill="#FBF8F3", font=biggyfont, anchor="center", justify="center", width=scale(325))
  
-        text_widgetoutline1 = canvas.create_text(1001 * sf -20 * sf-10 * sf, 126 * sf +10 * sf, text=self.text_content, fill="black", font=biggyfont, anchor="center", justify="center", width=325* sf)
-        text_widget1 = canvas.create_text(1000 * sf-20* sf-10* sf, 125* sf +10 * sf, text=self.text_content, fill="#FBF8F3", font=biggyfont, anchor="center", justify="center", width=325* sf)
+        text_widgetoutline1 = canvas.create_text(scale(1001) -scale(20) -scale(10), scale(126) + scale(10), text=self.text_content, fill="black", font=biggyfont, anchor="center", justify="center", width=scale(325))
+        text_widget1 = canvas.create_text(scale(1000) - scale(20) -scale(10), scale(125) +scale(10), text=self.text_content, fill="#FBF8F3", font=biggyfont, anchor="center", justify="center", width=scale(325))
 
     def Cheat_UI_elements(self, canvas):
-        self.cheatbg = canvas.create_image(0, -300* sf, anchor="nw", image=self.blurbackground, tags="background")
+        self.cheatbg = canvas.create_image(0, -scale(300), anchor="nw", image=self.blurbackground, tags="background")
         canvas.create_image(0, 0, anchor="nw", image=self.background_YuzuBG, tags="overlay-1")
         canvas.create_image(0, 0, anchor="nw", image=self.background_UI, tags="overlay")
 
@@ -620,20 +635,20 @@ class Manager:
 
         if not canvas == self.maincanvas:
             kofi_button = ttk.Button(self.window, text="Donate", bootstyle="success", command=lambda: self.open_browser("Kofi"), padding=10)
-            kofi_button_window = canvas.create_window(1110* sf+20* sf, 520* sf, anchor="center", window=kofi_button)
+            kofi_button_window = canvas.create_window(scale(1110)+scale(20), scale(520), anchor="center", window=kofi_button, width=scale(60), height=scale(30))
             self.read_description("Kofi", kofi_button)
             github_button = ttk.Button(self.window, text="Github", bootstyle="info", command=lambda: self.open_browser("Github"), padding=10)
-            github_button_window = canvas.create_window(1046* sf+20* sf, 520* sf, anchor="center", window=github_button)
+            github_button_window = canvas.create_window(scale(1046) + scale(20), scale(520), anchor="center", window=github_button, width=scale(60), height=scale(30))
             self.read_description("Github", github_button)
 
 
 
         # Create tabs
-        cul = 10
+        cul = scale(10)
 
         # Switch mode between Ryujinx and Yuzu
         manager_switch = ttk.Button(self.window, textvariable=self.switchtext, command=self.switchmode, bootstyle=style)
-        manager_switch_window = canvas.create_window(114* sf + 43* sf - 17* sf, cul, anchor="w", window=manager_switch)
+        manager_switch_window = canvas.create_window(scale(114) + scale(43) - scale(17), cul, anchor="w", window=manager_switch, width=scale(120), height=scale(30))
         self.read_description("Switch", manager_switch)
 
         # Make the button active for current canvas.
@@ -653,11 +668,11 @@ class Manager:
 
         # 1
         self.tab1_button = ttk.Button(self.window, text="Main", bootstyle=f"{button1style}", command=self.show_maincanvas)
-        tab1_button_window = canvas.create_window(0+ 43* sf - 17* sf, cul, anchor="w", window=self.tab1_button)
+        tab1_button_window = canvas.create_window(0+ scale(43) - scale(17), cul, anchor="w", window=self.tab1_button, width=scale(50), height=scale(30))
         self.read_description("Main", self.tab1_button)
         # 2
         self.tab2_button = ttk.Button(self.window, text="Cheats", bootstyle=f"{button2style}", command=self.show_cheatcanvas)
-        tab2_button_window = canvas.create_window(52* sf+ 43* sf - 17* sf, cul, anchor="w", window=self.tab2_button)
+        tab2_button_window = canvas.create_window(scale(52) + scale(43) - scale(17), cul, anchor="w", window=self.tab2_button, width=scale(60), height=scale(30))
         self.read_description("Cheats", self.tab2_button)
 
     def switchmode(self, command="true"):
@@ -689,7 +704,7 @@ class Manager:
                 # create new labels
                 self.selected_settings = tk.StringVar(value="No Change")
                 self.second_dropdown = ttk.Combobox(self.window, textvariable=self.selected_settings, values=["No Change", "Steamdeck", "AMD", "Nvidia", "High End Nvidia"])
-                self.second_dropdown_window = self.maincanvas.create_window(470* sf, 40* sf, anchor="w", window=self.second_dropdown)
+                self.second_dropdown_window = self.maincanvas.create_window(scale(470), scale(40), anchor="w", window=self.second_dropdown, width=scale(150), height=CBHEIGHT)
                 self.second_dropdown.bind("<<ComboboxSelected>>")
                 return
         elif command == "false":

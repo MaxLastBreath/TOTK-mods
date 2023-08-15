@@ -3,17 +3,17 @@ import threading
 from ttkbootstrap.constants import *
 from form import Manager
 from modules.update import textver, check_for_updates, delete_old_exe
-from configuration.settings import sf
-
+from modules.scaling import sf, scale
 
 if __name__ == "__main__":
     # Delete any old executables
     delete_old_exe()
-    window = ttk.Window(themename="flatly")
+
+    window = ttk.Window(themename="flatly", scaling=sf)
     window.title(f"TOTK Optimizer {textver}")
     main = Manager(window)
-    window_width = int(1200* sf)
-    window_height = int(600* sf)
+    window_width = scale(1200)
+    window_height = scale(600)
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
     x_position = (screen_width - window_width) // 2
