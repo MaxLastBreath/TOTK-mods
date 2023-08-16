@@ -30,5 +30,9 @@
 	"Remove QuaReduction": "Improves Quality when FPS drops.\nThis is mandatory with new DFPS.",
 	"Remove DOF": "Removes Depth of Field effect.",
 	"Remove Lensflare": "Removes lensflare effect,\nNote: The lensflare in TOTK flickers a lot..",
-	"Improve LOD": "Improves the distant objects in the game.\nThis has no effect on performance."
+	"Improve LOD": "Improves the distant objects in the game.\nThis has no effect on performance.",
+
+	"CHEATS - GROUP": "None",
+
+	"God Mode": "Turn on God Mode"
 }
