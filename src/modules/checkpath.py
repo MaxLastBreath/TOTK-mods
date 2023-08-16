@@ -42,7 +42,6 @@ def checkpath(self, mode):
         # Check for user folder
         if mode == "Yuzu":
             if os.path.exists(userfolder):
-                print("WORKING")
                 self.configdir = os.path.join(yuzupath, "../user/config/qt-config.ini")
                 self.TOTKconfig = os.path.join(self.configdir, "../custom/0100F2C0115B6000.ini")
                 config_parser = configparser.ConfigParser()
@@ -99,11 +98,13 @@ def checkpath(self, mode):
                 self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", "0100f2C0115b6000")
                 return
     # Ensure the path exists.
-    if self.os_platform == "Windows":
-        # Ensure directories exist for windows, skip for linux (gives off permission errors.)
+    try:
+        # attempt to create qt-config.ini directories in case they don't exist. Give error to warn user
         os.makedirs(self.nand_dir, exist_ok=True)
         os.makedirs(self.load_dir, exist_ok=True)
         os.makedirs(self.Yuzudir, exist_ok=True)
+    except PermissionError as e:
+        self.warning(f"Unable to create directories, please run {self.mode}, {e}")
 
 # Define OS
 def DetectOS(self, mode):

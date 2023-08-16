@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import Event, filedialog, messagebox, Toplevel
+from tkinter import Event, TclError, filedialog, messagebox, Toplevel
 import configparser
 import threading
 import os
@@ -23,7 +23,7 @@ from modules.backup import backup
 from modules.config import save_user_choices, load_user_choices
 from modules.scaling import scale
 from configuration.settings import Hoverdelay, title_id, localconfig, textfont, style, sf, textcolor, outlinecolor, dfpsurl, cheatsurl, versionurl, presetsurl, descurl, bigfont, BigTextcolor, biggyfont, CBHEIGHT, FPS, btnfont
-
+from configuration.settings_config import settingswindow
 
 class Manager:
     
@@ -32,6 +32,7 @@ class Manager:
         constyle.configure("TButton", font=btnfont)
         # Set Variables
         self.config = localconfig
+        self.allcanvas = []
         config = configparser.ConfigParser()
         config.read(localconfig)
         self.mode = config.get("Mode", "managermode", fallback="Yuzu")
@@ -44,13 +45,14 @@ class Manager:
         self.old_cheats = {}
         self.cheat_version = tk.StringVar(value="Version - 1.1.2")
 
-        # Load Hover description locally.
+        # Load Json Files.
         self.dfps_options = load_json("DFPS.json", dfpsurl)
         self.description = load_json("Description.json", descurl)
         self.presets = load_json("preset.json", presetsurl)
         self.version_options = load_json("Version.json", versionurl)
         self.cheat_options = load_json("Cheats.json", cheatsurl)
 
+        self.tooltip_active = False
         # Warn for Backup File
         self.warnagain = "yes"
 
@@ -61,27 +63,35 @@ class Manager:
         # Load Canvas
         self.Load_ImagePath()
         self.load_canvas()
-        self.allcanvas = [self.maincanvas, self.cheatcanvas]
         self.switchmode("false")
         # close existing threads.
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.window.bind("<FocusIn>", self.focus)
         self.window.bind("<FocusOut>", self.unfocus)
 
-
-
-
     def focus(self, event):
         self.is_Ani_Paused = False
     def unfocus(self, event):
         self.is_Ani_Paused = True
+    def warning(self, e,):
+        messagebox.showwarning(f"{e}")
+    def toggle(self, event, var):
+        if var.get() == "On":
+            var.set("Off")
+        else:
+            var.set("On")
 
+     # bind the toggle
+    def bind_toggle(self, canvas, item, var):
+        canvas.tag_bind(item, "<Button-1>", lambda event: self.toggle(event, var))
     # Canvas
 
     def createcanvas(self):
         # Create Canvas
         self.maincanvas = tk.Canvas(self.window, width= scale(1200), height=scale(600))
+        canvas = self.maincanvas
         self.maincanvas.pack()
+        self.allcanvas.append(self.maincanvas)
 
         # Load UI Elements
         self.load_UI_elements(self.maincanvas)
@@ -104,32 +114,33 @@ class Manager:
         # Create preset menu. 
         self.presets = {"Saved": {}} | self.presets
         self.preset_label = self.maincanvas.create_text(cultex+1, row+1, text="Select Preset:", anchor="w", fill=outlinecolor, font=textfont)
-        self.preset_label2 = self.maincanvas.create_text(cultex, row, text="Select Preset:", anchor="w", fill=textcolor, font=textfont)
+        pretext = self.preset_label2 = self.maincanvas.create_text(cultex, row, text="Select Preset:", anchor="w", fill=textcolor, font=textfont)
         self.selected_preset = tk.StringVar(value="Saved")
         self.preset_dropdown = ttk.Combobox(self.window, textvariable=self.selected_preset, values=list(self.presets.keys()))
         self.preset_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=self.preset_dropdown, width=scale(150), height=CBHEIGHT)
         self.preset_dropdown.bind("<<ComboboxSelected>>", self.apply_selected_preset)
-        self.read_description("Presets", self.preset_dropdown)
+        self.read_description(canvas, "Presets", self.preset_dropdown, pretext)
 
 
         # Setting Preset
-        self.Settings_label_outline = self.maincanvas.create_text(scale(370)+1, scale(40)+1, text="Yuzu Settings:", anchor="w", fill=outlinecolor, font=textfont)
-        self.Settings_label = self.maincanvas.create_text(scale(370), scale(40) , text="Yuzu Settings:", anchor="w", fill=textcolor, font=textfont)
+        Settings_label_outline = self.maincanvas.create_text(scale(370)+1, scale(40)+1, text="Yuzu Settings:", anchor="w", fill=outlinecolor, font=textfont)
+        Settings_label = self.maincanvas.create_text(scale(370), scale(40) , text="Yuzu Settings:", anchor="w", fill=textcolor, font=textfont)
         self.selected_settings = tk.StringVar(value="No Change")
         self.second_dropdown = ttk.Combobox(self.window, textvariable=self.selected_settings, values=["No Change", "Steamdeck", "AMD", "Nvidia", "High End Nvidia"])
         self.second_dropdown_window = self.maincanvas.create_window(scale(480), scale(40), anchor="w", window=self.second_dropdown, width=scale(150), height=CBHEIGHT)
         self.second_dropdown.bind("<<ComboboxSelected>>")
-        self.read_description("Settings", self.second_dropdown)
+        self.read_description(canvas, "Settings", self.second_dropdown, Settings_label)
         row += scale(40)
 
         # Create a label for yuzu.exe selection
         backupbutton = culsel
         self.selectexe_outline = self.maincanvas.create_text(cultex+1, row+1, text="Select yuzu.exe:", anchor="w", fill=outlinecolor, font=textfont)
         self.selectexe = self.maincanvas.create_text(cultex, row, text="Select yuzu.exe:", anchor="w", fill=textcolor, font=textfont)
+        self.read_description(canvas, "Browse", self.selectexe)
         if self.os_platform == "Windows":
             yuzu_button = ttk.Button(self.window, text="Browse", command=self.select_yuzu_exe)
             yuzu_button_window = self.maincanvas.create_window(culsel, row, anchor="w", window=yuzu_button, width= scale(65), height= scale(28))       
-            self.read_description("Browse", yuzu_button)
+            self.read_description(canvas, "Browse", yuzu_button)
 
             # Reset to Appdata
             def yuzu_appdata():
@@ -138,13 +149,13 @@ class Manager:
                 save_user_choices(self, self.config, "appdata", None)
             reset_button = ttk.Button(self.window, text="Use Appdata", command=yuzu_appdata)
             reset_button_window = self.maincanvas.create_window(culsel+scale(70), row, anchor="w", window=reset_button, width= scale(95), height= scale(28))
-            self.read_description("Reset", reset_button)
+            self.read_description(canvas, "Reset", reset_button)
             backupbutton = culsel + scale(170)
 
         # Create a Backup button
         backup_button = ttk.Button(self.window, text="Backup", command=lambda: backup(self))
         backup_button_window = self.maincanvas.create_window(backupbutton, row, anchor="w", window=backup_button, width=scale(65), height=scale(28))
-        self.read_description("Backup", backup_button)
+        self.read_description(canvas, "Backup", backup_button)
         row += scale(40)
 
         # Create big TEXT label.
@@ -158,30 +169,30 @@ class Manager:
 
         # Create a label for resolution selection
         self.maincanvas.create_text(cultex+1, row+1, text="Select a Resolution:", anchor="w", fill=outlinecolor, font=textfont)
-        self.maincanvas.create_text(cultex, row, text="Select a Resolution:", anchor="w", fill=textcolor, font=textfont)
+        restext = self.maincanvas.create_text(cultex, row, text="Select a Resolution:", anchor="w", fill=textcolor, font=textfont)
         self.resolution_var = tk.StringVar(value=self.dfps_options.get("ResolutionNames", [""])[2])  # Set the default resolution to "1080p FHD"
         resolution_dropdown = ttk.Combobox(self.window, textvariable=self.resolution_var, values=self.dfps_options.get("ResolutionNames", []))
         resolution_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=resolution_dropdown, width=scale(150), height=CBHEIGHT)
         resolution_dropdown.bind("<<ComboboxSelected>>", lambda event: self.warning_window("Res"))
-        self.read_description("Resolution", resolution_dropdown)
+        self.read_description(canvas, "Resolution", resolution_dropdown, restext)
         row += scale(40)
 
         # Create a label for FPS selection
         self.maincanvas.create_text(cultex+1, row+1, text="Select an FPS:", anchor="w", fill=outlinecolor, font=textfont)
-        self.maincanvas.create_text(cultex, row, text="Select an FPS:", anchor="w", fill=textcolor, font=textfont)
+        fpstext = self.maincanvas.create_text(cultex, row, text="Select an FPS:", anchor="w", fill=textcolor, font=textfont)
         self.fps_var = tk.StringVar(value=str(self.dfps_options.get("FPS", [])[2]))  # Set the default FPS to 60
         fps_dropdown = ttk.Combobox(self.window, textvariable=self.fps_var, values=self.dfps_options.get("FPS", []))
         fps_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=fps_dropdown, width=scale(150), height=CBHEIGHT)
-        self.read_description("FPS", fps_dropdown)
+        self.read_description(canvas, "FPS", fps_dropdown, fpstext)
         row += scale(40)
 
         # Create a label for shadow resolution selection
         self.maincanvas.create_text(cultex+1, row+1, text="Shadow Resolution:", anchor="w", fill=outlinecolor, font=textfont)
-        self.maincanvas.create_text(cultex, row, text="Shadow Resolution:", anchor="w", fill=textcolor, font=textfont)
-        self.shadow_resolution_var = tk.StringVar(value=self.dfps_options.get("ShadowResolutionNames", [""])[0])  # Set the default shadow resolution to "Auto"
+        shadowtext = self.maincanvas.create_text(cultex, row, text="Shadow Resolution:", anchor="w", fill=textcolor, font=textfont)
+        self.shadow_resolution_var = tk.StringVar(value=self.dfps_options.get("ShadowResolutionNames", [""])[1])  # Set the default shadow resolution to "Default"
         shadow_resolution_dropdown = ttk.Combobox(self.window, textvariable=self.shadow_resolution_var, values=self.dfps_options.get("ShadowResolutionNames", []))
         shadow_resolution_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=shadow_resolution_dropdown, width=scale(150), height=CBHEIGHT)
-        self.read_description("Shadows", shadow_resolution_dropdown)
+        self.read_description(canvas, "Shadows", shadow_resolution_dropdown, shadowtext)
         row += scale(40)
 
         # Make exception for camera quality
@@ -193,32 +204,32 @@ class Manager:
                 CameraQ[index] = "Off"
 
         self.maincanvas.create_text(cultex+1, row+1, text="Camera Quality++:", anchor="w", fill=outlinecolor, font=textfont)
-        self.maincanvas.create_text(cultex, row, text="Camera Quality++:", anchor="w", fill=textcolor, font=textfont)
+        camtext = self.maincanvas.create_text(cultex, row, text="Camera Quality++:", anchor="w", fill=textcolor, font=textfont)
         self.camera_var = tk.StringVar(value=CameraQ[0])  # Set the default camera quality to "Enable"
         camera_dropdown = ttk.Combobox(self.window, textvariable=self.camera_var, values=self.dfps_options.get("CameraQualityNames", []))
         camera_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=camera_dropdown, width=scale(150), height=CBHEIGHT)
-        self.read_description("Camera Quality", camera_dropdown)
+        self.read_description(canvas, "Camera Quality", camera_dropdown, camtext)
         row += scale(40)
 
         # Create a label for UI selection
         
         self.maincanvas.create_text(cultex+1, row+1, text="Select an UI:", anchor="w", fill=outlinecolor, font=textfont)
-        self.maincanvas.create_text(cultex, row, text="Select an UI:", anchor="w", fill=textcolor, font=textfont)
+        uitext = self.maincanvas.create_text(cultex, row, text="Select an UI:", anchor="w", fill=textcolor, font=textfont)
         ui_values = ["None", "Black Screen Fix", "PS4", "Xbox"]
         self.ui_var = tk.StringVar(value=ui_values[0])
         ui_dropdown = ttk.Combobox(self.window, textvariable=self.ui_var, values=ui_values)
         ui_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=ui_dropdown, width=scale(150), height=CBHEIGHT)
-        self.read_description("UI", ui_dropdown)
+        self.read_description(canvas, "UI", ui_dropdown, uitext)
         row += scale(40)
 
         # First Person and FOV
         self.maincanvas.create_text(cultex+1, row+1, text="Enable First Person:", anchor="w", fill=outlinecolor, font=textfont)
-        self.maincanvas.create_text(cultex, row, text="Enable First Person:", anchor="w", fill=textcolor, font=textfont)
+        fptext = self.maincanvas.create_text(cultex, row, text="Enable First Person:", anchor="w", fill=textcolor, font=textfont)
         fp_values = ["Off", "70 FOV", "90 FOV", "110 FOV"]
         self.fp_var = tk.StringVar(value=ui_values[0])
         fp_dropdown = ttk.Combobox(self.window, textvariable=self.fp_var, values=fp_values)
         fp_dropdown_window = self.maincanvas.create_window(culsel, row, anchor="w", window=fp_dropdown, width=scale(150), height=CBHEIGHT)
-        self.read_description("First Person", fp_dropdown)
+        self.read_description(canvas, "First Person", fp_dropdown, fptext)
         
         # XYZ to generate patch.
 
@@ -233,14 +244,15 @@ class Manager:
             # Create label
             if version_option_name not in ["Source", "nsobid", "offset", "version"]:
                 self.maincanvas.create_text(cultex+1, row+scale(40)+1, text=version_option_name, anchor="w", fill=outlinecolor, font=textfont)
-                self.maincanvas.create_text(cultex, row+scale(40), text=version_option_name, anchor="w", fill=textcolor, font=textfont)
+                text = self.maincanvas.create_text(cultex, row+scale(40), text=version_option_name, anchor="w", fill=textcolor, font=textfont, activefill="red")
                     
 
                 # Create checkbox
                 version_option_var = tk.StringVar(value="Off")
                 versioncheck = ttk.Checkbutton(self.window, variable=version_option_var, onvalue="On", offvalue="Off", bootstyle="success")
                 version_check_window = self.maincanvas.create_window(culsel, row+ scale(40), anchor="w", window=versioncheck)
-                self.read_description(f"{version_option_name}", versioncheck)
+                self.bind_toggle(canvas, text, version_option_var)
+                self.read_description(canvas, f"{version_option_name}", versioncheck, text)
                 self.selected_options[version_option_name] = version_option_var
                 row += scale(40)
 
@@ -252,7 +264,7 @@ class Manager:
         # Create a submit button
         submit_button = ttk.Button(self.window, text="Apply Mods", command=self.submit, padding=5, bootstyle="success")
         submit_button_window = self.maincanvas.create_window(scale(39), scale(520), anchor="w", window=submit_button, width=scale(90), height=scale(30))
-        self.read_description("Apply", submit_button)
+        self.read_description(canvas, "Apply", submit_button)
 
         # Load Saved User Options.
         load_user_choices(self, self.config)
@@ -262,6 +274,8 @@ class Manager:
         # Create Cheat Canvas
         self.cheatcanvas = tk.Canvas(self.window, width=scale(1200), height=scale(600))
         self.cheatcanvas.pack(expand=1, fill=BOTH)
+        canvas = self.cheatcanvas
+        self.allcanvas.append(self.cheatcanvas)
 
         # Create UI elements.
         self.Cheat_UI_elements(self.cheatcanvas)
@@ -286,7 +300,6 @@ class Manager:
 
 
         def loadCheats():
-            
             row = scale(40)
             cultex = scale(40)
             culsel = scale(200)
@@ -314,7 +327,8 @@ class Manager:
                 # Create label
                 if version_option_name not in ["Source", "Version", "Aversion", "Cheat Example"]:
                     self.cheatcanvas.create_text(cultex+1, row+1, text=version_option_name, anchor="w", fill=outlinecolor, font=textfont, tags="cheats")
-                    self.cheatcanvas.create_text(cultex, row, text=version_option_name, anchor="w", fill=textcolor, font=textfont, tags="cheats")
+                    cheattext = self.cheatcanvas.create_text(cultex, row, text=version_option_name, anchor="w", fill=textcolor, font=textfont, tags="cheats", activefill="red")
+                    print(cheattext)
                     # Create enable/disable dropdown menu
                     version_option_var = tk.StringVar(value="Off")
                     try:
@@ -325,15 +339,17 @@ class Manager:
 
                     versioncheck = ttk.Checkbutton(self.window, variable=version_option_var, onvalue="On", offvalue="Off", bootstyle="success")
                     version_check_window = self.cheatcanvas.create_window(culsel, row, anchor="w", window=versioncheck, tags="cheats")
+                    # Create Toggle Event
+                    self.bind_toggle(canvas, cheattext, version_option_var)
 
                     self.selected_cheats[version_option_name] = version_option_var
 
+                    if version_option_name in self.description:
+                        print(cheattext)
+                        self.read_description(canvas, version_option_name, versioncheck, cheattext)
+
                 else:
                     continue
-
-                if version_option_name in self.description:
-                    hover = self.description[version_option_name]
-                    versionhover = Hovertip(versioncheck, f"{hover}", hover_delay=Hoverdelay)
 
                 row += scale(40)
 
@@ -341,6 +357,7 @@ class Manager:
                     row = scale(40)
                     cultex += scale(200)
                     culsel += scale(200)
+
 
         def ResetCheats():
             try:
@@ -354,22 +371,22 @@ class Manager:
         # Create a submit button
         submit_button = ttk.Button(self.window, text="Apply Cheats", command=lambda: self.submit("Cheats"), padding=5, bootstyle="success")
         submit_button_window = self.cheatcanvas.create_window(scale(39), scale(520), anchor="w", window=submit_button, width=scale(85), height=scale(30))
-        self.read_description("Apply", submit_button)
+        self.read_description(canvas, "Apply", submit_button)
 
         # Create a submit button
         resetcheats_button = ttk.Button(self.window, text="Reset Cheats", command=lambda: ResetCheats(), padding=5)
         resetcheats_button_window = self.cheatcanvas.create_window(scale(277) + scale(6), scale(520), anchor="w", window=resetcheats_button, width=scale(85), height=scale(30))
-        self.read_description("Reset Cheats", submit_button)
+        self.read_description(canvas, "Reset Cheats", submit_button)
         # Read Cheats
 
         readcheats_button = ttk.Button(self.window, text="Read Saved Cheats", command=lambda: load_user_choices(self, self.config, "Cheats"), padding=5)
         readcheats_button_window = self.cheatcanvas.create_window(scale(367) + scale(6), scale(520), anchor="w", window=readcheats_button, width=scale(115), height=scale(30))
-        self.read_description("Read Cheats", submit_button)
+        self.read_description(canvas, "Read Cheats", submit_button)
 
         #Backup
         backup_button = ttk.Button(self.window, text="Backup", command=lambda: backup(self))
         backup_button_window = self.cheatcanvas.create_window(scale(485)+ scale(8), scale(520), anchor="w", window=backup_button, width=scale(70), height=scale(30))
-        self.read_description("Backup", backup_button)
+        self.read_description(canvas, "Backup", backup_button)
 
         loadCheats()
         load_user_choices(self, self.config)
@@ -521,14 +538,21 @@ class Manager:
         image = image.resize((scale(1200), scale(600)))
         self.background_UI3 = ImageTk.PhotoImage(image)
 
-        # Load and set the image as the background
-        image_path = self.get_UI_path("image.png")
-        image = Image.open(image_path)
-        image = image.resize((scale(1200), scale(600)))
-        image = image.filter(ImageFilter.GaussianBlur(1))
-        self.background_image = ImageTk.PhotoImage(image)
-
-        image_path = self.get_UI_path("image.png")
+        # Attempt to load images from custom folder.
+        try:
+            if os.path.exists("custom\\background.jpg"):
+                image_path = "custom\\background.jpg"
+            elif os.path.exists("custom\\background.png"):
+                image_path = "custom\\background.png"
+            else:
+                # Load and set the image as the background
+                image_path = self.get_UI_path("image.png")
+            image = Image.open(image_path)
+            image = image.resize((scale(1200), scale(600)))
+            image = image.filter(ImageFilter.GaussianBlur(1))
+            self.background_image = ImageTk.PhotoImage(image)
+        except FileNotFoundError as e:
+            self.warning(e)
         image = Image.open(image_path)
         image = image.resize((scale(2400), scale(1200)))
         image = image.filter(ImageFilter.GaussianBlur(3))
@@ -636,10 +660,10 @@ class Manager:
         if not canvas == self.maincanvas:
             kofi_button = ttk.Button(self.window, text="Donate", bootstyle="success", command=lambda: self.open_browser("Kofi"), padding=10)
             kofi_button_window = canvas.create_window(scale(1110)+scale(20), scale(520), anchor="center", window=kofi_button, width=scale(60), height=scale(30))
-            self.read_description("Kofi", kofi_button)
+            self.read_description(canvas, "Kofi", kofi_button)
             github_button = ttk.Button(self.window, text="Github", bootstyle="info", command=lambda: self.open_browser("Github"), padding=10)
             github_button_window = canvas.create_window(scale(1046) + scale(20), scale(520), anchor="center", window=github_button, width=scale(60), height=scale(30))
-            self.read_description("Github", github_button)
+            self.read_description(canvas, "Github", github_button)
 
 
 
@@ -649,31 +673,34 @@ class Manager:
         # Switch mode between Ryujinx and Yuzu
         manager_switch = ttk.Button(self.window, textvariable=self.switchtext, command=self.switchmode, bootstyle=style)
         manager_switch_window = canvas.create_window(scale(114) + scale(43) - scale(17), cul, anchor="w", window=manager_switch, width=scale(120), height=scale(30))
-        self.read_description("Switch", manager_switch)
+        self.read_description(canvas, "Switch", manager_switch)
 
         # Make the button active for current canvas.
         button1style = "default"
         button2style = "default"
+        button3style = "default"
         active_button_style = "secondary"
         try:
             if canvas == self.maincanvas:
                 button1style = active_button_style
-        except AttributeError as e:
-            print("")
-        try:
             if canvas == self.cheatcanvas:
                 button2style = active_button_style
         except AttributeError as e:
-            print("")
+            e = "n"
 
         # 1
         self.tab1_button = ttk.Button(self.window, text="Main", bootstyle=f"{button1style}", command=self.show_maincanvas)
         tab1_button_window = canvas.create_window(0+ scale(43) - scale(17), cul, anchor="w", window=self.tab1_button, width=scale(50), height=scale(30))
-        self.read_description("Main", self.tab1_button)
+        self.read_description(canvas, "Main", self.tab1_button)
         # 2
         self.tab2_button = ttk.Button(self.window, text="Cheats", bootstyle=f"{button2style}", command=self.show_cheatcanvas)
         tab2_button_window = canvas.create_window(scale(52) + scale(43) - scale(17), cul, anchor="w", window=self.tab2_button, width=scale(60), height=scale(30))
-        self.read_description("Cheats", self.tab2_button)
+        self.read_description(canvas, "Cheats", self.tab2_button)
+        # 3
+        self.tab3_button = ttk.Button(self.window, text="Settings", bootstyle=f"{button3style}", command=lambda: settingswindow("c"))
+        tab3_button_window = canvas.create_window(scale(232) + scale(43) - scale(17), cul, anchor="w", window=self.tab3_button, width=scale(70), height=scale(30))
+        self.read_description(canvas, "Settings", self.tab2_button)
+
 
     def switchmode(self, command="true"):
         if command == "true":
@@ -722,10 +749,48 @@ class Manager:
         elif command == "Mode":
             return self.mode
     # Read Hover Description
-    def read_description(self, option, position):
-        if f"{option}" in self.description:
-            hover = self.description[f"{option}"]
-            Hovertip(position, f"{hover}", hover_delay=Hoverdelay)
+    def read_description(self, canvas, option, position, position2=None, position3=None, position4=None):
+        positionlist = []
+        positionlist.append(position)
+        if not position2 == None:
+            positionlist.append(position2)
+        if not position3 == None:
+            positionlist.append(position2)
+        if not position4 == None:
+            positionlist.append(position2)
+        for position in positionlist:
+            try:
+                if f"{option}" in self.description:
+                    canvas_item = canvas.find_withtag(position)
+                    if canvas_item:
+                        canvas = canvas
+                        hover = self.description[f"{option}"]
+                        canvas.tag_bind(position, "<Enter>", lambda event: self.show_tooltip(event, position, hover, canvas))
+                        canvas.tag_bind(position, "<Leave>", lambda event: self.hide_tooltip(event))
+                        canvas.tag_bind(position, "<Return>", lambda event: self.hide_tooltip(event))
+                        break
+            except TclError as e:
+                if f"{option}" in self.description:
+                    hover = self.description[f"{option}"]
+                    Hovertip(position, f"{hover}", hover_delay=Hoverdelay)
+
+    def show_tooltip(self, event, item, text, canvas):
+        bbox = canvas.bbox(item)
+        x, y = bbox[0], bbox[1]
+        x += canvas.winfo_rootx()
+        y += canvas.winfo_rooty()
+    
+        self.window.after(50)
+        self.tooltip = ttk.Toplevel()
+        self.tooltip.wm_overrideredirect(True)
+        self.tooltip.geometry(f"+{x + scale(20)}+{y + scale(25)}")
+        tooltip_label = tk.Label(self.tooltip, text=text, background="gray", relief="solid", borderwidth=1, justify="left")
+        tooltip_label.pack()
+        self.tooltip_active = True
+
+    def hide_tooltip(self, _):
+        self.tooltip.destroy()
+        self.tooltip_active = False
 
     def apply_selected_preset(self, event=None):
         selected_preset = self.selected_preset.get()
@@ -773,6 +838,7 @@ class Manager:
                 self.selected_options[option_key].set(option_value)
             else:
                 continue
+
     # Select Yuzu Dir
     def select_yuzu_exe(self):
         # Open a file dialog to browse and select yuzu.exe
@@ -1003,86 +1069,86 @@ class Manager:
                                     file.write(value + "\n")
                 print("Applied cheats.")
                 return
+            elif mode == None:
+                resolution = self.resolution_var.get()
+                fps = self.fps_var.get()
+                shadow_resolution = self.shadow_resolution_var.get()
+                camera_quality = self.camera_var.get()
 
-            resolution = self.resolution_var.get()
-            fps = self.fps_var.get()
-            shadow_resolution = self.shadow_resolution_var.get()
-            camera_quality = self.camera_var.get()
+                # Determine the path to the INI file in the user's home directory
+                ini_file_directory = os.path.join(self.load_dir, "Mod Manager Patch", "romfs", "dfps")
+                os.makedirs(ini_file_directory, exist_ok=True)
+                ini_file_path = os.path.join(ini_file_directory, "default.ini")
 
-            # Determine the path to the INI file in the user's home directory
-            ini_file_directory = os.path.join(self.load_dir, "Mod Manager Patch", "romfs", "dfps")
-            os.makedirs(ini_file_directory, exist_ok=True)
-            ini_file_path = os.path.join(ini_file_directory, "default.ini")
+                # Remove the previous default.ini file if it exists - DFPS settings.
+                if os.path.exists(ini_file_path):
+                    os.remove(ini_file_path)
 
-            # Remove the previous default.ini file if it exists - DFPS settings.
-            if os.path.exists(ini_file_path):
-                os.remove(ini_file_path)
+                # Save the selected options to the INI file
+                config = configparser.ConfigParser() 
+                config.optionxform = lambda option: option
 
-            # Save the selected options to the INI file
-            config = configparser.ConfigParser() 
-            config.optionxform = lambda option: option
+                # Add the selected resolution, FPS, shadow resolution, and camera quality
+                Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
+                ShadowIndex = self.dfps_options.get("ShadowResolutionNames").index(shadow_resolution)
+                CameraIndex = self.dfps_options.get("CameraQualityNames").index(camera_quality)
 
-            # Add the selected resolution, FPS, shadow resolution, and camera quality
-            Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
-            ShadowIndex = self.dfps_options.get("ShadowResolutionNames").index(shadow_resolution)
-            CameraIndex = self.dfps_options.get("CameraQualityNames").index(camera_quality)
+                config['Graphics'] = {
+                    'ResolutionWidth': self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[0],
+                    'ResolutionHeight': self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1],
+                    'ResolutionShadows': self.dfps_options.get("ShadowResolutionValues", [""])[ShadowIndex]
+                }
+                config['dFPS'] = {'MaxFramerate': fps}
+                config['Features'] = {'EnableCameraQualityImprovement': self.dfps_options.get("CameraQualityValues", [""])[CameraIndex]}
 
-            config['Graphics'] = {
-                'ResolutionWidth': self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[0],
-                'ResolutionHeight': self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1],
-                'ResolutionShadows': self.dfps_options.get("ShadowResolutionValues", [""])[ShadowIndex]
-            }
-            config['dFPS'] = {'MaxFramerate': fps}
-            config['Features'] = {'EnableCameraQualityImprovement': self.dfps_options.get("CameraQualityValues", [""])[CameraIndex]}
+                selected_options = {}
 
-            selected_options = {}
+                for option_name, option_var in self.selected_options.items():
+                    selected_options[option_name] = option_var.get()
+                # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.
+                for version_option in self.version_options:
+                    version = version_option.get("version", "")
+                    mod_path = os.path.join(self.load_dir, "Mod Manager Patch", "exefs")
 
-            for option_name, option_var in self.selected_options.items():
-                selected_options[option_name] = option_var.get()
-            # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.
-            for version_option in self.version_options:
-                version = version_option.get("version", "")
-                mod_path = os.path.join(self.load_dir, "Mod Manager Patch", "exefs")
+                    # Create the directory if it doesn't exist
+                    os.makedirs(mod_path, exist_ok=True)
 
-                # Create the directory if it doesn't exist
-                os.makedirs(mod_path, exist_ok=True)
-
-                filename = os.path.join(mod_path, f"{version}.pchtxt")
-                all_values = []
-                with open(filename, "w") as file:
-                    file.write(version_option.get("Source", "") + "\n")
-                    file.write(version_option.get("nsobid", "") + "\n")
-                    file.write(version_option.get("offset", "") + "\n")
-                    for key, value in version_option.items():
-                        if key not in ["Source", "nsobid", "offset", "version", "Version"] and self.selected_options[key].get() == "On":
-                            pattern = r"@enabled\n([\da-fA-F\s]+)\n@stop"
-                            matches = re.findall(pattern, value)
-                            for match in matches:
-                                hex_values = match.strip().split()
-                                all_values.extend(hex_values)
-                                # Print @enabled and then @stop at the end.
-                    file.write("@enabled\n")
-                    for i, value in enumerate(all_values):
-                        file.write(value)
-                        if i % 2 == 1 and i != len(all_values) - 1:
-                            file.write("\n")
-                        else:
-                            file.write(" ")
-                    file.write("\n@stop\n")
-            if self.mode == "Yuzu":
-                qtconfig = get_config_parser()
-                qtconfig.optionxform = lambda option: option
-                qtconfig.read(self.configdir)
-            else:
-                qtconfig = None
-            # Ensures that the patches are active
-            modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "DFPS", action="remove")
-            modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Mod Manager Patches", action="remove")
-            # To maximize compatbility with old version of Mod Folders and Mod Manager.
-            modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Visual Improvements", action="add")
-            # Update Visual Improvements MOD.
-            with open(ini_file_path, 'w') as configfile:
-                config.write(configfile)
+                    filename = os.path.join(mod_path, f"{version}.pchtxt")
+                    all_values = []
+                    with open(filename, "w") as file:
+                        file.write(version_option.get("Source", "") + "\n")
+                        file.write(version_option.get("nsobid", "") + "\n")
+                        file.write(version_option.get("offset", "") + "\n")
+                        for key, value in version_option.items():
+                            if key not in ["Source", "nsobid", "offset", "version", "Version"] and self.selected_options[key].get() == "On":
+                                pattern = r"@enabled\n([\da-fA-F\s]+)\n@stop"
+                                matches = re.findall(pattern, value)
+                                for match in matches:
+                                    hex_values = match.strip().split()
+                                    all_values.extend(hex_values)
+                                    # Print @enabled and then @stop at the end.
+                        file.write("@enabled\n")
+                        for i, value in enumerate(all_values):
+                            file.write(value)
+                            if i % 2 == 1 and i != len(all_values) - 1:
+                                file.write("\n")
+                            else:
+                                file.write(" ")
+                        file.write("\n@stop\n")
+                if self.mode == "Yuzu":
+                    qtconfig = get_config_parser()
+                    qtconfig.optionxform = lambda option: option
+                    qtconfig.read(self.configdir)
+                else:
+                    qtconfig = None
+                # Ensures that the patches are active
+                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "DFPS", action="remove")
+                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Mod Manager Patches", action="remove")
+                # To maximize compatbility with old version of Mod Folders and Mod Manager.
+                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Visual Improvements", action="add")
+                # Update Visual Improvements MOD.
+                with open(ini_file_path, 'w') as configfile:
+                    config.write(configfile)
 
         def UpdateSettings():
             Setting_folder = None
