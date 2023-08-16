@@ -1,5 +1,5 @@
 Latest TOTK release 1.2.0!
 Latest DFPS Version 1.5.5(beta3)
---V1.2.0--
-Ryujinx and Cheats!
-Hovertips and New GUI!
+--V1.2.2--
+Fixed scaling issues
+Improved performance
