@@ -52,7 +52,7 @@ def checkpath(self, mode):
                 NEWyuzu_path = os.path.normpath(os.path.join(userfolder, "../"))
                 qt_config_save_dir = os.path.normpath(os.path.join(self.nand_dir, "../../"))
                 # Warn user that their QT-Config path is INCORRECT!
-                if qt_config_save_dir != NEWyuzu_path and self.warnagain == "yes":
+                if qt_config_save_dir != NEWyuzu_path and self.warn_again == "yes":
                     message = (
                         f"WARNING: Your QT Config Save Directory may not be correct!\n"
                         f"Your saves could be in danger.\n"
@@ -63,11 +63,11 @@ def checkpath(self, mode):
                     response = messagebox.askyesno("Warning", message, icon=messagebox.WARNING)
                     if response:
                         self.backup()
-                        self.warnagain = "no"
+                        self.warn_again = "no"
                         print("Sucessfully backed up save files, in backup folder. Please delete qt-config in USER folder! Or correct the user folder paths, then use the backup file to recover your saves!")
                         pass
                     else:
-                        self.warnagain = "no"
+                        self.warn_again = "no"
                         print("Warning has been declined!")
                 return
             # Default to Appdata

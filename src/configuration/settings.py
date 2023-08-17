@@ -1,7 +1,10 @@
 from modules.colors import Color
 from modules.scaling import scale, sf
+from configuration.settings_config import Setting
+from ttkbootstrap import Style
 
 
+s = Setting()
 fontsize = 13
 bigfontsize = 18
 CH = 26
@@ -20,12 +23,14 @@ html_color = Color()
 Hoverdelay = 500
 title_id = "72324500776771584"
 localconfig = "Manager_Config.ini"
-font = "Arial Bold"
+font = s.get_setting("f")
+theme = s.get_setting("s")
+tcolor = s.get_setting("c")
 textfont = (font, fontsize)
-btnfont = ("Arial Bolds", fontsize - 3)
+btnfont = (font, fontsize - 3)
 bigfont = ("Triforce", bigfontsize)
-biggyfont = ("Arial Bold", bigfontsize, "bold")
-textcolor = html_color["light-cyan"]
+biggyfont = (font, bigfontsize, "bold")
+textcolor = html_color[tcolor]
 BigTextcolor = html_color["light-green"]
 outlinecolor = html_color["purple"]
 style = "danger"
