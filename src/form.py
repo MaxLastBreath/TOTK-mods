@@ -103,7 +103,8 @@ class Manager:
         # Run Scripts for checking OS and finding location
         checkpath(self, self.mode)
         DetectOS(self, self.mode)
-        # DEBUG purpose
+
+        # FOR DEBUGGING PURPOSES
         def onCanvasClick(event):
             print (f"CRODS = X={event.x} + Y={event.y} + {event.widget}")
         self.maincanvas.bind("<Button-3>", onCanvasClick)
@@ -113,15 +114,11 @@ class Manager:
         presets = {"Saved": {}} | load_json("preset.json", presetsurl)
         values = list(presets.keys())
         self.selected_preset = self.on_canvas.create_combobox(
-                                                            master=self.window,
-                                                            canvas=canvas,
+                                                            master=self.window, canvas=canvas,
                                                             text="Select Preset:",
-                                                            variable="Saved",
-                                                            row=row,
-                                                            cul=cul_tex,
-                                                            values=values,
-                                                            tags=["text"],
-                                                            tag="Yuzu",
+                                                            variable=values[0], values=values,
+                                                            row=row, cul=cul_tex,
+                                                            tags=["text"], tag="Yuzu",
                                                             description_name="Presets",
                                                             command=self.apply_selected_preset
                                                         )
@@ -129,16 +126,11 @@ class Manager:
         # Setting Preset - returns variable.
         value = ["No Change", "Steamdeck", "AMD", "Nvidia", "High End Nvidia"]
         self.selected_settings = self.on_canvas.create_combobox(
-                                                            master=self.window,
-                                                            canvas=canvas,
+                                                            master=self.window, canvas=canvas,
                                                             text="Select Settings:",
-                                                            variable=value[0],
-                                                            row=row,
-                                                            cul=scale(340),
-                                                            drop_cul=scale(480),
-                                                            values=value,
-                                                            tags=["text"],
-                                                            tag="yuzu",
+                                                            variable=value[0], values=value,
+                                                            row=row, cul=340, drop_cul=480,
+                                                            tags=["text"], tag="yuzu",
                                                             description_name="Setting"
                                                         )
 
@@ -148,85 +140,90 @@ class Manager:
         self.selectexe_outline = self.maincanvas.create_text(cul_tex + 1, row + 1, text="Select yuzu.exe:", anchor="w", fill=outlinecolor, font=textfont, tags=["outline"])
         self.selectexe = self.maincanvas.create_text(cul_tex, row, text="Select yuzu.exe:", anchor="w", fill=textcolor, font=textfont, tags=["text"])
         self.read_description(canvas, "Browse", self.selectexe)
+
         if self.os_platform == "Windows":
-            yuzu_button = ttk.Button(self.window, text="Browse", command=self.select_yuzu_exe)
-            yuzu_button_window = self.maincanvas.create_window(cul_sel, row, anchor="w", window=yuzu_button, width=scale(65), height= scale(28))
-            self.read_description(canvas, "Browse", yuzu_button)
+            self.on_canvas.create_button(
+                                        master=self.window, canvas=canvas,
+                                        btn_text="Browse",
+                                        row=row, cul=cul_sel, width=6,
+                                        tags=["text", "Button"],
+                                        description_name="Browse",
+                                        command=self.select_yuzu_exe
+                                        )
+
 
             # Reset to Appdata
             def yuzu_appdata():
                 checkpath(self, self.mode)
                 print("Successfully Defaulted to Appdata!")
                 save_user_choices(self, self.config, "appdata", None)
-            reset_button = ttk.Button(self.window, text="Use Appdata", command=yuzu_appdata)
-            reset_button_window = self.maincanvas.create_window(cul_sel + scale(70), row, anchor="w", window=reset_button, width=scale(95), height=scale(28))
-            self.read_description(canvas, "Reset", reset_button)
-            backupbutton = cul_sel + scale(170)
+
+            self.on_canvas.create_button(
+                                        master=self.window, canvas=canvas,
+                                        btn_text="Use Appdata",
+                                        row=row, cul=cul_sel + 70, width=10,
+                                        tags=["text", "Button"],
+                                        description_name="Reset",
+                                        command=yuzu_appdata
+                                        )
+            backupbutton = cul_sel + 165
 
         # Create a Backup button
-        backup_button = ttk.Button(self.window, text="Backup", command=lambda: backup(self))
-        backup_button_window = self.maincanvas.create_window(backupbutton, row, anchor="w", window=backup_button, width=scale(65), height=scale(28))
-        self.read_description(canvas, "Backup", backup_button)
+        self.on_canvas.create_button(
+                                    master=self.window, canvas=canvas,
+                                    btn_text="Backup",
+                                    row=row, cul=backupbutton, width=7,
+                                    tags=["text", "Button"],
+                                    description_name="Backup",
+                                    command=lambda: backup(self)
+        )
         row += scale(40)
 
         # Create big TEXT label.
         self.preset_label = self.maincanvas.create_text(cul_tex + scale(101), row + 1, text="Display Settings", anchor="w", fill=outlinecolor, font=bigfont)
         self.preset_label2 = self.maincanvas.create_text(cul_tex + scale(100), row, text="Display Settings", anchor="w", fill=BigTextcolor, font=bigfont)
         # Create big TEXT label.
-        self.preset_label = self.maincanvas.create_text(scale(400)+ scale(101), row+1, text="Mod Improvements", anchor="w", fill=outlinecolor, font=bigfont)
-        self.preset_label2 = self.maincanvas.create_text(scale(400)+ scale(100), row, text="Mod Improvements", anchor="w", fill=BigTextcolor, font=bigfont)
+        self.preset_label = self.maincanvas.create_text(scale(400) + scale(101), row+1, text="Mod Improvements", anchor="w", fill=outlinecolor, font=bigfont)
+        self.preset_label2 = self.maincanvas.create_text(scale(400) + scale(100), row, text="Mod Improvements", anchor="w", fill=BigTextcolor, font=bigfont)
 
         row += scale(40)
 
         # Create a label for resolution selection
         values = self.dfps_options.get("ResolutionNames", [])
         self.resolution_var = self.on_canvas.create_combobox(
-                                                            master=self.window,
-                                                            canvas=canvas,
+                                                            master=self.window, canvas=canvas,
                                                             text="Select a Resolution:",
-                                                            variable=value[0],
-                                                            row=row,
-                                                            cul=cul_tex,
-                                                            drop_cul=cul_sel,
-                                                            values=values,
-                                                            tags=["text"],
-                                                            tag=None,
-                                                            description_name="Resolution"
-                                                        )
+                                                            variable=value[0], values=values,
+                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                            tags=["text"], tag=None,
+                                                            description_name="Resolution",
+                                                            command=lambda event: self.warning_window("Res")
+                                                            )
         row += scale(40)
 
         # Create a label for FPS selection
         values = self.dfps_options.get("FPS", [])
         self.fps_var = self.on_canvas.create_combobox(
-                                                            master=self.window,
-                                                            canvas=canvas,
+                                                            master=self.window, canvas=canvas,
                                                             text="Select an FPS:",
-                                                            variable=value[0],
-                                                            row=row,
-                                                            cul=cul_tex,
-                                                            drop_cul=cul_sel,
-                                                            values=values,
-                                                            tags=["text"],
-                                                            tag=None,
+                                                            variable=value[0], values=values,
+                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                            tags=["text"], tag=None,
                                                             description_name="FPS"
-                                                        )
+                                                      )
+
         row += scale(40)
 
         # Create a label for shadow resolution selection
         values = self.dfps_options.get("ShadowResolutionNames", [""])[1]
         self.shadow_resolution_var = self.on_canvas.create_combobox(
-                                                            master=self.window,
-                                                            canvas=canvas,
+                                                            master=self.window, canvas=canvas,
                                                             text="Shadow Resolution:",
-                                                            variable=value[0],
-                                                            row=row,
-                                                            cul=cul_tex,
-                                                            drop_cul=cul_sel,
-                                                            values=values,
-                                                            tags=["text"],
-                                                            tag=None,
+                                                            variable=value[0], values=values,
+                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                            tags=["text"], tag=None,
                                                             description_name="Shadows"
-                                                        )
+                                                                    )
         row += scale(40)
 
         # Make exception for camera quality
@@ -238,16 +235,11 @@ class Manager:
                 values[index] = "Off"
 
         self.camera_var = self.on_canvas.create_combobox(
-                                                            master=self.window,
-                                                            canvas=canvas,
+                                                            master=self.window, canvas=canvas,
                                                             text="Camera Quality++:",
-                                                            variable=value[0],
-                                                            row=row,
-                                                            cul=cul_tex,
-                                                            drop_cul=cul_sel,
-                                                            values=values,
-                                                            tags=["text"],
-                                                            tag=None,
+                                                            variable=value[0], values=values,
+                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                            tags=["text"], tag=None,
                                                             description_name="Camera"
                                                         )
         row += scale(40)
@@ -255,35 +247,25 @@ class Manager:
         # Create a label for UI selection
         values = ["None", "Black Screen Fix", "PS4", "Xbox"]
         self.ui_var = self.on_canvas.create_combobox(
-                                                            master=self.window,
-                                                            canvas=canvas,
+                                                            master=self.window, canvas=canvas,
                                                             text="Select an UI:",
-                                                            variable=value[0],
-                                                            row=row,
-                                                            cul=cul_tex,
-                                                            drop_cul=cul_sel,
-                                                            values=values,
-                                                            tags=["text"],
-                                                            tag=None,
+                                                            variable=value[0], values=values,
+                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                            tags=["text"], tag=None,
                                                             description_name="UI"
-                                                        )
+                                                    )
         row += scale(40)
 
         # First Person and FOV
         values = ["Off", "70 FOV", "90 FOV", "110 FOV"]
         self.fp_var = self.on_canvas.create_combobox(
-                                                            master=self.window,
-                                                            canvas=canvas,
-                                                            text="Enable First Person::",
-                                                            variable=value[0],
-                                                            row=row,
-                                                            cul=cul_tex,
-                                                            drop_cul=cul_sel,
-                                                            values=values,
-                                                            tags=["text"],
-                                                            tag=None,
-                                                            description_name="First Person"
-                                                        )
+                                                        master=self.window, canvas=canvas,
+                                                        text="Enable First Person::",
+                                                        values=values, variable=value[0],
+                                                        row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                        tags=["text"], tag=None,
+                                                        description_name="First Person"
+                                                    )
         # XYZ to generate patch.
 
         row = scale(120)
@@ -299,15 +281,11 @@ class Manager:
 
                 # Create checkbox
                 version_option_var = self.on_canvas.create_checkbutton(
-                                                                        master=self.window,
-                                                                        canvas=canvas,
+                                                                        master=self.window, canvas=canvas,
                                                                         text=version_option_name,
                                                                         variable="Off",
-                                                                        row=row + 40,
-                                                                        cul=cul_tex,
-                                                                        drop_cul=cul_sel,
-                                                                        tags=["text"],
-                                                                        tag=None,
+                                                                        row=row + 40, cul=cul_tex, drop_cul=cul_sel,
+                                                                        tags=["text"], tag=None,
                                                                         description_name=version_option_name
                                                                        )
                 self.selected_options[version_option_name] = version_option_var
@@ -319,10 +297,13 @@ class Manager:
                 cul_sel += scale(180)
 
         # Create a submit button
-        submit_button = ttk.Button(self.window, text="Apply Mods", command=self.submit, padding=5, bootstyle="success")
-        submit_button_window = self.maincanvas.create_window(scale(39), scale(520), anchor="w", window=submit_button, width=scale(90), height=scale(30))
-        self.read_description(canvas, "Apply", submit_button)
-
+        self.on_canvas.create_button(
+            master=self.window, canvas=canvas,
+            btn_text="Apply Mods", tags=["Button"],
+            row=520, cul=39, padding=10, width=9,
+            description_name="Apply", style="success",
+            command=self.submit
+        )
         # Load Saved User Options.
         load_user_choices(self, self.config)
         return self.maincanvas
@@ -339,8 +320,8 @@ class Manager:
         self.create_tab_buttons(self.cheatcanvas)
         # Create Positions.
         row = scale(40)
-        cultex = scale(40)
-        culsel = scale(200)
+        cul_tex = scale(40)
+        cul_sel = scale(200)
         Hoverdelay = scale(500)
 
         # Push every version in combobox
@@ -350,9 +331,16 @@ class Manager:
                 if key == "Aversion":
                     versionvalues.append("Version - " + value)
 
-        self.cheat_version_dropdown = ttk.Combobox(self.window, textvariable=self.cheat_version, values=versionvalues, state="readonly")
-        self.cheat_version_dropdown_window = self.cheatcanvas.create_window(scale(130), scale(520), anchor="w", window=self.cheat_version_dropdown, width=scale(150), height=CBHEIGHT)
-        self.cheat_version_dropdown.bind("<<ComboboxSelected>>", lambda event: loadCheats())
+        self.cheat_version = self.on_canvas.create_combobox(
+                                                            master=self.window, canvas=canvas,
+                                                            text="",
+                                                            values=versionvalues, variable=versionvalues[1],
+                                                            row=520, cul=130, drop_cul=130,
+                                                            tags=["text"], tag=None,
+                                                            description_name="CheatVersion",
+                                                            command=lambda event: loadCheats()
+                                                            )
+        load_user_choices(self, self.config)
 
 
         def loadCheats():
@@ -383,15 +371,11 @@ class Manager:
                 if version_option_name not in ["Source", "Version", "Aversion", "Cheat Example"]:
 
                     version_option_var = self.on_canvas.create_checkbutton(
-                        master=self.window,
-                        canvas=canvas,
+                        master=self.window, canvas=canvas,
                         text=version_option_name,
                         variable="Off",
-                        row=row,
-                        cul=cul_tex,
-                        drop_cul=cul_sel,
-                        tags=["text"],
-                        tag="cheats",
+                        row=row, cul=cul_tex, drop_cul=cul_sel,
+                        tags=["text"], tag="cheats",
                         description_name=version_option_name
                     )
 
@@ -423,25 +407,47 @@ class Manager:
 
 
         # Create a submit button
-        submit_button = ttk.Button(self.window, text="Apply Cheats", command=lambda: self.submit("Cheats"), padding=5, bootstyle="success")
-        submit_button_window = self.cheatcanvas.create_window(scale(39), scale(520), anchor="w", window=submit_button, width=scale(85), height=scale(30))
-        self.read_description(canvas, "Apply", submit_button)
+        self.on_canvas.create_button(
+                                    master=self.window, canvas=canvas,
+                                    btn_text="Apply Cheats",
+                                    row=520, cul=39, width=12, padding=5,
+                                    tags=["Button"],
+                                    style="success",
+                                    description_name="Apply Cheats",
+                                    command=lambda: self.submit("Cheats")
+        )
 
         # Create a submit button
-        resetcheats_button = ttk.Button(self.window, text="Reset Cheats", command=lambda: ResetCheats(), padding=5)
-        resetcheats_button_window = self.cheatcanvas.create_window(scale(277) + scale(6), scale(520), anchor="w", window=resetcheats_button, width=scale(85), height=scale(30))
-        self.read_description(canvas, "Reset Cheats", submit_button)
+        self.on_canvas.create_button(
+                                    master=self.window, canvas=canvas,
+                                    btn_text="Reset Cheats",
+                                    row=520, cul=277+6, width=12, padding=5,
+                                    tags=["text", "Button"],
+                                    style="default",
+                                    description_name="Reset Cheats",
+                                    command=ResetCheats
+        )
         # Read Cheats
-
-        readcheats_button = ttk.Button(self.window, text="Read Saved Cheats", command=lambda: load_user_choices(self, self.config, "Cheats"), padding=5)
-        readcheats_button_window = self.cheatcanvas.create_window(scale(367) + scale(6), scale(520), anchor="w", window=readcheats_button, width=scale(115), height=scale(30))
-        self.read_description(canvas, "Read Cheats", submit_button)
+        self.on_canvas.create_button(
+                                    master=self.window, canvas=canvas,
+                                    btn_text="Read Saved Cheats",
+                                    row=520, cul=367+6, width=16, padding=5,
+                                    tags=["Button"],
+                                    style="default",
+                                    description_name="Read Cheats",
+                                    command=lambda: load_user_choices(self, self.config, "Cheats")
+        )
 
         #Backup
-        backup_button = ttk.Button(self.window, text="Backup", command=lambda: backup(self))
-        backup_button_window = self.cheatcanvas.create_window(scale(485)+ scale(8), scale(520), anchor="w", window=backup_button, width=scale(70), height=scale(30))
-        self.read_description(canvas, "Backup", backup_button)
-
+        self.on_canvas.create_button(
+                                    master=self.window, canvas=canvas,
+                                    btn_text="Backup",
+                                    row=520, cul=480+6, width=8, padding=5,
+                                    tags=["Button"],
+                                    style="default",
+                                    description_name="Backup",
+                                    command=lambda: backup(self)
+        )
         loadCheats()
         load_user_choices(self, self.config)
 
@@ -486,16 +492,13 @@ class Manager:
             self.ani.start()
 
     def open_browser(self, web, event=None):
-
         url = "https://ko-fi.com/maxlastbreath#"
-
         if web == "Kofi":
             url = "https://ko-fi.com/maxlastbreath#"
         elif web == "Github":
             url = "https://github.com/MaxLastBreath/TOTK-mods"
         elif web == "Discord":
             url = "https://discord.gg/7MMv4yGfhM"
-
         webbrowser.open(url)
         return
 

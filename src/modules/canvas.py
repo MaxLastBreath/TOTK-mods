@@ -11,8 +11,10 @@ class Canvas:
         self.window = None
         self.tooltip_active = None
 
-    def create_combobox(self, master, canvas, text, row=40, cul=40, drop_cul=180, variable=any,
-                        values=[], tags=[], tag=None, description_name=None, command=None):
+    def create_combobox(self, master, canvas,
+                        text, description_name=None, variable=any, values=[],
+                        row=40, cul=40, drop_cul=180,
+                        tags=[], tag=None, command=None):
         # create text
         if tag is not None:
             tags.append(tag)
@@ -69,8 +71,11 @@ class Canvas:
         row += 40
         return new_variable
 
-    def create_checkbutton(self, master, canvas, text, row=40, cul=40, drop_cul=180, variable=any,
-                            tags=[], tag=None, description_name=None, command=any):
+    def create_checkbutton(
+            self, master, canvas,
+            text, description_name=None, variable=any,
+            row=40, cul=40, drop_cul=180,
+            tags=[], tag=None, command=any):
         # create text
         if tag is not None:
             tags.append(tag)
@@ -127,6 +132,43 @@ class Canvas:
                               )
         row += 40
         return new_variable
+
+    def create_button(
+            self, master, canvas,
+            btn_text, description_name=None,
+            row=40, cul=40, width=None, padding=None,
+            tags=[], tag=None,
+            style="default", command=any,
+                      ):
+        # create text
+        if tag is not None:
+            tags.append(tag)
+        # create checkbutton
+
+        button = ttk.Button(
+            master=master,
+            width=scale(width),
+            text=btn_text,
+            command=command,
+            bootstyle=style,
+            padding=padding
+        )
+
+        checkbutton_window = canvas.create_window(
+            scale(cul),
+            scale(row),
+            anchor="w",
+            window=button,
+            tags=tag
+        )
+
+        self.read_description(
+            canvas=canvas,
+            option=description_name,
+            position_list=[button],
+            master=master
+        )
+        return
 
     def read_description(self, canvas, option, position_list=list, master=any):
         for position in position_list:
