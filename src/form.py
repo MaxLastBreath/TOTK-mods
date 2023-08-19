@@ -1,35 +1,33 @@
 import tkinter as tk
-from tkinter import Event, TclError, filedialog, messagebox, Toplevel
 import configparser
 import threading
 import os
 import sys
 import shutil
-import json
 import requests
 import ttkbootstrap as ttk
 import time
 import webbrowser
 import re
-from ttkbootstrap import Style
+from tkinter import TclError, filedialog, messagebox, Toplevel
 from idlelib.tooltip import Hovertip
 from ttkbootstrap.constants import *
+from ttkbootstrap import Style
 from PIL import Image, ImageTk, ImageFilter, ImageOps
 from configparser import NoOptionError
+from modules.canvas import Canvas
 from modules.qt_config import modify_disabled_key, get_config_parser
 from modules.checkpath import checkpath, DetectOS
-from modules.json import load_json
 from modules.backup import backup
 from modules.config import save_user_choices, load_user_choices
-from modules.scaling import scale
-from configuration.settings import Hoverdelay, title_id, localconfig, textfont, style, sf, textcolor, outlinecolor, dfpsurl, cheatsurl, versionurl, presetsurl, descurl, bigfont, BigTextcolor, biggyfont, CBHEIGHT, FPS, btnfont, theme
+from configuration.settings import *
 from configuration.settings_config import Setting
 
 class Manager:
     def __init__(self, window):
         self.constyle = Style(theme=theme.lower())
         self.constyle.configure("TButton", font=btnfont)
-
+        self.on_canvas = Canvas()
         # Set Variables
         self.setting = Setting()
         self.config = localconfig
@@ -51,7 +49,6 @@ class Manager:
         self.presets = load_json("preset.json", presetsurl)
         self.version_options = load_json("Version.json", versionurl)
         self.cheat_options = load_json("Cheats.json", cheatsurl)
-
         self.tooltip_active = False
         # Warn for Backup File
         self.warn_again = "yes"
@@ -73,14 +70,13 @@ class Manager:
         self.is_Ani_Paused = False
     def unfocus(self, event):
         self.is_Ani_Paused = True
-    def warning(self, e,):
+    def warning(self, e):
         messagebox.showwarning(f"{e}")
     def toggle(self, event, var):
         if var.get() == "On":
             var.set("Off")
         else:
             var.set("On")
-
     # bind the toggle
 
     def bind_toggle(self, canvas, item, var):
@@ -88,7 +84,7 @@ class Manager:
     # Canvas
     def createcanvas(self):
         # Create Canvas
-        self.maincanvas = tk.Canvas(self.window, width= scale(1200), height=scale(600))
+        self.maincanvas = tk.Canvas(self.window, width=scale(1200), height=scale(600))
         canvas = self.maincanvas
         self.maincanvas.pack()
         self.all_canvas.append(self.maincanvas)
@@ -111,27 +107,38 @@ class Manager:
         self.maincanvas.bind("<Button-3>", onCanvasClick)
         # Start of CANVAS options.
 
-        # Create preset menu. 
-        self.presets = {"Saved": {}} | self.presets
-        self.preset_label = self.maincanvas.create_text(cul_tex + 1, row + 1, text="Select Preset:", anchor="w", fill=outlinecolor, font=textfont, tags=["outline"])
-        pretext = self.preset_label2 = self.maincanvas.create_text(cul_tex, row, text="Select Preset:", anchor="w", fill=textcolor, font=textfont, tags=["text"])
-        self.selected_preset = tk.StringVar(value="Saved")
-        self.preset_dropdown = ttk.Combobox(self.window, textvariable=self.selected_preset, values=list(self.presets.keys()), state="readonly")
-        self.preset_dropdown_window = self.maincanvas.create_window(cul_sel, row, anchor="w", window=self.preset_dropdown, width=scale(150), height=CBHEIGHT)
-        self.preset_dropdown.bind("<<ComboboxSelected>>", self.apply_selected_preset)
-        self.read_description(canvas, "Presets", self.preset_dropdown, pretext)
+        # Create preset menu.
+        presets = {"Saved": {}} | self.presets
+        self.selected_preset = self.on_canvas.create_combobox(
+                                                            master=self.window,
+                                                            canvas=canvas,
+                                                            text="Select Preset:",
+                                                            variable="Saved",
+                                                            row=row,
+                                                            cul=cul_tex,
+                                                            values=presets,
+                                                            tags=["text"],
+                                                            tag="Yuzu",
+                                                            description_name="Presets"
+                                                        )
 
+        # Setting Preset - returns variable.
+        value = ["No Change", "Steamdeck", "AMD", "Nvidia", "High End Nvidia"]
+        self.selected_settings = self.on_canvas.create_combobox(
+                                                            master=self.window,
+                                                            canvas=canvas,
+                                                            text="Select Settings:",
+                                                            variable=value[0],
+                                                            row=row,
+                                                            cul=scale(340),
+                                                            drop_cul=scale(480),
+                                                            values=value,
+                                                            tags=["text"],
+                                                            tag="yuzu",
+                                                            description_name="Setting"
+                                                        )
 
-        # Setting Preset
-        self.Settings_label_outline = self.maincanvas.create_text(scale(370)+1, scale(40)+1, text="Yuzu Settings:", anchor="w", fill=outlinecolor, font=textfont, tags=["outline"])
-        self.Settings_label = self.maincanvas.create_text(scale(370), scale(40), text="Yuzu Settings:", anchor="w", fill=textcolor, font=textfont, tags=["text"])
-        self.selected_settings = tk.StringVar(value="No Change")
-        self.second_dropdown = ttk.Combobox(self.window, textvariable=self.selected_settings, values=["No Change", "Steamdeck", "AMD", "Nvidia", "High End Nvidia"], state="readonly")
-        self.second_dropdown_window = self.maincanvas.create_window(scale(480), scale(40), anchor="w", window=self.second_dropdown, width=scale(150), height=CBHEIGHT)
-        self.second_dropdown.bind("<<ComboboxSelected>>")
-        self.read_description(canvas, "Settings", self.second_dropdown, self.Settings_label)
         row += scale(40)
-
         # Create a label for yuzu.exe selection
         backupbutton = cul_sel
         self.selectexe_outline = self.maincanvas.create_text(cul_tex + 1, row + 1, text="Select yuzu.exe:", anchor="w", fill=outlinecolor, font=textfont, tags=["outline"])
@@ -168,69 +175,111 @@ class Manager:
         row += scale(40)
 
         # Create a label for resolution selection
-        self.maincanvas.create_text(cul_tex + 1, row + 1, text="Select a Resolution:", anchor="w", fill=outlinecolor, font=textfont, tags=["outline"])
-        restext = self.maincanvas.create_text(cul_tex, row, text="Select a Resolution:", anchor="w", fill=textcolor, font=textfont, tags=["text"])
-        self.resolution_var = tk.StringVar(value=self.dfps_options.get("ResolutionNames", [""])[2])  # Set the default resolution to "1080p FHD"
-        resolution_dropdown = ttk.Combobox(self.window, textvariable=self.resolution_var, values=self.dfps_options.get("ResolutionNames", []), state="readonly")
-        resolution_dropdown_window = self.maincanvas.create_window(cul_sel, row, anchor="w", window=resolution_dropdown, width=scale(150), height=CBHEIGHT)
-        resolution_dropdown.bind("<<ComboboxSelected>>", lambda event: self.warning_window("Res"))
-        self.read_description(canvas, "Resolution", resolution_dropdown, restext)
+        values = self.dfps_options.get("ResolutionNames", [])
+        self.resolution_var = self.on_canvas.create_combobox(
+                                                            master=self.window,
+                                                            canvas=canvas,
+                                                            text="Select a Resolution:",
+                                                            variable=value[0],
+                                                            row=row,
+                                                            cul=cul_tex,
+                                                            drop_cul=cul_sel,
+                                                            values=values,
+                                                            tags=["text"],
+                                                            tag=None,
+                                                            description_name="Resolution"
+                                                        )
         row += scale(40)
 
         # Create a label for FPS selection
-        self.maincanvas.create_text(cul_tex + 1, row + 1, text="Select an FPS:", anchor="w", fill=outlinecolor, font=textfont, tags=["outline"])
-        fpstext = self.maincanvas.create_text(cul_tex, row, text="Select an FPS:", anchor="w", fill=textcolor, font=textfont, tags=["text"])
-        self.fps_var = tk.StringVar(value=str(self.dfps_options.get("FPS", [])[2]))  # Set the default FPS to 60
-        fps_dropdown = ttk.Combobox(self.window, textvariable=self.fps_var, values=self.dfps_options.get("FPS", []), state="readonly")
-        fps_dropdown_window = self.maincanvas.create_window(cul_sel, row, anchor="w", window=fps_dropdown, width=scale(150), height=CBHEIGHT)
-        self.read_description(canvas, "FPS", fps_dropdown, fpstext)
+        values = self.dfps_options.get("FPS", [])
+        self.fps_var = self.on_canvas.create_combobox(
+                                                            master=self.window,
+                                                            canvas=canvas,
+                                                            text="Select an FPS:",
+                                                            variable=value[0],
+                                                            row=row,
+                                                            cul=cul_tex,
+                                                            drop_cul=cul_sel,
+                                                            values=values,
+                                                            tags=["text"],
+                                                            tag=None,
+                                                            description_name="FPS"
+                                                        )
         row += scale(40)
 
         # Create a label for shadow resolution selection
-        self.maincanvas.create_text(cul_tex + 1, row + 1, text="Shadow Resolution:", anchor="w", fill=outlinecolor, font=textfont, tags=["outline"])
-        shadowtext = self.maincanvas.create_text(cul_tex, row, text="Shadow Resolution:", anchor="w", fill=textcolor, font=textfont, tags=["text"])
-        self.shadow_resolution_var = tk.StringVar(value=self.dfps_options.get("ShadowResolutionNames", [""])[1])  # Set the default shadow resolution to "Default"
-        shadow_resolution_dropdown = ttk.Combobox(self.window, textvariable=self.shadow_resolution_var, values=self.dfps_options.get("ShadowResolutionNames", []), state="readonly")
-        shadow_resolution_dropdown_window = self.maincanvas.create_window(cul_sel, row, anchor="w", window=shadow_resolution_dropdown, width=scale(150), height=CBHEIGHT)
-        self.read_description(canvas, "Shadows", shadow_resolution_dropdown, shadowtext)
+        values = self.dfps_options.get("ShadowResolutionNames", [""])[1]
+        self.shadow_resolution_var = self.on_canvas.create_combobox(
+                                                            master=self.window,
+                                                            canvas=canvas,
+                                                            text="Shadow Resolution:",
+                                                            variable=value[0],
+                                                            row=row,
+                                                            cul=cul_tex,
+                                                            drop_cul=cul_sel,
+                                                            values=values,
+                                                            tags=["text"],
+                                                            tag=None,
+                                                            description_name="Shadows"
+                                                        )
         row += scale(40)
 
         # Make exception for camera quality
-        CameraQ = self.dfps_options.get("CameraQualityNames", [""])
-        for index, value in enumerate(CameraQ):
-            if value == "Enable" or value == "Enabled":
-                CameraQ[index] = "On"
-            elif value == "Disable" or value == "Disabled":
-                CameraQ[index] = "Off"
+        values = self.dfps_options.get("CameraQualityNames", [""])
+        for index, value in enumerate(values):
+            if value in ["Enable", "Enabled"]:
+                values[index] = "On"
+            elif value in ["Disable", "Disabled"]:
+                values[index] = "Off"
 
-        self.maincanvas.create_text(cul_tex + 1, row + 1, text="Camera Quality++:", anchor="w", fill=outlinecolor, font=textfont, tags=["outline"])
-        camtext = self.maincanvas.create_text(cul_tex, row, text="Camera Quality++:", anchor="w", fill=textcolor, font=textfont, tags=["text"])
-        self.camera_var = tk.StringVar(value=CameraQ[0])  # Set the default camera quality to "Enable"
-        camera_dropdown = ttk.Combobox(self.window, textvariable=self.camera_var, values=self.dfps_options.get("CameraQualityNames", []), state="readonly")
-        camera_dropdown_window = self.maincanvas.create_window(cul_sel, row, anchor="w", window=camera_dropdown, width=scale(150), height=CBHEIGHT)
-        self.read_description(canvas, "Camera Quality", camera_dropdown, camtext)
+        self.camera_var = self.on_canvas.create_combobox(
+                                                            master=self.window,
+                                                            canvas=canvas,
+                                                            text="Camera Quality++:",
+                                                            variable=value[0],
+                                                            row=row,
+                                                            cul=cul_tex,
+                                                            drop_cul=cul_sel,
+                                                            values=values,
+                                                            tags=["text"],
+                                                            tag=None,
+                                                            description_name="Camera"
+                                                        )
         row += scale(40)
 
         # Create a label for UI selection
-
-        self.maincanvas.create_text(cul_tex + 1, row + 1, text="Select an UI:", anchor="w", fill=outlinecolor, font=textfont, tags=["outline"])
-        uitext = self.maincanvas.create_text(cul_tex, row, text="Select an UI:", anchor="w", fill=textcolor, font=textfont, tags=["text"])
-        ui_values = ["None", "Black Screen Fix", "PS4", "Xbox"]
-        self.ui_var = tk.StringVar(value=ui_values[0])
-        ui_dropdown = ttk.Combobox(self.window, textvariable=self.ui_var, values=ui_values, state="readonly")
-        ui_dropdown_window = self.maincanvas.create_window(cul_sel, row, anchor="w", window=ui_dropdown, width=scale(150), height=CBHEIGHT)
-        self.read_description(canvas, "UI", ui_dropdown, uitext)
+        values = ["None", "Black Screen Fix", "PS4", "Xbox"]
+        self.ui_var = self.on_canvas.create_combobox(
+                                                            master=self.window,
+                                                            canvas=canvas,
+                                                            text="Select an UI:",
+                                                            variable=value[0],
+                                                            row=row,
+                                                            cul=cul_tex,
+                                                            drop_cul=cul_sel,
+                                                            values=values,
+                                                            tags=["text"],
+                                                            tag=None,
+                                                            description_name="UI"
+                                                        )
         row += scale(40)
 
         # First Person and FOV
-        self.maincanvas.create_text(cul_tex + 1, row + 1, text="Enable First Person:", anchor="w", fill=outlinecolor, font=textfont, tags=["outline"])
-        fptext = self.maincanvas.create_text(cul_tex, row, text="Enable First Person:", anchor="w", fill=textcolor, font=textfont, tags=["text"])
-        fp_values = ["Off", "70 FOV", "90 FOV", "110 FOV"]
-        self.fp_var = tk.StringVar(value=ui_values[0])
-        fp_dropdown = ttk.Combobox(self.window, textvariable=self.fp_var, values=fp_values, state="readonly")
-        fp_dropdown_window = self.maincanvas.create_window(cul_sel, row, anchor="w", window=fp_dropdown, width=scale(150), height=CBHEIGHT)
-        self.read_description(canvas, "First Person", fp_dropdown, fptext)
-
+        values = ["Off", "70 FOV", "90 FOV", "110 FOV"]
+        self.fp_var = self.on_canvas.create_combobox(
+                                                            master=self.window,
+                                                            canvas=canvas,
+                                                            text="Enable First Person::",
+                                                            variable=value[0],
+                                                            row=row,
+                                                            cul=cul_tex,
+                                                            drop_cul=cul_sel,
+                                                            values=values,
+                                                            tags=["text"],
+                                                            tag=None,
+                                                            description_name="First Person"
+                                                        )
         # XYZ to generate patch.
 
         row = scale(120)
@@ -709,11 +758,7 @@ class Manager:
                     canvas.itemconfig("overlay-1", image=self.background_RyuBG)
                     canvas.itemconfig("information", text=f"{self.mode} TOTK Optimizer")
                 self.switch_text.set("Switch to Yuzu")
-                self.maincanvas.itemconfig(self.Settings_label_outline, text="")
-                self.maincanvas.itemconfig(self.Settings_label, text="")
-                self.maincanvas.itemconfig(self.selectexe_outline, text="Select Ryujinx.exe")
-                self.maincanvas.itemconfig(self.selectexe, text="Select Ryujinx.exe")
-                self.second_dropdown.destroy()
+                self.maincanvas.itemconfig("yuzu", state="hidden")
                 return
             elif self.mode == "Ryujinx":
                 self.mode = "Yuzu"
@@ -722,16 +767,7 @@ class Manager:
                     canvas.itemconfig("information", text=f"{self.mode} TOTK Optimizer")
                 # change text
                 self.switch_text.set("Switch to Ryujinx")
-                self.maincanvas.itemconfig(self.Settings_label_outline, text="Yuzu Settings:")
-                self.maincanvas.itemconfig(self.Settings_label, text="Yuzu Settings:")
-                self.maincanvas.itemconfig(self.selectexe_outline, text="Select yuzu.exe")
-                self.maincanvas.itemconfig(self.selectexe, text="Select yuzu.exe")
-
-                # create new labels
-                self.selected_settings = tk.StringVar(value="No Change")
-                self.second_dropdown = ttk.Combobox(self.window, textvariable=self.selected_settings, values=["No Change", "Steamdeck", "AMD", "Nvidia", "High End Nvidia"], state = "readonly")
-                self.second_dropdown_window = self.maincanvas.create_window(scale(470), scale(40), anchor="w", window=self.second_dropdown, width=scale(150), height=CBHEIGHT)
-                self.second_dropdown.bind("<<ComboboxSelected>>")
+                self.maincanvas.itemconfig("yuzu", state="normal")
                 return
         elif command == "false":
             if self.mode == "Ryujinx":
@@ -739,11 +775,7 @@ class Manager:
                     canvas.itemconfig("overlay-1", image=self.background_RyuBG)
                     canvas.itemconfig("information", text=f"{self.mode} TOTK Optimizer")
                 self.switch_text.set("Switch to Yuzu")
-                self.maincanvas.itemconfig(self.Settings_label_outline, text="")
-                self.maincanvas.itemconfig(self.Settings_label, text="")
-                self.maincanvas.itemconfig(self.selectexe_outline, text="Select Ryujinx.exe")
-                self.maincanvas.itemconfig(self.selectexe, text="Select Ryujinx.exe")
-                self.second_dropdown.destroy()
+                self.maincanvas.itemconfig("yuzu", state="hidden")
                 return
         elif command == "Mode":
             return self.mode
@@ -753,9 +785,9 @@ class Manager:
         positionlist.append(position)
         if not position2 == None:
             positionlist.append(position2)
-        if not position3 == None:
+        elif not position3 == None:
             positionlist.append(position2)
-        if not position4 == None:
+        elif not position4 == None:
             positionlist.append(position2)
         for position in positionlist:
             try:

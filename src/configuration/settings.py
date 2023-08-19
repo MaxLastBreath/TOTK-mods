@@ -1,7 +1,7 @@
 from modules.colors import Color
 from modules.scaling import scale, sf
 from configuration.settings_config import Setting
-from ttkbootstrap import Style
+from modules.json import load_json
 
 
 s = Setting()
@@ -35,10 +35,11 @@ BigTextcolor = html_color["light-green"]
 outlinecolor = html_color["purple"]
 style = "danger"
 
-
 # URLS
 dfpsurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/DFPS.json"
 cheatsurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/Cheats.json"
 presetsurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/presets.json"
 versionurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/VersionNew.json"
 descurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/Description.json"
+
+description = load_json("Description.json", descurl)
