@@ -151,7 +151,7 @@ class Manager:
             self.on_canvas.create_button(
                                         master=self.window, canvas=canvas,
                                         btn_text="Use Appdata",
-                                        row=row, cul=cul_sel + 70, width=10,
+                                        row=row, cul=cul_sel + 68, width=9,
                                         tags=["text", "Button"],
                                         description_name="Reset",
                                         command=yuzu_appdata
@@ -167,7 +167,7 @@ class Manager:
                                     text=text,
                                     description_name="Browse",
                                     row=row, cul=cul_tex,
-                                    tags=["Text"], tag=["Select-EXE"],
+                                    tags=["text"], tag=["Select-EXE"], outline_tag="outline",
                                     command=command
                                     )
 
@@ -272,7 +272,7 @@ class Manager:
         values = ["Off", "70 FOV", "90 FOV", "110 FOV"]
         self.fp_var = self.on_canvas.create_combobox(
                                                         master=self.window, canvas=canvas,
-                                                        text="Enable First Person::",
+                                                        text="Enable First Person:",
                                                         values=values, variable=value[0],
                                                         row=row, cul=cul_tex, drop_cul=cul_sel,
                                                         tags=["text"], tag=None,
@@ -347,7 +347,7 @@ class Manager:
                                                             master=self.window, canvas=canvas,
                                                             text="",
                                                             values=versionvalues, variable=versionvalues[1],
-                                                            row=520, cul=130, drop_cul=130,
+                                                            row=520, cul=130+2, drop_cul=130+2,
                                                             tags=["text"], tag=None,
                                                             description_name="CheatVersion",
                                                             command=lambda event: loadCheats()
@@ -422,7 +422,7 @@ class Manager:
         self.on_canvas.create_button(
                                     master=self.window, canvas=canvas,
                                     btn_text="Apply Cheats",
-                                    row=520, cul=39, width=12, padding=5,
+                                    row=520, cul=39, width=9, padding=5,
                                     tags=["Button"],
                                     style="success",
                                     description_name="Apply Cheats",
@@ -433,7 +433,7 @@ class Manager:
         self.on_canvas.create_button(
                                     master=self.window, canvas=canvas,
                                     btn_text="Reset Cheats",
-                                    row=520, cul=277+6, width=12, padding=5,
+                                    row=520, cul=277+6+2, width=8, padding=5,
                                     tags=["text", "Button"],
                                     style="default",
                                     description_name="Reset Cheats",
@@ -443,7 +443,7 @@ class Manager:
         self.on_canvas.create_button(
                                     master=self.window, canvas=canvas,
                                     btn_text="Read Saved Cheats",
-                                    row=520, cul=367+6, width=16, padding=5,
+                                    row=520, cul=366+2, width=11, padding=5,
                                     tags=["Button"],
                                     style="default",
                                     description_name="Read Cheats",
@@ -454,7 +454,7 @@ class Manager:
         self.on_canvas.create_button(
                                     master=self.window, canvas=canvas,
                                     btn_text="Backup",
-                                    row=520, cul=480+6, width=8, padding=5,
+                                    row=520, cul=479+2, width=7, padding=5,
                                     tags=["Button"],
                                     style="default",
                                     description_name="Backup",
@@ -490,16 +490,16 @@ class Manager:
         webbrowser.open(url)
         return
 
-    def get_UI_path(self, file_name):
+    def get_UI_path(self, file_name, folder_name="HUD"):
         if getattr(sys, 'frozen', False):
             # Look for the 'HUD' folder next to the executable
             executable_dir = os.path.dirname(sys.executable)
-            hud_folder_path = os.path.join(executable_dir, "HUD")
+            hud_folder_path = os.path.join(executable_dir, folder_name)
             if os.path.exists(hud_folder_path):
                 return os.path.abspath(os.path.join(hud_folder_path, file_name))
         # If not running as an executable or 'HUD' folder not found, assume it's in the same directory as the script
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        hud_folder_path = os.path.join(script_dir, "HUD")
+        hud_folder_path = os.path.join(script_dir, folder_name)
         return os.path.abspath(os.path.join(hud_folder_path, file_name))
 
     def load_canvas(self):
@@ -585,13 +585,14 @@ class Manager:
 
         # Attempt to load images from custom folder.
         try:
-            if os.path.exists("custom\\background.jpg"):
-                image_path = "custom\\background.jpg"
-            elif os.path.exists("custom\\background.png"):
-                image_path = "custom\\background.png"
+            if os.path.exists("custom\\bg.jpg"):
+                image_path = "custom\\bg.jpg"
+            elif os.path.exists("custom\\bg.png"):
+                image_path = "custom\\bg.png"
             else:
                 # Load and set the image as the background
                 image_path = self.get_UI_path("image.png")
+
             image = Image.open(image_path)
             image = image.resize((scale(1200), scale(600)))
             image = image.filter(ImageFilter.GaussianBlur(1))
@@ -646,11 +647,11 @@ class Manager:
 
     def load_UI_elements(self, canvas):
         # Images and Effects
-
         canvas.create_image(0, 0, anchor="nw", image=self.background_image, tags="background")
         canvas.create_image(0, 0, anchor="nw", image=self.background_YuzuBG, tags="overlay-1")
         canvas.create_image(0, 0, anchor="nw", image=self.background_UI, tags="overlay")
         canvas.create_image(0, 0, anchor="nw", image=self.background_UI_element, tags="overlay")
+
         # Info text BG
         canvas.create_image(0-scale(20), 0, anchor="nw", image=self.background_UI2, tags="overlay")
         canvas.create_image(0-scale(20), 0, anchor="nw", image=self.background_UI3, tags="overlay")
@@ -734,7 +735,7 @@ class Manager:
             master=self.window, canvas=canvas,
             btn_text="Switch", textvariable=self.switch_text,
             style="Danger",
-            row=11, cul=140, width=16,
+            row=11, cul=138, width=12,
             tags=["Button"],
             description_name="Switch",
             command=self.switchmode
@@ -767,7 +768,7 @@ class Manager:
             master=self.window, canvas=canvas,
             btn_text="Cheats",
             style=button2style,
-            row=11, cul=78, width=6,
+            row=11, cul=77, width=6,
             tags=["Button"],
             description_name="Cheats",
             command=self.show_cheatcanvas
@@ -777,7 +778,7 @@ class Manager:
             master=self.window, canvas=canvas,
             btn_text="Settings",
             style=button3style,
-            row=11, cul=261, width=8,
+            row=11, cul=257, width=8,
             tags=["Button"],
             description_name="Settings",
             command=lambda: self.setting.settingswindow(self.constyle, self.all_canvas)
@@ -959,76 +960,51 @@ class Manager:
             Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
             current_res = self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1]
             proper_res = float(current_res)
-            if not config.has_section("Core"):
-                config.add_section("Core")
-            try:
-                mem1 = config.get("Core", "use_unsafe_extended_memory_layout\\use_global")
-                mem2 = config.get("Core", "use_unsafe_extended_memory_layout\\default")
-                mem3 = config.get("Core", "use_unsafe_extended_memory_layout") # true = 8gb - doesn't work anymore in new version of Yuzu
-                newmem1 = config.get("Core", "memory_layout_mode\\use_global")
-                newmem2 = config.get("Core", "memory_layout_mode\\default")
-                newmemsetting = int(config.get("Core", "memory_layout_mode")) # 0 - 4gb, 1 - 6gb, 2 - 8gb
-                res1 = config.get("Renderer", "resolution_setup\\use_global")
-                res2 = config.get("Renderer", "resolution_setup\\default")
-                res3 = int(config.get("Renderer", "resolution_setup"))
-            except configparser.NoOptionError as e:
-                mem1 = "true"
-                mem2 = "true"
-                mem3 = "false"
-                newmem1 = "true"
-                newmem2 = "true"
-                newmemsetting = 0
-                res1 = "true"
-                res1 = "true"
-                res3 = 0
 
-            if proper_res > 1080:
-                if mem3 == "false" or newmemsetting == 0 or not res3 == 2 or not newmem1 == "false" or not newmem2 == "false" or not mem1 == "false" or not mem2 == "false":
-                    file_path = self.TOTKconfig
+            newmem1 = config.get("Core", "memory_layout_mode\\use_global", fallback="true")
+            newmem2 = config.get("Core", "memory_layout_mode\\default", fallback="true")
+            newmemsetting = int(config.get("Core", "memory_layout_mode", fallback=0)) # 0 - 4gb, 1 - 6gb, 2 - 8gb
+            res1 = config.get("Renderer", "resolution_setup\\use_global", fallback="true")
+            res2 = config.get("Renderer", "resolution_setup\\default", fallback="true")
+            res3 = int(config.get("Renderer", "resolution_setup", fallback=0))
+            print(newmem1, newmem2, newmemsetting, res1,res2,res3)
+
+            if 1080 < proper_res < 2160:
+                if newmemsetting < 1 or not res3 == 2 or not newmem1 == "false" or not newmem2 == "false":
+                    warning_message = f"Resolution {resolution}, requires 1x Yuzu renderer and extended memory layout 6GB to be enabled, otherwise it won't function properly and will cause artifacts, you currently have them disabled, do you want to enable them?"
+                else:
+                    print("Correct settings are already applied, no changes required!!")
+            elif proper_res > 2160:
+                if newmemsetting < 2 or not res3 == 2 or not newmem1 == "false" or not newmem2 == "false":
                     warning_message = f"Resolution {resolution}, requires 1x Yuzu renderer and extended memory layout 8GB to be enabled, otherwise it won't function properly and will cause artifacts, you currently have them disabled, do you want to enable them?"
                 else:
                     print("Correct settings are already applied, no changes required!!")
-            else:
-                print("Resolution is lower than 1080p! No changes required!")
 
         if warning_message is not None and warning_message.strip():
             response = messagebox.askyesno(f"WARNING! Required settings NOT Enabled!", warning_message)
             # If Yes, Modify the Config File.
             if response:
                 # Remove existing options in Renderer section
-                if config.has_section("Renderer"):
-                    if config.has_option("Renderer", "resolution_setup\\use_global"):
-                        config.remove_option("Renderer", "resolution_setup\\use_global")
-                    if config.has_option("Renderer", "resolution_setup\\default"):
-                        config.remove_option("Renderer", "resolution_setup\\default")
-                    if config.has_option("Renderer", "resolution_setup"):
-                        config.remove_option("Renderer", "resolution_setup")
+                if not config.has_section("Renderer"):
+                    config["Renderer"] = {}
+                config["Renderer"]["resolution_setup\\use_global"] = "false"
+                config["Renderer"]["resolution_setup\\default"] = "false"
+                config["Renderer"]["resolution_setup"] = "2"
 
-                # Remove existing options in Core section
-                if config.has_section("Core"):
-                    if config.has_option("Core", "use_unsafe_extended_memory_layout\\use_global"):
-                        config.remove_option("Core", "use_unsafe_extended_memory_layout\\use_global")
-                    if config.has_option("Core", "use_unsafe_extended_memory_layout\\default"):
-                        config.remove_option("Core", "use_unsafe_extended_memory_layout\\default")
-                    if config.has_option("Core", "use_unsafe_extended_memory_layout"):
-                        config.remove_option("Core", "use_unsafe_extended_memory_layout")
-                    if config.has_option("Core", "memory_layout_mode\\use_global"):
-                        config.remove_option("Core", "memory_layout_mode\\use_global")
-                    if config.has_option("Core", "memory_layout_mode\\default"):
-                        config.remove_option("Core", "memory_layout_mode\\default")
-                    if config.has_option("Core", "memory_layout_mode"):
-                        config.remove_option("Core", "memory_layout_mode")
-                # Add new values
-                config.set("Renderer", "resolution_setup\\use_global", "false")
-                config.set("Renderer", "resolution_setup\\default", "false")
-                config.set("Renderer", "resolution_setup", "2")
+                # Core section
+                if not config.has_section("Core"):
+                    config["Core"] = {}
+                config["Core"]["use_unsafe_extended_memory_layout\\use_global"] = "false"
+                config["Core"]["use_unsafe_extended_memory_layout\\default"] = "false"
+                config["Core"]["use_unsafe_extended_memory_layout\\default"] = "true"
 
-                config.set("Core", "use_unsafe_extended_memory_layout\\use_global", "false")
-                config.set("Core", "use_unsafe_extended_memory_layout\\default", "false")
-                config.set("Core", "use_unsafe_extended_memory_layout", "true")
-                config.set("Core", "memory_layout_mode\\use_global", "false")
-                config.set("Core", "memory_layout_mode\\default", "false")
-                config.set("Core", "memory_layout_mode", "1")
+                config["Core"]["memory_layout_mode\\use_global"] = "false"
+                config["Core"]["memory_layout_mode\\default"] = "false"
+                layout = "1"
+                if proper_res > 2160:
+                    layout = "2"
+
+                config["Core"]["memory_layout_mode"] = layout
 
                 with open(configfile, "w") as configfile:
                     config.write(configfile, space_around_delimiters=False)
@@ -1201,6 +1177,7 @@ class Manager:
                      Setting_folder = "High End Nvidia"
                      SettingGithubFolder = 'scripts/settings/Applied%20Settings/High%20End%20Nvidia/0100F2C0115B6000.ini'
                      print("Installing High End Nvidia Yuzu Preset")
+
             if Setting_selection is not None:
                     repo_url = 'https://github.com/MaxLastBreath/TOTK-mods'
                     Setting_directory = self.TOTKconfig
@@ -1221,37 +1198,27 @@ class Manager:
                         configfile = self.TOTKconfig
                         config = configparser.ConfigParser()
                         config.read(configfile)
-                        if config.has_option("Renderer", "resolution_setup\\use_global"):
-                            config.remove_option("Renderer", "resolution_setup\\use_global")
-                        if config.has_option("Renderer", "resolution_setup\\default"):
-                            config.remove_option("Renderer", "resolution_setup\\default")
-                        if config.has_option("Renderer", "resolution_setup"):
-                            config.remove_option("Renderer", "resolution_setup")
-
-                        # Remove existing options in Core section
-                        if config.has_option("Core", "use_unsafe_extended_memory_layout\\use_global"):
-                            config.remove_option("Core", "use_unsafe_extended_memory_layout\\use_global")
-                        if config.has_option("Core", "use_unsafe_extended_memory_layout\\default"):
-                            config.remove_option("Core", "use_unsafe_extended_memory_layout\\default")
-                        if config.has_option("Core", "use_unsafe_extended_memory_layout"):
-                            config.remove_option("Core", "use_unsafe_extended_memory_layout")
-                        if config.has_option("Core", "memory_layout_mode\\use_global"):
-                            config.remove_option("Core", "memory_layout_mode\\use_global")
-                        if config.has_option("Core", "memory_layout_mode\\default"):
-                            config.remove_option("Core", "memory_layout_mode\\default")
-                        if config.has_option("Core", "memory_layout_mode"):
-                            config.remove_option("Core", "memory_layout_mode")
                         # Add new values
-                        config.set("Renderer", "resolution_setup\\use_global", "false")
-                        config.set("Renderer", "resolution_setup\\default","false")
-                        config.set("Renderer", "resolution_setup", "2")
+                        if not config.has_section("Renderer"):
+                            config["Renderer"] = {}
+                        config["Renderer"]["resolution_setup\\use_global"] = "false"
+                        config["Renderer"]["resolution_setup\\default"] = "false"
+                        config["Renderer"]["resolution_setup"] = "2"
 
-                        config.set("Core", "use_unsafe_extended_memory_layout\\use_global", "false")
-                        config.set("Core", "use_unsafe_extended_memory_layout\\default", "false")
-                        config.set("Core", "use_unsafe_extended_memory_layout", "true")
-                        config.set("Core", "memory_layout_mode\\use_global", "false")
-                        config.set("Core", "memory_layout_mode\\default", "false")
-                        config.set("Core", "memory_layout_mode", "1")
+                        if not config.has_section("Core"):
+                            config["Core"] = {}
+                        config["Core"]["use_unsafe_extended_memory_layout\\use_global"] = "false"
+                        config["Core"]["use_unsafe_extended_memory_layout\\default"] = "false"
+                        config["Core"]["use_unsafe_extended_memory_layout\\default"] = "true"
+
+                        config["Core"]["memory_layout_mode\\use_global"] = "false"
+                        config["Core"]["memory_layout_mode\\default"] = "false"
+                        layout = "1"
+                    if proper_res >= 2160:
+                        layout = "2"
+                    elif proper_res >= 1080:
+                        layout = "0"
+                        config["Core"]["memory_layout_mode"] = layout
                         with open(configfile, "w") as configfile:
                             config.write(configfile)
             else:

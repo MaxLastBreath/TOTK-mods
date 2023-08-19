@@ -23,7 +23,7 @@ def load_json(name, url):
             if data != local_json_options:
                 with open(json_options_file_path, "w") as file:
                     json.dump(data, file)
-                    json_options_options = data
+                    json_options = data
             else:
                 json_options = local_json_options
         else:

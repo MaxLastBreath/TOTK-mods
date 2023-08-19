@@ -104,7 +104,7 @@ class Canvas:
                                        fill=textcolor,
                                        font=textfont,
                                        tags=tags,
-                                       activefil="red"
+                                       activefil="red",
                                        )
 
         # create checkbutton
@@ -115,7 +115,7 @@ class Canvas:
                                 offvalue="Off",
                                 state="readonly",
                                 command=command,
-                                bootstyle=None
+                                bootstyle="danger"
                                 )
 
         checkbutton_window = canvas.create_window(
@@ -150,7 +150,6 @@ class Canvas:
 
         button = ttk.Button(
             master=master,
-            width=scale(width),
             text=btn_text,
             command=command,
             textvariable=textvariable,
@@ -161,6 +160,7 @@ class Canvas:
         canvas.create_window(
             scale(cul),
             scale(row),
+            width=scale(width*10),
             anchor=pos,
             window=button,
             tags=tag
@@ -175,18 +175,18 @@ class Canvas:
         return
 
     def create_label(self, master, canvas,
-                        text, description_name=None, font=textfont, color=textcolor,
+                        text, description_name=None, font=textfont, color=textcolor, activefil=None,
                         row=40, cul=40,
-                        tags=[], tag=None, command=None
+                        tags=[], tag=None, outline_tag=None, command=None
                      ):
         # create text
-        activefil = None
         if tag is not None:
             tags.append(tag)
         if command is not None:
             activefil = "red"
         # add outline and user-tag to the outlined text.
-        outline_tag = ["outline", tag]
+        if outline_tag is not None:
+            outline_tag = [outline_tag, tag]
         # create an outline to the text.
         canvas.create_text(
                            scale(cul) + scale(1),
