@@ -16,9 +16,8 @@ class Canvas:
         # create text
         if tag is not None:
             tags.append(tag)
-        # add outline tag.
-        outline_tag = tags
-        outline_tag.append("outline")
+        # add outline and user-tag to the outlined text.
+        outline_tag = ["outline", tag]
         # create an outline to the text.
         canvas.create_text(
                            scale(cul) + scale(1),
@@ -47,7 +46,6 @@ class Canvas:
                                 textvariable=new_variable,
                                 values=values,
                                 state="readonly",
-                                command=command,
                                 )
 
         dropdown_window = canvas.create_window(
@@ -60,12 +58,71 @@ class Canvas:
                                                tags=tag
                                                )
         # bind canvas
-        dropdown.bind("<<ComboboxSelected>>")
+        dropdown.bind("<<ComboboxSelected>>", command)
         # attempt to make a Hovertip
         self.read_description(
                               canvas=canvas,
                               option=description_name,
                               position_list=[dropdown, text_line],
+                              master=master
+                              )
+        row += 40
+        return new_variable
+
+    def create_checkbutton(self, master, canvas, text, row=40, cul=40, drop_cul=180, variable=any,
+                            tags=[], tag=None, description_name=None, command=any):
+        # create text
+        if tag is not None:
+            tags.append(tag)
+        # add outline and user-tag to the outlined text.
+        outline_tag = ["outline", tag]
+        # create an outline to the text.
+        canvas.create_text(
+                           scale(cul) + scale(1),
+                           scale(row) + scale(1),
+                           text=text,
+                           anchor="w",
+                           fill=outlinecolor,
+                           font=textfont,
+                           tags=outline_tag
+                           )
+        # create the text and the variable for the dropdown.
+        new_variable = tk.StringVar(value=variable)
+        text_line = canvas.create_text(
+                                       scale(cul),
+                                       scale(row),
+                                       text=text,
+                                       anchor="w",
+                                       fill=textcolor,
+                                       font=textfont,
+                                       tags=tags,
+                                       activefil="red"
+                                       )
+
+        # create checkbutton
+        checkbutton = ttk.Checkbutton(
+                                master=master,
+                                variable=new_variable,
+                                onvalue="On",
+                                offvalue="Off",
+                                state="readonly",
+                                command=command,
+                                bootstyle=None
+                                )
+
+        checkbutton_window = canvas.create_window(
+                                               scale(drop_cul),
+                                               scale(row),
+                                               anchor="w",
+                                               window=checkbutton,
+                                               tags=tag
+                                               )
+        # attempt to make a Hovertip
+        canvas.tag_bind(text_line, "<Button-1>", lambda event: self.toggle(event, new_variable))
+        self.read_description(
+                              canvas=canvas,
+                              option=description_name,
+                              position_list=[checkbutton, text_line],
                               master=master
                               )
         row += 40
@@ -108,7 +165,7 @@ class Canvas:
         x += the_canvas.winfo_rootx()
         y += the_canvas.winfo_rooty()
 
-        master.after(500)
+        master.after(50)
         self.tooltip = tk.Toplevel()
         self.tooltip.wm_overrideredirect(True)
         self.tooltip.geometry(f"+{x + scale(20)}+{y + scale(25)}")
@@ -126,3 +183,13 @@ class Canvas:
     def hide_tooltip(self, event):
         self.tooltip.destroy()
         self.tooltip_active = False
+
+    def toggle(self, event, var):
+        if var.get() == "On":
+            var.set("Off")
+        else:
+            var.set("On")
+
+    # bind the toggle
+    def bind_toggle(self, canvas, item, var):
+        canvas.tag_bind(item, "<Button-1>", lambda event: self.toggle(event, var))

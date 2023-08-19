@@ -25,23 +25,37 @@ from configuration.settings_config import Setting
 
 class Manager:
     def __init__(self, window):
+        # Define the Manager window.
+        self.window = window
+
+        # Configure Style.
         self.constyle = Style(theme=theme.lower())
         self.constyle.configure("TButton", font=btnfont)
+
+        # Set Classes.
         self.on_canvas = Canvas()
-        # Set Variables
         self.setting = Setting()
-        self.config = localconfig
+
+        # Append all canvas in Manager class.
         self.all_canvas = []
+
+        # Load the Config.
+        self.config = localconfig
         config = configparser.ConfigParser()
         config.read(localconfig)
+
+        # Read the Current Emulator Mode.
         self.mode = config.get("Mode", "managermode", fallback="Yuzu")
+
+        # Set neccesary variables.
         self.Yuzudir = None
         self.is_Ani_running = False
         self.is_Ani_Paused = False
-        self.window = window
+        self.tooltip_active = False
+        self.warn_again = "yes"
         self.title_id = title_id
         self.old_cheats = {}
-        self.cheat_version = tk.StringVar(value="Version - 1.1.2")
+        self.cheat_version = tk.StringVar(value="Version - 1.2.00")
 
         # Load Json Files.
         self.dfps_options = load_json("DFPS.json", dfpsurl)
@@ -49,9 +63,6 @@ class Manager:
         self.presets = load_json("preset.json", presetsurl)
         self.version_options = load_json("Version.json", versionurl)
         self.cheat_options = load_json("Cheats.json", cheatsurl)
-        self.tooltip_active = False
-        # Warn for Backup File
-        self.warn_again = "yes"
 
         # Local text variable
         self.switch_text = ttk.StringVar()
@@ -61,7 +72,8 @@ class Manager:
         self.Load_ImagePath()
         self.load_canvas()
         self.switchmode("false")
-        # close existing threads.
+
+        # Window Protocols.
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.window.bind("<FocusIn>", self.focus)
         self.window.bind("<FocusOut>", self.unfocus)
@@ -72,16 +84,6 @@ class Manager:
         self.is_Ani_Paused = True
     def warning(self, e):
         messagebox.showwarning(f"{e}")
-    def toggle(self, event, var):
-        if var.get() == "On":
-            var.set("Off")
-        else:
-            var.set("On")
-    # bind the toggle
-
-    def bind_toggle(self, canvas, item, var):
-        canvas.tag_bind(item, "<Button-1>", lambda event: self.toggle(event, var))
-    # Canvas
     def createcanvas(self):
         # Create Canvas
         self.maincanvas = tk.Canvas(self.window, width=scale(1200), height=scale(600))
@@ -108,7 +110,8 @@ class Manager:
         # Start of CANVAS options.
 
         # Create preset menu.
-        presets = {"Saved": {}} | self.presets
+        presets = {"Saved": {}} | load_json("preset.json", presetsurl)
+        values = list(presets.keys())
         self.selected_preset = self.on_canvas.create_combobox(
                                                             master=self.window,
                                                             canvas=canvas,
@@ -116,10 +119,11 @@ class Manager:
                                                             variable="Saved",
                                                             row=row,
                                                             cul=cul_tex,
-                                                            values=presets,
+                                                            values=values,
                                                             tags=["text"],
                                                             tag="Yuzu",
-                                                            description_name="Presets"
+                                                            description_name="Presets",
+                                                            command=self.apply_selected_preset
                                                         )
 
         # Setting Preset - returns variable.
@@ -146,7 +150,7 @@ class Manager:
         self.read_description(canvas, "Browse", self.selectexe)
         if self.os_platform == "Windows":
             yuzu_button = ttk.Button(self.window, text="Browse", command=self.select_yuzu_exe)
-            yuzu_button_window = self.maincanvas.create_window(cul_sel, row, anchor="w", window=yuzu_button, width= scale(65), height= scale(28))
+            yuzu_button_window = self.maincanvas.create_window(cul_sel, row, anchor="w", window=yuzu_button, width=scale(65), height= scale(28))
             self.read_description(canvas, "Browse", yuzu_button)
 
             # Reset to Appdata
@@ -155,7 +159,7 @@ class Manager:
                 print("Successfully Defaulted to Appdata!")
                 save_user_choices(self, self.config, "appdata", None)
             reset_button = ttk.Button(self.window, text="Use Appdata", command=yuzu_appdata)
-            reset_button_window = self.maincanvas.create_window(cul_sel + scale(70), row, anchor="w", window=reset_button, width= scale(95), height= scale(28))
+            reset_button_window = self.maincanvas.create_window(cul_sel + scale(70), row, anchor="w", window=reset_button, width=scale(95), height=scale(28))
             self.read_description(canvas, "Reset", reset_button)
             backupbutton = cul_sel + scale(170)
 
@@ -292,16 +296,20 @@ class Manager:
 
             # Create label
             if version_option_name not in ["Source", "nsobid", "offset", "version"]:
-                self.maincanvas.create_text(cul_tex + 1, row + scale(40) + 1, text=version_option_name, anchor="w", fill=outlinecolor, font=textfont, tags=["outline"])
-                text = self.maincanvas.create_text(cul_tex, row + scale(40), text=version_option_name, anchor="w", fill=textcolor, font=textfont, activefill="red", tags=["text"])
-
 
                 # Create checkbox
-                version_option_var = tk.StringVar(value="Off")
-                versioncheck = ttk.Checkbutton(self.window, variable=version_option_var, onvalue="On", offvalue="Off", bootstyle="success")
-                version_check_window = self.maincanvas.create_window(cul_sel, row + scale(40), anchor="w", window=versioncheck)
-                self.bind_toggle(canvas, text, version_option_var)
-                self.read_description(canvas, f"{version_option_name}", versioncheck, text)
+                version_option_var = self.on_canvas.create_checkbutton(
+                                                                        master=self.window,
+                                                                        canvas=canvas,
+                                                                        text=version_option_name,
+                                                                        variable="Off",
+                                                                        row=row + 40,
+                                                                        cul=cul_tex,
+                                                                        drop_cul=cul_sel,
+                                                                        tags=["text"],
+                                                                        tag=None,
+                                                                        description_name=version_option_name
+                                                                       )
                 self.selected_options[version_option_name] = version_option_var
                 row += scale(40)
 
@@ -349,9 +357,8 @@ class Manager:
 
         def loadCheats():
             row = scale(40)
-            cultex = scale(40)
-            culsel = scale(200)
-            Hoverdelay = scale(500)
+            cul_tex = scale(40)
+            cul_sel = scale(200)
 
             corrent_cheats = self.cheat_options[versionvalues.index(self.cheat_version.get())].items()
             corrent_cheats_dict = dict(corrent_cheats)
@@ -374,28 +381,27 @@ class Manager:
 
                 # Create label
                 if version_option_name not in ["Source", "Version", "Aversion", "Cheat Example"]:
-                    self.cheatcanvas.create_text(cultex+1, row+1, text=version_option_name, anchor="w", fill=outlinecolor, font=textfont, tags=["cheats", "outline"])
-                    cheattext = self.cheatcanvas.create_text(cultex, row, text=version_option_name, anchor="w", fill=textcolor, font=textfont, tags=["cheats", "text"], activefill="red")
+
+                    version_option_var = self.on_canvas.create_checkbutton(
+                        master=self.window,
+                        canvas=canvas,
+                        text=version_option_name,
+                        variable="Off",
+                        row=row,
+                        cul=cul_tex,
+                        drop_cul=cul_sel,
+                        tags=["text"],
+                        tag="cheats",
+                        description_name=version_option_name
+                    )
 
                     # Create enable/disable dropdown menu
-                    version_option_var = tk.StringVar(value="Off")
                     try:
                         if self.old_cheats.get(version_option_name) == "On":
                             version_option_var.set("On")
                     except AttributeError as e:
                         self.old_cheats = {}
-
-                    versioncheck = ttk.Checkbutton(self.window, variable=version_option_var, onvalue="On", offvalue="Off", bootstyle="success")
-                    version_check_window = self.cheatcanvas.create_window(culsel, row, anchor="w", window=versioncheck, tags="cheats")
-                    # Create Toggle Event
-                    self.bind_toggle(canvas, cheattext, version_option_var)
-
                     self.selected_cheats[version_option_name] = version_option_var
-
-                    if version_option_name in self.description:
-                        print(cheattext)
-                        self.read_description(canvas, version_option_name, versioncheck, cheattext)
-
                 else:
                     continue
 
@@ -403,8 +409,8 @@ class Manager:
 
                 if row > scale(480):
                     row = scale(40)
-                    cultex += scale(200)
-                    culsel += scale(200)
+                    cul_tex += scale(200)
+                    cul_sel += scale(200)
 
 
         def ResetCheats():
@@ -824,7 +830,11 @@ class Manager:
         self.tooltip_active = False
 
     def apply_selected_preset(self, event=None):
-        selected_preset = self.selected_preset.get()
+        try:
+            selected_preset = self.selected_preset.get()
+        except AttributeError as e:
+            selected_preset = "Saved"
+            print(e)
 
         if selected_preset == "None":
             if os.path.exists(self.config):

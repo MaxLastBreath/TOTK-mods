@@ -9,7 +9,6 @@ def Auto_SF():
     h = current_monitor.height
     print(h)
     sf = 1.0
-
     if h >= 1080:
         sf = 1.0
     if h >= 1440:
@@ -25,6 +24,6 @@ sf = Auto_SF()
 def scale(scale):
     if sf == 1.0:
         return scale
-    truevr = float(scale * sf)
-    return int(truevr)
-        
+    true_vr = float(scale * sf)
+    return int(true_vr)
+
