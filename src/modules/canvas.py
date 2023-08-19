@@ -1,15 +1,18 @@
 from idlelib.tooltip import Hovertip
-import ttkbootstrap as ttk
 from ttkbootstrap import *
 from tkinter import *
 from configuration.settings import *
+import time
+import ttkbootstrap as ttk
 
 
 class Canvas:
-    def __int__(self):
+    def __init__(self):
         self.tooltip = None
         self.window = None
         self.tooltip_active = None
+        self.is_Ani_running = True
+        self.is_Ani_Paused = False
 
     def create_combobox(self, master, canvas,
                         text, description_name=None, variable=any, values=[],
@@ -135,8 +138,8 @@ class Canvas:
 
     def create_button(
             self, master, canvas,
-            btn_text, description_name=None,
-            row=40, cul=40, width=None, padding=None,
+            btn_text, description_name=None, textvariable=None,
+            row=40, cul=40, width=None, padding=None, pos="w",
             tags=[], tag=None,
             style="default", command=any,
                       ):
@@ -150,14 +153,15 @@ class Canvas:
             width=scale(width),
             text=btn_text,
             command=command,
+            textvariable=textvariable,
             bootstyle=style,
             padding=padding
         )
 
-        checkbutton_window = canvas.create_window(
+        canvas.create_window(
             scale(cul),
             scale(row),
-            anchor="w",
+            anchor=pos,
             window=button,
             tags=tag
         )
@@ -169,6 +173,48 @@ class Canvas:
             master=master
         )
         return
+
+    def create_label(self, master, canvas,
+                        text, description_name=None, font=textfont, color=textcolor,
+                        row=40, cul=40,
+                        tags=[], tag=None, command=None
+                     ):
+        # create text
+        activefil = None
+        if tag is not None:
+            tags.append(tag)
+        if command is not None:
+            activefil = "red"
+        # add outline and user-tag to the outlined text.
+        outline_tag = ["outline", tag]
+        # create an outline to the text.
+        canvas.create_text(
+                           scale(cul) + scale(1),
+                           scale(row) + scale(1),
+                           text=text,
+                           anchor="w",
+                           fill=outlinecolor,
+                           font=font,
+                           tags=outline_tag,
+                           )
+        # create the text and the variable for the dropdown.
+        text_line = canvas.create_text(
+                                       scale(cul),
+                                       scale(row),
+                                       text=text,
+                                       anchor="w",
+                                       fill=color,
+                                       font=font,
+                                       tags=tags,
+                                       activefil=activefil,
+                                       )
+        canvas.tag_bind(text_line, "<Button-1>", command)
+        self.read_description(
+                              canvas=canvas,
+                              option=description_name,
+                              position_list=[text_line],
+                              master=master
+                              )
 
     def read_description(self, canvas, option, position_list=list, master=any):
         for position in position_list:
@@ -232,6 +278,47 @@ class Canvas:
         else:
             var.set("On")
 
-    # bind the toggle
-    def bind_toggle(self, canvas, item, var):
-        canvas.tag_bind(item, "<Button-1>", lambda event: self.toggle(event, var))
+    # Handle animations and events during those animations.
+    def focus(self, event):
+        self.is_Ani_Paused = False
+        
+    def unfocus(self, event):
+        print("FFF")
+        self.is_Ani_Paused = True
+
+    def on_closing(self, master):
+        print("Closing Window")
+        self.is_Ani_running = False
+        master.destroy()
+
+    def canvas_animation(self, master, canvas):
+        canvas.bind("<Enter>", self.focus)
+        canvas.bind("<Leave>", self.unfocus)
+        x = 0
+        y = 0
+        m = 1
+        if FPS == 0.1:
+            m = 2
+        a = scale(m)
+        while True:
+            if self.is_Ani_running is False:
+                return
+            if self.is_Ani_Paused is False:
+                print(self.is_Ani_Paused)
+                if x <= 1000:
+                    x += m
+                    canvas.move("background", -a, 0)
+                    time.sleep(FPS)
+                if x >= 1000:
+                    if y == 0:
+                        canvas.move("background", scale(200), scale(300))
+                    if y <= 300:
+                        y += m
+                        canvas.move("background", 0, -a)
+                        time.sleep(FPS)
+                    if y >= 300:
+                        x = 0
+                        y = 0
+                        canvas.move("background", scale(800), 0)
+            else:
+                time.sleep(1)

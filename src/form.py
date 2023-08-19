@@ -73,15 +73,9 @@ class Manager:
         self.load_canvas()
         self.switchmode("false")
 
-        # Window Protocols.
-        self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
-        self.window.bind("<FocusIn>", self.focus)
-        self.window.bind("<FocusOut>", self.unfocus)
+        #Window protocols
+        self.window.protocol("WM_DELETE_WINDOW", lambda: self.on_canvas.on_closing(self.window))
 
-    def focus(self, event):
-        self.is_Ani_Paused = False
-    def unfocus(self, event):
-        self.is_Ani_Paused = True
     def warning(self, e):
         messagebox.showwarning(f"{e}")
     def createcanvas(self):
@@ -137,10 +131,6 @@ class Manager:
         row += scale(40)
         # Create a label for yuzu.exe selection
         backupbutton = cul_sel
-        self.selectexe_outline = self.maincanvas.create_text(cul_tex + 1, row + 1, text="Select yuzu.exe:", anchor="w", fill=outlinecolor, font=textfont, tags=["outline"])
-        self.selectexe = self.maincanvas.create_text(cul_tex, row, text="Select yuzu.exe:", anchor="w", fill=textcolor, font=textfont, tags=["text"])
-        self.read_description(canvas, "Browse", self.selectexe)
-
         if self.os_platform == "Windows":
             self.on_canvas.create_button(
                                         master=self.window, canvas=canvas,
@@ -167,6 +157,19 @@ class Manager:
                                         command=yuzu_appdata
                                         )
             backupbutton = cul_sel + 165
+            text = "Select Yuzu.exe"
+            command = lambda event: self.select_yuzu_exe()
+        else:
+            text = "Backup Save Files"
+            command = None
+        self.on_canvas.create_label(
+                                    master=self.window, canvas=canvas,
+                                    text=text,
+                                    description_name="Browse",
+                                    row=row, cul=cul_tex,
+                                    tags=["Text"], tag=["Select-EXE"],
+                                    command=command
+                                    )
 
         # Create a Backup button
         self.on_canvas.create_button(
@@ -180,12 +183,21 @@ class Manager:
         row += scale(40)
 
         # Create big TEXT label.
-        self.preset_label = self.maincanvas.create_text(cul_tex + scale(101), row + 1, text="Display Settings", anchor="w", fill=outlinecolor, font=bigfont)
-        self.preset_label2 = self.maincanvas.create_text(cul_tex + scale(100), row, text="Display Settings", anchor="w", fill=BigTextcolor, font=bigfont)
-        # Create big TEXT label.
-        self.preset_label = self.maincanvas.create_text(scale(400) + scale(101), row+1, text="Mod Improvements", anchor="w", fill=outlinecolor, font=bigfont)
-        self.preset_label2 = self.maincanvas.create_text(scale(400) + scale(100), row, text="Mod Improvements", anchor="w", fill=BigTextcolor, font=bigfont)
+        self.on_canvas.create_label(
+                                    master=self.window, canvas=canvas,
+                                    text="Display Settings", font=bigfont, color=BigTextcolor,
+                                    description_name="Display Settings",
+                                    row=row, cul=cul_tex+100,
+                                    tags=["Big-Text"]
+                                    )
 
+        self.on_canvas.create_label(
+                                    master=self.window, canvas=canvas,
+                                    text="Mod Improvements", font=bigfont, color=BigTextcolor,
+                                    description_name="Mod Improvements",
+                                    row=row, cul=400+100,
+                                    tags=["Big-Text"]
+                                    )
         row += scale(40)
 
         # Create a label for resolution selection
@@ -452,41 +464,17 @@ class Manager:
         load_user_choices(self, self.config)
 
     def show_maincanvas(self):
+        self.on_canvas.is_Ani_Paused = True
         self.cheatcanvas.pack_forget()
         self.maincanvas.pack()
 
     def show_cheatcanvas(self):
+        self.on_canvas.is_Ani_Paused = False
         self.cheatcanvas.pack()
         self.maincanvas.pack_forget()
-        def canvasanimation():
-            x = 0
-            y = 0
-            m = 1
-            if FPS == 0.1:
-                m = 2
-            a = scale(m)
-            while True:
-                if not self.is_Ani_running == True:
-                    print("Stopping Animation")
-                    return
-                if self.is_Ani_Paused == False:
-                    x += m
-                    self.cheatcanvas.move(self.cheatbg, -a, 0)
-                    time.sleep(FPS)
-                    if x == 1000:
-                        self.cheatcanvas.move(self.cheatbg, scale(200), scale(200))
-                        if y <= 250:
-                            y += m
-                            self.cheatcanvas.move(self.cheatbg, 0, -a)
-                            time.sleep(FPS)
-                        else:
-                            x = 0
-                            y = 0
-                            self.cheatcanvas.move(self.cheatbg, scale(800), scale(50))
-                else:
-                    time.sleep(1)
 
-        self.ani = threading.Thread(name="cheatbackground", target=canvasanimation)
+        self.ani = threading.Thread(name="cheatbackground",
+                                    target=lambda: self.on_canvas.canvas_animation(self.window, self.cheatcanvas))
         if not self.is_Ani_running == True:
             self.is_Ani_running = True
             self.ani.start()
@@ -615,6 +603,7 @@ class Manager:
         image = image.filter(ImageFilter.GaussianBlur(3))
         self.blurbackground = ImageTk.PhotoImage(image)
 
+
         # Handle Text Window
         def fetch_text_from_github(file_url):
             try:
@@ -715,23 +704,41 @@ class Manager:
             self.maincanvas.itemconfigure(tag, fill=textcolor)
 
         if not canvas == self.maincanvas:
-            kofi_button = ttk.Button(self.window, text="Donate", bootstyle="success", command=lambda: self.open_browser("Kofi"), padding=10)
-            kofi_button_window = canvas.create_window(scale(1110)+scale(20), scale(520), anchor="center", window=kofi_button, width=scale(60), height=scale(30))
-            self.read_description(canvas, "Kofi", kofi_button)
-            github_button = ttk.Button(self.window, text="Github", bootstyle="info", command=lambda: self.open_browser("Github"), padding=10)
-            github_button_window = canvas.create_window(scale(1046) + scale(20), scale(520), anchor="center", window=github_button, width=scale(60), height=scale(30))
-            self.read_description(canvas, "Github", github_button)
+            # Kofi Button
+            self.on_canvas.create_button(
+                master=self.window, canvas=canvas,
+                btn_text="Donate", textvariable=self.switch_text,
+                style="success",
+                row=1130, cul=520, width=60, padding=10, pos="center",
+                tags=["Button"],
+                description_name="Kofi",
+                command=lambda: self.open_browser("Kofi")
+            )
+            # Github Button
+            self.on_canvas.create_button(
+                master=self.window, canvas=canvas,
+                btn_text="Github", textvariable=self.switch_text,
+                style="success",
+                row=1066, cul=520, width=60, padding=10, pos="center",
+                tags=["Button"],
+                description_name="Github",
+                command=lambda: self.open_browser("Github")
+            )
 
 
 
         # Create tabs
-        cul = scale(10)
 
         # Switch mode between Ryujinx and Yuzu
-        manager_switch = ttk.Button(self.window, textvariable=self.switch_text, command=self.switchmode, bootstyle=style)
-        manager_switch_window = canvas.create_window(scale(114) + scale(43) - scale(17), cul, anchor="w", window=manager_switch, width=scale(120), height=scale(30))
-        self.read_description(canvas, "Switch", manager_switch)
-
+        self.on_canvas.create_button(
+            master=self.window, canvas=canvas,
+            btn_text="Switch", textvariable=self.switch_text,
+            style="Danger",
+            row=11, cul=140, width=16,
+            tags=["Button"],
+            description_name="Switch",
+            command=self.switchmode
+        )
         # Make the button active for current canvas.
         button1style = "default"
         button2style = "default"
@@ -745,19 +752,36 @@ class Manager:
         except AttributeError as e:
             e = "n"
 
-        # 1
-        self.tab1_button = ttk.Button(self.window, text="Main", bootstyle=f"{button1style}", command=self.show_maincanvas)
-        tab1_button_window = canvas.create_window(0+ scale(43) - scale(17), cul, anchor="w", window=self.tab1_button, width=scale(50), height=scale(30))
-        self.read_description(canvas, "Main", self.tab1_button)
-        # 2
-        self.tab2_button = ttk.Button(self.window, text="Cheats", bootstyle=f"{button2style}", command=self.show_cheatcanvas)
-        tab2_button_window = canvas.create_window(scale(52) + scale(43) - scale(17), cul, anchor="w", window=self.tab2_button, width=scale(60), height=scale(30))
-        self.read_description(canvas, "Cheats", self.tab2_button)
-        # 3
-
-        self.tab3_button = ttk.Button(self.window, text="Settings", bootstyle=f"{button3style}", command=lambda: self.setting.settingswindow(self.constyle, self.all_canvas))
-        tab3_button_window = canvas.create_window(scale(235) + scale(43) - scale(17), cul, anchor="w", window=self.tab3_button, width=scale(70), height=scale(30))
-        self.read_description(canvas, "Settings", self.tab2_button)
+        # 1 - Main
+        self.on_canvas.create_button(
+            master=self.window, canvas=canvas,
+            btn_text="Main",
+            style=button1style,
+            row=11, cul=26, width=5,
+            tags=["Button"],
+            description_name="Main",
+            command=self.show_maincanvas
+        )
+        # 2 - Cheats
+        self.on_canvas.create_button(
+            master=self.window, canvas=canvas,
+            btn_text="Cheats",
+            style=button2style,
+            row=11, cul=78, width=6,
+            tags=["Button"],
+            description_name="Cheats",
+            command=self.show_cheatcanvas
+        )
+        # 3 - Settings
+        self.on_canvas.create_button(
+            master=self.window, canvas=canvas,
+            btn_text="Settings",
+            style=button3style,
+            row=11, cul=261, width=8,
+            tags=["Button"],
+            description_name="Settings",
+            command=lambda: self.setting.settingswindow(self.constyle, self.all_canvas)
+        )
 
     def switchmode(self, command="true"):
         if command == "true":
@@ -766,71 +790,31 @@ class Manager:
                 for canvas in self.all_canvas:
                     canvas.itemconfig("overlay-1", image=self.background_RyuBG)
                     canvas.itemconfig("information", text=f"{self.mode} TOTK Optimizer")
+                    canvas.itemconfig("Select-EXE", text=f"Select Ryujinx.exe")
+                    canvas.itemconfig("yuzu", state="hidden")
                 self.switch_text.set("Switch to Yuzu")
-                self.maincanvas.itemconfig("yuzu", state="hidden")
                 return
             elif self.mode == "Ryujinx":
                 self.mode = "Yuzu"
                 for canvas in self.all_canvas:
                     canvas.itemconfig("overlay-1", image=self.background_YuzuBG)
                     canvas.itemconfig("information", text=f"{self.mode} TOTK Optimizer")
+                    canvas.itemconfig("Select-EXE", text=f"Select Yuzu.exe")
+                    canvas.itemconfig("yuzu", state="normal")
                 # change text
                 self.switch_text.set("Switch to Ryujinx")
-                self.maincanvas.itemconfig("yuzu", state="normal")
                 return
         elif command == "false":
             if self.mode == "Ryujinx":
                 for canvas in self.all_canvas:
                     canvas.itemconfig("overlay-1", image=self.background_RyuBG)
                     canvas.itemconfig("information", text=f"{self.mode} TOTK Optimizer")
+                    canvas.itemconfig("Select-EXE", text=f"Select Ryujinx.exe")
+                    canvas.itemconfig("yuzu", state="hidden")
                 self.switch_text.set("Switch to Yuzu")
-                self.maincanvas.itemconfig("yuzu", state="hidden")
                 return
         elif command == "Mode":
             return self.mode
-    # Read Hover Description
-    def read_description(self, canvas, option, position, position2=None, position3=None, position4=None):
-        positionlist = []
-        positionlist.append(position)
-        if not position2 == None:
-            positionlist.append(position2)
-        elif not position3 == None:
-            positionlist.append(position2)
-        elif not position4 == None:
-            positionlist.append(position2)
-        for position in positionlist:
-            try:
-                if f"{option}" in self.description:
-                    canvas_item = canvas.find_withtag(position)
-                    if canvas_item:
-                        canvas = canvas
-                        hover = self.description[f"{option}"]
-                        canvas.tag_bind(position, "<Enter>", lambda event: self.show_tooltip(event, position, hover, canvas))
-                        canvas.tag_bind(position, "<Leave>", lambda event: self.hide_tooltip(event))
-                        canvas.tag_bind(position, "<Return>", lambda event: self.hide_tooltip(event))
-                        break
-            except TclError as e:
-                if f"{option}" in self.description:
-                    hover = self.description[f"{option}"]
-                    Hovertip(position, f"{hover}", hover_delay=Hoverdelay)
-
-    def show_tooltip(self, event, item, text, canvas):
-        bbox = canvas.bbox(item)
-        x, y = bbox[0], bbox[1]
-        x += canvas.winfo_rootx()
-        y += canvas.winfo_rooty()
-
-        self.window.after(50)
-        self.tooltip = ttk.Toplevel()
-        self.tooltip.wm_overrideredirect(True)
-        self.tooltip.geometry(f"+{x + scale(20)}+{y + scale(25)}")
-        tooltip_label = tk.Label(self.tooltip, text=text, background="gray", relief="solid", borderwidth=1, justify="left")
-        tooltip_label.pack()
-        self.tooltip_active = True
-
-    def hide_tooltip(self, _):
-        self.tooltip.destroy()
-        self.tooltip_active = False
 
     def apply_selected_preset(self, event=None):
         try:
