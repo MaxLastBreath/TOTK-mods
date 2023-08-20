@@ -57,7 +57,7 @@ class Setting:
 
         item_list = self.Colors.getlist()
         item_list.sort()
-        swatch1=canvas_obj.create_rectangle(cul_sel+120, row, -cul_sel+120, -row, fill="red")
+        canvas_obj.create_rectangle(cul_sel+110, row-10, cul_sel+110+20, row+10, fill="red", tags="swatch1")
         self.color_var = self.canvas_create.create_combobox(
             master=window, canvas=canvas_obj,
             text="Text Color:",
@@ -66,10 +66,11 @@ class Setting:
             tags=["text"], tag=None,
             description_name="Text Colors",
             width=100,
-            command=lambda event: self.swatch_color(self.color_var, swatch1)
+            command=lambda event: self.swatch_color(event, canvas_obj, self.color_var, "swatch1")
         )
         row += 40
 
+        canvas_obj.create_rectangle(cul_sel + 110, row - 10, cul_sel + 110 + 20, row + 10, fill="red", tags="swatch2")
         self.outline_var = self.canvas_create.create_combobox(
             master=window, canvas=canvas_obj,
             text="Shadow Color:",
@@ -77,10 +78,12 @@ class Setting:
             row=row, cul=cul_tex,
             tags=["text"], tag=None,
             description_name="Text Colors",
-            width=100
+            width=100,
+            command=lambda event: self.swatch_color(event, canvas_obj, self.outline_var, "swatch2")
         )
         row += 40
 
+        canvas_obj.create_rectangle(cul_sel + 110, row - 10, cul_sel + 110 + 20, row + 10, fill="red", tags="swatch3")
         self.active_var = self.canvas_create.create_combobox(
             master=window, canvas=canvas_obj,
             text="Active Text Color:",
@@ -88,7 +91,8 @@ class Setting:
             row=row, cul=cul_tex,
             tags=["text"], tag=None,
             description_name="Text Colors",
-            width=100
+            width=100,
+            command=lambda event: self.swatch_color(event, canvas_obj, self.active_var, "swatch3")
         )
         row += 40
         # style dropdown menu
@@ -159,8 +163,7 @@ class Setting:
             style="success",
             command=lambda: self.saveconfig(canvases)
         )
-
-        self.loadconfig()
+        self.loadconfig(canvas_obj)
         return canvas_obj
 
     def saveconfig(self, canvases=list):
@@ -207,7 +210,7 @@ class Setting:
         except TclError as e:
             print(e)
 
-    def loadconfig(self):
+    def loadconfig(self, canvas):
         config = configparser.ConfigParser()
         config.read(localconfig)
 
@@ -220,6 +223,10 @@ class Setting:
         self.backup_var.set(config.get("Settings", "backup", fallback="Off"))
         self.backup_cheat_var.set(config.get("Settings", "cheat-backup", fallback="On"))
         self.ani_var.set(config.get("Settings", "animation", fallback="On"))
+
+        self.swatch_color(event=None, canvas=canvas, var=self.color_var, swatch="swatch1")
+        self.swatch_color(event=None, canvas=canvas, var=self.outline_var, swatch="swatch2")
+        self.swatch_color(event=None, canvas=canvas, var=self.active_var, swatch="swatch3")
 
     def get_setting(self, args):
         font = self.config.get("Settings", "font", fallback="Arial")
@@ -256,6 +263,6 @@ class Setting:
         self.window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
         self.window.resizable(False, False)
 
-    def swatch_color(self, event, var, swatch):
-        swatch = self.Colors[var]
-        window.configure(fill=swatch)
+    def swatch_color(self, event, canvas, var, swatch):
+        color = self.Colors[var.get()]
+        canvas.itemconfig(swatch, fill=color)

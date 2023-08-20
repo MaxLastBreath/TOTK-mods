@@ -6,7 +6,7 @@ import time
 import ttkbootstrap as ttk
 
 
-def next_index(event, var, list=list):
+def next_index(event, var, list=list, command=None):
     value = str(var.get())
     string_list = [str(item) for item in list]
     index = string_list.index(value)
@@ -14,6 +14,8 @@ def next_index(event, var, list=list):
     if index == len(list):
         index = 0
     var.set(list[index])
+    if command is not None:
+        command(event)
 
 
 def toggle(event, var):
@@ -94,7 +96,7 @@ class Canvas_Create:
                               position_list=[dropdown, text_line],
                               master=master
                               )
-        canvas.tag_bind(text_line, "<Button-1>", lambda event: next_index(event, new_variable, values))
+        canvas.tag_bind(text_line, "<Button-1>", lambda event: next_index(event, new_variable, values, command))
         row += 40
         return new_variable
 
@@ -211,7 +213,7 @@ class Canvas_Create:
         # create text
         if tag is not None:
             tags.append(tag)
-        if command is not None and active_fill is not None:
+        if command is not None and active_fill is None:
             active_fill = active_color
         # add outline and user-tag to the outlined text.
         if outline_tag is not None:
