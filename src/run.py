@@ -1,11 +1,7 @@
 import ttkbootstrap as ttk
-from ttkbootstrap import Style
-import threading
-from ttkbootstrap.constants import *
 from form import Manager
 from modules.update import textver, check_for_updates, delete_old_exe
 from modules.scaling import sf, scale
-from configuration.settings import theme
 
 if __name__ == "__main__":
     # Delete any old executables

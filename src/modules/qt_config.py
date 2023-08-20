@@ -4,6 +4,7 @@ import re
 import platform
 from configparser import Interpolation
 
+
 class CustomInterpolation(Interpolation):
     def before_get(self, parser, section, option, value, defaults):
         return value
@@ -13,9 +14,11 @@ class CustomInterpolation(Interpolation):
             return value.replace("%", "%%", 1)
         return value
 
+
 def get_config_parser():
     config = configparser.ConfigParser(interpolation=CustomInterpolation())
     return config
+
 
 def list_all_folders(directory_path):
     folders = []
@@ -25,6 +28,7 @@ def list_all_folders(directory_path):
             folders.append(item)
     return folders
 
+
 def find_folder_index_by_name(directory_path, folder_name):
     all_folders = list_all_folders(directory_path)
     try:
@@ -32,6 +36,7 @@ def find_folder_index_by_name(directory_path, folder_name):
         return index
     except ValueError:
         return None
+
 
 def find_title_id_index(config, title_id):
     section = f"DisabledAddOns"
@@ -45,6 +50,7 @@ def find_title_id_index(config, title_id):
                 TitleIndexnum = key.split("\\")[0]
                 return TitleIndexnum
     return None
+
 
 def find_highest_title_id_index(config):
     section = "DisabledAddOns"
@@ -60,12 +66,14 @@ def find_highest_title_id_index(config):
         return highest_index
     return None
 
+
 def remove_duplicates(arr):
     unique_list = []
     for item in arr:
         if item not in unique_list:
             unique_list.append(item)
     return unique_list
+
 
 def get_d_values(config, properindex):
     section = "DisabledAddOns"
@@ -74,6 +82,7 @@ def get_d_values(config, properindex):
         if key.startswith(f"{properindex}\\disabled\\") and key.endswith("\\d"):
             d_values.append(value)
     return d_values
+
 
 def clean_disabled_addons(config, title_id):
     section = "DisabledAddOns"
@@ -88,6 +97,7 @@ def clean_disabled_addons(config, title_id):
 
     for key in keys_to_remove:
         config.remove_option(section, key)
+
 
 def find_and_remove_entry(configdir, directory, config, title_id, entry_to_remove):
     properindex = find_title_id_index(config, title_id)
@@ -122,6 +132,7 @@ def find_and_remove_entry(configdir, directory, config, title_id, entry_to_remov
 
     config.set(section, f"{TitleIndexnum}\\disabled\\size", str(disabledindex))
     write_config_file(configdir, config)
+
 
 def add_entry(configdir, directory, config, title_id, entry_to_add):
 
@@ -159,6 +170,7 @@ def add_entry(configdir, directory, config, title_id, entry_to_add):
     config.set(section, f"{TitleIndexnum}\\disabled\\size", str(disabledindex))
     write_config_file(configdir, config)
 
+
 def modify_disabled_key(configdir, directory, config, title_id, entry, action='add'):
 
     if platform.system() == "Linux":
@@ -174,6 +186,7 @@ def modify_disabled_key(configdir, directory, config, title_id, entry, action='a
         if action == "remove":
             # print("Adding key:", entry)
             find_and_remove_entry(configdir, directory, config, title_id, entry)
+
 
 def write_config_file(configdir, config):
     with open(configdir, 'w') as config_file:

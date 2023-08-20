@@ -1,12 +1,37 @@
 from modules.colors import Color
 from modules.scaling import scale, sf
-from configuration.settings_config import Setting
 from modules.json import load_json
+import configparser
+
+localconfig = "Manager_Config.ini"
+config = configparser.ConfigParser()
+config.read(localconfig)
+
+# Read Config File.
+font = ""
+theme = ""
+tcolor = ""
+toutline = ""
+tactive = ""
+w_scale = ""
+is_auto_backup = ""
+is_cheat_backup = ""
+is_animation = ""
 
 
-s = Setting()
-fontsize = 13
-bigfontsize = 18
+def get_setting():
+    global font, tcolor, theme, toutline, tactive, is_animation, is_cheat_backup, is_auto_backup
+    font = config.get("Settings", "font", fallback="Arial")
+    tcolor = config.get("Settings", "color", fallback="light-cyan")
+    toutline = config.get("Settings", "shadow_color", fallback="purple")
+    tactive = config.get("Settings", "active_color", fallback="red")
+    theme = config.get("Settings", "style", fallback="flatly")
+    w_scale = config.get("Settings", "scale", fallback="On")
+    is_auto_backup = config.get("Settings", "backup", fallback="Off")
+    is_cheat_backup = config.get("Settings", "cheat-backup", fallback="On")
+    is_animation = config.get("Settings", "animation", fallback="On")
+
+get_setting()
 CH = 26
 FPS = 0.05
 
@@ -14,25 +39,29 @@ FPS = 0.05
 if sf > 1.0:
     FPS = 0.1
     CH +=5
+
 if sf > 1.5:
     CH +=5
 
 CBHEIGHT = CH
 html_color = Color()
+
 # Settings for the manager.
 Hoverdelay = 500
 title_id = "72324500776771584"
-localconfig = "Manager_Config.ini"
-font = s.get_setting("f")
-theme = s.get_setting("s")
-tcolor = s.get_setting("c")
-textfont = (font, fontsize)
-btnfont = ("Arial", fontsize - 3)
-bigfont = ("Triforce", bigfontsize)
-biggyfont = (font, bigfontsize, "bold")
+
+# Set fonts
+textfont = (font, 13)
+btnfont = ("Arial", 10)
+bigfont = ("Triforce", 18)
+biggyfont = (font, 18, "bold")
+# set Colors
 textcolor = html_color[tcolor]
+outline_color = html_color[toutline]
+active_color = html_color[tactive]
 BigTextcolor = html_color["light-green"]
-outlinecolor = html_color["purple"]
+
+
 style = "danger"
 
 # URLS

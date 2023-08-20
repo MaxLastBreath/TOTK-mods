@@ -1,5 +1,3 @@
-import tkinter as tk
-import configparser
 import threading
 import os
 import sys
@@ -10,12 +8,11 @@ import time
 import webbrowser
 import re
 from tkinter import TclError, filedialog, messagebox, Toplevel
-from idlelib.tooltip import Hovertip
 from ttkbootstrap.constants import *
 from ttkbootstrap import Style
 from PIL import Image, ImageTk, ImageFilter, ImageOps
 from configparser import NoOptionError
-from modules.canvas import Canvas
+from modules.canvas import Canvas_Create
 from modules.qt_config import modify_disabled_key, get_config_parser
 from modules.checkpath import checkpath, DetectOS
 from modules.backup import backup
@@ -33,7 +30,7 @@ class Manager:
         self.constyle.configure("TButton", font=btnfont)
 
         # Set Classes.
-        self.on_canvas = Canvas()
+        self.on_canvas = Canvas_Create()
         self.setting = Setting()
 
         # Append all canvas in Manager class.
@@ -55,7 +52,7 @@ class Manager:
         self.warn_again = "yes"
         self.title_id = title_id
         self.old_cheats = {}
-        self.cheat_version = tk.StringVar(value="Version - 1.2.00")
+        self.cheat_version = ttk.StringVar(value="Version - 1.2.00")
 
         # Load Json Files.
         self.dfps_options = load_json("DFPS.json", dfpsurl)
@@ -80,7 +77,7 @@ class Manager:
         messagebox.showwarning(f"{e}")
     def createcanvas(self):
         # Create Canvas
-        self.maincanvas = tk.Canvas(self.window, width=scale(1200), height=scale(600))
+        self.maincanvas = ttk.Canvas(self.window, width=scale(1200), height=scale(600))
         canvas = self.maincanvas
         self.maincanvas.pack()
         self.all_canvas.append(self.maincanvas)
@@ -90,9 +87,9 @@ class Manager:
         self.create_tab_buttons(self.maincanvas)
 
         # Create Text Position
-        row = scale(40)
-        cul_tex = scale(40)
-        cul_sel = scale(180)
+        row = 40
+        cul_tex = 40
+        cul_sel = 180
 
         # Run Scripts for checking OS and finding location
         checkpath(self, self.mode)
@@ -128,7 +125,7 @@ class Manager:
                                                             description_name="Setting"
                                                         )
 
-        row += scale(40)
+        row += 40
         # Create a label for yuzu.exe selection
         backupbutton = cul_sel
         if self.os_platform == "Windows":
@@ -180,7 +177,7 @@ class Manager:
                                     description_name="Backup",
                                     command=lambda: backup(self)
         )
-        row += scale(40)
+        row += 40
 
         # Create big TEXT label.
         self.on_canvas.create_label(
@@ -198,7 +195,7 @@ class Manager:
                                     row=row, cul=400+100,
                                     tags=["Big-Text"]
                                     )
-        row += scale(40)
+        row += 40
 
         # Create a label for resolution selection
         values = self.dfps_options.get("ResolutionNames", [])
@@ -211,7 +208,7 @@ class Manager:
                                                             description_name="Resolution",
                                                             command=lambda event: self.warning_window("Res")
                                                             )
-        row += scale(40)
+        row += 40
 
         # Create a label for FPS selection
         values = self.dfps_options.get("FPS", [])
@@ -224,10 +221,10 @@ class Manager:
                                                             description_name="FPS"
                                                       )
 
-        row += scale(40)
+        row += 40
 
         # Create a label for shadow resolution selection
-        values = self.dfps_options.get("ShadowResolutionNames", [""])[1]
+        values = self.dfps_options.get("ShadowResolutionNames", [""])
         self.shadow_resolution_var = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
                                                             text="Shadow Resolution:",
@@ -236,7 +233,7 @@ class Manager:
                                                             tags=["text"], tag=None,
                                                             description_name="Shadows"
                                                                     )
-        row += scale(40)
+        row += 40
 
         # Make exception for camera quality
         values = self.dfps_options.get("CameraQualityNames", [""])
@@ -254,7 +251,7 @@ class Manager:
                                                             tags=["text"], tag=None,
                                                             description_name="Camera"
                                                         )
-        row += scale(40)
+        row += 40
 
         # Create a label for UI selection
         values = ["None", "Black Screen Fix", "PS4", "Xbox"]
@@ -266,7 +263,7 @@ class Manager:
                                                             tags=["text"], tag=None,
                                                             description_name="UI"
                                                     )
-        row += scale(40)
+        row += 40
 
         # First Person and FOV
         values = ["Off", "70 FOV", "90 FOV", "110 FOV"]
@@ -280,9 +277,9 @@ class Manager:
                                                     )
         # XYZ to generate patch.
 
-        row = scale(120)
-        cul_tex = scale(400)
-        cul_sel = scale(550)
+        row =120
+        cul_tex = 400
+        cul_sel = 550
 
         # Create labels and enable/disable options for each entry
         self.selected_options = {}
@@ -301,12 +298,12 @@ class Manager:
                                                                         description_name=version_option_name
                                                                        )
                 self.selected_options[version_option_name] = version_option_var
-                row += scale(40)
+                row += 40
 
-            if row >= scale(480):
-                row = scale(120)
-                cul_tex += scale(180)
-                cul_sel += scale(180)
+            if row >= 480:
+                row = 20
+                cul_tex += 180
+                cul_sel += 180
 
         # Create a submit button
         self.on_canvas.create_button(
@@ -322,7 +319,7 @@ class Manager:
 
     def createcheatcanvas(self):
         # Create Cheat Canvas
-        self.cheatcanvas = tk.Canvas(self.window, width=scale(1200), height=scale(600))
+        self.cheatcanvas = ttk.Canvas(self.window, width=scale(1200), height=scale(600))
         self.cheatcanvas.pack(expand=1, fill=BOTH)
         canvas = self.cheatcanvas
         self.all_canvas.append(self.cheatcanvas)
@@ -331,10 +328,10 @@ class Manager:
         self.Cheat_UI_elements(self.cheatcanvas)
         self.create_tab_buttons(self.cheatcanvas)
         # Create Positions.
-        row = scale(40)
-        cul_tex = scale(40)
-        cul_sel = scale(200)
-        Hoverdelay = scale(500)
+        row = 40
+        cul_tex = 40
+        cul_sel = 200
+        Hoverdelay = 500
 
         # Push every version in combobox
         versionvalues = []
@@ -356,9 +353,9 @@ class Manager:
 
 
         def loadCheats():
-            row = scale(40)
-            cul_tex = scale(40)
-            cul_sel = scale(200)
+            row = 40
+            cul_tex = 40
+            cul_sel = 200
 
             corrent_cheats = self.cheat_options[versionvalues.index(self.cheat_version.get())].items()
             corrent_cheats_dict = dict(corrent_cheats)
@@ -401,12 +398,12 @@ class Manager:
                 else:
                     continue
 
-                row += scale(40)
+                row += 40
 
-                if row > scale(480):
-                    row = scale(40)
-                    cul_tex += scale(200)
-                    cul_sel += scale(200)
+                if row > 400:
+                    row = 40
+                    cul_tex += 200
+                    cul_sel += 200
 
 
         def ResetCheats():
