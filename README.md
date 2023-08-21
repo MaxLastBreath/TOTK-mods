@@ -22,8 +22,8 @@ DynamicFPS - Controls Resolution, FPS, Shadow Quality and Camera Quality.
 
 ## ⭐ Changelog
 
-- [![Yuzu](https://img.shields.io/badge/Yuzu-E60012?style=for-the-badge&logo=nintendo-switch&logoColor=white)](https://github.com/MaxLastBreath/TOTK-mods/blob/main/Changes%20Yuzu.md)
-- [![Ryujinx](https://img.shields.io/badge/Ryujinx-0068e6?style=for-the-badge&logo=nintendo-switch&logoColor=white)](https://github.com/MaxLastBreath/TOTK-mods/blob/main/Changes%20Ryujinx.md)
+- [![Yuzu](https://github.com/MaxLastBreath/TOTK-mods/releases)
+- [![Ryujinx](https://github.com/MaxLastBreath/TOTK-mods/releases)
 
 ## Copyright Source & Credits
 - [Dynamic FPS Mod](https://www.reddit.com/user/ChucksFeedAndSeed/)
