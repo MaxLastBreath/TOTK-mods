@@ -3,9 +3,10 @@ from modules.scaling import scale, sf
 from modules.json import load_json
 import configparser
 
+Version = "manager-1.3.0"
+repo_url_raw = 'https://github.com/MaxLastBreath/TOTK-mods'
+repo_url = 'https://api.github.com/repos/MaxLastBreath/TOTK-mods'
 localconfig = "Manager_Config.ini"
-config = configparser.ConfigParser()
-config.read(localconfig)
 
 # Read Config File.
 font = ""
@@ -19,8 +20,10 @@ is_cheat_backup = ""
 is_animation = ""
 
 
-def get_setting():
-    global font, tcolor, theme, toutline, tactive, is_animation, is_cheat_backup, is_auto_backup
+def get_setting(args=None):
+    global font, tcolor, theme, toutline, tactive, is_animation, is_cheat_backup, is_auto_backup, w_scale
+    config = configparser.ConfigParser()
+    config.read(localconfig)
     font = config.get("Settings", "font", fallback="Arial")
     tcolor = config.get("Settings", "color", fallback="light-cyan")
     toutline = config.get("Settings", "shadow_color", fallback="purple")
@@ -28,8 +31,16 @@ def get_setting():
     theme = config.get("Settings", "style", fallback="flatly")
     w_scale = config.get("Settings", "scale", fallback="On")
     is_auto_backup = config.get("Settings", "backup", fallback="Off")
-    is_cheat_backup = config.get("Settings", "cheat-backup", fallback="On")
+    is_cheat_backup = config.get("Settings", "cheat-backup", fallback="Off")
     is_animation = config.get("Settings", "animation", fallback="On")
+
+    if args in ["back", "backup", "auto-backup"]:
+        return is_auto_backup
+    if args in ["cback", "cheatbackup", "cheat-backup", "cb"]:
+        return is_cheat_backup
+    if args in ["ani", "animation"]:
+        return is_animation
+
 
 get_setting()
 CH = 26
@@ -37,10 +48,10 @@ FPS = 0.05
 
 # SET animation FPS to lower if higher resolution.
 if sf > 1.0:
-    FPS = 0.1
     CH +=5
 
 if sf > 1.5:
+    FPS = 0.1
     CH +=5
 
 CBHEIGHT = CH

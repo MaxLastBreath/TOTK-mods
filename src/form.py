@@ -75,7 +75,8 @@ class Manager:
 
     def warning(self, e):
         messagebox.showwarning(f"{e}")
-    def createcanvas(self):
+
+    def create_canvas(self):
         # Create Canvas
         self.maincanvas = ttk.Canvas(self.window, width=scale(1200), height=scale(600))
         canvas = self.maincanvas
@@ -317,7 +318,7 @@ class Manager:
         load_user_choices(self, self.config)
         return self.maincanvas
 
-    def createcheatcanvas(self):
+    def create_cheat_canvas(self):
         # Create Cheat Canvas
         self.cheatcanvas = ttk.Canvas(self.window, width=scale(1200), height=scale(600))
         self.cheatcanvas.pack(expand=1, fill=BOTH)
@@ -460,12 +461,12 @@ class Manager:
         loadCheats()
         load_user_choices(self, self.config)
 
-    def show_maincanvas(self):
+    def show_main_canvas(self):
         self.on_canvas.is_Ani_Paused = True
         self.cheatcanvas.pack_forget()
         self.maincanvas.pack()
 
-    def show_cheatcanvas(self):
+    def show_cheat_canvas(self):
         self.on_canvas.is_Ani_Paused = False
         self.cheatcanvas.pack()
         self.maincanvas.pack_forget()
@@ -501,8 +502,8 @@ class Manager:
 
     def load_canvas(self):
         # Main
-        self.createcanvas()
-        self.createcheatcanvas()
+        self.create_canvas()
+        self.create_cheat_canvas()
         self.cheatcanvas.pack_forget()
 
     def Load_ImagePath(self):
@@ -758,7 +759,7 @@ class Manager:
             row=11, cul=26, width=5,
             tags=["Button"],
             description_name="Main",
-            command=self.show_maincanvas
+            command=self.show_main_canvas
         )
         # 2 - Cheats
         self.on_canvas.create_button(
@@ -768,7 +769,7 @@ class Manager:
             row=11, cul=77, width=6,
             tags=["Button"],
             description_name="Cheats",
-            command=self.show_cheatcanvas
+            command=self.show_cheat_canvas
         )
         # 3 - Settings
         self.on_canvas.create_button(
@@ -837,13 +838,9 @@ class Manager:
         elif selected_preset in self.presets:
             preset_to_apply = self.presets[selected_preset]
             for key, value in preset_to_apply.items():
-                if value == "Enable":
+                if value.lower() in ["enable", "enabled", "on"]:
                     preset_to_apply[key] = "On"
-                if value == "Enabled":
-                    preset_to_apply[key] = "On"
-                elif value == "Disable":
-                    preset_to_apply[key] = "Off"
-                elif value == "Disabled":
+                elif value.lower() in ["disable", "disabled", "off"]:
                     preset_to_apply[key] = "Off"
             # Apply the selected preset from the online presets
             self.apply_preset(self.presets[selected_preset])
@@ -935,6 +932,7 @@ class Manager:
                    with open(file_name, 'wb') as file:
                        file.write(file_response.content)
                    print(f'copied file: {file_name}')
+
              elif item['type'] == "dir":
                  folder_name = os.path.join(Mod_directory, item['name'])
                  os.makedirs(folder_name, exist_ok=True)
@@ -1009,38 +1007,47 @@ class Manager:
                 # If No, do nothing.
                 print(f"Turning on required settings declined!!")
 
-    def on_closing(self):
-        print("Closing Window")
-        self.is_Ani_running = False
-        self.window.destroy()
     # Submit the results, run download manager. Open a Loading screen.
     def submit(self, mode=None):
+        self.add_list = []
+        self.remove_list = []
         checkpath(self, self.mode)
+        # Needs to be run after checkpath.
+        if self.mode == "Yuzu":
+            qtconfig = get_config_parser()
+            qtconfig.optionxform = lambda option: option
+            qtconfig.read(self.configdir)
+        else:
+            qtconfig = None
+
         def timer(value):
             progress_bar["value"] = value
             self.window.update_idletasks()
+
         def run_tasks():
-            if mode== "Cheats":
-                timer(50)
-                print(f"Backing up TOTK, save file from {self.nand_dir}.")
-                backup(self)
-                time.sleep(0.3)
-                timer(100)
-                UpdateVisualImprovements("Cheats")
+            if mode == "Cheats":
+                tasklist = [UpdateVisualImprovements("Cheats")]
+                if get_setting("cheat-backup") in ["On"]:
+                    tasklist.append(backup(self))
+                com = 100 // len(tasklist)
+                for task in tasklist:
+                    timer(com)
+                    com += com
+                    task
+                    time.sleep(0.05)
                 progress_window.destroy()
                 return
             if mode== None:
-                timer(20)
-                DownloadFP()
-                timer(40)
-                DownloadUI()
-                timer(50)
-                DownloadDFPS()
-                timer(80)
-                UpdateVisualImprovements()
-                time.sleep(0.3)
-                timer(100)
-                UpdateSettings()
+                tasklist = [DownloadFP(), DownloadUI(), DownloadDFPS(), UpdateVisualImprovements(), UpdateSettings(), Disable_Mods()]
+                if get_setting("auto-backup") in ["On"]:
+                    print("SS")
+                    tasklist.append(backup(self))
+                com = 100 // len(tasklist)
+                for task in tasklist:
+                    timer(com)
+                    com += com
+                    task
+                    time.sleep(0.05)
                 progress_window.destroy()
                 return
 
@@ -1176,9 +1183,8 @@ class Manager:
                      print("Installing High End Nvidia Yuzu Preset")
 
             if Setting_selection is not None:
-                    repo_url = 'https://github.com/MaxLastBreath/TOTK-mods'
                     Setting_directory = self.TOTKconfig
-                    raw_url = f'{repo_url}/raw/main/{SettingGithubFolder}'
+                    raw_url = f'{repo_url_raw}/raw/main/{SettingGithubFolder}'
                     response = requests.get(raw_url)
                     if response.status_code == 200:
                         with open(Setting_directory, "wb") as file:
@@ -1213,7 +1219,7 @@ class Manager:
                         layout = "1"
                     if proper_res >= 2160:
                         layout = "2"
-                    elif proper_res >= 1080:
+                    elif proper_res <= 1080:
                         layout = "0"
                         config["Core"]["memory_layout_mode"] = layout
                         with open(configfile, "w") as configfile:
@@ -1229,6 +1235,7 @@ class Manager:
                 qtconfig.read(self.configdir)
             else:
                 qtconfig = None
+
             modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "DFPS", action="remove")
 
             config = configparser.ConfigParser()
@@ -1277,66 +1284,66 @@ class Manager:
                 print("You already have the latest DFPS version and the folder exists!")
 
         def DownloadUI():
-            if self.mode == "Yuzu":
-                qtconfig = get_config_parser()
-                qtconfig.optionxform = lambda option: option
-                qtconfig.read(self.configdir)
-            else:
-                qtconfig = None
             #dirs
             Blackscreen = os.path.join(self.load_dir, "BlackscreenFIX")
             Xbox = os.path.join(self.load_dir, "Xbox UI")
             Ps4 = os.path.join(self.load_dir, "Playstation UI")
+
             #ui
             ui_mod_folder = None
             CurrentFolder = None
+
+
             ui_selection = self.ui_var.get()
+
+
             if ui_selection == "None":
-                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Xbox UI", action="add")
-                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Playstation UI", action="add")
-                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "BlackscreenFix", action="add")
+                if self.mode == "Yuzu":
+                    self.add_list.extend(["Xbox UI", "Playstation UI", "BlackscreenFix"])
+
                 if self.mode == "Ryujinx":
-                    if os.path.exists(Ps4):
-                       shutil.rmtree(Ps4)
-                    if os.path.exists(Blackscreen):
-                       shutil.rmtree(Blackscreen)
-                    if os.path.exists(Xbox):
-                       shutil.rmtree(Xbox)
+                    self.add_list.extend([Ps4, Blackscreen, Xbox])
+
                 print("No UI Selected, Disabling all UI mods!")
             elif ui_selection == "PS4":
-                if self.mode == "Ryujinx":
-                    if os.path.exists(Xbox):
-                       shutil.rmtree(Xbox)
-                    if os.path.exists(Blackscreen):
-                       shutil.rmtree(Blackscreen)
-                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Xbox UI", action="add")
-                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "BlackscreenFix", action="add")
-                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Playstation UI", action="remove")
+                # Remove required Mods.
                 ui_mod_folder = "Playstation UI"
                 CurrentFolder = "scripts/UI/Playstation%20UI/"
-            elif ui_selection == "Xbox":
+
+                if self.mode == "Yuzu":
+                    self.add_list.extend(["Xbox UI", "BlackscreenFix"])
+                    self.remove_list.append("Playstation UI")
+
                 if self.mode == "Ryujinx":
-                    if os.path.exists(Ps4):
-                       shutil.rmtree(Ps4)
-                    if os.path.exists(Blackscreen):
-                       shutil.rmtree(Blackscreen)
-                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Playstation UI", action="add")
-                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "BlackscreenFix", action="add")
-                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Xbox UI", action="remove")
+                    self.add_list.extend([Blackscreen, Xbox])
+
+
+            elif ui_selection == "Xbox":
+
                 ui_mod_folder = "Xbox UI"
                 CurrentFolder = 'scripts/UI/Xbox%20UI/'
-            elif ui_selection == "Black Screen Fix":
+
+                if self.mode == "Yuzu":
+                    self.add_list.extend(["Playstation UI", "BlackscreenFix"])
+                    self.remove_list.append("Xbox UI")
+
                 if self.mode == "Ryujinx":
-                    if os.path.exists(Ps4):
-                       shutil.rmtree(Ps4)
-                    if os.path.exists(Xbox):
-                       shutil.rmtree(Xbox)
-                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Playstation UI", action="add")
-                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Xbox UI", action="add")
-                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "BlackscreenFix", action="remove")
+                    self.add_list.extend([Blackscreen, Ps4])
+
+
+            elif ui_selection == "Black Screen Fix":
+
                 ui_mod_folder = "BlackscreenFix"
                 CurrentFolder = 'scripts/UI/BlackscreenFix/'
 
+                if self.mode == "Yuzu":
+                    self.add_list.extend(["Playstation UI", "Xbox UI"])
+                    self.remove_list.append("BlackscreenFix")
+
+                if self.mode == "Ryujinx":
+                    self.add_list.extend([Xbox, Ps4])
+
+            # Download...
             if ui_mod_folder is not None:
                     repo_url = 'https://api.github.com/repos/MaxLastBreath/TOTK-mods'
                     folder_path = f'{CurrentFolder}'
@@ -1370,53 +1377,45 @@ class Manager:
             fov90 = os.path.join(self.load_dir, "First Person 90 FOV")
             fov110 = os.path.join(self.load_dir, "First Person 110 FOV")
             if FP_selection == "Off":
+
+                if self.mode == "Yuzu":
+                    self.add_list.extend(["First Person 110 FOV", "First Person 90 FOV", "First Person 70 FOV"])
+
                 if self.mode == "Ryujinx":
-                    if os.path.exists(fov70):
-                       shutil.rmtree(fov70)
-                    if os.path.exists(fov90):
-                       shutil.rmtree(fov90)
-                    if os.path.exists(fov110):
-                       shutil.rmtree(fov110)
-                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 110 FOV", action="add")
-                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 90 FOV", action="add")
-                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 70 FOV", action="add")
-                print("Selected Third Person, removing ALL First Person Mods!")
+                    self.add_list.extend([fov70, fov90, fov110])
+                print("Selected Third Person, disabling ALL First Person Mods!")
 
             elif FP_selection == "70 FOV":
                     FP_mod_folder = "First Person 70 FOV"
                     FPCurrentFolder = "scripts/UI/First%20Person%20FOV%2070/"
+
+                    if self.mode == "Yuzu":
+                        self.add_list.extend(["First Person 110 FOV", "First Person 90 FOV"])
+                        self.remove_list.append("First Person 70 FOV")
+
                     if self.mode == "Ryujinx":
-                        if os.path.exists(fov90):
-                            shutil.rmtree(fov90)
-                        if os.path.exists(fov110):
-                            shutil.rmtree(fov110)
-                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 110 FOV", action="add")
-                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 90 FOV", action="add")
-                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 70 FOV", action="remove")
+                        self.add_list.extend([fov90, fov110])
 
             elif FP_selection == "90 FOV":
                     FP_mod_folder = "First Person 90 FOV"
                     FPCurrentFolder = 'scripts/UI/First%20Person%20FOV%2090/'
+                    if self.mode == "Yuzu":
+                        self.add_list.extend(["First Person 110 FOV", "First Person 70 FOV"])
+                        self.remove_list.append("First Person 90 FOV")
+
                     if self.mode == "Ryujinx":
-                        if os.path.exists(fov70):
-                            shutil.rmtree(fov70)
-                        if os.path.exists(fov110):
-                            shutil.rmtree(fov110)
-                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 110 FOV", action="add")
-                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 70 FOV", action="add")
-                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 90 FOV", action="remove")
+                        self.add_list.extend([fov70, fov110])
 
             elif FP_selection == "110 FOV":
                     FP_mod_folder = "First Person 110 FOV"
                     FPCurrentFolder = 'scripts/UI/First%20Person%20FOV%20110/'
+
+                    if self.mode == "Yuzu":
+                        self.add_list.extend(["First Person 90 FOV", "First Person 70 FOV"])
+                        self.remove_list.append("First Person 110 FOV")
+
                     if self.mode == "Ryujinx":
-                        if os.path.exists(fov70):
-                            shutil.rmtree(fov70)
-                        if os.path.exists(fov90):
-                            shutil.rmtree(fov90)
-                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 70 FOV", action="add")
-                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 90 FOV", action="add")
-                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "First Person 100 FOV", action="remove")
+                        self.add_list.extend([fov70, fov90])
 
             if FP_mod_folder is not None:
                     repo_url = 'https://api.github.com/repos/MaxLastBreath/TOTK-mods'
@@ -1437,6 +1436,20 @@ class Manager:
                         return
                     else:
                         print("failed to retrive folder and contents")
+
+        def Disable_Mods():
+            if self.mode == "Yuzu":
+                print("SS!!")
+                for item in self.add_list:
+                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, item, action="add")
+                for item in self.remove_list:
+                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, item, action="remove")
+            if self.mode == "Ryujinx":
+                for item in self.add_list:
+                    if os.path.exists(item):
+                        shutil.rmtree(item)
+            self.add_list.clear()
+            self.remove_list.clear()
 
         # Execute tasks and make a Progress Window.
         progress_window = Toplevel(self.window)

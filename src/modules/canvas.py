@@ -308,7 +308,6 @@ class Canvas_Create:
         self.is_Ani_Paused = False
         
     def un_focus(self, event):
-        print("FFF")
         self.is_Ani_Paused = True
 
     def on_closing(self, master):
@@ -322,26 +321,32 @@ class Canvas_Create:
         x = 0
         y = 0
         m = 1
+        if sf >= 1.5:
+            m *= 2
         if FPS == 0.1:
-            m = 2
+            m *= 2
         a = scale(m)
         try:
             while True:
+                if get_setting("ani") in ["Off"]:
+                    time.sleep(3)
                 if self.is_Ani_running is False:
                     return
                 if self.is_Ani_Paused is False:
-                    if x <= 1000:
+                    if x < 1000:
                         x += m
                         canvas.move("background", -a, 0)
                         time.sleep(FPS)
                     if x >= 1000:
+                        print(x)
                         if y == 0:
                             canvas.move("background", scale(200), scale(300))
-                        if y <= 300:
+                        if y < 300:
                             y += m
                             canvas.move("background", 0, -a)
                             time.sleep(FPS)
                         if y >= 300:
+                            print(y)
                             x = 0
                             y = 0
                             canvas.move("background", scale(800), 0)

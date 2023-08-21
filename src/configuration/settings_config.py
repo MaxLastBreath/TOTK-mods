@@ -57,7 +57,7 @@ class Setting:
 
         item_list = self.Colors.getlist()
         item_list.sort()
-        canvas_obj.create_rectangle(cul_sel+110, row-10, cul_sel+110+20, row+10, fill="red", tags="swatch1")
+        canvas_obj.create_rectangle(scale(cul_sel+110), scale(row-10), scale(cul_sel+110+20), scale(row+10), fill="red", tags="swatch1")
         self.color_var = self.canvas_create.create_combobox(
             master=window, canvas=canvas_obj,
             text="Text Color:",
@@ -70,7 +70,7 @@ class Setting:
         )
         row += 40
 
-        canvas_obj.create_rectangle(cul_sel + 110, row - 10, cul_sel + 110 + 20, row + 10, fill="red", tags="swatch2")
+        canvas_obj.create_rectangle(scale(cul_sel + 110), scale(row - 10), scale(cul_sel + 110 + 20), scale(row + 10), fill="red", tags="swatch2")
         self.outline_var = self.canvas_create.create_combobox(
             master=window, canvas=canvas_obj,
             text="Shadow Color:",
@@ -83,7 +83,7 @@ class Setting:
         )
         row += 40
 
-        canvas_obj.create_rectangle(cul_sel + 110, row - 10, cul_sel + 110 + 20, row + 10, fill="red", tags="swatch3")
+        canvas_obj.create_rectangle(scale(cul_sel + 110), scale(row - 10), scale(cul_sel + 110 + 20), scale(row + 10), fill="red", tags="swatch3")
         self.active_var = self.canvas_create.create_combobox(
             master=window, canvas=canvas_obj,
             text="Active Text Color:",
@@ -229,6 +229,7 @@ class Setting:
         self.swatch_color(event=None, canvas=canvas, var=self.active_var, swatch="swatch3")
 
     def get_setting(self, args):
+        self.config.read(localconfig)
         font = self.config.get("Settings", "font", fallback="Arial")
         color = self.config.get("Settings", "color", fallback="light-cyan")
         style = self.config.get("Settings", "style", fallback="flatly")

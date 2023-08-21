@@ -5,11 +5,9 @@ from packaging.version import Version, parse
 import platform
 import sys
 import glob
-import subprocess
-import tkinter as tk
+from configuration.settings import Version
 from tkinter import messagebox
 
-Version = "manager-1.2.2"
 textver = Version.strip("manager-")
 GITHUB = "TOTK-mods"
 OWNER = "MaxLastBreath"
