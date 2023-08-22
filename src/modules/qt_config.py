@@ -4,7 +4,7 @@ import re
 import platform
 from configparser import Interpolation
 
-
+# Ensure % doesn't cause issues in config, with mods like % drop rate.
 class CustomInterpolation(Interpolation):
     def before_get(self, parser, section, option, value, defaults):
         return value
@@ -68,12 +68,9 @@ def find_highest_title_id_index(config):
 
 
 def remove_duplicates(arr):
-    unique_list = []
-    for item in arr:
-        if item not in unique_list:
-            unique_list.append(item)
-    return unique_list
-
+    print(arr)
+    print(list(set(arr)))
+    return list(set(arr))
 
 def get_d_values(config, properindex):
     section = "DisabledAddOns"

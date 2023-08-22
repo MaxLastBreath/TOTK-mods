@@ -34,11 +34,11 @@ class Manager:
         # Define the Manager window.
         self.window = window
 
-        # Configure Style.
+        # Configure the Style of the entire window.
         self.constyle = Style(theme=theme.lower())
         self.constyle.configure("TButton", font=btnfont)
 
-        # Set Classes.
+        # Set initialize different Classes.
         self.on_canvas = Canvas_Create()
         self.setting = Setting()
 
@@ -63,7 +63,7 @@ class Manager:
         self.old_cheats = {}
         self.cheat_version = ttk.StringVar(value="Version - 1.2.00")
 
-        # Load Json Files.
+        # Initialize Json Files.
         self.dfps_options = load_json("DFPS.json", dfpsurl)
         self.description = load_json("Description.json", descurl)
         self.presets = load_json("preset.json", presetsurl)
@@ -71,8 +71,7 @@ class Manager:
         self.cheat_options = load_json("Cheats.json", cheatsurl)
 
         # Local text variable
-        self.switch_text = ttk.StringVar()
-        self.switch_text.set("Switch to Ryujinx")
+        self.switch_text = ttk.StringVar(value="Switch to Ryujinx")
 
         # Load Canvas
         self.Load_ImagePath()
@@ -337,11 +336,6 @@ class Manager:
         # Create UI elements.
         self.Cheat_UI_elements(self.cheatcanvas)
         self.create_tab_buttons(self.cheatcanvas)
-        # Create Positions.
-        row = 40
-        cul_tex = 40
-        cul_sel = 200
-        Hoverdelay = 500
 
         # Push every version in combobox
         versionvalues = []
@@ -410,7 +404,7 @@ class Manager:
 
                 row += 40
 
-                if row > 400:
+                if row > 480:
                     row = 40
                     cul_tex += 200
                     cul_sel += 200
@@ -523,7 +517,7 @@ class Manager:
             width=155, height=88,
         )
         self.master_sword_element2 = self.on_canvas.Photo_Image(
-            image_path="Master_Sword2.png",
+            image_path="Master_Sword2.png", mirror=True,
             width=155, height=88,
         )
 
@@ -533,7 +527,7 @@ class Manager:
         )
 
         self.master_sword_element2_active = self.on_canvas.Photo_Image(
-            image_path="Master_Sword_active2.png",
+            image_path="Master_Sword_active2.png", mirror=True,
             width=155, height=88,
         )
 
@@ -620,29 +614,6 @@ class Manager:
         end = time.time()
         print(f"Images loaded in: {end - start}")
 
-    def hoveranimation(self, canvas, mode, element, event):
-        if mode.lower() == "enter":
-            if element.lower() == "kofi":
-                canvas.itemconfig(self.mastersword, state="hidden")
-                canvas.itemconfig(self.mastersword_active, state="normal")
-            if element.lower() == "github":
-                canvas.itemconfig(self.mastersword1, state="hidden")
-                canvas.itemconfig(self.mastersword1_active, state="normal")
-            if element.lower() == "discord":
-                canvas.itemconfig(self.hylian, state="hidden")
-                canvas.itemconfig(self.hylian_active, state="normal")
-
-        if mode.lower() == "leave":
-            if element.lower() == "kofi":
-                canvas.itemconfig(self.mastersword, state="normal")
-                canvas.itemconfig(self.mastersword_active, state="hidden")
-            if element.lower() == "github":
-                canvas.itemconfig(self.mastersword1, state="normal")
-                canvas.itemconfig(self.mastersword1_active, state="hidden")
-            if element.lower() == "discord":
-                canvas.itemconfig(self.hylian, state="normal")
-                canvas.itemconfig(self.hylian_active, state="hidden")
-
     def load_UI_elements(self, canvas):
         # Images and Effects
         canvas.create_image(0, 0, anchor="nw", image=self.background_image, tags="background")
@@ -654,32 +625,27 @@ class Manager:
         canvas.create_image(0-scale(20), 0, anchor="nw", image=self.background_UI2, tags="overlay")
         canvas.create_image(0-scale(20), 0, anchor="nw", image=self.background_UI3, tags="overlay")
 
-        # Trigger Animation
-        self.mastersword = canvas.create_image(scale(794), scale(222) - scale(40), anchor="nw", image=self.master_sword_element, tags="overlay-sword1")
-        self.mastersword_active = canvas.create_image(scale(794), scale(222) - scale(40), anchor="nw", image=self.master_sword_element_active, tags="overlay-sword1")
-        self.maincanvas.itemconfig(self.mastersword_active, state="hidden")
+        # Create Active Buttons.
+        self.on_canvas.image_Button(
+            canvas=canvas,
+            row=182, cul=794,
+            img_1=self.master_sword_element, img_2=self.master_sword_element_active,
+            command=lambda event: self.open_browser("Kofi")
+        )
 
-        canvas.tag_bind(self.mastersword, "<Enter>", lambda event: self.hoveranimation(canvas, "Enter", "Kofi", event))
-        canvas.tag_bind(self.mastersword_active, "<Leave>", lambda event: self.hoveranimation(canvas, "Leave", "Kofi", event))
-        canvas.tag_bind(self.mastersword_active, "<Button-1>", lambda event: self.open_browser("Kofi"))
+        self.on_canvas.image_Button(
+            canvas=canvas,
+            row=182, cul=1007,
+            img_1=self.master_sword_element2, img_2=self.master_sword_element2_active,
+            command=lambda event: self.open_browser("Github")
+        )
 
-        # Trigger Animation
-        self.mastersword1 = canvas.create_image(scale(1007), scale(222) - scale(40), anchor="nw", image=self.master_sword_element2, tags="overlay-sword2")
-        self.mastersword1_active = canvas.create_image(scale(1007), scale(222) - scale(40), anchor="nw", image=self.master_sword_element2_active, tags="overlay-sword2")
-        self.maincanvas.itemconfig(self.mastersword1_active, state="hidden")
-
-        canvas.tag_bind(self.mastersword1, "<Enter>", lambda event: self.hoveranimation(canvas, "Enter", "Github", event))
-        canvas.tag_bind(self.mastersword1_active, "<Leave>", lambda event: self.hoveranimation(canvas, "Leave", "Github", event))
-        canvas.tag_bind(self.mastersword1_active, "<Button-1>", lambda event: self.open_browser("Github"))
-
-        # Hylian Shield
-        self.hylian = canvas.create_image(scale(978), scale(240), anchor="c", image=self.hylian_element, tags="overlay-hylian")
-        self.hylian_active = canvas.create_image(scale(978), scale(240), anchor="c", image=self.hylian_element_active, tags="overlay")
-        self.maincanvas.itemconfig(self.hylian_active, state="hidden")
-        canvas.tag_bind(self.hylian, "<Enter>", lambda event: self.hoveranimation(canvas, "Enter", "discord", event))
-        canvas.tag_bind(self.hylian_active, "<Leave>", lambda event: self.hoveranimation(canvas, "Leave", "discord", event))
-        canvas.tag_bind(self.hylian_active, "<Button-1>", lambda event: self.open_browser("Discord"))
-
+        self.on_canvas.image_Button(
+            canvas=canvas,
+            row=240, cul=978, anchor="c",
+            img_1=self.hylian_element, img_2=self.hylian_element_active,
+            command=lambda event: self.open_browser("Discord")
+        )
 
         # Information text.
         text_widgetoutline2 = canvas.create_text(scale(1001) - scale(20), scale(126) -scale(80), text=f"{self.mode} TOTK Optimizer", tags="information", fill="black", font=biggyfont, anchor="center", justify="center", width=scale(325))
@@ -694,13 +660,6 @@ class Manager:
         canvas.create_image(0, 0, anchor="nw", image=self.background_UI, tags="overlay")
 
     def create_tab_buttons(self, canvas):
-        # GitHub Button
-
-        # Ko-fi Button
-        def enter(event, tag):
-            self.maincanvas.itemconfigure(tag, fill="red")
-        def leave(event, tag):
-            self.maincanvas.itemconfigure(tag, fill=textcolor)
 
         if not canvas == self.maincanvas:
             # Kofi Button
@@ -723,8 +682,6 @@ class Manager:
                 description_name="Github",
                 command=lambda: self.open_browser("Github")
             )
-
-
 
         # Create tabs
 
@@ -911,7 +868,7 @@ class Manager:
             return ryujinx_path
     # Download Manager
 
-    def copy_files_and_subfolders(contents, Mod_directory):
+    def download_folders(contents, Mod_directory):
          for item in contents:
              if item['type'] == 'file':
                 file_url = item.get('download_url')
@@ -927,7 +884,7 @@ class Manager:
                  folder_name = os.path.join(Mod_directory, item['name'])
                  os.makedirs(folder_name, exist_ok=True)
                  subfolder_contents = Manager.get_folder_contents(item['url'])
-                 Manager.copy_files_and_subfolders(subfolder_contents, folder_name)
+                 Manager.download_folders(subfolder_contents, folder_name)
 
     def get_folder_contents(api_url):
         response = requests.get(api_url)
@@ -1073,6 +1030,10 @@ class Manager:
                 shadow_resolution = self.shadow_resolution_var.get()
                 camera_quality = self.camera_var.get()
 
+                # Ensures that the patches are active and ensure that old versions of the mod folder is disabled.
+                self.remove_list.extend(["DFPS", "Mod Manager Patch"])
+                self.add_list.append("Visual Improvements")
+
                 # Determine the path to the INI file in the user's home directory
                 ini_file_directory = os.path.join(self.load_dir, "Mod Manager Patch", "romfs", "dfps")
                 os.makedirs(ini_file_directory, exist_ok=True)
@@ -1133,17 +1094,6 @@ class Manager:
                             else:
                                 file.write(" ")
                         file.write("\n@stop\n")
-                if self.mode == "Yuzu":
-                    qtconfig = get_config_parser()
-                    qtconfig.optionxform = lambda option: option
-                    qtconfig.read(self.configdir)
-                else:
-                    qtconfig = None
-                # Ensures that the patches are active
-                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "DFPS", action="remove")
-                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Mod Manager Patches", action="remove")
-                # To maximize compatbility with old version of Mod Folders and Mod Manager.
-                modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "Visual Improvements", action="add")
                 # Update Visual Improvements MOD.
                 with open(ini_file_path, 'w') as configfile:
                     config.write(configfile)
@@ -1211,41 +1161,19 @@ class Manager:
                         layout = "2"
                     elif proper_res <= 1080:
                         layout = "0"
-                        config["Core"]["memory_layout_mode"] = layout
-                        with open(configfile, "w") as configfile:
-                            config.write(configfile)
+                    config["Core"]["memory_layout_mode"] = layout
+                    with open(configfile, "w") as configfile:
+                        config.write(configfile)
             else:
                 print("Selected option has no associated setting folder.")
 
         def DownloadDFPS():
-            # Make sure DFPS is enabled.
-            if self.mode == "Yuzu":
-                qtconfig = get_config_parser()
-                qtconfig.optionxform = lambda option: option
-                qtconfig.read(self.configdir)
-            else:
-                qtconfig = None
-
-            modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, "DFPS", action="remove")
-
             config = configparser.ConfigParser()
             config.read(self.config)
-            if not config.has_section("Updates"):
-                config.add_section("Updates")
-                config.set("Updates", "dfps", "1.0.0")
-                with open(self.config, "w") as configfile:
-                    config.write(configfile)
-            try:
-                latest_dfps_version = config.get("Updates", "dfps")
-            except NoOptionError as e:
-                # Handle the case when "dfps" option doesn't exist
-                config.set("Updates", "dfps", "1.0.0")
-                with open(self.config, "w") as configfile:
-                    config.write(configfile)
-                latest_dfps_version = "1.0.0"
-            print(f"Successfully updated config!")
-
-            current_dfps_version = self.dfps_options.get("DFPS Version")
+            current_dfps_version = config.get("Updates", "dfps", fallback="1.0.0")
+            latest_dfps_version = self.dfps_options.get("DFPS Version")
+            # Ensure DFPS is enabled in Yuzu.
+            self.remove_list.append("DFPS")
             # Start of DFPS file check.
             if current_dfps_version != latest_dfps_version or not os.path.exists(os.path.join(self.load_dir, "DFPS", "exefs")):
                 dfps_directory = os.path.join(self.load_dir, "DFPS", "exefs")
@@ -1263,15 +1191,16 @@ class Manager:
                 for file_info in file_urls:
                     url = file_info["url"]
                     save_path = file_info["save_path"]
-
-                    print("Checking for updates")
-                    Manager.download_file(url, save_path)
+                    print("Downloading latest DFPS version available.")
+                    download_file(url, save_path)
+                if not config.has_section("Updates"):
+                    config.add_section("Updates")
                 # Update Config File
-                config.set("Updates", "dfps", current_dfps_version)
+                config["Updates"]["dfps"] = latest_dfps_version
                 with open(self.config, "w") as configfile:
                     config.write(configfile)
             else:
-                print("You already have the latest DFPS version and the folder exists!")
+                print("You already have the latest DFPS version installed.!")
 
         def DownloadUI():
             #dirs
@@ -1347,7 +1276,7 @@ class Manager:
                     if response.status_code == 200:
                         contents = response.json()
                         os.makedirs(Mod_directory, exist_ok=True)
-                        Manager.copy_files_and_subfolders(contents, Mod_directory)
+                        Manager.download_folders(contents, Mod_directory)
                         return
                     else:
                         print("failed to retrive folder and contents")
@@ -1422,18 +1351,23 @@ class Manager:
                     if response.status_code == 200:
                         contents = response.json()
                         os.makedirs(FPMod_directory, exist_ok=True)
-                        Manager.copy_files_and_subfolders(contents, FPMod_directory)
+                        Manager.download_folders(contents, FPMod_directory)
                         return
                     else:
                         print("failed to retrive folder and contents")
 
         def Disable_Mods():
+            # Convert the lists to sets, removing any duplicates..
+            self.add_list = set(self.add_list)
+            self.remove_list = set(self.remove_list)
+            # Run the Main code to Enable and Disable necessary Mods, the remove ensures the mods are enabled.
             if self.mode == "Yuzu":
-                print("SS!!")
                 for item in self.add_list:
                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, item, action="add")
+                    print("Disabling ", item)
                 for item in self.remove_list:
                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, item, action="remove")
+                    print("Enabling ", item)
             if self.mode == "Ryujinx":
                 for item in self.add_list:
                     if os.path.exists(item):

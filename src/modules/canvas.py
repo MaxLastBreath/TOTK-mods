@@ -6,6 +6,8 @@ from tkinter import *
 from PIL import Image, ImageTk, ImageFilter, ImageOps
 from configuration.settings import *
 import time
+import string
+import random
 import ttkbootstrap as ttk
 
 
@@ -249,22 +251,58 @@ class Canvas_Create:
                               master=master
                               )
 
+    def image_Button(self, canvas,
+                     row, cul, anchor="nw",
+                     img_1=any, img_2=any,
+                     tag_1=None, tag_2=None,
+                     command=None
+                     ):
+        # If strings are not defined use random tags.
+        if tag_1 is None:
+            tag_1 = random.choices(string.ascii_uppercase +
+                           string.digits, k=8)
+            tag_1 = ''.join(tag_1)
+        if tag_2 is None:
+            tag_2 = random.choices(string.ascii_uppercase +
+                           string.digits, k=8)
+            tag_2 = ''.join(tag_2)
+        # Trigger Animation
+        canvas.create_image(scale(cul), scale(row), anchor=anchor, image=img_1, state="normal", tags=tag_1)
+        canvas.create_image(scale(cul), scale(row), anchor=anchor, image=img_2, state="hidden", tags=tag_2)
+
+        # Bind the actions for the button.
+        canvas.tag_bind(tag_1, "<Enter>", lambda event: self.toggle_img(
+                                                                        canvas=canvas, mode="Enter",
+                                                                        tag_1=tag_1, tag_2=tag_2,
+                                                                        event=event))
+        canvas.tag_bind(tag_2, "<Leave>", lambda event: self.toggle_img(
+                                                                        canvas=canvas, mode="Leave",
+                                                                        tag_1=tag_1, tag_2=tag_2,
+                                                                        event=event))
+        canvas.tag_bind(tag_2, "<Button-1>", command)
+        return tag_1, tag_2
+
+    def toggle_img(self, canvas, mode, tag_1, tag_2, event=None):
+        if mode.lower() == "enter":
+            canvas.itemconfig(tag_1, state="hidden")
+            canvas.itemconfig(tag_2, state="normal")
+        if mode.lower() == "leave":
+            canvas.itemconfig(tag_1, state="normal")
+            canvas.itemconfig(tag_2, state="hidden")
+
     def read_description(self, canvas, option, position_list=list, master=any):
+        if f"{option}" not in description:
+            return
         for position in position_list:
             try:
-                if f"{option}" in description:
-                    canvas_item = canvas.find_withtag(position)
-                    if canvas_item:
-                        canvas = canvas
-                        hover = description[f"{option}"]
-                        tooltip = None
-                        self.create_tooltip(canvas, position, hover, master)
-                        break
-
-            except TclError as e:
-                if f"{option}" in description:
+                canvas_item = canvas.find_withtag(position)
+                if canvas_item:
                     hover = description[f"{option}"]
-                    Hovertip(position, f"{hover}", hover_delay=Hoverdelay)
+                    self.create_tooltip(canvas, position, hover, master)
+                    break
+            except TclError as e:
+                hover = description[f"{option}"]
+                Hovertip(position, f"{hover}", hover_delay=Hoverdelay)
 
     def create_tooltip(self, canvas, position, hover, master):
 
@@ -328,34 +366,29 @@ class Canvas_Create:
         if FPS == 0.1:
             m *= 2
         a = scale(m)
-        try:
-            while True:
-                if get_setting("ani") in ["Off"]:
-                    time.sleep(3)
-                if self.is_Ani_running is False:
-                    return
-                if self.is_Ani_Paused is False:
-                    if x < 1000:
-                        x += m
-                        canvas.move("background", -a, 0)
+        while True:
+            if self.is_Ani_running is False:
+                return
+            if self.is_Ani_Paused is False or get_setting("ani") in ["Off", "Disabled"]:
+                if x < 1000:
+                    x += m
+                    canvas.move("background", -a, 0)
+                    time.sleep(FPS)
+                if x >= 1000:
+                    print(x)
+                    if y == 0:
+                        canvas.move("background", scale(200), scale(300))
+                    if y < 300:
+                        y += m
+                        canvas.move("background", 0, -a)
                         time.sleep(FPS)
-                    if x >= 1000:
-                        print(x)
-                        if y == 0:
-                            canvas.move("background", scale(200), scale(300))
-                        if y < 300:
-                            y += m
-                            canvas.move("background", 0, -a)
-                            time.sleep(FPS)
-                        if y >= 300:
-                            print(y)
-                            x = 0
-                            y = 0
-                            canvas.move("background", scale(800), 0)
-                else:
-                    time.sleep(1)
-        except AttributeError as e:
-            print(e)
+                    if y >= 300:
+                        print(y)
+                        x = 0
+                        y = 0
+                        canvas.move("background", scale(800), 0)
+            else:
+                time.sleep(1)
 
     def get_UI_path(self, file_name, folder_name="GUI"):
         start = time.time()
@@ -394,11 +427,11 @@ class Canvas_Create:
         if isinstance(blur, int):
             image = image.filter(ImageFilter.GaussianBlur(blur))
         if mirror is True:
-            ImageOps.mirror(image)
+            image = ImageOps.mirror(image)
         if flip is True:
-            ImageOps.flip(image)
+            image = ImageOps.flip(image)
         if auto_contrast is True:
-            ImageOps.autocontrast(image)
+            image = ImageOps.autocontrast(image)
         new_photo_image = ImageTk.PhotoImage(image)
 
         end = time.time()
