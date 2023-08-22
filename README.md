@@ -1,6 +1,6 @@
 <img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=6c7086&height=120&section=header"/>
 
-# TOTK Mod Folder README
+# TOTK Optimizer README
 # [![Download](https://img.shields.io/github/downloads/MaxLastBreath/TOTK-mods/total?style=for-the-badge&logoColor=%23ffffff&label=Download&labelColor=%232d89cf&color=%23de3e21)](https://github.com/MaxLastBreath/TOTK-mods/releases/download/manager-1.2.2/TOTK.Optimizer.1.2.2.exe) - [![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/invite/7MMv4yGfhM)  - [![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/maxlastbreath#) - [![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)](https://www.youtube.com/channel/UC9-81HNX9HfWHUsXBz5xYsQ) - [![Reddit](https://img.shields.io/badge/Reddit-%23FF4500.svg?style=for-the-badge&logo=Reddit&logoColor=white)](https://www.reddit.com/user/Maxlastbreath) 
 
 Previous Mod Folder releases are still available and can be found in [Rentry](https://rentry.org/ModFolder/).
@@ -22,8 +22,8 @@ DynamicFPS - Controls Resolution, FPS, Shadow Quality and Camera Quality.
 
 ## ⭐ Changelog
 
-- [![Yuzu](https://github.com/MaxLastBreath/TOTK-mods/releases)
-- [![Ryujinx](https://github.com/MaxLastBreath/TOTK-mods/releases)
+- [![Yuzu](https://img.shields.io/badge/Yuzu-E60012?style=for-the-badge&logo=nintendo-switch&logoColor=white)](https://github.com/MaxLastBreath/TOTK-mods/releases)
+- [![Ryujinx](https://img.shields.io/badge/Ryujinx-0068e6?style=for-the-badge&logo=nintendo-switch&logoColor=white)](https://github.com/MaxLastBreath/TOTK-mods/releases)
 
 ## Copyright Source & Credits
 - [Dynamic FPS Mod](https://www.reddit.com/user/ChucksFeedAndSeed/)
