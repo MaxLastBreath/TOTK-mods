@@ -1,16 +1,14 @@
 import threading
 import os
-import sys
 import shutil
 import requests
 import ttkbootstrap as ttk
 import time
 import webbrowser
 import re
-from tkinter import TclError, filedialog, messagebox, Toplevel
+from tkinter import filedialog, messagebox, Toplevel
 from ttkbootstrap.constants import *
 from ttkbootstrap import Style
-from PIL import Image, ImageTk, ImageFilter, ImageOps
 from configparser import NoOptionError
 from modules.canvas import Canvas_Create
 from modules.qt_config import modify_disabled_key, get_config_parser
@@ -19,6 +17,17 @@ from modules.backup import backup
 from modules.config import save_user_choices, load_user_choices
 from configuration.settings import *
 from configuration.settings_config import Setting
+
+@staticmethod
+def download_file(url, save_path):
+    response = requests.get(url, stream=True)
+    if response.status_code == 200:
+        with open(save_path, "wb") as file:
+            for chunk in response.iter_content(chunk_size=8192):
+                file.write(chunk)
+        print(f"Downloaded file: {save_path}")
+    else:
+        print(f"Failed to download file from {url}. Status code: {response.status_code}")
 
 class Manager:
     def __init__(self, window):
@@ -488,18 +497,6 @@ class Manager:
         webbrowser.open(url)
         return
 
-    def get_UI_path(self, file_name, folder_name="HUD"):
-        if getattr(sys, 'frozen', False):
-            # Look for the 'HUD' folder next to the executable
-            executable_dir = os.path.dirname(sys.executable)
-            hud_folder_path = os.path.join(executable_dir, folder_name)
-            if os.path.exists(hud_folder_path):
-                return os.path.abspath(os.path.join(hud_folder_path, file_name))
-        # If not running as an executable or 'HUD' folder not found, assume it's in the same directory as the script
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        hud_folder_path = os.path.join(script_dir, folder_name)
-        return os.path.abspath(os.path.join(hud_folder_path, file_name))
-
     def load_canvas(self):
         # Main
         self.create_canvas()
@@ -507,79 +504,77 @@ class Manager:
         self.cheatcanvas.pack_forget()
 
     def Load_ImagePath(self):
+        start = time.time()
         # Create a Gradiant for Yuzu.
-        UI_path = self.get_UI_path("Yuzu_BG.png")
-        image = Image.open(UI_path)
-        image = image.resize((scale(1200), scale(600)))
-        self.background_YuzuBG = ImageTk.PhotoImage(image)
+        self.background_YuzuBG = self.on_canvas.Photo_Image(
+            image_path="Yuzu_BG.png",
+            width=1200, height=600,
+        )
 
         # Create a Gradiant for Ryujinx.
-        UI_path = self.get_UI_path("Ryujinx_BG.png")
-        image = Image.open(UI_path)
-        image = image.resize((scale(1200), scale(600)))
-        self.background_RyuBG = ImageTk.PhotoImage(image)
-        # UI Elements
-        UI_path = self.get_UI_path("Master_Sword.png")
-        image = Image.open(UI_path)
-        image = image.resize((scale(150), scale(88)))
-        self.master_sword_element = ImageTk.PhotoImage(image)
+        self.background_RyuBG = self.on_canvas.Photo_Image(
+            image_path="Ryujinx_BG.png",
+            width=1200, height=600,
+        )
 
-        UI_path = self.get_UI_path("Master_Sword_active.png")
-        image = Image.open(UI_path)
-        image = image.resize((scale(155), scale(88)))
-        self.master_sword_element_active = ImageTk.PhotoImage(image)
+        # UI Elements/Buttons
+        self.master_sword_element = self.on_canvas.Photo_Image(
+            image_path="Master_Sword.png",
+            width=155, height=88,
+        )
+        self.master_sword_element2 = self.on_canvas.Photo_Image(
+            image_path="Master_Sword2.png",
+            width=155, height=88,
+        )
 
-        UI_path = self.get_UI_path("Master_Sword2.png")
-        image = Image.open(UI_path)
-        image = ImageOps.mirror(image)
-        image = image.resize((scale(155), scale(88)))
-        self.master_sword_element2 = ImageTk.PhotoImage(image)
+        self.master_sword_element_active = self.on_canvas.Photo_Image(
+            image_path="Master_Sword_active.png",
+            width=155, height=88,
+        )
 
-        UI_path = self.get_UI_path("Master_Sword_active2.png")
-        image = Image.open(UI_path)
-        image = ImageOps.mirror(image)
-        image = image.resize((scale(155), scale(88)))
-        self.master_sword_element2_active = ImageTk.PhotoImage(image)
+        self.master_sword_element2_active = self.on_canvas.Photo_Image(
+            image_path="Master_Sword_active2.png",
+            width=155, height=88,
+        )
 
-        UI_path = self.get_UI_path("Hylian_Shield.png")
-        image = Image.open(UI_path)
-        image = image.resize((scale(72), scale(114)))
-        self.hylian_element = ImageTk.PhotoImage(image)
+        self.hylian_element = self.on_canvas.Photo_Image(
+            image_path="Hylian_Shield.png",
+            width=72, height=114,
+        )
 
-        UI_path = self.get_UI_path("Hylian_Shield_active.png")
-        image = Image.open(UI_path)
-        image = image.resize((scale(72), scale(114)))
-        self.hylian_element_active = ImageTk.PhotoImage(image)
+        self.hylian_element_active = self.on_canvas.Photo_Image(
+            image_path="Hylian_Shield_active.png",
+            width=72, height=114,
+        )
 
-
-        # Create a Gradiant background.
-        UI_path = self.get_UI_path("BG_Left.png")
-        image = Image.open(UI_path)
-        image = image.resize((scale(1200), scale(600)))
-        self.background_UI = ImageTk.PhotoImage(image)
-
-        UI_path = self.get_UI_path("BG_Left_2.png")
-        image = Image.open(UI_path)
-        image = image.resize((scale(1200), scale(600)))
-        self.background_UI_element = ImageTk.PhotoImage(image)
+        self.background_UI_element = self.on_canvas.Photo_Image(
+            image_path="BG_Left_2.png",
+            width=1200, height=600,
+        )
 
         # Create Gradiant for cheats.
-        UI_path = self.get_UI_path("BG_Cheats.png")
-        image = Image.open(UI_path)
-        image = image.resize((scale(1200), scale(600)))
-        self.background_Cheats = ImageTk.PhotoImage(image)
+        self.background_Cheats = self.on_canvas.Photo_Image(
+            image_path="BG_Cheats.png",
+            width=1200, height=600,
+        )
 
         # Create a transparent black background
-        UI_path2 = self.get_UI_path("BG_Right.png")
-        image = Image.open(UI_path2)
-        image = image.resize((scale(1200), scale(600)))
-        self.background_UI2 = ImageTk.PhotoImage(image)
+        self.background_UI2 = self.on_canvas.Photo_Image(
+            image_path="BG_Right.png",
+            width=1200, height=600,
+        )
+
+        # Create a Gradiant background.
+        self.background_UI = self.on_canvas.Photo_Image(
+            image_path="BG_Left.png",
+            width=1200, height=600,
+        )
 
         # Create a transparent black background
-        UI_path2 = self.get_UI_path("BG_Right_UI.png")
-        image = Image.open(UI_path2)
-        image = image.resize((scale(1200), scale(600)))
-        self.background_UI3 = ImageTk.PhotoImage(image)
+        self.background_UI3 = self.on_canvas.Photo_Image(
+            image_path="BG_Right_UI.png",
+            width=1200, height=600,
+        )
 
         # Attempt to load images from custom folder.
         try:
@@ -589,19 +584,21 @@ class Manager:
                 image_path = "custom\\bg.png"
             else:
                 # Load and set the image as the background
-                image_path = self.get_UI_path("image.png")
-
-            image = Image.open(image_path)
-            image = image.resize((scale(1200), scale(600)))
-            image = image.filter(ImageFilter.GaussianBlur(1))
-            self.background_image = ImageTk.PhotoImage(image)
+                image_path ="image.png"
         except FileNotFoundError as e:
             self.warning(e)
-        image = Image.open(image_path)
-        image = image.resize((scale(2400), scale(1200)))
-        image = image.filter(ImageFilter.GaussianBlur(3))
-        self.blurbackground = ImageTk.PhotoImage(image)
 
+        self.background_image = self.on_canvas.Photo_Image(
+            image_path=image_path,
+            width=1200, height=600,
+            blur=1
+        )
+
+        self.blurbackground = self.on_canvas.Photo_Image(
+            image_path=image_path,
+            width=1200, height=600, img_scale=2.0,
+            blur=3
+        )
 
         # Handle Text Window
         def fetch_text_from_github(file_url):
@@ -619,6 +616,9 @@ class Manager:
         file_url = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Announcements/Announcement%20Window.txt"
         self.text_content = fetch_text_from_github(file_url)
         # Info Element
+
+        end = time.time()
+        print(f"Images loaded in: {end - start}")
 
     def hoveranimation(self, canvas, mode, element, event):
         if mode.lower() == "enter":
@@ -910,16 +910,6 @@ class Manager:
             ryujinx_path = config.get('Paths', 'ryujinxpath', fallback="Appdata")
             return ryujinx_path
     # Download Manager
-    @staticmethod
-    def download_file(url, save_path):
-        response = requests.get(url, stream=True)
-        if response.status_code == 200:
-            with open(save_path, "wb") as file:
-                for chunk in response.iter_content(chunk_size=8192):
-                    file.write(chunk)
-            print(f"Downloaded file: {save_path}")
-        else:
-            print(f"Failed to download file from {url}. Status code: {response.status_code}")
 
     def copy_files_and_subfolders(contents, Mod_directory):
          for item in contents:

@@ -9,8 +9,8 @@ Open a terminal set the current path to the folder DIR. Then write
 
 For Windows
 
-pyinstaller run.py --onefile --name TOTK_MOD_Manager --add-data "HUD;HUD"
+pyinstaller run.py --onefile --name TOTK_MOD_Manager --add-data "GUI;GUI"
 
 For Linux
 
-pyinstaller run.py --onefile --name TOTK_Mod_Manager --add-data "HUD:HUD" --hidden-import PIL --hidden-import PIL._tkinter_finder --hidden-import PIL._tkinter
+pyinstaller run.py --onefile --name TOTK_Mod_Manager --add-data "GUI:GUI" --hidden-import PIL --hidden-import PIL._tkinter_finder --hidden-import PIL._tkinter

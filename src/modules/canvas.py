@@ -1,6 +1,9 @@
+import os
+import sys
 from idlelib.tooltip import Hovertip
 from ttkbootstrap import *
 from tkinter import *
+from PIL import Image, ImageTk, ImageFilter, ImageOps
 from configuration.settings import *
 import time
 import ttkbootstrap as ttk
@@ -23,7 +26,6 @@ def toggle(event, var):
         var.set("Off")
     else:
         var.set("On")
-
 
 class Canvas_Create:
     def __init__(self):
@@ -303,8 +305,8 @@ class Canvas_Create:
         self.tooltip.destroy()
         self.tooltip_active = False
 
-    # Handle animations and events during those animations.
     def focus(self, event):
+        # Handle animations and events during those animations.
         self.is_Ani_Paused = False
         
     def un_focus(self, event):
@@ -354,3 +356,51 @@ class Canvas_Create:
                     time.sleep(1)
         except AttributeError as e:
             print(e)
+
+    def get_UI_path(self, file_name, folder_name="GUI"):
+        start = time.time()
+        if getattr(sys, 'frozen', False):
+            # Look for the 'GUI' folder next to the executable
+            executable_dir = os.path.dirname(sys.executable)
+            # Get the sub folder of modules. <-- .exe fill fail without this.
+            executable_dir = os.path.dirname(executable_dir)
+            hud_folder_path = os.path.join(executable_dir, folder_name)
+            # check if the file exists, if it doesn't run the rest of the code.
+            if os.path.exists(os.path.join(hud_folder_path, file_name)):
+                end = time.time()
+                print("FOUND", end - start)
+                return os.path.abspath(os.path.join(hud_folder_path, file_name))
+        # If not running as an executable or 'GUI' folder not found, assume it's in the same directory as the script
+        if os.path.exists(os.path.join(folder_name, file_name)):
+            return os.path.join(folder_name, file_name)
+        else:
+            end = time.time()
+            print(end - start)
+            return file_name
+
+    def Photo_Image(self, image_path=str, is_stored=False,
+                    width=None, height=None,
+                    blur=None, mirror=False, flip=False,
+                    auto_contrast=False, img_scale=None):
+        start = time.time()
+
+        UI_path = self.get_UI_path(image_path)
+        image = Image.open(UI_path)
+        if isinstance(img_scale, int) or isinstance(img_scale, float):
+            width = int(width * img_scale)
+            height = int(height * img_scale)
+        if isinstance(width, int) and isinstance(height, int):
+            image = image.resize((scale(width), scale(height)))
+        if isinstance(blur, int):
+            image = image.filter(ImageFilter.GaussianBlur(blur))
+        if mirror is True:
+            ImageOps.mirror(image)
+        if flip is True:
+            ImageOps.flip(image)
+        if auto_contrast is True:
+            ImageOps.autocontrast(image)
+        new_photo_image = ImageTk.PhotoImage(image)
+
+        end = time.time()
+        print(end - start)
+        return new_photo_image
