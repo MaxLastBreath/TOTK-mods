@@ -32,9 +32,33 @@
 	"Remove Lensflare": "Removes lensflare effect,\nNote: The lensflare in TOTK flickers a lot..",
 	"Improve LOD": "Improves the distant objects in the game.\nThis has no effect on performance.",
 	"Camera Speed x2": "Increase the Player Camera Speed.",
+	"Remove FXAA": "Removes Internal FX Anti Aliasing, \nNOTE: could improve quality with external upscaler.",
+	"Remove FSR": "Removes Internal FSR 1.0 Upscaler, \nNOTE: could reduce blurriness and improve quality.",
 
 
 	"CHEATS - GROUP": "None",
 
-	"God Mode": "Turn on God Mode"
+	"God Mode": "Turn on God Mode",
+	"Mark all Korok": "Marks all the korok seeds on the map \nNote: Zoom in!.",
+	"Free Autobuild": "Removes the cost of Autobuild.",
+	"Infinite Battery": "Zonai devices consume no battery.",
+	"Infinite Durability": "Infinite Durability for Weapons and Shields.",
+	"Infinite Items (500)": "Makes all items Infinite,\nNote: recommended to do a backup.",
+	"Infinite Zonai Devices": "Lets you summon Zonai devices infinitely.",
+	"Infinite Stamina": "Infinite running Stamina.",
+	"Swimming Speed 2x": "Increases Swimming speed by 200%.",
+	"Swimming Speed 3x": "Increases Swimming speed by 300%.",
+	"Fast Forward Time": "Press (ZL+R3Left) to accelerate time.",
+	"Time Resume": "Press (ZL+R3Up) to trigger.",
+	"Time Rewind": "Time Rewind press (ZL+R3Left) to trigger",
+	"Time Stop": "Press (ZL+R3Down) to trigger.",
+	"Mark ALl Shrines": "Marks all the shrines on the map.",
+	"Quickfire Bow": "Decreases bow Charge time.",
+	"No Charge Stamina": "Removes weapon charge stamina.",
+	"No Fall Damage": "Removes fall damage.",
+	"Movement speed 3x": "Movement speed 300%, \nNOTE: Affects horses.",
+	"Movement speed 2x": "Movement speed 200%, \nNOTE: Affects horses.",
+	"Movement speed 1x": "Movement speed 100%, \nNOTE: Affects horses.",
+	"No skill CD": "Removes the skill CD of sages."
+
 }
