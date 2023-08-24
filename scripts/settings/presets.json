@@ -9,7 +9,9 @@
     "Remove QuaReduction": "Enable",
     "Remove DOF": "Enable",
     "Remove Lensflare": "Enable",
-    "Improve LOD": "Enable"
+    "Improve LOD": "Enable",
+    "Remove FSR": "Disable",
+    "Remove FXAA": "Disable"
   },
   "Low": {
     "Resolution": "1080p FHD",
@@ -21,7 +23,9 @@
     "Remove QuaReduction": "Disable",
     "Remove DOF": "Enable",
     "Remove Lensflare": "Enable",
-    "Improve LOD": "Enable"
+    "Improve LOD": "Enable",
+    "Remove FSR": "Disable",
+    "Remove FXAA": "Disable"
   },
   "Medium": {
     "Resolution": "1440p QHD - Experimental",
@@ -33,7 +37,9 @@
     "Remove QuaReduction": "Enable",
     "Remove DOF": "Disable",
     "Remove Lensflare": "Enable",
-    "Improve LOD": "Enable"
+    "Improve LOD": "Enable",
+    "Remove FSR": "Enable",
+    "Remove FXAA": "Disable"
   },
   "High": {
     "Resolution": "4K UHD",
@@ -45,7 +51,9 @@
     "Remove QuaReduction": "Enable",
     "Remove DOF": "Enable",
     "Remove Lensflare": "Enable",
-    "Improve LOD": "Enable"
+    "Improve LOD": "Enable",
+    "Remove FSR": "Enable",
+    "Remove FXAA": "Enable"
   },
   "Ultra": {
     "Resolution": "6K QUHD - Experimental",
@@ -57,7 +65,9 @@
     "Remove QuaReduction": "Enable",
     "Remove DOF": "Enable",
     "Remove Lensflare": "Enable",
-    "Improve LOD": "Enable"
+    "Improve LOD": "Enable",
+    "Remove FSR": "Enable",
+    "Remove FXAA": "Enable"
   },
     "Steamdeck": {
     "Resolution": "1080p FHD",
@@ -69,7 +79,9 @@
     "Remove QuaReduction": "Disable",
     "Remove DOF": "Enable",
     "Remove Lensflare": "Enable",
-    "Improve LOD": "Enable"
+    "Improve LOD": "Enable",
+    "Remove FSR": "Enable",
+    "Remove FXAA": "Disable"
   },
   "RTX 4090 SUPER HIGH": {
     "Resolution": "6K QUHD - Experimental",
@@ -81,6 +93,8 @@
     "Remove QuaReduction": "Enable",
     "Remove DOF": "Enable",
     "Remove Lensflare": "Enable",
-    "Improve LOD": "Enable"
+    "Improve LOD": "Enable",
+    "Remove FSR": "Enable",
+    "Remove FXAA": "Enable"
   }
 }
