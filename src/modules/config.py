@@ -1,7 +1,5 @@
-import os
-import configparser
 from modules.checkpath import checkpath
-from tkinter import messagebox, filedialog
+from configuration.settings import *
 
 def save_user_choices(self, config_file, yuzu_path=None, mode=None):
     config = configparser.ConfigParser()
@@ -23,6 +21,7 @@ def save_user_choices(self, config_file, yuzu_path=None, mode=None):
     if not config.has_section("Options"):
         config["Options"] = {}
     config['Options']['Resolution'] = self.resolution_var.get()
+    config['Options']['Aspect Ratio'] = self.aspect_ratio_var.get()
     config['Options']['FPS'] = self.fps_var.get()
     config['Options']['ShadowResolution'] = self.shadow_resolution_var.get()
     config['Options']['CameraQuality'] = self.camera_var.get()
@@ -67,25 +66,17 @@ def load_user_choices(self, config_file, mode=None):
     # Load the selected options
     self.cheat_version.set(config.get("Manager", "Cheat_Version", fallback="Version - 1.2.0"))
     self.resolution_var.set(config.get('Options', 'Resolution', fallback=self.dfps_options.get("ResolutionNames", [""])[2]))
+    self.aspect_ratio_var.set(config.get('Options', 'Aspect Ratio', fallback=AR_list[0]))
     self.fps_var.set(config.get('Options', 'FPS', fallback=str(self.dfps_options.get("FPS", [])[2])))
     self.shadow_resolution_var.set(config.get('Options', 'ShadowResolution', fallback=self.dfps_options.get("ShadowResolutionNames", [""])[0])) # Shadow Auto
     self.camera_var.set(config.get('Options', 'CameraQuality', fallback=self.dfps_options.get("CameraQualityNames", [""])[0]))
-    ui_selection = config.get('Options', 'UI', fallback="None")
-    fp_selection = config.get('Options', 'First Person', fallback="Off")
-    # Neccessary to FIX ui, won't download otherwise.
-    if fp_selection in ["Off", "70 FOV", "90 FOV", "110 FOV"]:
-        self.fp_var.set(fp_selection)
-    else:
-        self.fp_var.set("Off")
-    # Neccessary to FIX ui, won't download otherwise.
-    if ui_selection in ["None", "Black Screen Fix", "PS4", "Xbox"]:
-        self.ui_var.set(ui_selection)
-    else:
-        self.ui_var.set("None")
+    self.ui_var.set(config.get('Options', 'UI', fallback="None"))
+    self.fp_var.set(config.get('Options', 'First Person', fallback="Off"))
     # Load the enable/disable choices
     for option_name, option_var in self.selected_options.items():
-        option_value = config.get('Options', option_name, fallback="On")
+        option_value = config.get('Options', option_name, fallback="Off")
         option_var.set(option_value)
+
     # Load the enable/disabled cheats
     try:
         for option_name, option_var in self.selected_cheats.items():
@@ -93,6 +84,8 @@ def load_user_choices(self, config_file, mode=None):
             option_var.set(option_value)
     except AttributeError as e:
         print("")
+
+
 
     self.yuzu_path = self.load_yuzu_path(config_file)
 
@@ -108,7 +101,6 @@ def load_user_choices(self, config_file, mode=None):
             if os.path.exists(Default_Directory):
                 self.Yuzudir = os.path.join(home_directory, "portable", "mods", "contents", "0100f2c0115b6000")
                 print(f"Portable Folder Found! New mod path! {self.Yuzudir}")
-            
         else:
             print("User Folder not Found defaulting to Default Dir!")
             checkpath(self, self.mode)

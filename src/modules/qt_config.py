@@ -68,8 +68,6 @@ def find_highest_title_id_index(config):
 
 
 def remove_duplicates(arr):
-    print(arr)
-    print(list(set(arr)))
     return list(set(arr))
 
 def get_d_values(config, properindex):
@@ -152,7 +150,7 @@ def add_entry(configdir, directory, config, title_id, entry_to_add):
     if entry_to_add in d_values:
         # print(f"Already exists{entry_to_add}")
         return
-
+    print("Disabling ", entry_to_add)
     d_values.append(f"{entry_to_add}")
     clean_d_values = remove_duplicates(d_values)
     clean_d_values.sort()

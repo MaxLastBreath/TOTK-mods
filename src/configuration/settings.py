@@ -1,7 +1,10 @@
 from modules.colors import Color
 from modules.scaling import scale, sf
 from modules.json import load_json
+from modules.download import *
 import configparser
+import time
+import json
 
 Version = "manager-1.3.0"
 repo_url_raw = 'https://github.com/MaxLastBreath/TOTK-mods'
@@ -63,7 +66,7 @@ title_id = "72324500776771584"
 
 # Set fonts
 textfont = (font, 13)
-btnfont = ("Arial", 10)
+btnfont = ("bahnschrift", 10)
 bigfont = ("Triforce", 18)
 biggyfont = (font, 18, "bold")
 # set Colors
@@ -83,3 +86,53 @@ versionurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scr
 descurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/Description.json"
 
 description = load_json("Description.json", descurl)
+
+time_config = configparser.ConfigParser()
+time_config.read(localconfig)
+
+
+old_time = float(time_config.get("Time", "api", fallback=0))
+if time.time() - old_time >= 3600 or not os.path.exists("json.data/api.json"):
+    if not time_config.has_section("Time"):
+        time_config["Time"] = {}
+
+    time_config["Time"]["api"] = f"{time.time()}"
+    with open(localconfig, 'w') as file:
+        time_config.write(file)
+
+    skip = ["XBOX", "UI", "PS4", "STEAMDECK"]
+    AR = get_zip_list_and_dict("https://api.github.com/repos/MaxLastBreath/TOTK-mods/contents/scripts/Mods/Aspect%20Ratios", skip=skip)
+    AR_list = AR[0]
+    AR_list.insert(0, "Aspect Ratio 16-9")
+    AR_dict = AR[1]
+
+    UI = get_zip_list_and_dict("https://api.github.com/repos/MaxLastBreath/TOTK-mods/contents/scripts/Mods/UI%20Mods")
+    UI_list = UI[0]
+    UI_list.insert(0, "None")
+    UI_dict = UI[1]
+
+    FP = get_zip_list_and_dict("https://api.github.com/repos/MaxLastBreath/TOTK-mods/contents/scripts/Mods/FP%20Mods")
+    FP_list = FP[0]
+    FP_list.insert(0, "Off")
+    FP_dict = FP[1]
+
+    api_json = {
+        "AR_list": AR_list,
+        "AR_dict": AR_dict,
+        "UI_list": UI_list,
+        "UI_dict": UI_dict,
+        "FP_list": FP_list,
+        "FP_dict": FP_dict
+    }
+    with open("json.data/api.json", "w") as json_file:
+        json.dump(api_json, json_file, indent=4)
+
+else:
+    with open("json.data/api.json", "r") as json_file:
+        api_json = json.load(json_file)
+    AR_list = api_json["AR_list"]
+    AR_dict = api_json["AR_dict"]
+    UI_list = api_json["UI_list"]
+    UI_dict = api_json["UI_dict"]
+    FP_list = api_json["FP_list"]
+    FP_dict = api_json["FP_dict"]

@@ -40,7 +40,7 @@ class Setting:
         cul_sel = 180
 
         # font dropdown menu
-        font_list = ["Arial", "Georgia", "Calibri", "Triforce", "Segoe", "The Wild Breath of Zelda", "Times New Roman", "Tahoma", "Impact", "Lucida"]
+        font_list = ["Arial", "Georgia", "Calibri", "Triforce", "Segoe", "The Wild Breath of Zelda", "Times New Roman", "Tahoma", "Impact", "Lucida", "bahnschrift"]
         font_list.sort()
         self.font_var = self.canvas_create.create_combobox(
             master=window, canvas=canvas_obj,
@@ -214,7 +214,7 @@ class Setting:
         config = configparser.ConfigParser()
         config.read(localconfig)
 
-        self.font_var.set(config.get("Settings", "font", fallback="Arial"))
+        self.font_var.set(config.get("Settings", "font", fallback="bahnschrift"))
         self.color_var.set(config.get("Settings", "color", fallback="light-cyan"))
         self.outline_var.set(config.get("Settings", "shadow_color", fallback="purple"))
         self.active_var.set(config.get("Settings", "active_color", fallback="red"))

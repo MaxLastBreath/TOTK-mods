@@ -9,25 +9,16 @@ import re
 from tkinter import filedialog, messagebox, Toplevel
 from ttkbootstrap.constants import *
 from ttkbootstrap import Style
-from configparser import NoOptionError
 from modules.canvas import Canvas_Create
 from modules.qt_config import modify_disabled_key, get_config_parser
 from modules.checkpath import checkpath, DetectOS
 from modules.backup import backup
+from modules.download import *
 from modules.config import save_user_choices, load_user_choices
 from configuration.settings import *
 from configuration.settings_config import Setting
 
-@staticmethod
-def download_file(url, save_path):
-    response = requests.get(url, stream=True)
-    if response.status_code == 200:
-        with open(save_path, "wb") as file:
-            for chunk in response.iter_content(chunk_size=8192):
-                file.write(chunk)
-        print(f"Downloaded file: {save_path}")
-    else:
-        print(f"Failed to download file from {url}. Status code: {response.status_code}")
+
 
 class Manager:
     def __init__(self, window):
@@ -131,7 +122,7 @@ class Manager:
                                                             variable=value[0], values=value,
                                                             row=row, cul=340, drop_cul=480,
                                                             tags=["text"], tag="yuzu",
-                                                            description_name="Setting"
+                                                            description_name="Settings"
                                                         )
 
         row += 40
@@ -219,6 +210,16 @@ class Manager:
                                                             )
         row += 40
 
+        self.aspect_ratio_var = self.on_canvas.create_combobox(
+                                                            master=self.window, canvas=canvas,
+                                                            text="Screen Aspect Ratio:",
+                                                            variable=AR_list[0], values=AR_list,
+                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                            tags=["text"], tag=None,
+                                                            description_name="Aspect Ratio",
+                                                            )
+        row += 40
+
         # Create a label for FPS selection
         values = self.dfps_options.get("FPS", [])
         self.fps_var = self.on_canvas.create_combobox(
@@ -258,16 +259,15 @@ class Manager:
                                                             variable=value[0], values=values,
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
                                                             tags=["text"], tag=None,
-                                                            description_name="Camera"
+                                                            description_name="Camera Quality"
                                                         )
         row += 40
 
         # Create a label for UI selection
-        values = ["None", "Black Screen Fix", "PS4", "Xbox"]
         self.ui_var = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
                                                             text="Select an UI:",
-                                                            variable=value[0], values=values,
+                                                            variable=UI_list[0], values=UI_list,
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
                                                             tags=["text"], tag=None,
                                                             description_name="UI"
@@ -275,11 +275,10 @@ class Manager:
         row += 40
 
         # First Person and FOV
-        values = ["Off", "70 FOV", "90 FOV", "110 FOV"]
         self.fp_var = self.on_canvas.create_combobox(
                                                         master=self.window, canvas=canvas,
                                                         text="Enable First Person:",
-                                                        values=values, variable=value[0],
+                                                        values=FP_list, variable=FP_list[0],
                                                         row=row, cul=cul_tex, drop_cul=cul_sel,
                                                         tags=["text"], tag=None,
                                                         description_name="First Person"
@@ -829,11 +828,11 @@ class Manager:
             home_directory = os.path.dirname(self.yuzu_path)
             Default_Yuzu_Directory = os.path.join(home_directory, "user")
             Default_Ryujinx_Directory = os.path.join(home_directory, "portable")
-            executablename = yuzu_path
-            if executablename.endswith("Ryujinx.exe"):
+            executable_name = yuzu_path
+            if executable_name.endswith("Ryujinx.exe"):
                 if self.mode == "Yuzu":
                     self.switchmode("true")
-            if executablename.endswith("yuzu.exe"):
+            if executable_name.endswith("yuzu.exe"):
                 if self.mode == "Ryujinx":
                     self.switchmode("true")
             if yuzu_path:
@@ -868,30 +867,9 @@ class Manager:
             return ryujinx_path
     # Download Manager
 
-    def download_folders(contents, Mod_directory):
-         for item in contents:
-             if item['type'] == 'file':
-                file_url = item.get('download_url')
-                file_name = os.path.join(Mod_directory, item['name'])
-
-                file_response = requests.get(file_url)
-                if file_response.status_code == 200:
-                   with open(file_name, 'wb') as file:
-                       file.write(file_response.content)
-                   print(f'copied file: {file_name}')
-
-             elif item['type'] == "dir":
-                 folder_name = os.path.join(Mod_directory, item['name'])
-                 os.makedirs(folder_name, exist_ok=True)
-                 subfolder_contents = Manager.get_folder_contents(item['url'])
-                 Manager.download_folders(subfolder_contents, folder_name)
-
-    def get_folder_contents(api_url):
-        response = requests.get(api_url)
-        if response.status_code == 200:
-           return response.json()
-
     def warning_window(self, setting_type):
+        if self.mode == "Ryujinx":
+            return
         warning_message = None
         configfile = self.TOTKconfig
         config = configparser.ConfigParser()
@@ -899,8 +877,8 @@ class Manager:
 
         if setting_type == "Res":
             resolution = self.resolution_var.get()
-            Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
-            current_res = self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1]
+            Res_index = self.dfps_options.get("ResolutionNames").index(resolution)
+            current_res = self.dfps_options.get("ResolutionValues", [""])[Res_index].split("x")[1]
             proper_res = float(current_res)
 
             newmem1 = config.get("Core", "memory_layout_mode\\use_global", fallback="true")
@@ -909,7 +887,6 @@ class Manager:
             res1 = config.get("Renderer", "resolution_setup\\use_global", fallback="true")
             res2 = config.get("Renderer", "resolution_setup\\default", fallback="true")
             res3 = int(config.get("Renderer", "resolution_setup", fallback=0))
-            print(newmem1, newmem2, newmemsetting, res1,res2,res3)
 
             if 1080 < proper_res < 2160:
                 if newmemsetting < 1 or not res3 == 2 or not newmem1 == "false" or not newmem2 == "false":
@@ -987,7 +964,6 @@ class Manager:
             if mode== None:
                 tasklist = [DownloadFP(), DownloadUI(), DownloadDFPS(), UpdateVisualImprovements(), UpdateSettings(), Disable_Mods()]
                 if get_setting("auto-backup") in ["On"]:
-                    print("SS")
                     tasklist.append(backup(self))
                 com = 100 // len(tasklist)
                 for task in tasklist:
@@ -1203,158 +1179,57 @@ class Manager:
                 print("You already have the latest DFPS version installed.!")
 
         def DownloadUI():
-            #dirs
-            Blackscreen = os.path.join(self.load_dir, "BlackscreenFIX")
-            Xbox = os.path.join(self.load_dir, "Xbox UI")
-            Ps4 = os.path.join(self.load_dir, "Playstation UI")
+            new_list = []
+            new_list.extend(UI_list)
+            for item in AR_dict:
+                print("Item:", item)
+                new_list.append(item)
 
-            #ui
-            ui_mod_folder = None
-            CurrentFolder = None
+            if any(item in self.aspect_ratio_var.get().split(" ") for item in ["16-9"]):
+                print("Found 16:9 Aspect ratio, defaulting to default UI mods.")
+                if self.ui_var.get() == "None":
+                    return
+                new_folder = self.ui_var.get()
 
+            else:
+                selected_ui = ""
+                if self.ui_var.get().lower().split(" ")[0] == "xbox":
+                    selected_ui = " XBOX UI"
+                if self.ui_var.get().lower().split(" ")[0] in ["ps4", "playstation"]:
+                    selected_ui = " PS4 UI"
+                if self.ui_var.get().lower().split(" ")[0] == "steamdeck":
+                    selected_ui = " STEAMDECK UI"
+                new_folder = f"{self.aspect_ratio_var.get()}{selected_ui}"
+                new_list.extend(UI_list)
 
-            ui_selection = self.ui_var.get()
+            link = AR_dict.get(new_folder)
+            new_list.remove(new_folder)
+            self.add_list.extend(new_list)
+            self.remove_list.append(new_folder)
 
+            Mod_directory = os.path.join(self.load_dir)
 
-            if ui_selection == "None":
-                if self.mode == "Yuzu":
-                    self.add_list.extend(["Xbox UI", "Playstation UI", "BlackscreenFix"])
+            if os.path.exists(os.path.join(Mod_directory, new_folder)):
+                print(f"The UI mod folder '{new_folder}' already exists. Skipping download.")
+                return
 
-                if self.mode == "Ryujinx":
-                    self.add_list.extend([Ps4, Blackscreen, Xbox])
-
-                print("No UI Selected, Disabling all UI mods!")
-            elif ui_selection == "PS4":
-                # Remove required Mods.
-                ui_mod_folder = "Playstation UI"
-                CurrentFolder = "scripts/UI/Playstation%20UI/"
-
-                if self.mode == "Yuzu":
-                    self.add_list.extend(["Xbox UI", "BlackscreenFix"])
-                    self.remove_list.append("Playstation UI")
-
-                if self.mode == "Ryujinx":
-                    self.add_list.extend([Blackscreen, Xbox])
-
-
-            elif ui_selection == "Xbox":
-
-                ui_mod_folder = "Xbox UI"
-                CurrentFolder = 'scripts/UI/Xbox%20UI/'
-
-                if self.mode == "Yuzu":
-                    self.add_list.extend(["Playstation UI", "BlackscreenFix"])
-                    self.remove_list.append("Xbox UI")
-
-                if self.mode == "Ryujinx":
-                    self.add_list.extend([Blackscreen, Ps4])
-
-
-            elif ui_selection == "Black Screen Fix":
-
-                ui_mod_folder = "BlackscreenFix"
-                CurrentFolder = 'scripts/UI/BlackscreenFix/'
-
-                if self.mode == "Yuzu":
-                    self.add_list.extend(["Playstation UI", "Xbox UI"])
-                    self.remove_list.append("BlackscreenFix")
-
-                if self.mode == "Ryujinx":
-                    self.add_list.extend([Xbox, Ps4])
-
-            # Download...
-            if ui_mod_folder is not None:
-                    repo_url = 'https://api.github.com/repos/MaxLastBreath/TOTK-mods'
-                    folder_path = f'{CurrentFolder}'
-                    Mod_directory = os.path.join(self.load_dir, f'{ui_mod_folder}')
-                    if os.path.exists(Mod_directory):
-                        print(f"The UI mod folder '{ui_mod_folder}' already exists. Skipping download.")
-                        return
-                    api_url = f'{repo_url}/contents/{folder_path}'
-                    response = requests.get(api_url)
-
-                    if response.status_code == 200:
-                        contents = response.json()
-                        os.makedirs(Mod_directory, exist_ok=True)
-                        Manager.download_folders(contents, Mod_directory)
-                        return
-                    else:
-                        print("failed to retrive folder and contents")
+            os.makedirs(Mod_directory, exist_ok=True)
+            download_unzip(link, Mod_directory)
 
         def DownloadFP():
-            if self.mode == "Yuzu":
-                qtconfig = get_config_parser()
-                qtconfig.optionxform = lambda option: option
-                qtconfig.read(self.configdir)
-            else:
-                qtconfig = None
-
-            FP_mod_folder = None
-            FPCurrentFolder = None
-            FP_selection = self.fp_var.get()
-            fov70 = os.path.join(self.load_dir, "First Person 70 FOV")
-            fov90 = os.path.join(self.load_dir, "First Person 90 FOV")
-            fov110 = os.path.join(self.load_dir, "First Person 110 FOV")
-            if FP_selection == "Off":
-
-                if self.mode == "Yuzu":
-                    self.add_list.extend(["First Person 110 FOV", "First Person 90 FOV", "First Person 70 FOV"])
-
-                if self.mode == "Ryujinx":
-                    self.add_list.extend([fov70, fov90, fov110])
-                print("Selected Third Person, disabling ALL First Person Mods!")
-
-            elif FP_selection == "70 FOV":
-                    FP_mod_folder = "First Person 70 FOV"
-                    FPCurrentFolder = "scripts/UI/First%20Person%20FOV%2070/"
-
-                    if self.mode == "Yuzu":
-                        self.add_list.extend(["First Person 110 FOV", "First Person 90 FOV"])
-                        self.remove_list.append("First Person 70 FOV")
-
-                    if self.mode == "Ryujinx":
-                        self.add_list.extend([fov90, fov110])
-
-            elif FP_selection == "90 FOV":
-                    FP_mod_folder = "First Person 90 FOV"
-                    FPCurrentFolder = 'scripts/UI/First%20Person%20FOV%2090/'
-                    if self.mode == "Yuzu":
-                        self.add_list.extend(["First Person 110 FOV", "First Person 70 FOV"])
-                        self.remove_list.append("First Person 90 FOV")
-
-                    if self.mode == "Ryujinx":
-                        self.add_list.extend([fov70, fov110])
-
-            elif FP_selection == "110 FOV":
-                    FP_mod_folder = "First Person 110 FOV"
-                    FPCurrentFolder = 'scripts/UI/First%20Person%20FOV%20110/'
-
-                    if self.mode == "Yuzu":
-                        self.add_list.extend(["First Person 90 FOV", "First Person 70 FOV"])
-                        self.remove_list.append("First Person 110 FOV")
-
-                    if self.mode == "Ryujinx":
-                        self.add_list.extend([fov70, fov90])
-
-            if FP_mod_folder is not None:
-                    repo_url = 'https://api.github.com/repos/MaxLastBreath/TOTK-mods'
-                    FPfolder_path = f'{FPCurrentFolder}'
-                    FPMod_directory = os.path.join(self.load_dir, f'{FP_mod_folder}')
-
-                    if os.path.exists(FPMod_directory):
-                        print(f"The FP mod folder '{FP_mod_folder}' already exists. Skipping download.")
-                        return
-
-                    api_url = f'{repo_url}/contents/{FPfolder_path}'
-                    response = requests.get(api_url)
-
-                    if response.status_code == 200:
-                        contents = response.json()
-                        os.makedirs(FPMod_directory, exist_ok=True)
-                        Manager.download_folders(contents, FPMod_directory)
-                        return
-                    else:
-                        print("failed to retrive folder and contents")
+            selected_fp_mod = self.fp_var.get()
+            self.add_list.extend(FP_list)
+            self.add_list.remove(selected_fp_mod)
+            self.remove_list.append(selected_fp_mod)
+            link = FP_dict.get(selected_fp_mod)
+            Mod_directory = os.path.join(self.load_dir)
+            full_dir = os.path.join(Mod_directory, selected_fp_mod)
+            if link is None:
+                return
+            if os.path.exists(full_dir):
+                return
+            os.makedirs(Mod_directory, exist_ok=True)
+            download_unzip(link, Mod_directory)
 
         def Disable_Mods():
             # Convert the lists to sets, removing any duplicates..
@@ -1364,14 +1239,13 @@ class Manager:
             if self.mode == "Yuzu":
                 for item in self.add_list:
                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, item, action="add")
-                    print("Disabling ", item)
                 for item in self.remove_list:
                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, item, action="remove")
-                    print("Enabling ", item)
             if self.mode == "Ryujinx":
                 for item in self.add_list:
-                    if os.path.exists(item):
-                        shutil.rmtree(item)
+                    item_dir = os.path.join(self.load_dir, item)
+                    if os.path.exists(item_dir):
+                        shutil.rmtree(item_dir)
             self.add_list.clear()
             self.remove_list.clear()
 
