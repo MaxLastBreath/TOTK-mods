@@ -22,7 +22,7 @@ if __name__ == "__main__":
             "pyinstaller",
             "run.py",
             "--onefile",
-            f"--name=TOTK Optimizer {latest_version}",
+            f"--name=TOTK Optimizer {latest_version}.AppImage",
             "--add-data", "GUI:GUI",
             "--add-data", "json.data:json.data"
             "--hidden-import=PIL",
