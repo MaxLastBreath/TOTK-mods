@@ -15,6 +15,7 @@ if __name__ == "__main__":
             "--add-data", "GUI;GUI",
             "--add-data", "json.data;json.data"
         ]
+        subprocess.run(command, shell=True)
 
     if platform.system() == "Linux":
         command = [
@@ -24,9 +25,8 @@ if __name__ == "__main__":
             f"--name=TOTK Optimizer {latest_version}",
             "--add-data", "GUI:GUI",
             "--add-data", "json.data:json.data"
-            "--hidden-import PIL",
-            "--hidden-import PIL._tkinter_finder",
-            "--hidden-import PIL._tkinter"
+            "--hidden-import=PIL",
+            "--hidden-import=PIL._tkinter_finder",
+            "--hidden-import=PIL._tkinter"
         ]
-
-    subprocess.run(command, shell=True)
+        subprocess.run(command, check=True)
