@@ -20,6 +20,7 @@ def save_user_choices(self, config_file, yuzu_path=None, mode=None):
     # Save the selected options
     if not config.has_section("Options"):
         config["Options"] = {}
+    config['Options']['DFPS Version'] = self.DFPS_var.get()
     config['Options']['Resolution'] = self.resolution_var.get()
     config['Options']['Aspect Ratio'] = self.aspect_ratio_var.get()
     config['Options']['FPS'] = self.fps_var.get()
@@ -65,6 +66,7 @@ def load_user_choices(self, config_file, mode=None):
 
     # Load the selected options
     self.cheat_version.set(config.get("Manager", "Cheat_Version", fallback="Version - 1.2.0"))
+    self.DFPS_var.set(config.get('Options', 'DFPS Version', fallback="Latest"))
     self.resolution_var.set(config.get('Options', 'Resolution', fallback=self.dfps_options.get("ResolutionNames", [""])[2]))
     self.aspect_ratio_var.set(config.get('Options', 'Aspect Ratio', fallback=AR_list[0]))
     self.fps_var.set(config.get('Options', 'FPS', fallback=str(self.dfps_options.get("FPS", [])[2])))

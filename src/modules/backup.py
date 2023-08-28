@@ -40,3 +40,22 @@ def backup(self):
 
     except Exception as e:
         messagebox.showerror("Backup Error", f"Error creating backup: {e}")
+
+
+def clean_shaders(self):
+    answer = messagebox.askyesno(title="Yuzu Shader Warning.",
+                                 message="Are you sure you want to delete your shaders?\n"
+                                         "This could Improve performance.")
+    emu_dir = self.Globaldir
+    if self.mode == "Yuzu":
+        shaders = os.path.join(emu_dir, "shader/0100f2c0115b6000")
+    if self.mode == "Ryujinx":
+        shaders = os.path.join(emu_dir, "games/0100f2c0115b6000/cache/shader")
+    if answer is True:
+        try:
+            shutil.rmtree(shaders)
+            print("The shaders have been successfully removed")
+        except FileNotFoundError as e:
+            print("No shaders have been found. Potentially already removed.")
+    if answer is False:
+        print("No shaders have been deleted.")

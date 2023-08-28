@@ -1,3 +1,6 @@
+from inspect import Traceback
+from socket import socket
+from urllib.error import URLError
 import requests
 import urllib.request
 import os
@@ -11,23 +14,33 @@ class Download:
 
 
 def download_file(url, save_path):
-    response = requests.get(url, stream=True)
-    if response.status_code == 200:
-        with open(save_path, "wb") as file:
-            for chunk in response.iter_content(chunk_size=8192):
-                file.write(chunk)
-        print(f"Downloaded file: {save_path}")
-    else:
-        print(f"Failed to download file from {url}. Status code: {response.status_code}")
+    try:
+        response = requests.get(url, stream=True)
+        if response.status_code == 200:
+            with open(save_path, "wb") as file:
+                for chunk in response.iter_content(chunk_size=8192):
+                    file.write(chunk)
+            print(f"Downloaded file: {save_path}")
+        else:
+            print(f"Failed to download file from {url}. Status code: {response.status_code}")
+    except requests.exceptions.ConnectionError as e:
+            print(
+                "No internet connection or api limit reached. Downloading files is halted.")
+
 
 
 def download_unzip(url, target_directory):
-    response = urllib.request.urlopen(url)
-    zip_content = BytesIO(response.read())
-    # Create a ZipFile object
-    with zipfile.ZipFile(zip_content, 'r') as zip_ref:
-        # Extract all contents to a target directory
-        zip_ref.extractall(target_directory)
+    try:
+        response = urllib.request.urlopen(url)
+        zip_content = BytesIO(response.read())
+        # Create a ZipFile object
+        with zipfile.ZipFile(zip_content, 'r') as zip_ref:
+            # Extract all contents to a target directory
+            zip_ref.extractall(target_directory)
+    except URLError as e:
+        print(
+                f"Invalid download URL {url}, possibly due to no internet connection."
+                f"Downloading has been halted.")
 
 
 def download_folders(api_url, dir):

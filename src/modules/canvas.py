@@ -1,4 +1,3 @@
-import os
 import sys
 from idlelib.tooltip import Hovertip
 from ttkbootstrap import *
@@ -87,7 +86,7 @@ class Canvas_Create:
                                                scale(row),
                                                anchor="w",
                                                window=dropdown,
-                                               width=width,
+                                               width=scale(width),
                                                height=CBHEIGHT,
                                                tags=tag
                                                )
@@ -198,7 +197,7 @@ class Canvas_Create:
             width=scale(width*10),
             anchor=pos,
             window=button,
-            tags=tag
+            tags=tags
         )
 
         self.read_description(
@@ -391,7 +390,6 @@ class Canvas_Create:
                 time.sleep(1)
 
     def get_UI_path(self, file_name, folder_name="GUI"):
-        start = time.time()
         if getattr(sys, 'frozen', False):
             # Look for the 'GUI' folder next to the executable
             executable_dir = os.path.dirname(sys.executable)
@@ -400,15 +398,11 @@ class Canvas_Create:
             hud_folder_path = os.path.join(executable_dir, folder_name)
             # check if the file exists, if it doesn't run the rest of the code.
             if os.path.exists(os.path.join(hud_folder_path, file_name)):
-                end = time.time()
-                print("FOUND", end - start)
                 return os.path.abspath(os.path.join(hud_folder_path, file_name))
         # If not running as an executable or 'GUI' folder not found, assume it's in the same directory as the script
         if os.path.exists(os.path.join(folder_name, file_name)):
             return os.path.join(folder_name, file_name)
         else:
-            end = time.time()
-            print(end - start)
             return file_name
 
     def Photo_Image(self, image_path=str, is_stored=False,

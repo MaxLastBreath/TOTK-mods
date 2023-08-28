@@ -1,7 +1,7 @@
 import platform
 import configparser
 from screeninfo import get_monitors
-from ctypes import windll
+from ctypes import *
 
 localconfig = "Manager_Config.ini"
 
@@ -16,7 +16,7 @@ def Auto_SF():
     if w_scale == "1.5x":
         sf = 1.5
     if w_scale == "2.0x":
-        sf = 2.0
+        sf = 1.75
         return sf
     if w_scale == "On":
         if platform.system() == "Windows":

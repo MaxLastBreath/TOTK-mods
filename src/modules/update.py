@@ -1,3 +1,4 @@
+import time
 import requests
 import os
 import shutil
@@ -17,23 +18,27 @@ def show_confirmation_dialog(remote_version_str):
 
 # Check For Update
 def check_for_updates():
-    print("Checking for Updates!")
-    url = f"https://api.github.com/repos/{OWNER}/{GITHUB}/releases/latest"
-    response = requests.get(url)
-    if response.status_code == 200:
-        response.raise_for_status()
-        release_info = response.json()
-        remote_version_str = release_info["tag_name"].strip("manager-")
-        remote_version = parse(remote_version_str)
+    try:
+        print("Checking for Updates!")
+        url = f"https://api.github.com/repos/{OWNER}/{GITHUB}/releases/latest"
+        response = requests.get(url)
+        if response.status_code == 200:
+            response.raise_for_status()
+            release_info = response.json()
+            remote_version_str = release_info["tag_name"].strip("manager-")
+            remote_version = parse(remote_version_str)
 
-        if remote_version > parse(textver):
-            confirmation_result = show_confirmation_dialog(remote_version_str)
-            if confirmation_result:
-               download_update(release_info["assets"])
+            if remote_version > parse(textver):
+                confirmation_result = show_confirmation_dialog(remote_version_str)
+                if confirmation_result:
+                   download_update(release_info["assets"])
+                else:
+                    return
             else:
-                return
-        else:
-            print("No Updates Found. Your app is up to date.")
+                print("No Updates Found. Your app is up to date.")
+    except requests.exceptions.ConnectionError as e:
+        print(
+        "No internet connection or api limit reached. You won't be able to check for Updates.")
 
 def download_update(assets):
     current_platform = platform.system()
@@ -106,6 +111,7 @@ def apply_update(assets):
     sys.exit()
 
 def delete_old_exe():
+    time.sleep(1)
     executable_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
     current_platform = platform.system()
     try:

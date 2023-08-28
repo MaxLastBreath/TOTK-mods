@@ -22,6 +22,7 @@ class Setting:
         self.style = style
         self.createwindow()
         canvas_obj = self.canvas(canvases)
+        self.loadconfig(canvas_obj)
 
     def clear(self, canvas, canvases=list):
         canvases.remove(canvas)
@@ -163,7 +164,6 @@ class Setting:
             style="success",
             command=lambda: self.saveconfig(canvases)
         )
-        self.loadconfig(canvas_obj)
         return canvas_obj
 
     def saveconfig(self, canvases=list):
@@ -227,6 +227,12 @@ class Setting:
         self.swatch_color(event=None, canvas=canvas, var=self.color_var, swatch="swatch1")
         self.swatch_color(event=None, canvas=canvas, var=self.outline_var, swatch="swatch2")
         self.swatch_color(event=None, canvas=canvas, var=self.active_var, swatch="swatch3")
+
+        fonty = get_setting("f")
+        newfont = (fonty, 13)
+        canvas.itemconfig("active_text", activefill=self.Colors[self.active_var.get()])
+        canvas.itemconfig("text", fill=self.Colors[self.color_var.get()], font=newfont)
+        canvas.itemconfig("outline", fill=self.Colors[self.outline_var.get()], font=newfont)
 
     def get_setting(self, args):
         self.config.read(localconfig)

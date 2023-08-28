@@ -1,19 +1,16 @@
 import threading
-import os
-import shutil
-import requests
+import tkinter
+
 import ttkbootstrap as ttk
-import time
 import webbrowser
 import re
-from tkinter import filedialog, messagebox, Toplevel
+from tkinter import filedialog, Toplevel
 from ttkbootstrap.constants import *
 from ttkbootstrap import Style
 from modules.canvas import Canvas_Create
 from modules.qt_config import modify_disabled_key, get_config_parser
 from modules.checkpath import checkpath, DetectOS
-from modules.backup import backup
-from modules.download import *
+from modules.backup import *
 from modules.config import save_user_choices, load_user_choices
 from configuration.settings import *
 from configuration.settings_config import Setting
@@ -38,8 +35,6 @@ class Manager:
 
         # Load the Config.
         self.config = localconfig
-        config = configparser.ConfigParser()
-        config.read(localconfig)
 
         # Read the Current Emulator Mode.
         self.mode = config.get("Mode", "managermode", fallback="Yuzu")
@@ -133,7 +128,7 @@ class Manager:
                                         master=self.window, canvas=canvas,
                                         btn_text="Browse",
                                         row=row, cul=cul_sel, width=6,
-                                        tags=["text", "Button"],
+                                        tags=["Button"],
                                         description_name="Browse",
                                         command=self.select_yuzu_exe
                                         )
@@ -149,7 +144,7 @@ class Manager:
                                         master=self.window, canvas=canvas,
                                         btn_text="Use Appdata",
                                         row=row, cul=cul_sel + 68, width=9,
-                                        tags=["text", "Button"],
+                                        tags=["Button", "yuzu"],
                                         description_name="Reset",
                                         command=yuzu_appdata
                                         )
@@ -173,9 +168,18 @@ class Manager:
                                     master=self.window, canvas=canvas,
                                     btn_text="Backup",
                                     row=row, cul=backupbutton, width=7,
-                                    tags=["text", "Button"],
+                                    tags=["Button", "yuzu"],
                                     description_name="Backup",
                                     command=lambda: backup(self)
+        )
+
+        self.on_canvas.create_button(
+                                    master=self.window, canvas=canvas,
+                                    btn_text="Clear Shaders",
+                                    row=row, cul=backupbutton+78, width=9,
+                                    tags=["Button", "yuzu"],
+                                    description_name="Shaders",
+                                    command=lambda: clean_shaders(self)
         )
         row += 40
 
@@ -198,6 +202,18 @@ class Manager:
         row += 40
 
         # Create a label for resolution selection
+
+        self.DFPS_var = self.on_canvas.create_combobox(
+                                                            master=self.window, canvas=canvas,
+                                                            text="Dynamic FPS Version:",
+                                                            variable=DFPS_list[0], values=DFPS_list,
+                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                            tags=["text"], tag=None,
+                                                            description_name="DFPS",
+                                                            command=lambda event: self.warning_window("Res")
+                                                            )
+        row += 40
+
         values = self.dfps_options.get("ResolutionNames", [])
         self.resolution_var = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
@@ -434,7 +450,7 @@ class Manager:
                                     master=self.window, canvas=canvas,
                                     btn_text="Reset Cheats",
                                     row=520, cul=277+6+2, width=8, padding=5,
-                                    tags=["text", "Button"],
+                                    tags=["Button"],
                                     style="default",
                                     description_name="Reset Cheats",
                                     command=ResetCheats
@@ -570,22 +586,23 @@ class Manager:
         )
 
         # Attempt to load images from custom folder.
-        try:
-            if os.path.exists("custom\\bg.jpg"):
-                image_path = "custom\\bg.jpg"
-            elif os.path.exists("custom\\bg.png"):
-                image_path = "custom\\bg.png"
-            else:
-                # Load and set the image as the background
-                image_path ="image.png"
-        except FileNotFoundError as e:
-            self.warning(e)
+        if os.path.exists("custom/bg.jpg"):
+            image_path = "custom/bg.jpg"
+        elif os.path.exists("custom/bg.png"):
+            image_path = "custom/bg.png"
+        else:
+            # Load and set the image as the background
+            image_path ="image.png"
 
         self.background_image = self.on_canvas.Photo_Image(
             image_path=image_path,
             width=1200, height=600,
             blur=1
         )
+        if os.path.exists("custom/cbg.jpg"):
+            image_path = "custom/cbg.jpg"
+        elif os.path.exists("custom/cbg.png"):
+            image_path = "custom/cbg.png"
 
         self.blurbackground = self.on_canvas.Photo_Image(
             image_path=image_path,
@@ -978,6 +995,7 @@ class Manager:
             save_user_choices(self, self.config)
 
             if mode == "Cheats":
+                self.progress_var.set("Creating Cheat ManagerPatch.")
                 save_user_choices(self, self.config, None, "Cheats")
                 selected_cheats = {}
                 for option_name, option_var in self.selected_cheats.items():
@@ -1001,6 +1019,8 @@ class Manager:
                 print("Applied cheats.")
                 return
             elif mode == None:
+                # Update progress bar
+                self.progress_var.set("Creating Mod ManagerPatch.")
                 resolution = self.resolution_var.get()
                 fps = self.fps_var.get()
                 shadow_resolution = self.shadow_resolution_var.get()
@@ -1099,6 +1119,7 @@ class Manager:
                      print("Installing High End Nvidia Yuzu Preset")
 
             if Setting_selection is not None:
+                    self.progress_var.set(f"Downloading and applying settings for {Setting_selection}.")
                     Setting_directory = self.TOTKconfig
                     raw_url = f'{repo_url_raw}/raw/main/{SettingGithubFolder}'
                     response = requests.get(raw_url)
@@ -1110,109 +1131,105 @@ class Manager:
                         Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
                         current_res = self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1]
                         proper_res = float(current_res)
+                        new_config = configparser.ConfigParser()
+                        new_config.read(Setting_directory)
+                        print("TEST", new_config)
                     else:
                         print(f"Failed to download file from {raw_url}. Status code: {response.status_code}")
                         return
                     if proper_res > 1080:
-                        configfile = self.TOTKconfig
-                        config = configparser.ConfigParser()
-                        config.read(configfile)
                         # Add new values
-                        if not config.has_section("Renderer"):
-                            config["Renderer"] = {}
-                        config["Renderer"]["resolution_setup\\use_global"] = "false"
-                        config["Renderer"]["resolution_setup\\default"] = "false"
-                        config["Renderer"]["resolution_setup"] = "2"
+                        if not new_config.has_section("Renderer"):
+                            new_config["Renderer"] = {}
+                        new_config["Renderer"]["resolution_setup\\use_global"] = "false"
+                        new_config["Renderer"]["resolution_setup\\default"] = "false"
+                        new_config["Renderer"]["resolution_setup"] = "2"
 
-                        if not config.has_section("Core"):
-                            config["Core"] = {}
-                        config["Core"]["use_unsafe_extended_memory_layout\\use_global"] = "false"
-                        config["Core"]["use_unsafe_extended_memory_layout\\default"] = "false"
-                        config["Core"]["use_unsafe_extended_memory_layout\\default"] = "true"
+                        if not new_config.has_section("Core"):
+                            new_config["Core"] = {}
+                        new_config["Core"]["use_unsafe_extended_memory_layout\\use_global"] = "false"
+                        new_config["Core"]["use_unsafe_extended_memory_layout\\default"] = "false"
+                        new_config["Core"]["use_unsafe_extended_memory_layout\\default"] = "true"
 
-                        config["Core"]["memory_layout_mode\\use_global"] = "false"
-                        config["Core"]["memory_layout_mode\\default"] = "false"
+                        new_config["Core"]["memory_layout_mode\\use_global"] = "false"
+                        new_config["Core"]["memory_layout_mode\\default"] = "false"
                         layout = "1"
                     if proper_res >= 2160:
                         layout = "2"
                     elif proper_res <= 1080:
                         layout = "0"
-                    config["Core"]["memory_layout_mode"] = layout
-                    with open(configfile, "w") as configfile:
-                        config.write(configfile)
+                    new_config["Core"]["memory_layout_mode\\use_global"] = "false"
+                    new_config["Core"]["memory_layout_mode\\default"] = "false"
+                    new_config["Core"]["memory_layout_mode"] = layout
+                    with open(Setting_directory, "w") as config_file:
+                        new_config.write(config_file, space_around_delimiters=False)
+                        print(response.content)
             else:
                 print("Selected option has no associated setting folder.")
 
         def DownloadDFPS():
-            config = configparser.ConfigParser()
-            config.read(self.config)
-            current_dfps_version = config.get("Updates", "dfps", fallback="1.0.0")
-            latest_dfps_version = self.dfps_options.get("DFPS Version")
-            # Ensure DFPS is enabled in Yuzu.
-            self.remove_list.append("DFPS")
-            # Start of DFPS file check.
-            if current_dfps_version != latest_dfps_version or not os.path.exists(os.path.join(self.load_dir, "DFPS", "exefs")):
-                dfps_directory = os.path.join(self.load_dir, "DFPS", "exefs")
-                os.makedirs(dfps_directory, exist_ok=True)
-                file_urls = [
-                    {
-                        "url": "https://github.com/MaxLastBreath/TOTK-mods/raw/main/scripts/DFPS/main.npdm",
-                        "save_path": os.path.join(dfps_directory, "main.npdm")
-                    },
-                    {
-                        "url": "https://github.com/MaxLastBreath/TOTK-mods/raw/main/scripts/DFPS/subsdk9",
-                        "save_path": os.path.join(dfps_directory, "subsdk9")
-                    }
-                ]
-                for file_info in file_urls:
-                    url = file_info["url"]
-                    save_path = file_info["save_path"]
-                    print("Downloading latest DFPS version available.")
-                    download_file(url, save_path)
-                if not config.has_section("Updates"):
-                    config.add_section("Updates")
-                # Update Config File
-                config["Updates"]["dfps"] = latest_dfps_version
-                with open(self.config, "w") as configfile:
-                    config.write(configfile)
-            else:
-                print("You already have the latest DFPS version installed.!")
+            DFPS_ver = self.DFPS_var.get()
+            self.remove_list.append(DFPS_ver)
+            link = DFPS_dict.get(DFPS_ver)
+            Mod_directory = os.path.join(self.load_dir)
+            if link is None:
+                return
+            if DFPS_ver == get_setting("dfps"):
+                return
+            if not DFPS_ver == "Latest":
+                set_setting(args="dfps", value=DFPS_ver)
+            self.progress_var.set(f"Downloading DFPS: {DFPS_ver}")
+            print("Downloading: ", DFPS_ver)
+            os.makedirs(Mod_directory, exist_ok=True)
+            download_unzip(link, Mod_directory)
 
         def DownloadUI():
             new_list = []
             new_list.extend(UI_list)
             for item in AR_dict:
-                print("Item:", item)
                 new_list.append(item)
 
-            if any(item in self.aspect_ratio_var.get().split(" ") for item in ["16-9"]):
-                print("Found 16:9 Aspect ratio, defaulting to default UI mods.")
-                if self.ui_var.get() == "None":
+            if any(item in self.aspect_ratio_var.get().split(" ") for item in ["16-9", "16x9"]):
+                print("Selected 16:9 Aspect Ratio.")
+                if self.ui_var.get().lower() in ["none", "switch"]:
+                    self.add_list.extend(new_list)
                     return
                 new_folder = self.ui_var.get()
 
             else:
-                selected_ui = ""
-                if self.ui_var.get().lower().split(" ")[0] == "xbox":
-                    selected_ui = " XBOX UI"
-                if self.ui_var.get().lower().split(" ")[0] in ["ps4", "playstation"]:
-                    selected_ui = " PS4 UI"
-                if self.ui_var.get().lower().split(" ")[0] == "steamdeck":
-                    selected_ui = " STEAMDECK UI"
+                # define
+                UIs = {
+                    "PS4": ["ps", "ps4", "playstation", "ps5", "dualshock"],
+                    "STEAMDECK": ["steamdeck", "deck"],
+                    "XBOX": ["xbox", "xboxone"],
+                }
+
+                string_list = self.ui_var.get().lower().split(" ")
+
+                for ui, tags in UIs.items():
+                    if any(tag in string_list for tag in tags):
+                        selected_ui = f" {ui} UI"
+                        break
+                    else:
+                        selected_ui = ""
+
+                # search
                 new_folder = f"{self.aspect_ratio_var.get()}{selected_ui}"
                 new_list.extend(UI_list)
-
+            # fetch
             link = AR_dict.get(new_folder)
+            # delete/disable
             new_list.remove(new_folder)
             self.add_list.extend(new_list)
             self.remove_list.append(new_folder)
-
+            print("Downloading: ", new_folder)
+            self.progress_var.set(f"Downloading: {new_folder}")
             Mod_directory = os.path.join(self.load_dir)
-
+            # skip
             if os.path.exists(os.path.join(Mod_directory, new_folder)):
                 print(f"The UI mod folder '{new_folder}' already exists. Skipping download.")
                 return
-
+            # download
             os.makedirs(Mod_directory, exist_ok=True)
             download_unzip(link, Mod_directory)
 
@@ -1228,11 +1245,14 @@ class Manager:
                 return
             if os.path.exists(full_dir):
                 return
+            self.progress_var.set(f"Downloading: {selected_fp_mod}")
+            print("Downloading: ", selected_fp_mod)
             os.makedirs(Mod_directory, exist_ok=True)
             download_unzip(link, Mod_directory)
 
         def Disable_Mods():
-            # Convert the lists to sets, removing any duplicates..
+            self.progress_var.set(f"Disabling old mods.")
+            # Convert the lists to sets, removing any duplicates.
             self.add_list = set(self.add_list)
             self.remove_list = set(self.remove_list)
             # Run the Main code to Enable and Disable necessary Mods, the remove ensures the mods are enabled.
@@ -1261,6 +1281,10 @@ class Manager:
         progress_window.geometry(f"{window_width}x{window_height}+{x_coordinate}+{y_coordinate}")
         progress_window.resizable(False, False)
         total_iterations = 100
+        self.progress_var = ttk.StringVar()
+        self.progress_var.set("Applying the changes.")
+        label = ttk.Label(progress_window, textvariable=self.progress_var)
+        label.pack(pady=10)
         progress_bar = ttk.Progressbar(progress_window, mode="determinate", maximum=total_iterations)
         progress_bar.pack(pady=20)
         task_thread = threading.Thread(target=run_tasks)
