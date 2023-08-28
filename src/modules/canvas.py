@@ -391,25 +391,16 @@ class Canvas_Create:
 
     def get_UI_path(self, file_name, folder_name="GUI"):
         if getattr(sys, 'frozen', False):
-            # Look for the 'GUI' folder next to the executable
-            executable_dir = os.path.dirname(sys.executable)
-            # Get the sub folder of modules. <-- .exe fill fail without this.
-            executable_dir = os.path.dirname(executable_dir)
-            hud_folder_path = os.path.join(executable_dir, folder_name)
-            # check if the file exists, if it doesn't run the rest of the code.
-            if os.path.exists(os.path.join(hud_folder_path, file_name)):
-                return os.path.abspath(os.path.join(hud_folder_path, file_name))
-        # If not running as an executable or 'GUI' folder not found, assume it's in the same directory as the script
-        if os.path.exists(os.path.join(folder_name, file_name)):
-            return os.path.join(folder_name, file_name)
+            base_path = sys._MEIPASS
         else:
-            return file_name
+            base_path = os.path.dirname(os.path.abspath(__file__))
+            base_path = os.path.dirname(base_path)
+        return os.path.join(base_path, folder_name, file_name)
 
     def Photo_Image(self, image_path=str, is_stored=False,
                     width=None, height=None,
                     blur=None, mirror=False, flip=False,
                     auto_contrast=False, img_scale=None):
-        start = time.time()
 
         UI_path = self.get_UI_path(image_path)
         image = Image.open(UI_path)
@@ -428,6 +419,4 @@ class Canvas_Create:
             image = ImageOps.autocontrast(image)
         new_photo_image = ImageTk.PhotoImage(image)
 
-        end = time.time()
-        print(end - start)
         return new_photo_image
