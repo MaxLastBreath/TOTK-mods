@@ -17,8 +17,12 @@ def start_logger():
 
 
 # Print GPU(s)
-gpus = GPUtil.getGPUs()
-gpu_name = gpus[0].name
+if platform.system() == "Windows":
+    gpus = GPUtil.getGPUs()
+    gpu_name = gpus[0].name
+else:
+    gpu_name = "Not Detected"
+    
 # Print Memory
 memory_info = psutil.virtual_memory()
 total_memory = memory_info.total//1000000000
