@@ -2,6 +2,7 @@ import configparser
 import os
 import re
 import platform
+from modules.logger import *
 from configparser import Interpolation
 
 # Ensure % doesn't cause issues in config, with mods like % drop rate.
@@ -42,7 +43,8 @@ def find_title_id_index(config, title_id):
     section = f"DisabledAddOns"
     if not config.has_section(section):
         config.add_section(section)
-        print(f"Config has not been able, identify title_ID: {title_id}, the manager will continue but the mods won't be turned off as expected.")
+        log.info(f"Config has not been able, identify title_ID: {title_id},"
+                 f"the manager will continue but the mods may not be turned off as expected.")
         return None
     else:
         for key, value in config.items(section):
@@ -150,7 +152,7 @@ def add_entry(configdir, directory, config, title_id, entry_to_add):
     if entry_to_add in d_values:
         # print(f"Already exists{entry_to_add}")
         return
-    print("Disabling ", entry_to_add)
+    log.info(f"Disabling: {entry_to_add}")
     d_values.append(f"{entry_to_add}")
     clean_d_values = remove_duplicates(d_values)
     clean_d_values.sort()

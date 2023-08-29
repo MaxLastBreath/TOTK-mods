@@ -1,0 +1,58 @@
+{
+    "ResolutionNames": [
+        "600p",
+        "720p HD - Experimental",
+        "1080p FHD",
+        "1440p QHD - Experimental",
+        "4K UHD",
+        "6K QUHD - Experimental",
+        "8K UUHD"
+    ],
+    "ResolutionValues": [
+        "800x600",
+        "1280x720",
+        "1920x1080",
+        "2560x1440",
+        "3840x2160",
+        "5120x2880",
+        "7680x4320"
+    ],
+    "FPS": [
+        30,
+        45,
+        60,
+        90,
+        120
+    ],
+    "ShadowResolutionNames": [
+        "Auto",
+        "Default",
+        "Very Low x103",
+        "Low x206",
+        "Medium x512",
+        "High x1024",
+        "Ultra High x2048",
+        "EXTREME x4096",
+        "Ultra Extreme x8192"
+    ],
+    "ShadowResolutionValues": [
+        "-1",
+        "0",
+        "103",
+        "206",
+        "512",
+        "1024",
+        "2048",
+        "4096",
+        "8192"
+    ],
+    "CameraQualityNames": [
+        "Enable",
+        "Disable"
+    ],
+    "CameraQualityValues": [
+        "True",
+        "False"
+    ],
+    "DFPS Version": "1.5.5(Beta3)"
+}

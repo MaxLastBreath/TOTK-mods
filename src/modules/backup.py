@@ -1,7 +1,9 @@
 import os
 import shutil
 import sys
+from modules.logger import *
 from tkinter import messagebox
+
 
 def backup(self):
     if self.mode == "Yuzu":
@@ -39,6 +41,7 @@ def backup(self):
             messagebox.showerror("Backup Error", "Folder to backup not found.")
 
     except Exception as e:
+        log.error(f"Backup Error", f"Error creating backup: {e}")
         messagebox.showerror("Backup Error", f"Error creating backup: {e}")
 
 
@@ -54,8 +57,8 @@ def clean_shaders(self):
     if answer is True:
         try:
             shutil.rmtree(shaders)
-            print("The shaders have been successfully removed")
+            log.info("The shaders have been successfully removed")
         except FileNotFoundError as e:
-            print("No shaders have been found. Potentially already removed.")
+            log.info("No shaders have been found. Potentially already removed.")
     if answer is False:
-        print("No shaders have been deleted.")
+        log.info("Shaders deletion declined.")

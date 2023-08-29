@@ -11,10 +11,10 @@ from modules.canvas import Canvas_Create
 from modules.qt_config import modify_disabled_key, get_config_parser
 from modules.checkpath import checkpath, DetectOS
 from modules.backup import *
+from modules.logger import *
 from modules.config import save_user_choices, load_user_choices
 from configuration.settings import *
 from configuration.settings_config import Setting
-
 
 
 class Manager:
@@ -92,7 +92,7 @@ class Manager:
 
         # FOR DEBUGGING PURPOSES
         def onCanvasClick(event):
-            print (f"CRODS = X={event.x} + Y={event.y} + {event.widget}")
+            print(f"CRODS = X={event.x} + Y={event.y} + {event.widget}")
         self.maincanvas.bind("<Button-3>", onCanvasClick)
         # Start of CANVAS options.
 
@@ -137,7 +137,7 @@ class Manager:
             # Reset to Appdata
             def yuzu_appdata():
                 checkpath(self, self.mode)
-                print("Successfully Defaulted to Appdata!")
+                log.info("Successfully Defaulted to Appdata!")
                 save_user_choices(self, self.config, "appdata", None)
 
             self.on_canvas.create_button(
@@ -430,8 +430,7 @@ class Manager:
                 for key, value in self.selected_cheats.items():
                     value.set("Off")
             except AttributeError as e:
-                print(e)
-                print("Error found from ResetCheats, the script will continue.")
+                log.error(f"Error found from ResetCheats, the script will continue. {e}")
 
 
         # Create a submit button
@@ -513,7 +512,6 @@ class Manager:
         self.cheatcanvas.pack_forget()
 
     def Load_ImagePath(self):
-        start = time.time()
         # Create a Gradiant for Yuzu.
         self.background_YuzuBG = self.on_canvas.Photo_Image(
             image_path="Yuzu_BG.png",
@@ -617,18 +615,15 @@ class Manager:
                 if response.status_code == 200:
                     return response.text
                 else:
-                    print(f"Error: Unable to fetch text from Github")
+                    log.error("Error: Unable to fetch text from Github")
             except requests.exceptions.RequestException as e:
-                print(f"Error occurred while fetching text: {e}")
+                log.error(f"Error occurred while fetching text: {e}")
 
             return ""
         # Information text
         file_url = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Announcements/Announcement%20Window.txt"
         self.text_content = fetch_text_from_github(file_url)
         # Info Element
-
-        end = time.time()
-        print(f"Images loaded in: {end - start}")
 
     def load_UI_elements(self, canvas):
         # Images and Effects
@@ -793,7 +788,7 @@ class Manager:
             selected_preset = self.selected_preset.get()
         except AttributeError as e:
             selected_preset = "Saved"
-            print(e)
+            log.error(f"Failed to apply selected preset: {e}")
 
         if selected_preset == "None":
             if os.path.exists(self.config):
@@ -857,10 +852,10 @@ class Manager:
                 save_user_choices(self, self.config, yuzu_path)
                 home_directory = os.path.dirname(yuzu_path)
                 if os.path.exists(Default_Yuzu_Directory) or os.path.exists(Default_Ryujinx_Directory):
-                    print(f"Successfully selected {self.mode}.exe! And a portable folder was found at {home_directory}!")
+                    log.info(f"Successfully selected {self.mode}.exe! And a portable folder was found at {home_directory}!")
                     checkpath(self, self.mode)
                 else:
-                    print("Portable folder not found defaulting to default appdata directory!")
+                    log.info(f"Portable folder for {self.mode} not found defaulting to appdata directory!")
                     checkpath(self, self.mode)
 
                 # Update the yuzu.exe path in the current session
@@ -909,12 +904,12 @@ class Manager:
                 if newmemsetting < 1 or not res3 == 2 or not newmem1 == "false" or not newmem2 == "false":
                     warning_message = f"Resolution {resolution}, requires 1x Yuzu renderer and extended memory layout 6GB to be enabled, otherwise it won't function properly and will cause artifacts, you currently have them disabled, do you want to enable them?"
                 else:
-                    print("Correct settings are already applied, no changes required!!")
+                    log.info("Correct settings are already applied, no changes required!!")
             elif proper_res > 2160:
                 if newmemsetting < 2 or not res3 == 2 or not newmem1 == "false" or not newmem2 == "false":
                     warning_message = f"Resolution {resolution}, requires 1x Yuzu renderer and extended memory layout 8GB to be enabled, otherwise it won't function properly and will cause artifacts, you currently have them disabled, do you want to enable them?"
                 else:
-                    print("Correct settings are already applied, no changes required!!")
+                    log.info("Correct settings are already applied, no changes required!!")
 
         if warning_message is not None and warning_message.strip():
             response = messagebox.askyesno(f"WARNING! Required settings NOT Enabled!", warning_message)
@@ -946,7 +941,7 @@ class Manager:
                     config.write(configfile, space_around_delimiters=False)
             else:
                 # If No, do nothing.
-                print(f"Turning on required settings declined!!")
+                log.info(f"Turning on required settings declined!!")
 
     # Submit the results, run download manager. Open a Loading screen.
     def submit(self, mode=None):
@@ -967,7 +962,8 @@ class Manager:
 
         def run_tasks():
             if mode == "Cheats":
-                tasklist = [UpdateVisualImprovements("Cheats")]
+                log.info("Starting TASKs for Cheat Patch..")
+                tasklist = [Create_Mod_Patch("Cheats")]
                 if get_setting("cheat-backup") in ["On"]:
                     tasklist.append(backup(self))
                 com = 100 // len(tasklist)
@@ -979,7 +975,8 @@ class Manager:
                 progress_window.destroy()
                 return
             if mode== None:
-                tasklist = [DownloadFP(), DownloadUI(), DownloadDFPS(), UpdateVisualImprovements(), UpdateSettings(), Disable_Mods()]
+                log.info("Starting TASKs for Normal Patch..")
+                tasklist = [DownloadFP(), DownloadUI(), DownloadDFPS(), Create_Mod_Patch(), UpdateSettings(), Disable_Mods()]
                 if get_setting("auto-backup") in ["On"]:
                     tasklist.append(backup(self))
                 com = 100 // len(tasklist)
@@ -991,10 +988,11 @@ class Manager:
                 progress_window.destroy()
                 return
 
-        def UpdateVisualImprovements(mode=None):
+        def Create_Mod_Patch(mode=None):
             save_user_choices(self, self.config)
 
             if mode == "Cheats":
+                log.info("Starting Cheat patcher.")
                 self.progress_var.set("Creating Cheat ManagerPatch.")
                 save_user_choices(self, self.config, None, "Cheats")
                 selected_cheats = {}
@@ -1010,15 +1008,23 @@ class Manager:
 
                     filename = os.path.join(mod_path, f"{version}.txt")
                     all_values = []
-                    with open(filename, "w") as file:
-                        # file.write(version_option.get("Source", "") + "\n") - makes cheats not work
-                        for key, value in version_option.items():
-                            if key in selected_cheats:
-                                if key not in ["Source", "Aversion", "Version"] and selected_cheats[key] == "On":
-                                    file.write(value + "\n")
-                print("Applied cheats.")
+                    try:
+                        with open(filename, "w") as file:
+                            file.flush()
+                            # file.write(version_option.get("Source", "") + "\n") - makes cheats not work
+                            for key, value in version_option.items():
+                                if key not in ["Source", "Aversion", "Version"] and selected_cheats[key] == "Off":
+                                    continue
+                                if key in selected_cheats:
+                                        file.write(value + "\n")
+                    except Exception as e:
+                        log.error(f"ERROR! FAILED TO CREATE CHEAT PATCH. {e}")
+                self.remove_list.append("Cheat Manager Patch")
+                log.info("Applied cheats successfully.")
                 return
+
             elif mode == None:
+                log.info("Starting Mod Creator.")
                 # Update progress bar
                 self.progress_var.set("Creating Mod ManagerPatch.")
                 resolution = self.resolution_var.get()
@@ -1061,6 +1067,7 @@ class Manager:
                 for option_name, option_var in self.selected_options.items():
                     selected_options[option_name] = option_var.get()
                 # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.
+            try:
                 for version_option in self.version_options:
                     version = version_option.get("version", "")
                     mod_path = os.path.join(self.load_dir, "Mod Manager Patch", "exefs")
@@ -1075,7 +1082,7 @@ class Manager:
                         file.write(version_option.get("nsobid", "") + "\n")
                         file.write(version_option.get("offset", "") + "\n")
                         for key, value in version_option.items():
-                            if key not in ["Source", "nsobid", "offset", "version", "Version"] and self.selected_options[key].get() == "On":
+                            if key not in ["Source", "nsobid", "offset", "version", "Version"] and not self.selected_options[key].get() == "Off":
                                 pattern = r"@enabled\n([\da-fA-F\s]+)\n@stop"
                                 matches = re.findall(pattern, value)
                                 for match in matches:
@@ -1093,30 +1100,32 @@ class Manager:
                 # Update Visual Improvements MOD.
                 with open(ini_file_path, 'w') as configfile:
                     config.write(configfile)
+            except PermissionError as e:
+                log.error(f"FAILED TO CREATE MOD PATCH: {e}")
 
         def UpdateSettings():
             Setting_folder = None
             SettingGithubFolder = None
             Setting_selection = self.selected_settings.get()
             if Setting_selection == "No Change":
-                print("No Yuzu Settings have been changed!")
+                log.info("Settings selection is None. Returning!")
                 return
             elif Setting_selection == "Steamdeck":
                      Setting_folder = "Steamdeck"
                      SettingGithubFolder = "scripts/settings/Applied%20Settings/Steamdeck/0100F2C0115B6000.ini"
-                     print("Installing steamdeck Yuzu preset")
+                     log.info("Installing steamdeck Yuzu preset")
             elif Setting_selection == "AMD":
                      Setting_folder = "AMD"
                      SettingGithubFolder = 'scripts/settings/Applied%20Settings/AMD/0100F2C0115B6000.ini'
-                     print("Installing AMD Yuzu Preset")
+                     log.info("Installing AMD Yuzu Preset")
             elif Setting_selection == "Nvidia":
                      Setting_folder = "Nvidia"
                      SettingGithubFolder = 'scripts/settings/Applied%20Settings/Nvidia/0100F2C0115B6000.ini'
-                     print("Installing Nvidia Yuzu Preset")
+                     log.info("Installing Nvidia Yuzu Preset")
             elif Setting_selection == "High End Nvidia":
                      Setting_folder = "High End Nvidia"
                      SettingGithubFolder = 'scripts/settings/Applied%20Settings/High%20End%20Nvidia/0100F2C0115B6000.ini'
-                     print("Installing High End Nvidia Yuzu Preset")
+                     log.info("Installing High End Nvidia Yuzu Preset")
 
             if Setting_selection is not None:
                     self.progress_var.set(f"Downloading and applying settings for {Setting_selection}.")
@@ -1124,18 +1133,20 @@ class Manager:
                     raw_url = f'{repo_url_raw}/raw/main/{SettingGithubFolder}'
                     response = requests.get(raw_url)
                     if response.status_code == 200:
-                        with open(Setting_directory, "wb") as file:
-                            file.write(response.content)
-                        print("Successfully Installed TOTK Yuzu preset settings!")
+                        try:
+                            with open(Setting_directory, "wb") as file:
+                                file.write(response.content)
+                        except Exception as e:
+                            log.error(f"FAILED TO CREATE SETTINGS FILE: {e}")
+                        log.info("Successfully Installed TOTK Yuzu preset settings!")
                         resolution = self.resolution_var.get()
                         Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
                         current_res = self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1]
                         proper_res = float(current_res)
                         new_config = configparser.ConfigParser()
                         new_config.read(Setting_directory)
-                        print("TEST", new_config)
                     else:
-                        print(f"Failed to download file from {raw_url}. Status code: {response.status_code}")
+                        log.error(f"Failed to download file from {raw_url}. Status code: {response.status_code}")
                         return
                     if proper_res > 1080:
                         # Add new values
@@ -1161,11 +1172,13 @@ class Manager:
                     new_config["Core"]["memory_layout_mode\\use_global"] = "false"
                     new_config["Core"]["memory_layout_mode\\default"] = "false"
                     new_config["Core"]["memory_layout_mode"] = layout
-                    with open(Setting_directory, "w") as config_file:
-                        new_config.write(config_file, space_around_delimiters=False)
-                        print(response.content)
+                    try:
+                        with open(Setting_directory, "w") as config_file:
+                            new_config.write(config_file, space_around_delimiters=False)
+                    except Exception as e:
+                        log.error(f"FAILED TO EDIT SETTINGS FILE: {e}")
             else:
-                print("Selected option has no associated setting folder.")
+                log.warning("Selected option has no associated setting folder.")
 
         def DownloadDFPS():
             DFPS_ver = self.DFPS_var.get()
@@ -1179,23 +1192,25 @@ class Manager:
             if not DFPS_ver == "Latest":
                 set_setting(args="dfps", value=DFPS_ver)
             self.progress_var.set(f"Downloading DFPS: {DFPS_ver}")
-            print("Downloading: ", DFPS_ver)
+            log.info(f"Downloading DFPS: {DFPS_ver}")
             os.makedirs(Mod_directory, exist_ok=True)
             download_unzip(link, Mod_directory)
+            log.info(f"Downloaded DFPS: {DFPS_ver}")
 
         def DownloadUI():
+            log.info(f"starting the search for UI folder link.")
             new_list = []
             new_list.extend(UI_list)
             for item in AR_dict:
                 new_list.append(item)
 
             if any(item in self.aspect_ratio_var.get().split(" ") for item in ["16-9", "16x9"]):
-                print("Selected 16:9 Aspect Ratio.")
+                log.info("Selected default Aspect Ratio.")
                 if self.ui_var.get().lower() in ["none", "switch"]:
                     self.add_list.extend(new_list)
                     return
                 new_folder = self.ui_var.get()
-
+                link = UI_dict.get(new_folder)
             else:
                 # define
                 UIs = {
@@ -1216,22 +1231,24 @@ class Manager:
                 # search
                 new_folder = f"{self.aspect_ratio_var.get()}{selected_ui}"
                 new_list.extend(UI_list)
-            # fetch
-            link = AR_dict.get(new_folder)
+                # fetch
+                link = AR_dict.get(new_folder)
+
             # delete/disable
             new_list.remove(new_folder)
             self.add_list.extend(new_list)
             self.remove_list.append(new_folder)
-            print("Downloading: ", new_folder)
-            self.progress_var.set(f"Downloading: {new_folder}")
+            log.info(f"Attempting to download {new_folder}")
+            self.progress_var.set(f"Downloading: {new_folder}\n(May take some time)")
             Mod_directory = os.path.join(self.load_dir)
             # skip
             if os.path.exists(os.path.join(Mod_directory, new_folder)):
-                print(f"The UI mod folder '{new_folder}' already exists. Skipping download.")
+                log.info(f"{new_folder} FOLDER already exists, continue...")
                 return
             # download
             os.makedirs(Mod_directory, exist_ok=True)
             download_unzip(link, Mod_directory)
+            log.info(f"Downloaded: {new_folder}")
 
         def DownloadFP():
             selected_fp_mod = self.fp_var.get()
@@ -1245,10 +1262,11 @@ class Manager:
                 return
             if os.path.exists(full_dir):
                 return
-            self.progress_var.set(f"Downloading: {selected_fp_mod}")
-            print("Downloading: ", selected_fp_mod)
+            self.progress_var.set(f"Downloading: {selected_fp_mod}\n(May take some time)")
+            log.info(f"Downloading: {selected_fp_mod}")
             os.makedirs(Mod_directory, exist_ok=True)
             download_unzip(link, Mod_directory)
+            log.info(f"Downloaded: {selected_fp_mod}")
 
         def Disable_Mods():
             self.progress_var.set(f"Disabling old mods.")

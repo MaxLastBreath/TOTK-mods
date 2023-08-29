@@ -374,7 +374,6 @@ class Canvas_Create:
                     canvas.move("background", -a, 0)
                     time.sleep(FPS)
                 if x >= 1000:
-                    print(x)
                     if y == 0:
                         canvas.move("background", scale(200), scale(300))
                     if y < 300:
@@ -382,7 +381,6 @@ class Canvas_Create:
                         canvas.move("background", 0, -a)
                         time.sleep(FPS)
                     if y >= 300:
-                        print(y)
                         x = 0
                         y = 0
                         canvas.move("background", scale(800), 0)
@@ -392,10 +390,20 @@ class Canvas_Create:
     def get_UI_path(self, file_name, folder_name="GUI"):
         if getattr(sys, 'frozen', False):
             base_path = sys._MEIPASS
+            path = os.path.join(base_path, folder_name, file_name)
+            if not os.path.exists(path):
+                base_path = os.path.dirname(os.path.abspath(__file__))
+                base_path = os.path.dirname(base_path)
+                path = os.path.join(base_path, file_name)
         else:
             base_path = os.path.dirname(os.path.abspath(__file__))
             base_path = os.path.dirname(base_path)
-        return os.path.join(base_path, folder_name, file_name)
+            path = os.path.join(base_path, folder_name, file_name)
+            if not os.path.exists(path):
+                base_path = os.path.dirname(os.path.abspath(__file__))
+                base_path = os.path.dirname(base_path)
+                path = os.path.join(base_path, file_name)
+        return path
 
     def Photo_Image(self, image_path=str, is_stored=False,
                     width=None, height=None,

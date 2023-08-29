@@ -1,6 +1,7 @@
 import os
 import platform
 import configparser
+from modules.logger import *
 from configuration.settings import localconfig
 from tkinter import messagebox
 
@@ -16,7 +17,7 @@ def checkpath(self, mode):
             self.configdir = os.path.join(self.Globaldir, "config", "qt-config.ini")
             self.TOTKconfig = os.path.join(self.Globaldir, "config", "custom", "0100F2C0115B6000.ini")
             if not os.path.exists(self.configdir):
-                print("Detected a steamdeck!")
+                log.info("Detected a steamdeck!")
                 self.configdir = os.path.join(home_directory, ".config", "yuzu", "qt-config.ini")
                 self.TOTKconfig = os.path.join(home_directory, ".config", "yuzu", "custom", "0100F2C0115B6000.ini")
             config_parser = configparser.ConfigParser()
@@ -64,11 +65,14 @@ def checkpath(self, mode):
                     if response:
                         self.backup()
                         self.warn_again = "no"
-                        print("Sucessfully backed up save files, in backup folder. Please delete qt-config in USER folder! Or correct the user folder paths, then use the backup file to recover your saves!")
+                        log.info("Sucessfully backed up save files, in backup folder. "
+                                 "Please delete qt-config in USER folder! "
+                                 "Or correct the user folder paths, then use the backup file to recover your saves!")
                         pass
                     else:
                         self.warn_again = "no"
-                        print("Warning has been declined!")
+                        log.info("Warning has been declined, "
+                                 "no saves have been moved!")
                 return
             # Default to Appdata
             else:
@@ -104,16 +108,18 @@ def checkpath(self, mode):
         os.makedirs(self.load_dir, exist_ok=True)
         os.makedirs(self.Yuzudir, exist_ok=True)
     except PermissionError as e:
+        log.warrning(f"Unable to create directories, please run {self.mode}, {e}")
         self.warning(f"Unable to create directories, please run {self.mode}, {e}")
 
 # Define OS
 def DetectOS(self, mode):
     if self.os_platform == "Linux":
-        print("Detected a Linux based SYSTEM!")
+        log.info("Detected a Linux based SYSTEM!")
     elif self.os_platform == "Windows":
-        print("Detected a Windows based SYSTEM!")
+        log.info("Detected a Windows based SYSTEM!")
         if mode == "Yuzu":
             if os.path.exists(self.configdir):
-                print("a qt-config.ini file found!")
+                log.info("a qt-config.ini file found!")
             else:
-                print("qt-config.ini not found, the script will assume default appdata directories, please reopen Yuzu for consistency and make sure TOTK is present..!")
+                log.warning("qt-config.ini not found, the script will assume default appdata directories, "
+                            "please reopen Yuzu for consistency and make sure TOTK is present..!")

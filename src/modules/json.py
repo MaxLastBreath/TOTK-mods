@@ -3,15 +3,13 @@ import os
 import shutil
 import sys
 import time
-
 import requests
 import json
+import logging
 from packaging.version import parse
 from modules.download import get_zip_list_and_dict
-
+from modules.logger import *
 localconfig = "Manager_Config.ini"
-
-
 def load_json(name, url):
     # Check if the .presets folder exists, if not, create it
     presets_folder = "json.data"
@@ -42,7 +40,7 @@ def load_json(name, url):
                 json_options = data
 
     except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
-        print(f"Error occurred while fetching or parsing Description.json: {e}")
+        log.error(f"Error occurred while fetching or parsing {name}: {e}")
         if os.path.exists(json_options_file_path):
             with open(json_options_file_path, "r") as file:
                 json_options = json.load(file)
@@ -76,10 +74,12 @@ def load_values_from_json():
 
     json_file_path = 'json.data/api.json'
     try:
+        logging.info(f"Loading api.json file..")
         with open(json_file_path, "r") as json_file:
             api_json = json.load(json_file)
     except Exception as e:
         json_file_path = fetch_local_json("api.json")
+        logging.info(f"api.json file not found, loading internal data.")
         with open(json_file_path, "r") as json_file:
             api_json = json.load(json_file)
 
@@ -92,9 +92,13 @@ def load_values_from_json():
     DFPS_list = api_json["DFPS_list"]
     DFPS_dict = api_json["DFPS_dict"]
 
+    log.info("Succesfully loaded api.json.")
+
 
 try:
     if time.time() - old_time >= 3600 or not os.path.exists("json.data/api.json"):
+        logging.info(f"Attempting to create API instructions. {time.ctime()}")
+
         skip = ["XBOX", "UI", "PS4", "STEAMDECK"]
         AR = get_zip_list_and_dict(
             "https://api.github.com/repos/MaxLastBreath/TOTK-mods/contents/scripts/Mods/Aspect%20Ratios", skip=skip)
@@ -137,7 +141,7 @@ try:
             if parse(latest) == parse(vers):
                 if int(cur_beta) < int(beta):
                     full_latest = item
-
+        logging.info(f"Github Api instructions have been fetched succesfully.")
         DFPS_list.insert(0, "Latest")
         DFPS_dict["Latest"] = DFPS_dict.get(full_latest)
 
@@ -151,23 +155,32 @@ try:
             "DFPS_list": DFPS_list,
             "DFPS_dict": DFPS_dict
         }
+        logging.info(f"Attempting to create api.json.")
         if not os.path.exists("json.data"):
             os.makedirs("json.data")
         try:
+            logging.info(f"Creating api.json file..")
             with open("json.data/api.json", "w") as json_file:
                 json.dump(api_json, json_file, indent=4)
         except PermissionError as e:
+            logging.error(f"Permission error has been detected while "
+                          f"creating api.json, attempting to delete api.json.")
             shutil.rmtree("json.data/api.json")
         # Save Time.
         if not time_config.has_section("Time"):
             time_config["Time"] = {}
-
+        logging.info(f"Adding API time to config_file. {time.ctime()}.")
         time_config["Time"]["api"] = f"{time.time()}"
         with open(localconfig, 'w') as file:
             time_config.write(file)
     else:
+        logging.info(f"Attempting to load local api.json..")
         load_values_from_json()
 except requests.exceptions.ConnectionError as e:
+    logging.error(f"Couldn't create api.json, no internet connection."
+                  f"Application will now fetch api.json locally.")
     load_values_from_json()
 except TypeError as e:
+    logging.error("Couldn't find local api.json data,"
+                  "Application will default to stored api.json data.")
     load_values_from_json()

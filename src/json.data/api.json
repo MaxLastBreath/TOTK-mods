@@ -23,11 +23,13 @@
         "None",
         "Black Screen Fix",
         "Playstation UI",
+        "Steamdeck UI",
         "Xbox UI"
     ],
     "UI_dict": {
         "Black Screen Fix": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/UI%20Mods/Black%20Screen%20Fix.zip",
         "Playstation UI": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/UI%20Mods/Playstation%20UI.zip",
+        "Steamdeck UI": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/UI%20Mods/Steamdeck%20UI.zip",
         "Xbox UI": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/UI%20Mods/Xbox%20UI.zip"
     },
     "FP_list": [

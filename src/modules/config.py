@@ -2,6 +2,7 @@ from modules.checkpath import checkpath
 from configuration.settings import *
 
 def save_user_choices(self, config_file, yuzu_path=None, mode=None):
+    log.info(f"Saving user choices in {localconfig}")
     config = configparser.ConfigParser()
     if os.path.exists(config_file):
         config.read(config_file)
@@ -14,7 +15,6 @@ def save_user_choices(self, config_file, yuzu_path=None, mode=None):
             config["Manager"] = {}
             config["Manager"]["Cheat_Version"] = self.cheat_version.get()
             config.write(file)
-
         return
 
     # Save the selected options
@@ -45,10 +45,13 @@ def save_user_choices(self, config_file, yuzu_path=None, mode=None):
 
     # Save the manager selected mode I.E Ryujinx/Yuzu
     config["Mode"] = {"ManagerMode": self.mode}
-
+    log.info("User choices saved in Memory,"
+             "Attempting to write into file.")
     # Write the updated configuration back to the file
     with open(config_file, 'w') as file:
         config.write(file)
+    log.info("Successfully written into log file")
+
 
 def load_user_choices(self, config_file, mode=None):
     config = configparser.ConfigParser()
@@ -61,7 +64,8 @@ def load_user_choices(self, config_file, mode=None):
                 option_value = config.get('Cheats', option_name, fallback="Off")
                 option_var.set(option_value)
         except AttributeError as e:
-            print("")
+            # continue, not important.
+            handle = e
         return
 
     # Load the selected options
@@ -85,7 +89,8 @@ def load_user_choices(self, config_file, mode=None):
             option_value = config.get('Cheats', option_name, fallback="Off")
             option_var.set(option_value)
     except AttributeError as e:
-        print("")
+        # continue, not important.
+        handle = e
 
 
 
@@ -98,14 +103,14 @@ def load_user_choices(self, config_file, mode=None):
         if self.mode == "Yuzu":
             if os.path.exists(Default_Directory):
                 self.Yuzudir = os.path.join(home_directory, "user", "load", "0100F2C0115B6000")
-                print(f"User Folder Found! New mod path! {self.Yuzudir}")
+                log.info(f"User Folder Found! New mod path! {self.Yuzudir}")
         elif self.mode == "Ryujinx":
             if os.path.exists(Default_Directory):
                 self.Yuzudir = os.path.join(home_directory, "portable", "mods", "contents", "0100f2c0115b6000")
-                print(f"Portable Folder Found! New mod path! {self.Yuzudir}")
+                log.info(f"Portable Folder Found! New mod path! {self.Yuzudir}")
         else:
-            print("User Folder not Found defaulting to Default Dir!")
+            log.warning("User Folder not Found defaulting to Default Dir!")
             checkpath(self, self.mode)
     else:
-        print("Yuzu path not found in the config file - Defaulting to Default Dir!")
+        log.warning("Yuzu path not found in the config file - Defaulting to Default Dir!")
         checkpath(self, self.mode)

@@ -4,7 +4,6 @@ from configuration.settings import *
 latest_version = Version.strip("manager-")
 
 
-
 if __name__ == "__main__":
     if platform.system() == "Windows":
         command = [

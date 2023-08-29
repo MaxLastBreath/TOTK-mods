@@ -41,7 +41,7 @@ class Setting:
         cul_sel = 180
 
         # font dropdown menu
-        font_list = ["Arial", "Georgia", "Calibri", "Triforce", "Segoe", "The Wild Breath of Zelda", "Times New Roman", "Tahoma", "Impact", "Lucida", "bahnschrift"]
+        font_list = ["Arial", "Georgia", "Calibri", "Triforce", "Segoe", "The Wild Breath of Zelda", "Times New Roman", "Tahoma", "Impact", "Lucida", "Bahnschrift"]
         font_list.sort()
         self.font_var = self.canvas_create.create_combobox(
             master=window, canvas=canvas_obj,
@@ -214,10 +214,10 @@ class Setting:
         config = configparser.ConfigParser()
         config.read(localconfig)
 
-        self.font_var.set(config.get("Settings", "font", fallback="bahnschrift"))
-        self.color_var.set(config.get("Settings", "color", fallback="light-cyan"))
-        self.outline_var.set(config.get("Settings", "shadow_color", fallback="purple"))
-        self.active_var.set(config.get("Settings", "active_color", fallback="red"))
+        self.font_var.set(config.get("Settings", "font", fallback="Bahnschrift"))
+        self.color_var.set(config.get("Settings", "color", fallback="cyan"))
+        self.outline_var.set(config.get("Settings", "shadow_color", fallback="light-blue"))
+        self.active_var.set(config.get("Settings", "active_color", fallback="white"))
         self.style_var.set(config.get("Settings", "style", fallback="flatly"))
         self.w_scale_var.set(config.get("Settings", "scale", fallback="On"))
         self.backup_var.set(config.get("Settings", "backup", fallback="Off"))
@@ -233,30 +233,6 @@ class Setting:
         canvas.itemconfig("active_text", activefill=self.Colors[self.active_var.get()])
         canvas.itemconfig("text", fill=self.Colors[self.color_var.get()], font=newfont)
         canvas.itemconfig("outline", fill=self.Colors[self.outline_var.get()], font=newfont)
-
-    def get_setting(self, args):
-        self.config.read(localconfig)
-        font = self.config.get("Settings", "font", fallback="Arial")
-        color = self.config.get("Settings", "color", fallback="light-cyan")
-        style = self.config.get("Settings", "style", fallback="flatly")
-        w_scale = self.config.get("Settings", "scale", fallback="Off")
-        backup = self.config.get("Settings", "backup", fallback="Off")
-        cheat_backup = self.config.get("Settings", "cheat-backup", fallback="On")
-        animation = self.config.get("Settings", "animation", fallback="On")
-        if args in ["ani", "animation"]:
-            return animation
-        elif args in ["color", "c"]:
-            return color
-        elif args in ["font", "f"]:
-            return font
-        elif args in ["style", "s"]:
-            return style
-        elif args in ["ws", "scale"]:
-            return w_scale
-        elif args in ["backup", "b"]:
-            return backup
-        elif args in ["cheatbackup", "cheat_backup", "cb"]:
-            return cheat_backup
 
     def createwindow(self):
         self.window = ttk.Window(scaling=sf)

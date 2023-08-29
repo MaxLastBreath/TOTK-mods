@@ -1,7 +1,9 @@
 from modules.colors import Color
 from modules.scaling import *
 from modules.json import *
+import time
 from modules.download import *
+import logging
 import configparser
 
 Version = "manager-1.3.0"
@@ -25,10 +27,10 @@ def get_setting(args=None):
     global font, tcolor, theme, toutline, tactive, is_animation, is_cheat_backup, is_auto_backup, w_scale
     config = configparser.ConfigParser()
     config.read(localconfig)
-    font = config.get("Settings", "font", fallback="Bahnschrift")
-    tcolor = config.get("Settings", "color", fallback="light-cyan")
-    toutline = config.get("Settings", "shadow_color", fallback="purple")
-    tactive = config.get("Settings", "active_color", fallback="red")
+    font = config.get("Settings", "font", fallback="Bahnschrift Font")
+    tcolor = config.get("Settings", "color", fallback="cyan")
+    toutline = config.get("Settings", "shadow_color", fallback="light-blue")
+    tactive = config.get("Settings", "active_color", fallback="white")
     theme = config.get("Settings", "style", fallback="flatly")
     w_scale = config.get("Settings", "scale", fallback="On")
     is_auto_backup = config.get("Settings", "backup", fallback="Off")
