@@ -27,7 +27,7 @@ def Auto_SF():
                 monitors = get_monitors()
                 current_monitor = monitors[0]
                 h = current_monitor.height
-            except ScreenInfoError as e 
+            except ScreenInfoError as e:
                 h = 1080
             print(h)
             if h <= 1080 and h < 1440:
