@@ -1,6 +1,6 @@
 import platform
 import configparser
-from screeninfo import get_monitors
+from screeninfo import get_monitors, ScreenInfoError
 from ctypes import *
 
 localconfig = "Manager_Config.ini"
@@ -23,11 +23,14 @@ def Auto_SF():
             windll.shcore.SetProcessDpiAwareness(1)
         else:
             # Scale based on the first detected Monitor - For Other OS.
-            monitors = get_monitors()
-            current_monitor = monitors[0]
-            h = current_monitor.height
+            try:
+                monitors = get_monitors()
+                current_monitor = monitors[0]
+                h = current_monitor.height
+            except ScreenInfoError as e:
+                h = 1080
             print(h)
-            if h >= 1080:
+            if h <= 1080 and h < 1440:
                 sf = 1.0
             if h >= 1440:
                 sf = 1.5
