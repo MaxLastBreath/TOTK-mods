@@ -32,8 +32,8 @@ def checkpath(self, mode):
             self.configdir = None
             self.TOTKconfig = None
             self.nand_dir = os.path.join(f"{self.Globaldir}", "bis", "user", "save")
-            self.load_dir = os.path.join(f"{self.Globaldir}", "mods", "contents", "0100f2C0115b6000")
-            self.Yuzudir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents", "0100f2C0115b6000")
+            self.load_dir = os.path.join(f"{self.Globaldir}", "mods", "contents", "0100f2C0115B6000")
+            self.Yuzudir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents", "0100f2C0115B6000")
             return
     # Default Dir for Windows or user folder.
     elif self.os_platform == "Windows":
@@ -91,7 +91,7 @@ def checkpath(self, mode):
                 self.TOTKconfig = None
                 self.nand_dir = os.path.join(f"{portablefolder}", "bis", "user", "save")
                 self.load_dir = os.path.join(f"{portablefolder}", "mods", "contents", "0100f2C0115b6000")
-                self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", "0100f2C0115b6000")
+                self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", "0100f2C0115B6000")
                 return
             else:
                 self.Globaldir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx")
@@ -99,7 +99,7 @@ def checkpath(self, mode):
                 self.TOTKconfig = None
                 self.nand_dir = os.path.join(f"{self.Globaldir}", "bis", "user", "save")
                 self.load_dir = os.path.join(f"{self.Globaldir}", "mods", "contents", "0100f2C0115b6000")
-                self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", "0100f2C0115b6000")
+                self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", "0100f2C0115B6000")
                 return
     # Ensure the path exists.
     try:
