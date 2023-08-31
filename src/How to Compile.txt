@@ -1,15 +1,12 @@
 Note you need dependencies namely:
 
-pip install requests
-pip install Pillow
-pip install patool
-pip install tk
+pip install requests Pillow patool tk
 
 Open a terminal set the current path to the folder DIR. Then write
 
 For Windows
 
-pyinstaller run.py --onefile --name TOTK_MOD_Manager --add-data "GUI;GUI"
+python -m pyinstaller run.py --onefile --name TOTK_MOD_Manager --add-data "GUI;GUI" --add-data "json.data;json.data"
 
 For Linux
 

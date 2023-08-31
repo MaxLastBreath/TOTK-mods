@@ -1280,7 +1280,7 @@ class Manager:
                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, item, action="add")
                 for item in self.remove_list:
                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, item, action="remove")
-            if self.mode == "Ryujinx":
+            if self.mode == "Ryujinx" or platform.system() == "Linux":
                 for item in self.add_list:
                     item_dir = os.path.join(self.load_dir, item)
                     if os.path.exists(item_dir):

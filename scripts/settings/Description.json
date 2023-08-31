@@ -7,6 +7,8 @@
 	"Camera Quality": "Increases camera Picture Quality.\nNote: Recommended to not use this mod, as it COULD cause issues.",
 	"UI": "Choose the button prompts for Tears of The Kingdom.\nNote: Recommended to use BlackscreenFIX, if you don't desire to use any other UI mod.",
 	"First Person": "Switches all cameras to First Person.",
+	"DFPS": "Select DFPS Version.\nIt's recommended to use the latest available.\nNote: Versions below 1.5.4 are not fully supported.",
+	"Aspect Ratio": "Aspect Ratio mods, those mods are a combination of various UI changes.\nNote: Full support up to 1.2.0 and partial support after 1.2.1.",
 
 	"PRESETS - GROUP": "None",
 
@@ -24,6 +26,7 @@
 	"Switch": "Switches between Yuzu and Ryujinx Manager.",
 	"Main": "The Main section of the Mod Manager.",
 	"Cheats": "In this tab you can add cheats to your game.",
+	"Shaders": "Clear Shader Cache, YUZU only. \nSometimes can Improve performance and Fix Visual bugs.",
 
 	"DYNAMICMODS - GROUP": "None",
 
@@ -35,6 +38,14 @@
 	"Remove FXAA": "Removes Internal FX Anti Aliasing, \nNOTE: could improve quality with external upscaler.",
 	"Remove FSR": "Removes Internal FSR 1.0 Upscaler, \nNOTE: could reduce blurriness and improve quality.",
 
+	"SETTINGS - GROUP": "None",
+	"fonts": "Change fonts from the ones present\nNote: Some of the fonts may need to be installed separately.",
+	"Text Colors": "Select Text Colors.",
+	"GUI-Theme": "Select ttkbootstrap based theme!",
+	"Windows Scaling": "Select GUI scaling.\nOn: Scales based on Windows scaling.\n1-2x Manual scaling, Be careful.",
+	"Auto Backup": "Backup save files, every time you click apply.",
+	"Auto Backup Cheats": "Backup save files, every time you click apply In the cheat Menu.",
+	"Gui Animations": "Removes GUI animation, specifically for cheat Menu.\nNote: There shouldn't be need to turn this off.",
 
 	"CHEATS - GROUP": "None",
 

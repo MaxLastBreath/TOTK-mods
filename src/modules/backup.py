@@ -16,6 +16,7 @@ def backup(self):
             if target_folder in dirs:
                 folder_to_backup = os.path.join(root, target_folder)
         print(f"Attemping to backup {folder_to_backup}")
+
     # Create the 'backup' folder inside the mod manager directory if it doesn't exist
     elif self.mode == "Ryujinx":
         folder_to_backup = self.nand_dir
