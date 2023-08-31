@@ -7,10 +7,13 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        platform: [ ubuntu-20.04, windows-latest ]
+    runs-on: ${{ matrix.platform }}
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python 3.10
+    - name: Set up Python 3.11
       uses: actions/setup-python@v3
       with:
         python-version: "3.10"

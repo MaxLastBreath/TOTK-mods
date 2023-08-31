@@ -1,0 +1,10 @@
+@echo off
+nuitka ^
+--onefile ^
+--plugin-enable=tk-inter ^
+--recurse-all ^
+--output-dir=dist ^
+--output-name=TOTK_Optimizer_%latest_version% ^
+--include-data-file=GUI;GUI ^
+--include-data-file=json.data;json.data ^
+run.py

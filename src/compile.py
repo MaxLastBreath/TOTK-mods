@@ -7,12 +7,11 @@ latest_version = Version.strip("manager-")
 if __name__ == "__main__":
     if platform.system() == "Windows":
         command = [
-            "pyinstaller",
-            "run.py",
-            "--onefile",
-            f"--name=TOTK_Optimizer_{latest_version}",
-            "--add-data", "GUI;GUI",
-            "--add-data", "json.data;json.data"
+            "nuitka",
+            "--standalone",
+            "--output-dir=dist",
+            "--output-file=TOTK_Optimizer_{}.exe".format(latest_version),
+            "run.py"
         ]
         subprocess.run(command, shell=True)
 
