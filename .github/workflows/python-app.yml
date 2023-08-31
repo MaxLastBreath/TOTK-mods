@@ -20,11 +20,11 @@ jobs:
     - name: Get pip cache dir
       id: pip-cache
       run: |
-        echo "pipcachedir=$(pip cache dir)" >> $GITHUB_OUTPUT
+        echo "pipcachedir=$(pip cache dir)" >> $GITHUB_ENV
     - name: pip cache
       uses: actions/cache@v2
       with:
-        path: ${{ steps.pip-cache.outputs.pipcachedir }}
+        path: ${{ env.pipcachedir }}
         key: ${{ runner.os }}-pip
         restore-keys: |
           ${{ runner.os }}-pip
