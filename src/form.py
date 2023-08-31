@@ -550,7 +550,7 @@ class Manager:
         )
 
         self.hylian_element_active = self.on_canvas.Photo_Image(
-            image_path="Hylian_Shield_active.png",
+            image_path="Hylian_Shield_Active.png",
             width=72, height=114,
         )
 
