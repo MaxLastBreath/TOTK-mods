@@ -392,17 +392,13 @@ class Canvas_Create:
             base_path = sys._MEIPASS
             path = os.path.join(base_path, folder_name, file_name)
             if not os.path.exists(path):
-                base_path = os.path.dirname(os.path.abspath(__file__))
-                base_path = os.path.dirname(base_path)
-                path = os.path.join(base_path, file_name)
+                return file_name
         else:
             base_path = os.path.dirname(os.path.abspath(__file__))
             base_path = os.path.dirname(base_path)
             path = os.path.join(base_path, folder_name, file_name)
             if not os.path.exists(path):
-                base_path = os.path.dirname(os.path.abspath(__file__))
-                base_path = os.path.dirname(base_path)
-                path = os.path.join(base_path, file_name)
+                return file_name
         return path
 
     def Photo_Image(self, image_path=str, is_stored=False,

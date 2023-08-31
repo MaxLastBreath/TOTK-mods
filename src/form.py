@@ -597,6 +597,7 @@ class Manager:
             width=1200, height=600,
             blur=1
         )
+
         if os.path.exists("custom/cbg.jpg"):
             image_path = "custom/cbg.jpg"
         elif os.path.exists("custom/cbg.png"):
