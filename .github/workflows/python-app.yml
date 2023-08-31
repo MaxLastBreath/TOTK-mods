@@ -31,7 +31,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install requests patool ttkbootstrap==1.5.1 screeninfo packaging GPUtil psutil pyinstaller
+        pip install requests patool ttkbootstrap==1.5.1 screeninfo packaging GPUtil psutil pyinstaller nuitka
     - name: Build
       run: |
         cd ./src/
