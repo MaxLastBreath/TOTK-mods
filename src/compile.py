@@ -9,7 +9,6 @@ if __name__ == "__main__":
         command = [
             "nuitka",
             "--recurse-all",
-            "--output-dir=dist",
             "--standalone",
             "--output-dir=dist",
             "--output-name=TOTK_Optimizer_" + latest_version + ".exe",
