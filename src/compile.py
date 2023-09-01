@@ -8,7 +8,6 @@ if __name__ == "__main__":
     if platform.system() == "Windows":
         command = [
             "nuitka",
-            "--recurse-all",
             "--standalone",
             "--output-dir=dist",
             "--output-name=TOTK_Optimizer_" + latest_version + ".exe",
