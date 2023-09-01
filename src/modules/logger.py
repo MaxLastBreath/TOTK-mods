@@ -21,7 +21,7 @@ try:
     gpus = GPUtil.getGPUs()
     gpu_name = gpus[0].name
 except IndexError as e:
-    print(e)
+    gpu_name = "None"
     
 # Print Memory
 memory_info = psutil.virtual_memory()
