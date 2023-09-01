@@ -19,7 +19,7 @@ if __name__ == "__main__":
         }
 
         executables = [
-            Executable("run.py", base=base, targetName=f"TOTK_Optimizer_{latest_version}.exe")
+            Executable("run.py", base=base)
         ]
         sys.argv.append("build")
         setup(
