@@ -9,6 +9,8 @@ import glob
 from configuration.settings import Version
 from tkinter import messagebox
 
+from modules.logger import log
+
 textver = Version.strip("manager-")
 GITHUB = "TOTK-mods"
 OWNER = "MaxLastBreath"
@@ -35,9 +37,9 @@ def check_for_updates():
                 else:
                     return
             else:
-                print("No Updates Found. Your app is up to date.")
+                log.info("No Updates Found. Your app is up to date.")
     except requests.exceptions.ConnectionError as e:
-        print(
+        log.warning(
         "No internet connection or api limit reached. You won't be able to check for Updates.")
 
 def download_update(assets):
@@ -48,36 +50,36 @@ def download_update(assets):
         asset_url = asset["browser_download_url"]
         
         if current_platform == "Linux" and asset_name.endswith(".AppImage"):
-            print(f"Downloading {asset_name}")
+            log.info(f"Downloading {asset_name}")
             try:
                 response = requests.get(asset_url)
                 response.raise_for_status()
             except requests.RequestException as e:
-                print("Error downloading asset:", e)
+                log.error(f"Error downloading asset: {e}")
                 return
 
             with open(asset_name, "wb") as f:
                 f.write(response.content)
 
-            print("Asset downloaded successfully.")
+            log.info("Asset downloaded successfully.")
 
         elif current_platform == "Windows" and asset_name.endswith(".exe"):
-            print(f"Downloading {asset_name}")
+            log.info(f"Downloading {asset_name}")
             try:
                 response = requests.get(asset_url)
                 response.raise_for_status()
             except requests.RequestException as e:
-                print("Error downloading asset:", e)
+                log.error(f"Error downloading asset: {e}")
                 return
 
             with open(asset_name, "wb") as f:
                 f.write(response.content)
 
-            print("Asset downloaded successfully.")
+            log.info("Asset downloaded successfully.")
         apply_update(assets)
 
 def apply_update(assets):
-    print("Applying Update...")
+    log.info("Applying Update...")
     current_platform = platform.system()
     updated_executable = None
 
@@ -88,14 +90,14 @@ def apply_update(assets):
             break
 
     if updated_executable is None:
-        print("No Windows executable found in the assets.")
+        log.info("No Windows executable found in the assets.")
         return
 
     try:
         old_executable = sys.argv[0]
         if os.path.exists(old_executable):
             os.rename(old_executable, f"{old_executable}.tmp")
-            print("Old executable deleted.")
+            log.info("Old executable deleted.")
 
         if sys.platform.startswith("linux"):
             os.chmod(updated_executable, 0o755)
@@ -104,14 +106,13 @@ def apply_update(assets):
 
         os.execl(updated_executable, *([updated_executable] + sys.argv[1:]))
     except Exception as e:
-        print(f"Error applying update: {e}")
+        log.error(f"Error applying update: {e}")
         return
 
-    print("Update Applied. Exiting...")
+    log.info("Update Applied. Exiting...")
     sys.exit()
 
 def delete_old_exe():
-    time.sleep(1)
     executable_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
     current_platform = platform.system()
     try:
@@ -128,11 +129,23 @@ def delete_old_exe():
         matching_files += glob.glob(os.path.join(executable_directory, "*1.1.0.appimage.tmp"))
 
         for file_path in matching_files:
-            print("Removing old exe:", file_path)
             if os.path.isfile(file_path):
                 os.remove(file_path)
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path)
+        # Rename for consistency
+        name = "run.py"
+        if platform.system() == "Windows":
+            name = "TOTK Optimizer.exe"
+        elif platform.system() == "Linux":
+            name = "TOTK Optimizer.AppImage"
+        time.sleep(0.5)
+        new_executable = sys.argv[0]
+        current_name = new_executable.split("\\")[-1]
+        print(current_name)
+        if not current_name == name and not current_name == "run.py":
+            os.rename(new_executable, f"{name}")
+
 
     except Exception as e:
-        print("Error:", e)
+        log.error(f"Error: {e}")

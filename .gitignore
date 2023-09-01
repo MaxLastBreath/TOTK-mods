@@ -1,6 +1,7 @@
-
 *.pyc
 src/Manager_Config.ini
+src/.idea/
+src/logger.txt
 scripts/Mods/Aspect Ratios/Aspect Ratio 16-10
 scripts/Mods/Aspect Ratios/Aspect Ratio 16-10 PS4 UI
 scripts/Mods/Aspect Ratios/Aspect Ratio 16-10 STEAMDECK UI
@@ -19,11 +20,3 @@ scripts/Mods/FP Mods/First Person FOV 90
 scripts/Mods/UI Mods/Black Screen Fix
 scripts/Mods/UI Mods/Playstation UI
 scripts/Mods/UI Mods/Xbox UI
-src/logger.txt
-src/.idea/workspace.xml
-src/.idea/workspace.xml
-src/.idea/misc.xml
-src/.idea/vcs.xml
-src/.idea/workspace.xml
-src/.idea/inspectionProfiles/profiles_settings.xml
-src/.idea/workspace.xml
