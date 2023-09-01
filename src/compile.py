@@ -10,7 +10,6 @@ if __name__ == "__main__":
             "nuitka",
             "--standalone",
             "--output-dir=dist",
-            "--output-name=TOTK_Optimizer_" + latest_version + ".exe",
             "run.py"
         ]
         
@@ -21,8 +20,8 @@ if __name__ == "__main__":
             "pyinstaller",
             "--onefile",
             "--collect-all", "ttkbootstrap",
-            "run.py",
             f"--name=TOTK Optimizer {latest_version}.AppImage",
+            "run.py",
             "--add-data", "GUI:GUI",
             "--add-data", "json.data:json.data"
             "--hidden-import=PIL",
