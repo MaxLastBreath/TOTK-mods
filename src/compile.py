@@ -1,19 +1,34 @@
 import platform
 import subprocess
 from configuration.settings import *
+from cx_Freeze import setup, Executable
 latest_version = Version.strip("manager-")
 
 
 if __name__ == "__main__":
     if platform.system() == "Windows":
-        command = [
-            "nuitka",
-            "--standalone",
-            "--output-dir=dist",
-            "run.py"
+        base = "Win32GUI"
+        options = {
+            "build_exe": {
+                "packages": [],
+                "include_files": [
+                    ("GUI", "GUI"),
+                    ("json.data", "json.data")
+                ]
+            }
+        }
+
+        executables = [
+            Executable("run.py", base=base, targetName=f"TOTK_Optimizer_{latest_version}.exe")
         ]
-        
-        subprocess.run(command, shell=True)
+
+        setup(
+            name="TOTK_Optimizer",
+            options=options,
+            version=latest_version,
+            description="Your application description",
+            executables=executables
+)
         
     if platform.system() == "Linux":
         command = [
