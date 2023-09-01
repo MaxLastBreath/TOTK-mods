@@ -3,6 +3,7 @@ import sys
 import platform
 import psutil
 import GPUtil
+from modules.scaling import *
 
 
 def start_logger():
