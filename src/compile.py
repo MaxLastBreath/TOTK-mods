@@ -1,30 +1,22 @@
 import platform
 import subprocess
-from distutils.core import setup
-import py2exe
 from configuration.settings import *
 latest_version = Version.strip("manager-")
 
 
 if __name__ == "__main__":
     if platform.system() == "Windows":
-        setup(
-            console=[
-                {
-                    "script": "run.py",
-                    "dest_base": f"TOTK_Optimizer_{latest_version}",
-                }
-            ],
-            options={
-                "py2exe": {
-                    "bundle_files": 1,
-                    "dll_excludes": ["MSVCP90.dll"],
-                    "optimize": 2,
-                }
-            }
-        )
-
-        subprocess.run("python setup.py py2exe", shell=True)
+        command = [
+            "nuitka",
+            "--recurse-all",
+            "--output-dir=dist",
+            "--standalone",
+            "--output-dir=dist",
+            "--output-name=TOTK_Optimizer_" + latest_version + ".exe",
+            "run.py"
+        ]
+        
+        subprocess.run(command, shell=True)
         
     if platform.system() == "Linux":
         command = [
