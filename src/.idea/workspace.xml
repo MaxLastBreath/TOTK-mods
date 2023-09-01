@@ -4,19 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f486820f-c29b-4432-aa38-bb312c18401c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../scripts/settings/presets.json" beforeDir="false" afterPath="$PROJECT_DIR$/../scripts/settings/presets.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/How to Compile.txt" beforeDir="false" afterPath="$PROJECT_DIR$/How to Compile.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/compile.py" beforeDir="false" afterPath="$PROJECT_DIR$/compile.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/configuration/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/form.py" beforeDir="false" afterPath="$PROJECT_DIR$/form.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/checkpath.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/checkpath.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/download.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/download.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/logger.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/scaling.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/scaling.py" afterDir="false" />
-    </list>
+    <list default="true" id="f486820f-c29b-4432-aa38-bb312c18401c" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
