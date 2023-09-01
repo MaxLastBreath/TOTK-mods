@@ -13,7 +13,7 @@ jobs:
         include:
         - name: Windows
           os: windows-latest
-          distpath: ./src/build
+          distpath: ./src/dist
         - name: Linux
           os: ubuntu-20.04
           distpath: ./src/dist
