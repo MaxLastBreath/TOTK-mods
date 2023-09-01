@@ -6,7 +6,7 @@ from modules.download import *
 import logging
 import configparser
 
-Version = "manager-1.3.0"
+Version = "manager-1.3.1"
 repo_url_raw = 'https://github.com/MaxLastBreath/TOTK-mods'
 repo_url = 'https://api.github.com/repos/MaxLastBreath/TOTK-mods'
 localconfig = "Manager_Config.ini"

@@ -6,7 +6,7 @@ Open a terminal set the current path to the folder DIR. Then write
 
 For Windows
 
-python -m pyinstaller run.py --onefile --name TOTK_MOD_Manager --add-data "GUI;GUI" --add-data "json.data;json.data"
+python -m PyInstaller run.py --onefile --name TOTK_MOD_Manager --add-data "GUI;GUI" --add-data "json.data;json.data"
 
 For Linux
 

@@ -1,34 +1,20 @@
 import platform
 import subprocess
 from configuration.settings import *
-from cx_Freeze import setup, Executable
 latest_version = Version.strip("manager-")
 
 
 if __name__ == "__main__":
     if platform.system() == "Windows":
-        base = "Win32GUI"
-        options = {
-            "build_exe": {
-                "packages": [],
-                "include_files": [
-                    ("GUI", "GUI"),
-                    ("json.data", "json.data")
-                ]
-            }
-        }
-
-        executables = [
-            Executable("run.py", base=base)
+        command = [
+            "pyinstaller",
+            "run.py",
+            "--onefile",
+            f"--name=TOTK_Optimizer_{latest_version}",
+            "--add-data", "GUI;GUI",
+            "--add-data", "json.data;json.data"
         ]
-        sys.argv.append("build")
-        setup(
-            name="TOTK_Optimizer",
-            options=options,
-            version=latest_version,
-            description="Your application description",
-            executables=executables
-        )   
+        subprocess.run(command, shell=True)
         
     if platform.system() == "Linux":
         command = [

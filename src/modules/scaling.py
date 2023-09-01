@@ -1,6 +1,5 @@
 import platform
 import configparser
-from screeninfo import get_monitors, ScreenInfoError
 from ctypes import *
 
 localconfig = "Manager_Config.ini"

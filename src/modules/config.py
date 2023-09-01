@@ -91,26 +91,3 @@ def load_user_choices(self, config_file, mode=None):
     except AttributeError as e:
         # continue, not important.
         handle = e
-
-
-
-    self.yuzu_path = self.load_yuzu_path(config_file)
-
-    if self.yuzu_path:
-        home_directory = os.path.dirname(self.yuzu_path)
-        Default_Directory = os.path.join(home_directory, "user")
-        Default_Directory = os.path.join(home_directory, "portable")
-        if self.mode == "Yuzu":
-            if os.path.exists(Default_Directory):
-                self.Yuzudir = os.path.join(home_directory, "user", "load", "0100F2C0115B6000")
-                log.info(f"User Folder Found! New mod path! {self.Yuzudir}")
-        elif self.mode == "Ryujinx":
-            if os.path.exists(Default_Directory):
-                self.Yuzudir = os.path.join(home_directory, "portable", "mods", "contents", "0100f2c0115b6000")
-                log.info(f"Portable Folder Found! New mod path! {self.Yuzudir}")
-        else:
-            log.warning("User Folder not Found defaulting to Default Dir!")
-            checkpath(self, self.mode)
-    else:
-        log.warning("Yuzu path not found in the config file - Defaulting to Default Dir!")
-        checkpath(self, self.mode)

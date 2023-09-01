@@ -791,19 +791,9 @@ class Manager:
             selected_preset = "Saved"
             log.error(f"Failed to apply selected preset: {e}")
 
-        if selected_preset == "None":
-            if os.path.exists(self.config):
-                load_user_choices(self, self.config)
-            else:
-                # Fallback to the default preset
-                default_preset = self.get_local_presets().get("Default", {})
-                self.apply_preset(default_preset)
+        if selected_preset == "Saved":
+            load_user_choices(self, self.config)
 
-        elif selected_preset == "Saved":
-            if os.path.exists(self.config):
-                load_user_choices(self, self.config)
-            else:
-                messagebox.showinfo("Saved Preset", "No saved preset found. Please save your current settings first.")
         elif selected_preset in self.presets:
             preset_to_apply = self.presets[selected_preset]
             for key, value in preset_to_apply.items():
@@ -813,14 +803,19 @@ class Manager:
                     preset_to_apply[key] = "Off"
             # Apply the selected preset from the online presets
             self.apply_preset(self.presets[selected_preset])
+    def fetch_var(self, var, dict, option):
+        if not dict.get(option, "") == "":
+            var.set(dict.get(option, ""))
+        return
 
     def apply_preset(self, preset_options):
-        self.resolution_var.set(preset_options.get("Resolution", ""))
-        self.fps_var.set(preset_options.get("FPS", ""))
-        self.shadow_resolution_var.set(preset_options.get("ShadowResolution", ""))
-        self.camera_var.set(preset_options.get("CameraQuality", ""))
-        self.ui_var.set(preset_options.get("UI", ""))
-        self.fp_var.set(preset_options.get("First Person", ""))
+        self.fetch_var(self.resolution_var, preset_options, "Resolution")
+        self.fetch_var(self.fps_var, preset_options, "FPS")
+        self.fetch_var(self.camera_var, preset_options, "CameraQuality")
+        self.fetch_var(self.ui_var, preset_options, "UI")
+        self.fetch_var(self.aspect_ratio_var, preset_options, "Aspect Ratio")
+        self.fetch_var(self.fp_var, preset_options, "First Person")
+        self.fetch_var(self.selected_settings, preset_options, "Settings")
 
         skip_keys = ["Resolution", "FPS", "ShadowResolution", "CameraQuality", "UI"]
 
@@ -839,8 +834,6 @@ class Manager:
                 filetypes=[("Executable files", "*.exe"), ("All Files", "*.*")]
             )
             home_directory = os.path.dirname(self.yuzu_path)
-            Default_Yuzu_Directory = os.path.join(home_directory, "user")
-            Default_Ryujinx_Directory = os.path.join(home_directory, "portable")
             executable_name = yuzu_path
             if executable_name.endswith("Ryujinx.exe"):
                 if self.mode == "Yuzu":
@@ -852,12 +845,15 @@ class Manager:
                 # Save the selected yuzu.exe path to a configuration file
                 save_user_choices(self, self.config, yuzu_path)
                 home_directory = os.path.dirname(yuzu_path)
-                if os.path.exists(Default_Yuzu_Directory) or os.path.exists(Default_Ryujinx_Directory):
+                fullpath = os.path.dirname(yuzu_path)
+                if any(item in os.listdir(fullpath) for item in ["user", "portable"]):
                     log.info(f"Successfully selected {self.mode}.exe! And a portable folder was found at {home_directory}!")
                     checkpath(self, self.mode)
+                    return
                 else:
                     log.info(f"Portable folder for {self.mode} not found defaulting to appdata directory!")
                     checkpath(self, self.mode)
+                    return
 
                 # Update the yuzu.exe path in the current session
                 self.yuzu_path = yuzu_path

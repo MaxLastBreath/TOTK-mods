@@ -1,8 +1,8 @@
 import logging
 import sys
 import platform
-import GPUtil
 import psutil
+import GPUtil
 
 
 def start_logger():
@@ -16,16 +16,21 @@ def start_logger():
     return new_logger
 
 
-# Print GPU(s)
 try:
     gpus = GPUtil.getGPUs()
     gpu_name = gpus[0].name
-except IndexError as e:
-    gpu_name = "None"
-    
+except Exception as e:
+    logging.warning(f"The GPU was not detected, nothing to be concerned about. {e}")
+    gpu_name = "Undetected"
+
 # Print Memory
-memory_info = psutil.virtual_memory()
-total_memory = memory_info.total//1000000000
+try:
+    memory_info = psutil.virtual_memory()
+    total_memory = memory_info.total//1000000000
+except Exception as e:
+    logging.warning(f"The System Memory was not detected, nothing to be concerned about. {e}")
+    total_memory = "Undetected"
+
 
 log = start_logger()
 log.info(f"\n\n\n\nAttempting to start Application.\n"
