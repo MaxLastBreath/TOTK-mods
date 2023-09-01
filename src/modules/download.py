@@ -1,6 +1,7 @@
 from modules.logger import *
 from urllib.error import URLError
 import requests
+import certifi
 import urllib.request
 import os
 import zipfile
@@ -23,7 +24,7 @@ def download_file(url, save_path):
 
 def download_unzip(url, target_directory):
     try:
-        response = urllib.request.urlopen(url)
+        response = urllib.request.urlopen(url, cafile=certifi.where())
         zip_content = BytesIO(response.read())
         # Create a ZipFile object
         with zipfile.ZipFile(zip_content, 'r') as zip_ref:
