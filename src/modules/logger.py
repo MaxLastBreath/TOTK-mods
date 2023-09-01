@@ -17,11 +17,11 @@ def start_logger():
 
 
 # Print GPU(s)
-if platform.system() == "Windows":
+try:
     gpus = GPUtil.getGPUs()
     gpu_name = gpus[0].name
-else:
-    gpu_name = "Not Detected"
+excet IndexError as e:
+    print(e)
     
 # Print Memory
 memory_info = psutil.virtual_memory()
