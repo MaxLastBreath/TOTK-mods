@@ -21,14 +21,14 @@ if __name__ == "__main__":
         executables = [
             Executable("run.py", base=base, targetName=f"TOTK_Optimizer_{latest_version}.exe")
         ]
-
+        sys.argv.append("build")
         setup(
             name="TOTK_Optimizer",
             options=options,
             version=latest_version,
             description="Your application description",
             executables=executables
-)
+        )   
         
     if platform.system() == "Linux":
         command = [
