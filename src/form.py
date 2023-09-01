@@ -833,7 +833,6 @@ class Manager:
             yuzu_path = filedialog.askopenfilename(
                 filetypes=[("Executable files", "*.exe"), ("All Files", "*.*")]
             )
-            home_directory = os.path.dirname(self.yuzu_path)
             executable_name = yuzu_path
             if executable_name.endswith("Ryujinx.exe"):
                 if self.mode == "Yuzu":
