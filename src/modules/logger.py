@@ -20,7 +20,7 @@ def start_logger():
 try:
     gpus = GPUtil.getGPUs()
     gpu_name = gpus[0].name
-excet IndexError as e:
+except IndexError as e:
     print(e)
     
 # Print Memory
