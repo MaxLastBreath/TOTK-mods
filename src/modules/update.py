@@ -8,12 +8,12 @@ import sys
 import glob
 from configuration.settings import Version
 from tkinter import messagebox
-
 from modules.logger import log
 
 textver = Version.strip("manager-")
-GITHUB = "ModTest"
+GITHUB = "TOTK-mods"
 OWNER = "MaxLastBreath"
+
 def show_confirmation_dialog(remote_version_str):
     result = messagebox.askyesno("Confirmation", f"Mod Manager version {remote_version_str} was found, do you want to apply the update?")
     return result

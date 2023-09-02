@@ -27,7 +27,7 @@ if __name__ == "__main__":
                 amount = int(item.get("download_count"))
                 print(f"Windows Downloads: {amount}")
                 count_windows += amount
-    print(f"--TOTAL VERSION COUNT--"
+    print(f"\n\n--TOTAL VERSION COUNT--\n"
           f"Linux has: {count_linux} Downloads\n"
           f"Windows has {count_windows} Downloads\n"
           f"Total download count is: {count_linux + count_windows}")
