@@ -12,7 +12,7 @@ from tkinter import messagebox
 from modules.logger import log
 
 textver = Version.strip("manager-")
-GITHUB = "TOTK-mods"
+GITHUB = "ModTest"
 OWNER = "MaxLastBreath"
 def show_confirmation_dialog(remote_version_str):
     result = messagebox.askyesno("Confirmation", f"Mod Manager version {remote_version_str} was found, do you want to apply the update?")
@@ -100,11 +100,16 @@ def apply_update(assets):
             log.info("Old executable deleted.")
 
         if sys.platform.startswith("linux"):
+            name = "TOTK Optimizer.AppImage"
             os.chmod(updated_executable, 0o755)
         elif sys.platform.startswith("win"):
-            pass 
-
-        os.execl(updated_executable, *([updated_executable] + sys.argv[1:]))
+            name = "TOTK Optimizer.exe"
+            pass
+        else:
+            name = updated_executable
+        os.rename(updated_executable, name)
+        # Rename for consistency
+        os.execl(name, *sys.argv)
     except Exception as e:
         log.error(f"Error applying update: {e}")
         return
@@ -114,38 +119,26 @@ def apply_update(assets):
 
 def delete_old_exe():
     executable_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
-    current_platform = platform.system()
+    if sys.platform.startswith("linux"):
+        name = "TOTK Optimizer.AppImage"
+    elif sys.platform.startswith("win"):
+        name = "TOTK Optimizer.exe"
+    else:
+        name = "TOTK Optimizer.exe"
+    exe_to_rename = sys.argv[0]
+    current = exe_to_rename.split("\\")[-1]
+    if current == "run.py":
+        return
+    os.rename(exe_to_rename, name)
     try:
         # Remove old versions of manager
         matching_files = glob.glob(os.path.join(executable_directory, "*.exe.tmp"))
-        matching_files += glob.glob(os.path.join(executable_directory, "*1.1.3.exe"))
-        matching_files += glob.glob(os.path.join(executable_directory, "*1.1.2.exe"))
-        matching_files += glob.glob(os.path.join(executable_directory, "*1.1.1.exe"))
-        matching_files += glob.glob(os.path.join(executable_directory, "*1.1.0.exe"))
         matching_files += glob.glob(os.path.join(executable_directory, "*appimage.tmp"))
-        matching_files += glob.glob(os.path.join(executable_directory, "*1.1.3.appimage.tmp"))
-        matching_files += glob.glob(os.path.join(executable_directory, "*1.1.2.appimage.tmp"))
-        matching_files += glob.glob(os.path.join(executable_directory, "*1.1.1.appimage.tmp"))
-        matching_files += glob.glob(os.path.join(executable_directory, "*1.1.0.appimage.tmp"))
 
         for file_path in matching_files:
             if os.path.isfile(file_path):
                 os.remove(file_path)
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path)
-        # Rename for consistency
-        name = "run.py"
-        if platform.system() == "Windows":
-            name = "TOTK Optimizer.exe"
-        elif platform.system() == "Linux":
-            name = "TOTK Optimizer.AppImage"
-        time.sleep(0.5)
-        new_executable = sys.argv[0]
-        current_name = new_executable.split("\\")[-1]
-        print(current_name)
-        if not current_name == name and not current_name == "run.py":
-            os.rename(new_executable, f"{name}")
-
-
     except Exception as e:
         log.error(f"Error: {e}")

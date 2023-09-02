@@ -10,11 +10,14 @@ from packaging.version import parse
 from modules.download import get_zip_list_and_dict
 from modules.logger import *
 localconfig = "Manager_Config.ini"
+ask_again = "Yes"
 def load_json(name, url):
+    global ask_again
     # Check if the .presets folder exists, if not, create it
     presets_folder = "json.data"
     if not os.path.exists(presets_folder):
         os.makedirs(presets_folder)
+
     json_url = url
     json_options_file_path = os.path.join(presets_folder, name)
 
@@ -58,7 +61,6 @@ time_config.read(localconfig)
 
 old_time = float(time_config.get("Time", "api", fallback=0))
 
-
 # Pull new links only once an hour. - Avoids overwhelming Github API.
 def fetch_local_json(name):
     if getattr(sys, 'frozen', False):
@@ -93,7 +95,6 @@ def load_values_from_json():
     DFPS_dict = api_json["DFPS_dict"]
 
     log.info("Succesfully loaded api.json.")
-
 
 try:
     if time.time() - old_time >= 3600 or not os.path.exists("json.data/api.json"):
