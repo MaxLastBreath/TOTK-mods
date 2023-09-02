@@ -21,7 +21,7 @@ def show_confirmation_dialog(remote_version_str):
 # Check For Update
 def check_for_updates():
     try:
-        print("Checking for Updates!")
+        log.info("Checking for Updates!")
         url = f"https://api.github.com/repos/{OWNER}/{GITHUB}/releases/latest"
         response = requests.get(url)
         if response.status_code == 200:
