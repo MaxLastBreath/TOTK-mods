@@ -1,0 +1,64 @@
+{
+    "AR_list": [
+        "Aspect Ratio 16-9",
+        "Aspect Ratio 16-10",
+        "Aspect Ratio 21-9",
+        "Aspect Ratio 4-4"
+    ],
+    "AR_dict": {
+        "Aspect Ratio 16-10 PS4 UI": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/Aspect%20Ratios/Aspect%20Ratio%2016-10%20PS4%20UI.zip",
+        "Aspect Ratio 16-10 STEAMDECK UI": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/Aspect%20Ratios/Aspect%20Ratio%2016-10%20STEAMDECK%20UI.zip",
+        "Aspect Ratio 16-10 XBOX UI": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/Aspect%20Ratios/Aspect%20Ratio%2016-10%20XBOX%20UI.zip",
+        "Aspect Ratio 16-10": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/Aspect%20Ratios/Aspect%20Ratio%2016-10.zip",
+        "Aspect Ratio 21-9 PS4 UI": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/Aspect%20Ratios/Aspect%20Ratio%2021-9%20PS4%20UI.zip",
+        "Aspect Ratio 21-9 STEAMDECK UI": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/Aspect%20Ratios/Aspect%20Ratio%2021-9%20STEAMDECK%20UI.zip",
+        "Aspect Ratio 21-9 XBOX UI": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/Aspect%20Ratios/Aspect%20Ratio%2021-9%20XBOX%20UI.zip",
+        "Aspect Ratio 21-9": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/Aspect%20Ratios/Aspect%20Ratio%2021-9.zip",
+        "Aspect Ratio 4-4 PS4 UI": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/Aspect%20Ratios/Aspect%20Ratio%204-4%20PS4%20UI.zip",
+        "Aspect Ratio 4-4 STEAMDECK UI": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/Aspect%20Ratios/Aspect%20Ratio%204-4%20STEAMDECK%20UI.zip",
+        "Aspect Ratio 4-4 XBOX UI": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/Aspect%20Ratios/Aspect%20Ratio%204-4%20XBOX%20UI.zip",
+        "Aspect Ratio 4-4": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/Aspect%20Ratios/Aspect%20Ratio%204-4.zip"
+    },
+    "UI_list": [
+        "None",
+        "Black Screen Fix",
+        "Playstation UI",
+        "Steamdeck UI",
+        "Xbox UI"
+    ],
+    "UI_dict": {
+        "Black Screen Fix": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/UI%20Mods/Black%20Screen%20Fix.zip",
+        "Playstation UI": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/UI%20Mods/Playstation%20UI.zip",
+        "Steamdeck UI": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/UI%20Mods/Steamdeck%20UI.zip",
+        "Xbox UI": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/UI%20Mods/Xbox%20UI.zip"
+    },
+    "FP_list": [
+        "Off",
+        "First Person FOV 110",
+        "First Person FOV 70",
+        "First Person FOV 90"
+    ],
+    "FP_dict": {
+        "First Person FOV 110": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/FP%20Mods/First%20Person%20FOV%20110.zip",
+        "First Person FOV 70": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/FP%20Mods/First%20Person%20FOV%2070.zip",
+        "First Person FOV 90": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/FP%20Mods/First%20Person%20FOV%2090.zip"
+    },
+    "DFPS_list": [
+        "Latest",
+        "DFPS 1.5.5 (Beta 3)",
+        "DFPS 1.5.5 (Beta 1)",
+        "DFPS 1.5.4",
+        "DFPS 1.3.1",
+        "DFPS 1.3.0",
+        "DFPS 1.2.0"
+    ],
+    "DFPS_dict": {
+        "DFPS 1.2.0": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/DFPS/DFPS%201.2.0.zip",
+        "DFPS 1.3.0": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/DFPS/DFPS%201.3.0.zip",
+        "DFPS 1.3.1": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/DFPS/DFPS%201.3.1.zip",
+        "DFPS 1.5.4": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/DFPS/DFPS%201.5.4.zip",
+        "DFPS 1.5.5 (Beta 1)": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/DFPS/DFPS%201.5.5%20(Beta%201).zip",
+        "DFPS 1.5.5 (Beta 3)": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/DFPS/DFPS%201.5.5%20(Beta%203).zip",
+        "Latest": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/DFPS/DFPS%201.5.5%20(Beta%201).zip"
+    }
+}
