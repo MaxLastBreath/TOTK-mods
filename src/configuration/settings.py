@@ -27,7 +27,7 @@ is_animation = ""
 def get_setting(args=None):
     global font, tcolor, theme, toutline, tactive, is_animation, is_cheat_backup, is_auto_backup, w_scale
     # Define Fallbacks
-    if os.platform == "Windows":
+    if platform.system() == "Windows":
         fall_font = "Bahnschrift Font"
         fall_scale = "On"
     else:
