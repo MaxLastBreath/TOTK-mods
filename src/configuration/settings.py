@@ -26,6 +26,7 @@ is_animation = ""
 
 def get_setting(args=None):
     global font, tcolor, theme, toutline, tactive, is_animation, is_cheat_backup, is_auto_backup, w_scale
+
     # Define Fallbacks
     if platform.system() == "Windows":
         fall_font = "Bahnschrift Font"
@@ -33,6 +34,7 @@ def get_setting(args=None):
     else:
         fall_font = "Cascadia"
         fall_scale = "Off"
+
     config = configparser.ConfigParser()
     config.read(localconfig)
     font = config.get("Settings", "font", fallback=fall_font)
