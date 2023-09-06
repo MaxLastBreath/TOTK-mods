@@ -32,7 +32,7 @@ class Setting:
     def canvas(self, canvases=list):
         window = self.window
         canvas_obj = ttk.Canvas(name="settings", master=window, width=scale(400), height=scale(500))
-        self.window.protocol("WM_DELETE_WINDOW", lambda: self.clear(canvas_obj, window, canvases))
+        self.window.protocol("WM_DELETE_WINDOW_1", lambda: self.clear(canvas_obj, window, canvases))
         canvas_obj.pack()
         canvases.append(canvas_obj)
 
