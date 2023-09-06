@@ -8,7 +8,7 @@ a = Analysis(
     ['run.py'],
     pathex=[],
     binaries=[],
-    datas=[('GUI', 'GUI')],
+    datas=[('GUI', 'GUI'), ('json.data', 'json.data')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

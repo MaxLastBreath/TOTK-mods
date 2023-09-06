@@ -20,7 +20,6 @@ if __name__ == "__main__":
         command = [
             "pyinstaller",
             "--onefile",
-            "--collect-all", "ttkbootstrap",
             f"--name=TOTK Optimizer {latest_version}.AppImage",
             "run.py",
             "--add-data", "GUI:GUI",
