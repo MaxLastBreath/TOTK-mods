@@ -27,6 +27,6 @@ if __name__ == "__main__":
             "--hidden-import=PIL",
             "--hidden-import=PIL._tkinter_finder",
             "--hidden-import=PIL._tkinter",
-            "--hidden-import=ttkbootstrap.localization"
+            "--hidden-import=ttkbootstrap"
         ]
         subprocess.run(command, check=True)
