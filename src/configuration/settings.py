@@ -26,14 +26,21 @@ is_animation = ""
 
 def get_setting(args=None):
     global font, tcolor, theme, toutline, tactive, is_animation, is_cheat_backup, is_auto_backup, w_scale
+    # Define Fallbacks
+    if os.platform == "Windows":
+        fall_font = "Bahnschrift Font"
+        fall_scale = "On"
+    else:
+        fall_font = "Cascadia"
+        fall_scale = "Off"
     config = configparser.ConfigParser()
     config.read(localconfig)
-    font = config.get("Settings", "font", fallback="Bahnschrift Font")
+    font = config.get("Settings", "font", fallback=fall_font)
     tcolor = config.get("Settings", "color", fallback="cyan")
     toutline = config.get("Settings", "shadow_color", fallback="light-blue")
     tactive = config.get("Settings", "active_color", fallback="white")
     theme = config.get("Settings", "style", fallback="flatly")
-    w_scale = config.get("Settings", "scale", fallback="On")
+    w_scale = config.get("Settings", "scale", fallback=fall_scale)
     is_auto_backup = config.get("Settings", "backup", fallback="Off")
     is_cheat_backup = config.get("Settings", "cheat-backup", fallback="Off")
     is_animation = config.get("Settings", "animation", fallback="On")

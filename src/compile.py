@@ -10,7 +10,7 @@ if __name__ == "__main__":
             "pyinstaller",
             "run.py",
             "--onefile",
-            f"--name=TOTK_Optimizer_{latest_version}",
+            f"--name=TOTK Optimizer {latest_version}",
             "--add-data", "GUI;GUI",
             "--add-data", "json.data;json.data"
         ]

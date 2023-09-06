@@ -19,6 +19,7 @@ def Auto_SF():
         sf = 2.0
         return sf
     if w_scale == "On":
+        h = 1080
         if platform.system() == "Windows":
             windll.shcore.SetProcessDpiAwareness(1)
         try:
@@ -27,8 +28,7 @@ def Auto_SF():
                 if monitor.is_primary:
                     h = monitor.height
         except Exception as e:
-            h = 1080
-        print(h)
+            return 1.0
         if h <= 1080 and h < 1440:
             sf = 1.0
         if h >= 1440:

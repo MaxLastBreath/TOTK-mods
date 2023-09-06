@@ -107,7 +107,7 @@ class Canvas_Create:
             self, master, canvas,
             text, description_name=None, variable=any,
             row=40, cul=40, drop_cul=180,
-            tags=[], tag=None, command=None, is_active=True):
+            tags=[], tag=None, command=None, is_active=True, style="success"):
         # create text
         active_color_new = active_color
         if tag is not None:
@@ -138,19 +138,22 @@ class Canvas_Create:
                                        fill=textcolor,
                                        font=textfont,
                                        tags=tags,
-                                       activefil=active_color_new,
+                                       activefil=active_color_new
                                        )
 
         # create checkbutton
-        checkbutton = ttk.Checkbutton(
-                                master=master,
-                                variable=new_variable,
-                                onvalue="On",
-                                offvalue="Off",
-                                state="readonly",
-                                command=command,
-                                bootstyle="success"
-                                )
+        try:
+            checkbutton = ttk.Checkbutton(
+                                    master=master,
+                                    variable=new_variable,
+                                    onvalue="On",
+                                    offvalue="Off",
+                                    state="readonly",
+                                    command=command,
+                                    bootstyle=style
+                                    )
+        except Exception as e:
+            log.error(e)
 
         checkbutton_window = canvas.create_window(
                                                scale(drop_cul),
