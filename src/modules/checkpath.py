@@ -13,15 +13,20 @@ def checkpath(self, mode):
     self.os_platform = platform.system()
     if self.os_platform == "Linux":
         if mode == "Yuzu":
+<<<<<<< HEAD
             flatpak = os.path.join(home_directory, ".var", "app", "org.yuzu_emu.yuzu", "config", "yuzu")
+=======
+            flatpak = os.path.join(home_directory, ".var", "app", "org.yuzu_emu.yuzu" , "config.")
+            steamdeckdir = os.path.join(home_directory, ".config", "yuzu", "qt-config.ini")
+>>>>>>> 5acd61f64aa7d0619fd0c3d0fb9d0e90481e7f9c
             self.Globaldir = os.path.join(home_directory, ".local", "share", "yuzu")
             self.configdir = os.path.join(self.Globaldir, "config", "qt-config.ini")
             self.TOTKconfig = os.path.join(self.Globaldir, "config", "custom", "0100F2C0115B6000.ini")
 
             # Assume it's a steamdeck
-            if not os.path.exists(self.configdir):
+            if os.path.exists(steamdeckdir):
                 log.info("Detected a steamdeck!")
-                self.configdir = os.path.join(home_directory, ".config", "yuzu", "qt-config.ini")
+                self.configdir = steamdeckdir
                 self.TOTKconfig = os.path.join(home_directory, ".config", "yuzu", "custom", "0100F2C0115B6000.ini")
 
             # Check for a flatpak.
