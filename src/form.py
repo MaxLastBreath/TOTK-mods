@@ -1,6 +1,5 @@
 import threading
 import tkinter
-
 import ttkbootstrap as ttk
 import webbrowser
 import re
@@ -957,7 +956,7 @@ class Manager:
                 if arg in ["r", "remove"]:
                     self.add_list.remove(mod)
                 if arg in ["a", "add"]:
-                    self.add_list.append(mod)
+                    self.remove_list.append(mod)
             except Exception as e:
                 log.warning(print(f"The Mod: {mod}, doesn't exist anymore,"
                                   f"\nconsider changing it to a different one."))
@@ -1190,7 +1189,7 @@ class Manager:
 
         def DownloadDFPS():
             DFPS_ver = self.DFPS_var.get()
-            self.remove_list.append(DFPS_ver)
+            self.remove_list.append("DFPS")
             link = DFPS_dict.get(DFPS_ver)
             Mod_directory = os.path.join(self.load_dir)
             if link is None:
@@ -1243,7 +1242,11 @@ class Manager:
                 link = AR_dict.get(new_folder)
 
             # delete/disable
-            new_list.remove(new_folder)
+            try:
+                new_list.remove(new_folder)
+            except Exception as e:
+                log.warning(print(f"The Mod: {new_folder}, doesn't exist anymore,"
+                                  f"\nconsider changing it to a different one."))
             self.add_list.extend(new_list)
             self.remove_list.append(new_folder)
             log.info(f"Attempting to download {new_folder}")
@@ -1261,8 +1264,8 @@ class Manager:
         def DownloadFP():
             selected_fp_mod = self.fp_var.get()
             self.add_list.extend(FP_list)
-            self.add_list.remove(selected_fp_mod)
-            self.remove_list.append(selected_fp_mod)
+            mod_list("a", selected_fp_mod)
+            mod_list("r", selected_fp_mod)
             link = FP_dict.get(selected_fp_mod)
             Mod_directory = os.path.join(self.load_dir)
             full_dir = os.path.join(Mod_directory, selected_fp_mod)
