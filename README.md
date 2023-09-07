@@ -25,7 +25,7 @@
   - A one click setup for all yours needs.
 - Select Settings
   - Optimized settings for TOTK only.
-### **DFPS & It's Options.**
+### **DFPS & Its Options.**
 - Recommended to use a version past 1.5.5
 - Resolution.
    - Anything past 1080p requires external changes to Yuzu settings. This is done rather automatically by the Optimizer.
