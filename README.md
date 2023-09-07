@@ -63,9 +63,9 @@
 - [Dynamic FPS Mod](https://www.reddit.com/user/ChucksFeedAndSeed/)
 - [Blackscreen FIX](https://www.reddit.com/user/MarethyuX)
 - [Controller UI mods](https://gamebanana.com/members/1944248)
+- [Cheats bad1dea](https://github.com/bad1dea/NXCheats/tree/main/The%20Legend%20of%20Zelda%20Tears%20of%20the%20Kingdom)
 - Theboy181 - LOD mod, DOF mod, Lensflare mod, camera speed.
 - First Person Mod - me @maxlastbreath
-- [Cheats bad1dea](https://github.com/bad1dea/NXCheats/tree/main/The%20Legend%20of%20Zelda%20Tears%20of%20the%20Kingdom)
 
 # Special Thanks to
 - [Jake for testing the Mod Manager on Linux and reformatting and cleaning readme.](https://github.com/JakeDystopia/)
