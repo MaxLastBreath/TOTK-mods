@@ -983,13 +983,11 @@ class Manager:
                     time.sleep(0.05)
                 progress_window.destroy()
                 return
-    def mod_list(self, arg, mod):
-        if arg in ["r", "remove"]:
-            self.add_list.append(mod)
-        if arg in ["a", "add"]:
-            self.add_list.append(mod)
-
-
+        def mod_list(self, arg, mod):
+            if arg in ["r", "remove"]:
+                self.add_list.append(mod)
+            if arg in ["a", "add"]:
+                self.add_list.append(mod)
 
         def Create_Mod_Patch(mode=None):
             save_user_choices(self, self.config)
