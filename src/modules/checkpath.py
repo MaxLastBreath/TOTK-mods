@@ -76,7 +76,7 @@ def checkpath(self, mode):
                 self.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{os.path.join(yuzupath, "../user/nand")}')), "0100F2C0115B6000")
                 self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "yuzu", "load", "0100F2C0115B6000")
                 NEWyuzu_path = os.path.normpath(os.path.join(userfolder, "../"))
-                self.Globaldir = NEWyuzu_path
+                self.Globaldir = os.path.join(NEWyuzu_path, "user")
                 qt_config_save_dir = os.path.normpath(os.path.join(self.nand_dir, "../../"))
                 # Warn user that their QT-Config path is INCORRECT!
                 if qt_config_save_dir != NEWyuzu_path and self.warn_again == "yes":
