@@ -1,4 +1,4 @@
-TOTK Version 1.2.0 SUPPORT!
+~TOTK Version 1.2.0 SUPPORT~
 Latest DFPS Version 1.5.5(beta3)
 --V.1.3.3--
 Linux Flatpak Support
