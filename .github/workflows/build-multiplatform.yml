@@ -35,7 +35,6 @@ jobs:
     - name: Install dependencies Linux
       if: ${{ matrix.name == 'Linux' }}
       run: |
-        python -m pip install
         pip install requests patool ttkbootstrap screeninfo packaging GPUtil psutil pyinstaller
     - name: Install dependencies Windows
       if: ${{ matrix.name == 'Windows' }}
