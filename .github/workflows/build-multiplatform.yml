@@ -36,8 +36,7 @@ jobs:
       if: ${{ matrix.name == 'Linux' }}
       run: |
         python -m pip install --upgrade pip
-        pip install https://github.com/MaxLastBreath/ttkbootstrapFIX/tree/master/src/ttkbootstrap
-        pip install requests patool screeninfo packaging GPUtil psutil pyinstaller
+        pip install requests patool screeninfo packaging GPUtil psutil pyinstaller https://github.com/MaxLastBreath/ttkbootstrapFIX/zipball/master
     - name: Install dependencies Windows
       if: ${{ matrix.name == 'Windows' }}
       run: |
