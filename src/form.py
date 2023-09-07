@@ -957,7 +957,7 @@ class Manager:
                 self.add_list.append(mod)
             if arg in ["a", "add"]:
                 self.add_list.append(mod)
-        
+
         def timer(value):
             progress_bar["value"] = value
             self.window.update_idletasks()
@@ -1106,6 +1106,9 @@ class Manager:
                 log.error(f"FAILED TO CREATE MOD PATCH: {e}")
 
         def UpdateSettings():
+            if self.mode == "Ryujinx":
+                print("Ryujinx Doesn't support custom settings as it, doesn't require them.")
+                return
             Setting_folder = None
             SettingGithubFolder = None
             Setting_selection = self.selected_settings.get()

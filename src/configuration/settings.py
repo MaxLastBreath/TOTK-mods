@@ -7,7 +7,7 @@ import logging
 from tkinter import messagebox
 import configparser
 
-Version = "manager-1.3.2"
+Version = "manager-1.3.3"
 repo_url_raw = 'https://github.com/MaxLastBreath/TOTK-mods'
 repo_url = 'https://api.github.com/repos/MaxLastBreath/TOTK-mods'
 localconfig = "Manager_Config.ini"
@@ -29,7 +29,7 @@ def get_setting(args=None):
 
     # Define Fallbacks
     if platform.system() == "Windows":
-        fall_font = "Bahnschrift Font"
+        fall_font = "Bahnschrift"
         fall_scale = "On"
     else:
         fall_font = "Cascadia"
