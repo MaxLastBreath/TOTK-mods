@@ -952,12 +952,15 @@ class Manager:
         else:
             qtconfig = None
 
-        def mod_list(self, arg, mod):
-            if arg in ["r", "remove"]:
-                self.add_list.append(mod)
-            if arg in ["a", "add"]:
-                self.add_list.append(mod)
-
+        def mod_list(arg, mod):
+            try:
+                if arg in ["r", "remove"]:
+                    self.add_list.remove(mod)
+                if arg in ["a", "add"]:
+                    self.add_list.append(mod)
+            except Exception as e:
+                log.warning(print(f"The Mod: {mod}, doesn't exist anymore,"
+                                  f"\nconsider changing it to a different one."))
         def timer(value):
             progress_bar["value"] = value
             self.window.update_idletasks()

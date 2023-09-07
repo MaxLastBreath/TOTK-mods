@@ -29,12 +29,14 @@ def checkpath(self, mode):
             # Check for a flatpak.
             if os.path.exists(flatpak):
                 log.info("Detected a Yuzu flatpak!")
-                self.configdir = os.path.join(flatpak, "qt-config.ini", "qt-config.ini")
+                self.configdir = os.path.join(flatpak, "qt-config.ini")
                 self.TOTKconfig = os.path.join(flatpak, "custom", "0100F2C0115B6000.ini")
+                new_path = os.path.dirname(os.path.dirname(flatpak))
+                self.Globaldir = os.path.join(new_path, "data", "yuzu")
 
             config_parser = configparser.ConfigParser()
             config_parser.read(self.configdir)
-            self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{self.Globaldir}/nand'))
+            self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory',fallback=f'{self.Globaldir}/nand'))
             self.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{self.Globaldir}/load')), "0100F2C0115B6000")
             self.Yuzudir = os.path.join(home_directory, ".local", "share", "yuzu", "load", "0100F2C0115B6000")
             return
@@ -45,11 +47,11 @@ def checkpath(self, mode):
 
             if os.path.exists(flatpak):
                 log.info("Detected a Ryujinx flatpak!")
+                self.Globaldir = flatpak
                 self.nand_dir = os.path.join(f"{self.Globaldir}", "bis", "user", "save")
                 self.load_dir = os.path.join(f"{self.Globaldir}", "mods", "contents", "0100f2c0115b6000")
                 self.Yuzudir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents",
                                             "0100f2c0115b6000")
-                self.Globaldir = flatpak
                 return
 
             self.configdir = None
