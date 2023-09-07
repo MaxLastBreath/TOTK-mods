@@ -69,6 +69,7 @@
 
 # Special Thanks to
 - [Jake for testing the Mod Manager on Linux and reformatting and cleaning readme.](https://github.com/JakeDystopia/)
-- [u/Pixelkiri for testing on Windows](https://github.com/alexkiri/)
-- [Hoverbike testing Mods!](https://github.com/hoverbike1/)
+- [u/Pixelkiri for Workflow and testing!](https://github.com/alexkiri/)
+- [Hoverbike for testing Mods!](https://github.com/hoverbike1/)
+- [MaxAnimatior for some insight and testing](https://github.com/D-Maxwell)
 - Meeko on my Discord Server for testing Steamdeck.
