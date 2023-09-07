@@ -19,7 +19,7 @@
 
 
 # <p align=center> 🐬 Advanced Setup 🐬 </p>
-## <p align=center> Display Settings </p>
+## <p align=center> 🐋 Display Settings 🐋 </p>
 ### **Presets and Preset Settings**
 - Select Preset
   - A one click setup for all yours needs.
@@ -42,7 +42,7 @@
 ### **Camera Mods**
 
 - First Person, completely transforms the game into First Person! Horses, Steering stick and more!
-## <p align=center> Optimizer Settings </p>
+## <p align=center> 🔧 Optimizer Settings 🔧 </p>
 ### Text Settings
 - Select Font
   - Changes the font of the text, to your desired font, it does require the font to be installed.
