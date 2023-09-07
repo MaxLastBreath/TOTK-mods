@@ -15,13 +15,13 @@ def start_logger():
     new_logger = logging.getLogger('LOGGER')
     logging.getLogger('LOGGER').addHandler(logging.StreamHandler(sys.stdout))
     return new_logger
-
+log = start_logger()
 
 try:
     gpus = GPUtil.getGPUs()
     gpu_name = gpus[0].name
 except Exception as e:
-    logging.warning(f"The GPU was not detected, nothing to be concerned about. {e}")
+    log.warning(f"The GPU was not detected, nothing to be concerned about. {e}")
     gpu_name = "Undetected"
 
 # Print Memory
@@ -29,11 +29,9 @@ try:
     memory_info = psutil.virtual_memory()
     total_memory = memory_info.total//1000000000
 except Exception as e:
-    logging.warning(f"The System Memory was not detected, nothing to be concerned about. {e}")
+    log.warning(f"The System Memory was not detected, nothing to be concerned about. {e}")
     total_memory = "Undetected"
 
-
-log = start_logger()
 log.info(f"\n\n\n\nAttempting to start Application.\n"
          f"__SystemINFO__\n"
          f"System: {platform.system()}\n"

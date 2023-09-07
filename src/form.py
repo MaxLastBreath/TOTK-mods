@@ -983,6 +983,13 @@ class Manager:
                     time.sleep(0.05)
                 progress_window.destroy()
                 return
+    def mod_list(self, arg, mod):
+        if arg in ["r", "remove"]:
+            self.add_list.append(mod)
+        if arg in ["a", "add"]:
+            self.add_list.append(mod)
+
+
 
         def Create_Mod_Patch(mode=None):
             save_user_choices(self, self.config)
@@ -1282,6 +1289,7 @@ class Manager:
                         shutil.rmtree(item_dir)
             self.add_list.clear()
             self.remove_list.clear()
+
 
         # Execute tasks and make a Progress Window.
         progress_window = Toplevel(self.window)

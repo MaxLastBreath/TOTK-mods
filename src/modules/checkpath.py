@@ -13,7 +13,7 @@ def checkpath(self, mode):
     self.os_platform = platform.system()
     if self.os_platform == "Linux":
         if mode == "Yuzu":
-            flatpak = os.path.join(home_directory, ".var", "app", "org.yuzu_emu.yuzu" , "config.")
+            flatpak = os.path.join(home_directory, ".var", "app", "org.yuzu_emu.yuzu", "config", "yuzu")
             self.Globaldir = os.path.join(home_directory, ".local", "share", "yuzu")
             self.configdir = os.path.join(self.Globaldir, "config", "qt-config.ini")
             self.TOTKconfig = os.path.join(self.Globaldir, "config", "custom", "0100F2C0115B6000.ini")
@@ -25,8 +25,8 @@ def checkpath(self, mode):
                 self.TOTKconfig = os.path.join(home_directory, ".config", "yuzu", "custom", "0100F2C0115B6000.ini")
 
             # Check for a flatpak.
-            elif os.path.exists(flatpak):
-                log.info("Detected a flatpak!")
+            if os.path.exists(flatpak):
+                log.info("Detected a Yuzu flatpak!")
                 self.configdir = os.path.join(flatpak, "qt-config.ini", "qt-config.ini")
                 self.TOTKconfig = os.path.join(flatpak, "custom", "0100F2C0115B6000.ini")
 
@@ -39,6 +39,17 @@ def checkpath(self, mode):
 
         if mode == "Ryujinx":
             self.Globaldir = os.path.join(home_directory, ".config", "Ryujinx")
+            flatpak = os.path.join(home_directory, ".var", "app", "org.ryujinx.Ryujinx", "config", "Ryujinx")
+
+            if os.path.exists(flatpak):
+                log.info("Detected a Ryujinx flatpak!")
+                self.nand_dir = os.path.join(f"{self.Globaldir}", "bis", "user", "save")
+                self.load_dir = os.path.join(f"{self.Globaldir}", "mods", "contents", "0100f2c0115b6000")
+                self.Yuzudir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents",
+                                            "0100f2c0115b6000")
+                self.Globaldir = flatpak
+                return
+
             self.configdir = None
             self.TOTKconfig = None
             self.nand_dir = os.path.join(f"{self.Globaldir}", "bis", "user", "save")
