@@ -23,7 +23,7 @@
 ## <p align=center> 🐋 Display Settings 🐋 </p>
 ### **Presets and Preset Settings**
 - Select Preset
-  - A one click setup for all yours needs.
+  - A one click setup for all your needs.
 - Select Settings
   - Optimized settings for TOTK only.
 ### **DFPS & Its Options.**
