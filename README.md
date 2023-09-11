@@ -48,6 +48,8 @@
 - First Person, completely transforms the game into First Person! Horses, Steering stick and more!
 ## <p align=center> 🔧 Optimizer Settings 🔧 </p>
 ### Text Settings
+- Custom Background
+  - Make a folder named **custom**, put any image (16:9 or 2:1, AR) rename it to bg.png or bg.jpg. Enjoy a newly fresh custom background!
 - Select Font
   - Changes the font of the text, to your desired font, it does require the font to be installed.
 - Text Color, Shadow Color, Active Color
