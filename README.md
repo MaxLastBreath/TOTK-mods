@@ -15,7 +15,7 @@
 **Download the Provided AppImage or .exe File from [releases](https://github.com/MaxLastBreath/TOTK-mods/releases)**
 - Run the executable.
    - Simply select a preset you would like to choose.
-   - If you desire further tweak the settings.
+   - If you desire further changes, tweak the settings.
 - Click apply!
 
 **If you can't get the AppImage to Open for Linux**
