@@ -14,9 +14,13 @@
 
 **Download the Provided AppImage or .exe File from [releases](https://github.com/MaxLastBreath/TOTK-mods/releases)**
 - Run the executable.
-   - Simply select a preset you would like to choose.
+   - Simply select a preset suitable for your PC configuration. The following presets are for.
+      - **Low** 1080P- GTX 1050ti/1060. AMD Rx 570/580
+      - **Medium** 1440P- Gtx 1070/1660ti/2060. AMD Rx 5700+
+      - **High 4K**- Gtx 1080/2070/3070/3080+. AMD Rx 6700/6800/7800
+      - **Ultra 6K**- 3080/3090+. Rx 6800/7800/7800xt.
    - If you desire further changes, tweak the settings.
-- Click apply!
+- Click **apply**!
 
 **If you can't get the AppImage to Open for Linux**
 - Right click, properties, permissions, run as executable
