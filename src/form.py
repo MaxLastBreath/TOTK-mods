@@ -640,7 +640,7 @@ class Manager:
         self.on_canvas.image_Button(
             canvas=canvas,
             row=182, cul=794,
-            img_1=self.master_sword_element, img_2=self.master_sword_element_active,
+            img_1=self.master_sword_element, img_2=self.master_sword_element_active, effect_folder="effect1",
             command=lambda event: self.open_browser("Kofi")
         )
 

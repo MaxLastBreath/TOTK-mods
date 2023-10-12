@@ -1,33 +1,57 @@
 import requests
+import time
+import math
 
 GITHUB = "TOTK-mods"
 OWNER = "MaxLastBreath"
 url = f"https://api.github.com/repos/MaxLastBreath/TOTK-mods/releases"
 search_tag = "manager"
 
+def write_print(args):
+    file.write(args)
+    print(args)
+
 if __name__ == "__main__":
     response = requests.get(url)
-    if response.status_code == 200:
-        response.raise_for_status()
-        release_info = response.json()
-    count_linux = 0
-    count_windows = 0
-    for item in release_info:
-        if not item.get("tag_name").startswith(search_tag):
-            continue
-        print(item.get("tag_name"))
-        assets = item.get("assets")
-        for item in assets:
-            name = item.get("name")
-            if name.endswith(".AppImage") or name.startswith("Linux"):
+    with open("Downloads.txt", "w") as file:
+        if response.status_code == 200:
+            response.raise_for_status()
+            release_info = response.json()
+            release_info.reverse()
+        count_linux = 0
+        count_windows = 0
+        total_count = 0
+        for item in release_info:
+            if not item.get("tag_name").startswith(search_tag):
+                continue
+            assets = item.get("assets")
+            for item in assets:
                 amount = int(item.get("download_count"))
-                print(f"Linux Downloads: {amount}")
-                count_linux += amount
-            if name.endswith(".exe") or name.startswith("Windows"):
-                amount = int(item.get("download_count"))
-                print(f"Windows Downloads: {amount}")
-                count_windows += amount
-    print(f"\n\n--TOTAL VERSION COUNT--\n"
-          f"Linux has: {count_linux} Downloads\n"
-          f"Windows has {count_windows} Downloads\n"
-          f"Total download count is: {count_linux + count_windows}")
+                total_count += amount
+
+        write_print(f"__TOTAL DOWNLOADS__ {total_count}\n")
+        for item in release_info:
+            if not item.get("tag_name").startswith(search_tag):
+                continue
+            write_print(item.get("tag_name")+ "")
+            assets = item.get("assets")
+            for item in assets:
+                name = item.get("name")
+                date = item.get("created_at")
+                if name.endswith(".AppImage") or name.startswith("Linux"):
+                    amount = int(item.get("download_count"))
+                    current_linux_amount = amount
+                    count_linux += amount
+                if name.endswith(".exe") or name.startswith("Windows"):
+                    amount = int(item.get("download_count"))
+                    current_windows_amount = amount
+                    count_windows += amount
+                    write_print(f" - Date: {date}\n"
+                               f"Total Count: {count_windows + count_linux}\n")
+                    write_print(f"Linux Downloads: {current_linux_amount}\n")
+                    write_print(f"Windows Downloads: {current_windows_amount}\n\n")
+
+        write_print(f"\n\n--TOTAL VERSION COUNT--\n"
+                  f"Of which Linux has: {count_linux} and {math.ceil((total_count / count_windows*10))}% Downloads\n"
+                  f"Of which Windows has {count_windows} and {math.ceil((total_count / count_linux*10))}% Downloads\n"
+                  f"As of {time.ctime} Total download count is: {total_count}\n")

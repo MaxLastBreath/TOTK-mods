@@ -58,6 +58,7 @@ def clean_shaders(self):
     if answer is True:
         try:
             shutil.rmtree(shaders)
+
             log.info("The shaders have been successfully removed")
         except FileNotFoundError as e:
             log.info("No shaders have been found. Potentially already removed.")

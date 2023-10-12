@@ -255,7 +255,7 @@ class Canvas_Create:
 
     def image_Button(self, canvas,
                      row, cul, anchor="nw",
-                     img_1=any, img_2=any,
+                     img_1=any, img_2=any, effect_folder=None,
                      tag_1=None, tag_2=None,
                      command=None
                      ):
@@ -282,7 +282,34 @@ class Canvas_Create:
                                                                         tag_1=tag_1, tag_2=tag_2,
                                                                         event=event))
         canvas.tag_bind(tag_2, "<Button-1>", command)
+        
         return tag_1, tag_2
+        new_folder_path = self.get_UI_path(effect_folder)
+        effect_img_list = os.listdir(new_folder_path)
+        if effect_folder is not None:
+            for item in effect_img_list:
+                print(effect_img_list)
+                new_item_path = os.path.join(new_folder_path, item)
+                effect_img = self.Photo_Image(
+                                              image_path=new_item_path,
+                                              width=img_1.width(), height=img_1.height(),
+                                             )
+
+
+        return tag_1, tag_2
+
+    def set_image(self, canvas,
+                     row, cul, anchor="nw",
+                     img=any,
+                     tag=None,
+                     ):
+
+        if tag is None:
+            tag = random.choices(string.ascii_uppercase +
+                           string.digits, k=8)
+            tag = ''.join(tag)
+
+        canvas.create_image(scale(cul), scale(row), anchor=anchor, image=img, state="normal", tags=tag)
 
     def toggle_img(self, canvas, mode, tag_1, tag_2, event=None):
         if mode.lower() == "enter":
@@ -425,5 +452,13 @@ class Canvas_Create:
         if auto_contrast is True:
             image = ImageOps.autocontrast(image)
         new_photo_image = ImageTk.PhotoImage(image)
-
         return new_photo_image
+    def effect(self, canvas, img_list=list):
+        self.is_effect_active = True
+        while True:
+            for image in img_list:
+                canvas.withtag("effect", state="hidden")
+                canvas.withtag(image, state="active")
+                time.sleep(0.5)
+            if self.is_effect_active is False:
+                break
