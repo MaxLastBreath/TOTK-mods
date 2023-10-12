@@ -64,7 +64,9 @@ def set_setting(args, value):
     config = configparser.ConfigParser()
     config.read(localconfig)
     if args == "dfps":
-        config["Updates"]["dfps"] = value
+        if not config.has_section("Updates"):
+            config.add_section("Updates")
+        config.set("Updates", "dfps", value)
 
     with open(localconfig, 'w') as config_file:
         config.write(config_file, space_around_delimiters=False)
