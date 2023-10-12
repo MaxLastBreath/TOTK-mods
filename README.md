@@ -1,28 +1,40 @@
 <img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=6c7086&height=120&section=header"/>
 
-# <p align=center> TOTK Optimizer README </p>
+# <p align=center> [![SWORD TEXT](https://github.com/MaxLastBreath/TOTK-mods/assets/136052075/2067bf40-402c-4c32-a33b-e81394f3436b)](https://github.com/MaxLastBreath/TOTK-mods/releases) </p>
+
+
+
+
 # <p align=center> [![Download](https://img.shields.io/github/downloads/MaxLastBreath/TOTK-mods/total?style=for-the-badge&logoColor=%23ffffff&label=Download&labelColor=%232d89cf&color=%23de3e21)](https://github.com/MaxLastBreath/TOTK-mods/releases/download/manager-1.3.3/TOTK.Optimizer.1.3.3.exe) - [![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/invite/7MMv4yGfhM)  - [![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/maxlastbreath#) - [![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)](https://www.youtube.com/channel/UC9-81HNX9HfWHUsXBz5xYsQ) - [![Reddit](https://img.shields.io/badge/Reddit-%23FF4500.svg?style=for-the-badge&logo=Reddit&logoColor=white)](https://www.reddit.com/user/Maxlastbreath) </p>
 
-<p align=center> Previous Mod Folder releases are still available and can be found in [Rentry](https://rentry.org/ModFolder/). </p>
+### <p align=center> Previous Mod Folder releases are still available and can be found in [Rentry](https://rentry.org/ModFolder). </p>
 
 
 # <p align=center> 🐾 Installation Guide 🐾 </p>
 
 **Download the Provided AppImage or .exe File from [releases](https://github.com/MaxLastBreath/TOTK-mods/releases)**
 - Run the executable.
-   - Simply select a preset you would like to choose.
-   - If you desire further tweak the settings.
-- Click apply!
+   - Simply select a preset suitable for your PC configuration. The following presets are for.
+      - **Low** (1080P)- GTX 1050ti/1060. AMD Rx 570/580
+      - **Medium** (1440P)- Gtx 1070/1660ti/2060. AMD Rx 5700+
+      - **High (4K)**- Gtx 1080/2070/3070/3080+. AMD Rx 6700/6800/7800
+      - **Ultra (6K)**- 3080/3090+. Rx 6800/7800/7800xt.
+   - If you desire further changes, tweak the settings.
+- Click **apply**!
 
 **If you can't get the AppImage to Open for Linux**
 - Right click, properties, permissions, run as executable
 
 
 # <p align=center> 🐬 Advanced Setup 🐬 </p>
-## <p align=center> Display Settings </p>
+## <p align=center> 🐋 Display Settings 🐋 </p>
 ### **Presets and Preset Settings**
 - Select Preset
-  - A one click setup for all yours needs.
+  - A one click setup for all your needs.
+    - **Low** (1080P)- GTX 1050ti/1060. AMD Rx 570/580
+    - **Medium** (1440P)- Gtx 1070/1660ti/2060. AMD Rx 5700+
+    - **High (4K)**- Gtx 1080/2070/3070/3080+. AMD Rx 6700/6800/7800
+    - **Ultra (6K)**- 3080/3090+. Rx 6800/7800/7800xt.
 - Select Settings
   - Optimized settings for TOTK only.
 ### **DFPS & Its Options.**
@@ -42,8 +54,10 @@
 ### **Camera Mods**
 
 - First Person, completely transforms the game into First Person! Horses, Steering stick and more!
-## <p align=center> Optimizer Settings </p>
+## <p align=center> 🔧 Optimizer Settings 🔧 </p>
 ### Text Settings
+- Custom Background
+  - Make a folder named **custom**, put any image (16:9 or 2:1, AR) rename it to bg.png or bg.jpg. Enjoy a newly fresh custom background!
 - Select Font
   - Changes the font of the text, to your desired font, it does require the font to be installed.
 - Text Color, Shadow Color, Active Color

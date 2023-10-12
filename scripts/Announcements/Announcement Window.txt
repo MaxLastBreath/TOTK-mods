@@ -1,5 +1,5 @@
-Latest supported TOTK Version 1.2.0!
+~TOTK Version 1.2.0 SUPPORT~
 Latest DFPS Version 1.5.5(beta3)
---V1.3.1--
-Steamdeck 1 click Install
-Fixed crashes and Various Bugs
+--V.1.3.3--
+Linux Flatpak Support
+A lot of BUG fixes...
