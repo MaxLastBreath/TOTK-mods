@@ -8,6 +8,7 @@
 	"UI": "Choose the button prompts for Tears of The Kingdom.\nNote: Recommended to use BlackscreenFIX, if you don't desire to use any other UI mod.",
 	"First Person": "Switches all cameras to First Person.",
 	"DFPS": "Select DFPS Version.\nIt's recommended to use the latest available.\nNote: Versions below 1.5.4 are not fully supported.",
+	"Upscale": "New upscaling method = Max DFPS++, works on all versions.\nLegacy = DFPS 1.5.5(beta3), not compatible with version 1.2.1+",
 	"Aspect Ratio": "Aspect Ratio mods, those mods are a combination of various UI changes.\nNote: Full support up to 1.2.0 and partial support after 1.2.1.",
 
 	"PRESETS - GROUP": "None",

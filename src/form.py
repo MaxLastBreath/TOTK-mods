@@ -47,7 +47,6 @@ class Manager:
         self.title_id = title_id
         self.old_cheats = {}
         self.cheat_version = ttk.StringVar(value="Version - 1.2.00")
-        self.upscaling_method = ""
 
         # Initialize Json Files.
         self.dfps_options = load_json("DFPS.json", dfpsurl)
@@ -202,14 +201,14 @@ class Manager:
         row += 40
 
         # Create a label for resolution selection
-
+        self.upscale_list = ["New", "Legacy"]
         self.DFPS_var = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
-                                                            text="Dynamic FPS Version:",
-                                                            variable=DFPS_list[0], values=DFPS_list,
+                                                            text="Upscaling Method:",
+                                                            variable=self.upscale_list[0], values=self.upscale_list,
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
                                                             tags=["text"], tag=None,
-                                                            description_name="DFPS",
+                                                            description_name="Upscale",
                                                             command=lambda event: self.warning_window("Res")
                                                             )
         row += 40
@@ -261,24 +260,6 @@ class Manager:
                                                                     )
         row += 40
 
-        # Make exception for camera quality
-        values = self.dfps_options.get("CameraQualityNames", [""])
-        for index, value in enumerate(values):
-            if value in ["Enable", "Enabled"]:
-                values[index] = "On"
-            elif value in ["Disable", "Disabled"]:
-                values[index] = "Off"
-
-        self.camera_var = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
-                                                            text="Camera Quality++:",
-                                                            variable=value[0], values=values,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
-                                                            tags=["text"], tag=None,
-                                                            description_name="Camera Quality"
-                                                        )
-        row += 40
-
         # Create a label for UI selection
         self.ui_var = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
@@ -299,6 +280,24 @@ class Manager:
                                                         tags=["text"], tag=None,
                                                         description_name="First Person"
                                                     )
+        row += 40
+        # Make exception for camera quality
+        values = self.dfps_options.get("CameraQualityNames", [""])
+        for index, value in enumerate(values):
+            if value in ["Enable", "Enabled"]:
+                values[index] = "On"
+            elif value in ["Disable", "Disabled"]:
+                values[index] = "Off"
+
+        self.camera_var = self.on_canvas.create_combobox(
+                                                            master=self.window, canvas=canvas,
+                                                            text="Camera Quality++:",
+                                                            variable=value[0], values=values,
+                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                            tags=["text"], tag=None,
+                                                            description_name="Camera Quality"
+                                                        )
+
         # XYZ to generate patch.
 
         row =120
@@ -1191,14 +1190,16 @@ class Manager:
         def DownloadDFPS():
             DFPS_ver = self.DFPS_var.get()
             self.remove_list.append("DFPS")
-            link = DFPS_dict.get(DFPS_ver)
+            if DFPS_ver == "Legacy":
+                link = DFPS_dict.get("Latest")
+            else:
+                link = "Link_Link"
+
             Mod_directory = os.path.join(self.load_dir)
             if link is None:
                 return
-            if DFPS_ver == get_setting("dfps"):
-                return
-            if not DFPS_ver == "Latest":
-                set_setting(args="dfps", value=DFPS_ver)
+            set_setting(args="dfps", value=DFPS_ver)
+
             self.progress_var.set(f"Downloading DFPS: {DFPS_ver}")
             log.info(f"Downloading DFPS: {DFPS_ver}")
             os.makedirs(Mod_directory, exist_ok=True)
