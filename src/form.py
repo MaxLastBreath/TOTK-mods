@@ -281,23 +281,6 @@ class Manager:
                                                         tags=["text"], tag=None,
                                                         description_name="First Person"
                                                     )
-        row += 40
-        # Make exception for camera quality
-        values = self.dfps_options.get("CameraQualityNames", [""])
-        for index, value in enumerate(values):
-            if value in ["Enable", "Enabled"]:
-                values[index] = "On"
-            elif value in ["Disable", "Disabled"]:
-                values[index] = "Off"
-
-        self.camera_var = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
-                                                            text="Camera Quality++:",
-                                                            variable=value[0], values=values,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
-                                                            tags=["text"], tag=None,
-                                                            description_name="Camera Quality"
-                                                        )
 
         # XYZ to generate patch.
 
@@ -811,7 +794,6 @@ class Manager:
     def apply_preset(self, preset_options):
         self.fetch_var(self.resolution_var, preset_options, "Resolution")
         self.fetch_var(self.fps_var, preset_options, "FPS")
-        self.fetch_var(self.camera_var, preset_options, "CameraQuality")
         self.fetch_var(self.ui_var, preset_options, "UI")
         self.fetch_var(self.aspect_ratio_var, preset_options, "Aspect Ratio")
         self.fetch_var(self.fp_var, preset_options, "First Person")
@@ -1035,43 +1017,45 @@ class Manager:
                 resolution = self.resolution_var.get()
                 fps = self.fps_var.get()
                 shadow_resolution = self.shadow_resolution_var.get()
-                camera_quality = self.camera_var.get()
 
                 # Ensures that the patches are active and ensure that old versions of the mod folder is disabled.
                 self.remove_list.extend(["DFPS", "Mod Manager Patch"])
                 self.add_list.append("Visual Improvements")
+                if self.DFPS_var.get() == "Legacy":
+                    # Determine the path to the INI file in the user's home directory
+                    ini_file_directory = os.path.join(self.load_dir, "Mod Manager Patch", "romfs", "dfps")
+                    os.makedirs(ini_file_directory, exist_ok=True)
+                    ini_file_path = os.path.join(ini_file_directory, "default.ini")
 
-                # Determine the path to the INI file in the user's home directory
-                ini_file_directory = os.path.join(self.load_dir, "Mod Manager Patch", "romfs", "dfps")
-                os.makedirs(ini_file_directory, exist_ok=True)
-                ini_file_path = os.path.join(ini_file_directory, "default.ini")
+                    # Remove the previous default.ini file if it exists - DFPS settings.
+                    if os.path.exists(ini_file_path):
+                        os.remove(ini_file_path)
 
-                # Remove the previous default.ini file if it exists - DFPS settings.
-                if os.path.exists(ini_file_path):
-                    os.remove(ini_file_path)
+                    # Save the selected options to the INI file
+                    config = configparser.ConfigParser()
+                    config.optionxform = lambda option: option
 
-                # Save the selected options to the INI file
-                config = configparser.ConfigParser()
-                config.optionxform = lambda option: option
+                    # Add the selected resolution, FPS, shadow resolution, and camera quality
+                    Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
+                    ShadowIndex = self.dfps_options.get("ShadowResolutionNames").index(shadow_resolution)
 
-                # Add the selected resolution, FPS, shadow resolution, and camera quality
-                Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
-                ShadowIndex = self.dfps_options.get("ShadowResolutionNames").index(shadow_resolution)
-                CameraIndex = self.dfps_options.get("CameraQualityNames").index(camera_quality)
+                    config['Graphics'] = {
+                        'ResolutionWidth': self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[0],
+                        'ResolutionHeight': self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1],
+                        'ResolutionShadows': self.dfps_options.get("ShadowResolutionValues", [""])[ShadowIndex]
+                    }
+                    config['dFPS'] = {'MaxFramerate': fps}
 
-                config['Graphics'] = {
-                    'ResolutionWidth': self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[0],
-                    'ResolutionHeight': self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1],
-                    'ResolutionShadows': self.dfps_options.get("ShadowResolutionValues", [""])[ShadowIndex]
-                }
-                config['dFPS'] = {'MaxFramerate': fps}
-                config['Features'] = {'EnableCameraQualityImprovement': self.dfps_options.get("CameraQualityValues", [""])[CameraIndex]}
+                    selected_options = {}
 
-                selected_options = {}
+                    for option_name, option_var in self.selected_options.items():
+                        selected_options[option_name] = option_var.get()
 
-                for option_name, option_var in self.selected_options.items():
-                    selected_options[option_name] = option_var.get()
-                # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.
+                    # Legacy DFPS config file.
+                    with open(ini_file_path, 'w') as configfile:
+                        config.write(configfile)
+
+            # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.
             try:
                 for version_option in self.version_options:
                     version = version_option.get("version", "")
@@ -1118,9 +1102,12 @@ class Manager:
 
                                     # Upscale Patch
                                     reso_dict = patch_dict.get("Resolution_Table")
+                                    resolution = self.resolution_var.get()
+                                    Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
+                                    current_res = self.dfps_options.get("ResolutionValues", [""])[Resindex]
                                     try:
-                                        log.info(f"Applying resolution scaling patch for {self.resolution_var.get()}")
-                                        new_resolution_hex = reso_dict.get(self.resolution_var.get())
+                                        log.info(f"Applying resolution scaling patch for {current_res}")
+                                        new_resolution_hex = reso_dict.get(current_res)
                                         new_scaling_patch = scaling_patch.replace("PATCH_here", new_resolution_hex)
                                         file.write(f"\n{new_scaling_patch}")
                                     except Exception as e:
@@ -1142,8 +1129,6 @@ class Manager:
                             log.info("Using legacy upscaling.")
                         file.write("\n@stop\n")
                 # Update Visual Improvements MOD.
-                with open(ini_file_path, 'w') as configfile:
-                    config.write(configfile)
             except PermissionError as e:
                 log.error(f"FAILED TO CREATE MOD PATCH: {e}")
 
@@ -1195,7 +1180,7 @@ class Manager:
                     else:
                         log.error(f"Failed to download file from {raw_url}. Status code: {response.status_code}")
                         return
-                    if proper_res > 1080:
+                    if proper_res > 1080 & self.DFPS_var == "Legacy":
                         # Add new values
                         if not new_config.has_section("Renderer"):
                             new_config["Renderer"] = {}
@@ -1212,9 +1197,9 @@ class Manager:
                         new_config["Core"]["memory_layout_mode\\use_global"] = "false"
                         new_config["Core"]["memory_layout_mode\\default"] = "false"
                         layout = "1"
-                    if proper_res >= 2160:
+                    if proper_res >= 2160 & self.DFPS_var == "Legacy":
                         layout = "2"
-                    elif proper_res <= 1080:
+                    elif proper_res <= 1080 & self.DFPS_var == "Legacy":
                         layout = "0"
                     new_config["Core"]["memory_layout_mode\\use_global"] = "false"
                     new_config["Core"]["memory_layout_mode\\default"] = "false"
@@ -1229,11 +1214,12 @@ class Manager:
 
         def DownloadDFPS():
             DFPS_ver = self.DFPS_var.get()
-            self.remove_list.append("DFPS")
             if DFPS_ver == "Legacy":
+                self.remove_list.append("DFPS")
                 link = DFPS_dict.get("Latest")
-            else:
-                link = "Link_Link"
+            if DFPS_ver == "New":
+                self.remove_list.append("Max DFPS++")
+                link = New_DFPS_Download
 
             Mod_directory = os.path.join(self.load_dir)
             if link is None:

@@ -25,7 +25,6 @@ def save_user_choices(self, config_file, yuzu_path=None, mode=None):
     config['Options']['Aspect Ratio'] = self.aspect_ratio_var.get()
     config['Options']['FPS'] = self.fps_var.get()
     config['Options']['ShadowResolution'] = self.shadow_resolution_var.get()
-    config['Options']['CameraQuality'] = self.camera_var.get()
     config['Options']['UI'] = self.ui_var.get()
     config['Options']['First Person'] = self.fp_var.get()
 
@@ -75,7 +74,6 @@ def load_user_choices(self, config_file, mode=None):
     self.aspect_ratio_var.set(config.get('Options', 'Aspect Ratio', fallback=AR_list[0]))
     self.fps_var.set(config.get('Options', 'FPS', fallback=str(self.dfps_options.get("FPS", [])[2])))
     self.shadow_resolution_var.set(config.get('Options', 'ShadowResolution', fallback=self.dfps_options.get("ShadowResolutionNames", [""])[0])) # Shadow Auto
-    self.camera_var.set(config.get('Options', 'CameraQuality', fallback=self.dfps_options.get("CameraQualityNames", [""])[0]))
     self.ui_var.set(config.get('Options', 'UI', fallback="None"))
     self.fp_var.set(config.get('Options', 'First Person', fallback="Off"))
     # Load the enable/disable choices
