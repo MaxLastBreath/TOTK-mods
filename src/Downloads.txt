@@ -1,67 +1,67 @@
-__TOTAL DOWNLOADS__ 20150
+__TOTAL DOWNLOADS__ 24923
 manager-1.0.0 - Date: 2023-07-23T02:22:07Z
-Total Count: 1867
+Total Count: 1872
 Linux Downloads: 116
-Windows Downloads: 1751
+Windows Downloads: 1756
 
 manager-1.1.0 - Date: 2023-07-28T12:06:37Z
-Total Count: 3668
+Total Count: 3673
 Linux Downloads: 274
 Windows Downloads: 1527
 
 manager-1.1.1 - Date: 2023-07-29T01:44:30Z
-Total Count: 4901
-Linux Downloads: 154
-Windows Downloads: 1079
+Total Count: 4922
+Linux Downloads: 159
+Windows Downloads: 1090
 
 manager-1.1.2 - Date: 2023-07-31T08:00:53Z
-Total Count: 4934
-Linux Downloads: 5
-Windows Downloads: 28
+Total Count: 4959
+Linux Downloads: 7
+Windows Downloads: 30
 
 manager-1.1.3 - Date: 2023-07-31T11:19:11Z
-Total Count: 7722
-Linux Downloads: 232
-Windows Downloads: 2556
+Total Count: 7764
+Linux Downloads: 234
+Windows Downloads: 2571
 
 manager-1.2.0 - Date: 2023-08-14T16:32:35Z
-Total Count: 8285
-Linux Downloads: 90
-Windows Downloads: 473
+Total Count: 8375
+Linux Downloads: 101
+Windows Downloads: 510
 
 manager-1.2.1 - Date: 2023-08-14T19:15:07Z
-Total Count: 8562
-Linux Downloads: 33
-Windows Downloads: 244
+Total Count: 8660
+Linux Downloads: 34
+Windows Downloads: 251
 
 manager-1.2.2 - Date: 2023-08-15T07:55:45Z
-Total Count: 12975
-Linux Downloads: 575
-Windows Downloads: 3838
+Total Count: 13135
+Linux Downloads: 587
+Windows Downloads: 3888
 
 manager-1.3.0 - Date: 2023-08-31T15:28:18Z
-Total Count: 13605
-Linux Downloads: 65
-Windows Downloads: 565
+Total Count: 13781
+Linux Downloads: 71
+Windows Downloads: 575
 
 manager-1.3.1 - Date: 2023-09-01T13:44:01Z
-Total Count: 14490
-Linux Downloads: 115
-Windows Downloads: 770
+Total Count: 14708
+Linux Downloads: 122
+Windows Downloads: 805
 
 manager-1.3.2 - Date: 2023-09-02T15:52:58Z
-Total Count: 16191
-Linux Downloads: 216
-Windows Downloads: 1485
+Total Count: 16566
+Linux Downloads: 237
+Windows Downloads: 1621
 
 manager-1.3.3 - Date: 2023-09-07T19:31:00Z
-Total Count: 20150
-Linux Downloads: 568
-Windows Downloads: 3391
+Total Count: 24923
+Linux Downloads: 1230
+Windows Downloads: 7127
 
 
 
 --TOTAL VERSION COUNT--
-Of which Linux has: 2443 and 12% Downloads
-Of which Windows has 17707 and 83% Downloads
-As of <built-in function ctime> Total download count is: 20150
+Of which Linux has: 3172 and 12% Downloads
+Of which Windows has 21751 and 79% Downloads
+As of <built-in function ctime> Total download count is: 24923
