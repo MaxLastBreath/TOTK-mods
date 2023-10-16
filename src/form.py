@@ -860,6 +860,8 @@ class Manager:
     def warning_window(self, setting_type):
         if self.mode == "Ryujinx":
             return
+        if self.DFPS_var.get() == "Legacy":
+            return
         warning_message = None
         configfile = self.TOTKconfig
         config = configparser.ConfigParser()
@@ -1054,6 +1056,26 @@ class Manager:
                     # Legacy DFPS config file.
                     with open(ini_file_path, 'w') as configfile:
                         config.write(configfile)
+                    
+                else:
+                    # Resolution scaling for MAX DFPS++
+                    configfile = self.TOTKconfig
+                    config = configparser.ConfigParser()
+                    config.read(configfile)
+
+                    patch_dict = self.upscale_options[-1]
+                    reso_dict = patch_dict.get("Resolution_Table")
+                    resolution = self.resolution_var.get()
+                    Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
+                    current_res = self.dfps_options.get("ResolutionValues", [""])[Resindex]
+                    try:
+                        yuzu_scaling = reso_dict.get(current_res)
+                    except Exception as e:
+                        yuzu_scaling = "2"
+
+                    config["Renderer"]["resolution_setup"] = yuzu_scaling
+                    with open(configfile, "w") as configfile:
+                        config.write(configfile, space_around_delimiters=False)
 
             # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.
             try:
@@ -1180,7 +1202,7 @@ class Manager:
                     else:
                         log.error(f"Failed to download file from {raw_url}. Status code: {response.status_code}")
                         return
-                    if proper_res > 1080 & self.DFPS_var == "Legacy":
+                    if proper_res > 1080 & self.DFPS_var.get() == "Legacy":
                         # Add new values
                         if not new_config.has_section("Renderer"):
                             new_config["Renderer"] = {}
@@ -1197,9 +1219,9 @@ class Manager:
                         new_config["Core"]["memory_layout_mode\\use_global"] = "false"
                         new_config["Core"]["memory_layout_mode\\default"] = "false"
                         layout = "1"
-                    if proper_res >= 2160 & self.DFPS_var == "Legacy":
+                    if proper_res >= 2160 & self.DFPS_var.get() == "Legacy":
                         layout = "2"
-                    elif proper_res <= 1080 & self.DFPS_var == "Legacy":
+                    elif proper_res <= 1080 & self.DFPS_var.get() == "Legacy":
                         layout = "0"
                     new_config["Core"]["memory_layout_mode\\use_global"] = "false"
                     new_config["Core"]["memory_layout_mode\\default"] = "false"

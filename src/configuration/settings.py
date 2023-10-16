@@ -112,6 +112,8 @@ presetsurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scr
 versionurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/VersionNew.json"
 descurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/Description.json"
 upscale = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/New_Upscale.json"
-New_DFPS_Download = "https://github.com/MaxLastBreath/TOTK-mods/raw/main/scripts/Mods/Max%20DFPS/Max%20DFPS++%201.0.1.zip"
+
+# Download MAX DFPS++
+New_DFPS_Download = "https://github.com/MaxLastBreath/TOTK-mods/raw/main/scripts/Mods/Max%20DFPS/Max%20DFPS++.zip"
 
 description = load_json("Description.json", descurl)
