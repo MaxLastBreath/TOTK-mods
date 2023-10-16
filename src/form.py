@@ -1115,19 +1115,29 @@ class Manager:
 
                                     # Resolution Patch
                                     file.write(f"\n{resolution_patch}")
+
                                     # Upscale Patch
                                     reso_dict = patch_dict.get("Resolution_Table")
-                                    print(reso_dict)
                                     try:
-                                        new_resolution_hex = reso_dict.get(self.resolution_var)
+                                        log.info(f"Applying resolution scaling patch for {self.resolution_var.get()}")
+                                        new_resolution_hex = reso_dict.get(self.resolution_var.get())
+                                        new_scaling_patch = scaling_patch.replace("PATCH_here", new_resolution_hex)
+                                        file.write(f"\n{new_scaling_patch}")
                                     except Exception as e:
-                                        log.info("Resolution below 4K selected.")
-                                    else:
-                                        scaling_patch.replace("PATCH_here", new_resolution_hex)
-                                        file.write(f"\n{scaling_patch}")
+                                        log.info("Resolution below 4K selected, no scaling patch will be applied.")
+
+                                    ShadowIndex = self.dfps_options.get("ShadowResolutionNames").index(self.shadow_resolution_var.get())
+                                    selected_shadow = self.dfps_options.get("ShadowResolutionValues", [""])[ShadowIndex]
 
                                     # Shadow Patch
-                                    file.write(f"\n{shadow_patch}")
+                                    shadow_dict = patch_dict.get("Shadow_Table")
+                                    try:
+                                        log.info(f"Applying shadow patch for {selected_shadow}")
+                                        new_shadow_hex = shadow_dict.get(selected_shadow)
+                                        shadow_patch = scaling_patch.replace("PATCH_here", new_shadow_hex)
+                                        file.write(f"\n{shadow_patch}")
+                                    except Exception as e:
+                                        log.info("Shadow resolution set to default..")
                         else:
                             log.info("Using legacy upscaling.")
                         file.write("\n@stop\n")

@@ -36,9 +36,12 @@
         "shadow_patch": "00CEC1CC PATCH_here\n00CEC1D0 17000014"
     },
     {
-        "patch_4k": "1B10201E",
-        "patch_6k": "1B10211E",
-        "patch_8k": "1B10221E",
+        "Resolution_Table": {
+            "4K UHD": "1B10201E",
+            "6K QUHD": "1B10211E",
+            "6K QUHD - Experimental": "1B10211E",
+            "8K UUHD": "1B10221E"
+        },
         "shadow_256x": "0B208052",
         "shadow_512x": "0B408052",
         "shadow_1024x": "0B808052"
