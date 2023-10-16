@@ -1058,24 +1058,29 @@ class Manager:
                         config.write(configfile)
 
                 else:
-                    # Resolution scaling for MAX DFPS++
-                    configfile = self.TOTKconfig
-                    config = configparser.ConfigParser()
-                    config.read(configfile)
+                    if self.mode == "Yuzu":
+                        # Resolution scaling for MAX DFPS++
+                        configfile = self.TOTKconfig
+                        config = configparser.ConfigParser()
+                        config.read(configfile)
 
-                    patch_dict = self.upscale_options[-1]
-                    reso_dict = patch_dict.get("Resolution_Table")
-                    resolution = self.resolution_var.get()
-                    Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
-                    current_res = self.dfps_options.get("ResolutionValues", [""])[Resindex]
-                    try:
-                        yuzu_scaling = reso_dict.get(current_res)
-                    except Exception as e:
-                        yuzu_scaling = "2"
-
-                    config["Renderer"]["resolution_setup"] = yuzu_scaling
-                    with open(configfile, "w") as configfile:
-                        config.write(configfile, space_around_delimiters=False)
+                        patch_dict = self.upscale_options[-1]
+                        reso_dict = patch_dict.get("Scaling_Table")
+                        resolution = self.resolution_var.get()
+                        Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
+                        current_res = self.dfps_options.get("ResolutionValues", [""])[Resindex]
+                        try:
+                            yuzu_scaling = reso_dict.get(current_res)
+                        except Exception as e:
+                            yuzu_scaling = "2"
+                        log.info(f"Applying {resolution} in Yuzu.")
+                        config["Renderer"]["resolution_setup\\use_global"] = "false"
+                        config["Renderer"]["resolution_setup\\default"] = "false"
+                        config["Renderer"]["resolution_setup"] = yuzu_scaling
+                        with open(configfile, "w") as configfile:
+                            config.write(configfile, space_around_delimiters=False)
+                    if self.mode == "Ryujinx":
+                        log.info("Do nothing for now.")
 
             # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.
             try:
