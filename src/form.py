@@ -1106,15 +1106,28 @@ class Manager:
                             for each_version in self.upscale_options:
                                 upscale_version = each_version.get("version", "")
                                 if version.split("main")[1] == upscale_version:
-                                    # Resolution Patch
+                                    # Directory with patch information.
+                                    patch_dict = self.upscale_options[-1]
+                                    # hex patches, resolution, shadows, scaling.
                                     resolution_patch = each_version.get("resolution_patch", "")
-                                    scaling_patch = each_version.get("resolution_patch", "")
-                                    shadow_patch = each_version.get("resolution_patch", "")
-                                    file.write(f"{resolution_patch}")
-                                    # Upscale_Patch
-                                    file.write(f"{scaling_patch}")
+                                    scaling_patch = each_version.get("scaling_patch", "")
+                                    shadow_patch = each_version.get("shadow_patch", "")
+
+                                    # Resolution Patch
+                                    file.write(f"\n{resolution_patch}")
+                                    # Upscale Patch
+                                    reso_dict = patch_dict.get("Resolution_Table")
+                                    print(reso_dict)
+                                    try:
+                                        new_resolution_hex = reso_dict.get(self.resolution_var)
+                                    except Exception as e:
+                                        log.info("Resolution below 4K selected.")
+                                    else:
+                                        scaling_patch.replace("PATCH_here", new_resolution_hex)
+                                        file.write(f"\n{scaling_patch}")
+
                                     # Shadow Patch
-                                    file.write(f"{shadow_patch}")
+                                    file.write(f"\n{shadow_patch}")
                         else:
                             log.info("Using legacy upscaling.")
                         file.write("\n@stop\n")
