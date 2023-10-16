@@ -111,5 +111,6 @@ cheatsurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scri
 presetsurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/presets.json"
 versionurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/VersionNew.json"
 descurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/Description.json"
+upscale = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/New_Upscale.json"
 
 description = load_json("Description.json", descurl)

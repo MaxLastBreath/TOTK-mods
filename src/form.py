@@ -54,6 +54,7 @@ class Manager:
         self.presets = load_json("preset.json", presetsurl)
         self.version_options = load_json("Version.json", versionurl)
         self.cheat_options = load_json("Cheats.json", cheatsurl)
+        self.upscale_options = load_json("New_Upscale.json", upscale)
 
         # Local text variable
         self.switch_text = ttk.StringVar(value="Switch to Ryujinx")
@@ -1100,6 +1101,22 @@ class Manager:
                                 file.write("\n")
                             else:
                                 file.write(" ")
+                        # new upscale, method
+                        if self.DFPS_var.get() == "New":
+                            for each_version in self.upscale_options:
+                                upscale_version = each_version.get("version", "")
+                                if version.split("main")[1] == upscale_version:
+                                    # Resolution Patch
+                                    resolution_patch = each_version.get("resolution_patch", "")
+                                    scaling_patch = each_version.get("resolution_patch", "")
+                                    shadow_patch = each_version.get("resolution_patch", "")
+                                    file.write(f"{resolution_patch}")
+                                    # Upscale_Patch
+                                    file.write(f"{scaling_patch}")
+                                    # Shadow Patch
+                                    file.write(f"{shadow_patch}")
+                        else:
+                            log.info("Using legacy upscaling.")
                         file.write("\n@stop\n")
                 # Update Visual Improvements MOD.
                 with open(ini_file_path, 'w') as configfile:

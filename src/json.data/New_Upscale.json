@@ -1,0 +1,46 @@
+[
+    {
+        "version": "1.0.0",
+        "resolution_patch": "00c6325c 15000014\n",
+        "scaling_patch": "029d1510 PATCH_here\n029d1518 BF000014\n029d1814 00083B1E\n029d1818 21083B1E\n",
+        "shadow_patch": "00B7214C PATCH_here\n00B72150 17000014\n"
+    },
+    {
+        "version": "1.1.0",
+        "resolution_patch": "00cea77c 15000014\n",
+        "scaling_patch": "02a498d0 PATCH_here\n02a498d8 BF000014\n02a49bd4 00083B1E\n02a49bd8 21083B1E\n",
+        "shadow_patch": "00D075AC PATCH_here\n00D075B0 17000014\n"
+    },
+    {
+        "version": "1.1.1",
+        "resolution_patch": "00CECC0C 15000014\n",
+        "scaling_patch": "02a51630 PATCH_here\n02a51638 BF000014\n02a51934 00083B1E\n02a51938 21083B1E\n",
+        "shadow_patch": "00BF002C PATCH_here\n00BF0030 17000014\n"
+    },
+    {
+        "version": "1.1.2",
+        "resolution_patch": "00CECC0C 15000014\n",
+        "scaling_patch": "02A40A40 PATCH_here\n02A40A48 BF000014\n02A40D44 00083B1E\n02A40D48 21083B1E\n",
+        "shadow_patch": "00BD2BFC PATCH_here\n00BD2C00 17000014\n"
+    },
+    {
+        "version": "1.2.0",
+        "resolution_patch": "00CDD58C 15000014\n",
+        "scaling_patch": "02A348A0 PATCH_here\n02A348A8 BF000014\n02A34BA4 00083B1E\n02A34BA8 21083B1E\n",
+        "shadow_patch": "00ccd368 PATCH_here\n00ccd36c 17000014\n"
+    },
+    {
+        "version": "1.2.1",
+        "resolution_patch": "00CC4124 15000014\n",
+        "scaling_patch": "02A43BF0 PATCH_here\n02A43BF8 BF000014\n02A43EF4 00083B1E\n02A43EF8 21083B1E\n",
+        "shadow_patch": "00CEC1CC PATCH_here\n00CEC1D0 17000014\n"
+    },
+    {
+        "patch_4k": "1B10201E",
+        "patch_6k": "1B10211E",
+        "patch_8k": "1B10221E",
+        "shadow_256x": "0B208052",
+        "shadow_512x": "0B408052",
+        "shadow_1024x": "0B808052"
+    }
+]
