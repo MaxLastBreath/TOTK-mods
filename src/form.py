@@ -1056,7 +1056,7 @@ class Manager:
                     # Legacy DFPS config file.
                     with open(ini_file_path, 'w') as configfile:
                         config.write(configfile)
-                    
+
                 else:
                     # Resolution scaling for MAX DFPS++
                     configfile = self.TOTKconfig
