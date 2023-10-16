@@ -47,6 +47,7 @@ class Manager:
         self.title_id = title_id
         self.old_cheats = {}
         self.cheat_version = ttk.StringVar(value="Version - 1.2.00")
+        self.upscaling_method = ""
 
         # Initialize Json Files.
         self.dfps_options = load_json("DFPS.json", dfpsurl)
