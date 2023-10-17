@@ -11,7 +11,7 @@ from modules.qt_config import modify_disabled_key, get_config_parser
 from modules.checkpath import checkpath, DetectOS
 from modules.backup import *
 from modules.logger import *
-from modules.config import save_user_choices, load_user_choices
+from modules.config import save_user_choices, load_user_choices, write_yuzu_config
 from configuration.settings import *
 from configuration.settings_config import Setting
 
@@ -210,7 +210,6 @@ class Manager:
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
                                                             tags=["text"], tag=None,
                                                             description_name="Upscale",
-                                                            command=lambda event: self.warning_window("Res")
                                                             )
         row += 40
 
@@ -222,7 +221,6 @@ class Manager:
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
                                                             tags=["text"], tag=None,
                                                             description_name="Resolution",
-                                                            command=lambda event: self.warning_window("Res")
                                                             )
         row += 40
 
@@ -855,73 +853,6 @@ class Manager:
             config.read(config_file)
             ryujinx_path = config.get('Paths', 'ryujinxpath', fallback="Appdata")
             return ryujinx_path
-    # Download Manager
-
-    def warning_window(self, setting_type):
-        if self.mode == "Ryujinx":
-            return
-        if self.DFPS_var.get() == "New":
-            return
-        warning_message = None
-        configfile = self.TOTKconfig
-        config = configparser.ConfigParser()
-        config.read(configfile)
-
-        if setting_type == "Res":
-            resolution = self.resolution_var.get()
-            Res_index = self.dfps_options.get("ResolutionNames").index(resolution)
-            current_res = self.dfps_options.get("ResolutionValues", [""])[Res_index].split("x")[1]
-            proper_res = float(current_res)
-
-            newmem1 = config.get("Core", "memory_layout_mode\\use_global", fallback="true")
-            newmem2 = config.get("Core", "memory_layout_mode\\default", fallback="true")
-            newmemsetting = int(config.get("Core", "memory_layout_mode", fallback=0)) # 0 - 4gb, 1 - 6gb, 2 - 8gb
-            res1 = config.get("Renderer", "resolution_setup\\use_global", fallback="true")
-            res2 = config.get("Renderer", "resolution_setup\\default", fallback="true")
-            res3 = int(config.get("Renderer", "resolution_setup", fallback=0))
-
-            if 1080 < proper_res < 2160:
-                if newmemsetting < 1 or not res3 == 2 or not newmem1 == "false" or not newmem2 == "false":
-                    warning_message = f"Legacy Upscaling {resolution}, requires 1x Yuzu renderer and extended memory layout 6GB to be enabled, otherwise it won't function properly and will cause artifacts, you currently have them disabled, do you want to enable them?"
-                else:
-                    log.info("Correct settings are already applied, no changes required!!")
-            elif proper_res > 2160:
-                if newmemsetting < 2 or not res3 == 2 or not newmem1 == "false" or not newmem2 == "false":
-                    warning_message = f"Legacy Upscaling {resolution}, requires 1x Yuzu renderer and extended memory layout 8GB to be enabled, otherwise it won't function properly and will cause artifacts, you currently have them disabled, do you want to enable them?"
-                else:
-                    log.info("Correct settings are already applied, no changes required!!")
-
-        if warning_message is not None and warning_message.strip():
-            response = messagebox.askyesno(f"WARNING! Required settings NOT Enabled!", warning_message)
-            # If Yes, Modify the Config File.
-            if response:
-                # Remove existing options in Renderer section
-                if not config.has_section("Renderer"):
-                    config["Renderer"] = {}
-                config["Renderer"]["resolution_setup\\use_global"] = "false"
-                config["Renderer"]["resolution_setup\\default"] = "false"
-                config["Renderer"]["resolution_setup"] = "2"
-
-                # Core section
-                if not config.has_section("Core"):
-                    config["Core"] = {}
-                config["Core"]["use_unsafe_extended_memory_layout\\use_global"] = "false"
-                config["Core"]["use_unsafe_extended_memory_layout\\default"] = "false"
-                config["Core"]["use_unsafe_extended_memory_layout\\default"] = "true"
-
-                config["Core"]["memory_layout_mode\\use_global"] = "false"
-                config["Core"]["memory_layout_mode\\default"] = "false"
-                layout = "1"
-                if proper_res > 2160:
-                    layout = "2"
-
-                config["Core"]["memory_layout_mode"] = layout
-
-                with open(configfile, "w") as configfile:
-                    config.write(configfile, space_around_delimiters=False)
-            else:
-                # If No, do nothing.
-                log.info(f"Turning on required settings declined!!")
 
     # Submit the results, run download manager. Open a Loading screen.
     def submit(self, mode=None):
@@ -1021,7 +952,7 @@ class Manager:
                 shadow_resolution = self.shadow_resolution_var.get()
 
                 # Ensures that the patches are active and ensure that old versions of the mod folder is disabled.
-                self.remove_list.extend(["DFPS", "Mod Manager Patch"])
+                self.remove_list.extend(["Mod Manager Patch"])
                 self.add_list.append("Visual Improvements")
                 if self.DFPS_var.get() == "Legacy":
                     # Determine the path to the INI file in the user's home directory
@@ -1056,14 +987,22 @@ class Manager:
                     # Legacy DFPS config file.
                     with open(ini_file_path, 'w') as configfile:
                         config.write(configfile)
+                    # 1 resolution scale
+                    write_yuzu_config(self.TOTKconfig, "Renderer", "resolution_setup", "2")
+                    height = self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1]
+                    layout = 1
+                    if int(height) <= 1080:
+                        layout = 0
+                    if int(height) <= 2160 and int(height) > 1080:
+                        layout = 1
+                    if int(height) > 2160:
+                        layout = 2
+                    # Extended memory layout for DFPS 1.5.5
+                    write_yuzu_config(self.TOTKconfig, "Core", "memory_layout_mode", f"{layout}")
 
                 else:
                     if self.mode == "Yuzu":
                         # Resolution scaling for MAX DFPS++
-                        configfile = self.TOTKconfig
-                        config = configparser.ConfigParser()
-                        config.read(configfile)
-
                         patch_dict = self.upscale_options[-1]
                         reso_dict = patch_dict.get("Scaling_Table")
                         resolution = self.resolution_var.get()
@@ -1074,11 +1013,9 @@ class Manager:
                         except Exception as e:
                             yuzu_scaling = "2"
                         log.info(f"Applying {resolution} in Yuzu.")
-                        config["Renderer"]["resolution_setup\\use_global"] = "false"
-                        config["Renderer"]["resolution_setup\\default"] = "false"
-                        config["Renderer"]["resolution_setup"] = yuzu_scaling
-                        with open(configfile, "w") as configfile:
-                            config.write(configfile, space_around_delimiters=False)
+                        # custom resolution scale
+                        write_yuzu_config(self.TOTKconfig, "Renderer", "resolution_setup", yuzu_scaling)
+                        write_yuzu_config(self.TOTKconfig, "Core", "memory_layout_mode", "0")
                     if self.mode == "Ryujinx":
                         log.info("Do nothing for now.")
 
@@ -1117,6 +1054,7 @@ class Manager:
                             for each_version in self.upscale_options:
                                 upscale_version = each_version.get("version", "")
                                 if version.split("main")[1] == upscale_version:
+                                    print(upscale_version)
                                     # Directory with patch information.
                                     patch_dict = self.upscale_options[-1]
                                     # hex patches, resolution, shadows, scaling.
@@ -1150,7 +1088,7 @@ class Manager:
                                             selected_shadow = "1024"
                                         log.info(f"Applying shadow patch for {selected_shadow} resolution shadows.")
                                         new_shadow_hex = shadow_dict.get(selected_shadow)
-                                        shadow_patch = scaling_patch.replace("PATCH_here", new_shadow_hex)
+                                        shadow_patch = shadow_patch.replace("PATCH_here", new_shadow_hex)
                                         file.write(f"\n{shadow_patch}")
                                     except Exception as e:
                                         log.info("Shadow resolution set to default..")
@@ -1200,44 +1138,9 @@ class Manager:
                         except Exception as e:
                             log.error(f"FAILED TO CREATE SETTINGS FILE: {e}")
                         log.info("Successfully Installed TOTK Yuzu preset settings!")
-                        resolution = self.resolution_var.get()
-                        Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
-                        current_res = self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1]
-                        proper_res = float(current_res)
-                        new_config = configparser.ConfigParser()
-                        new_config.read(Setting_directory)
                     else:
                         log.error(f"Failed to download file from {raw_url}. Status code: {response.status_code}")
                         return
-                    if proper_res > 1080 & self.DFPS_var.get() == "Legacy":
-                        # Add new values
-                        if not new_config.has_section("Renderer"):
-                            new_config["Renderer"] = {}
-                        new_config["Renderer"]["resolution_setup\\use_global"] = "false"
-                        new_config["Renderer"]["resolution_setup\\default"] = "false"
-                        new_config["Renderer"]["resolution_setup"] = "2"
-
-                        if not new_config.has_section("Core"):
-                            new_config["Core"] = {}
-                        new_config["Core"]["use_unsafe_extended_memory_layout\\use_global"] = "false"
-                        new_config["Core"]["use_unsafe_extended_memory_layout\\default"] = "false"
-                        new_config["Core"]["use_unsafe_extended_memory_layout\\default"] = "true"
-
-                        new_config["Core"]["memory_layout_mode\\use_global"] = "false"
-                        new_config["Core"]["memory_layout_mode\\default"] = "false"
-                        layout = "1"
-                    if proper_res >= 2160 & self.DFPS_var.get() == "Legacy":
-                        layout = "2"
-                    elif proper_res <= 1080 & self.DFPS_var.get() == "Legacy":
-                        layout = "0"
-                    new_config["Core"]["memory_layout_mode\\use_global"] = "false"
-                    new_config["Core"]["memory_layout_mode\\default"] = "false"
-                    new_config["Core"]["memory_layout_mode"] = layout
-                    try:
-                        with open(Setting_directory, "w") as config_file:
-                            new_config.write(config_file, space_around_delimiters=False)
-                    except Exception as e:
-                        log.error(f"FAILED TO EDIT SETTINGS FILE: {e}")
             else:
                 log.warning("Selected option has no associated setting folder.")
 
@@ -1245,9 +1148,11 @@ class Manager:
             DFPS_ver = self.DFPS_var.get()
             if DFPS_ver == "Legacy":
                 self.remove_list.append("DFPS")
+                self.add_list.append("Max DFPS++")
                 link = DFPS_dict.get("Latest")
             if DFPS_ver == "New":
                 self.remove_list.append("Max DFPS++")
+                self.add_list.append("DFPS")
                 link = New_DFPS_Download
 
             Mod_directory = os.path.join(self.load_dir)

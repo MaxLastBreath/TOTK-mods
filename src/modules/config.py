@@ -93,3 +93,14 @@ def load_user_choices(self, config_file, mode=None):
     except AttributeError as e:
         # continue, not important.
         handle = e
+
+def write_yuzu_config(configfile, section, setting, selection):
+    yuzuconfig = configparser.ConfigParser()
+    yuzuconfig.read(configfile)
+    if not yuzuconfig.has_section(section):
+        yuzuconfig[f"{section}"] = {}
+    yuzuconfig[f"{section}"][f"{setting}\\use_global"] = "false"
+    yuzuconfig[f"{section}"][f"{setting}\\default"] = "false"
+    yuzuconfig[f"{section}"][f"{setting}"] = selection
+    with open(configfile, "w") as configfile:
+        yuzuconfig.write(configfile, space_around_delimiters=False)
