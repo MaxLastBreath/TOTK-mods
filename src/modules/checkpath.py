@@ -115,6 +115,7 @@ def checkpath(self, mode):
             if os.path.exists(portablefolder):
                 self.configdir = None
                 self.TOTKconfig = None
+                self.ryujinx_config = os.path.join(portablefolder, "Config.json")
                 self.nand_dir = os.path.join(f"{portablefolder}", "bis", "user", "save")
                 self.load_dir = os.path.join(f"{portablefolder}", "mods", "contents", "0100f2C0115b6000")
                 self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", "0100f2C0115B6000")
@@ -123,6 +124,7 @@ def checkpath(self, mode):
                 self.Globaldir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx")
                 self.configdir = None
                 self.TOTKconfig = None
+                self.ryujinx_config = os.path.join(self.Globaldir, "Config.json")
                 self.nand_dir = os.path.join(f"{self.Globaldir}", "bis", "user", "save")
                 self.load_dir = os.path.join(f"{self.Globaldir}", "mods", "contents", "0100f2C0115b6000")
                 self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", "0100f2C0115B6000")

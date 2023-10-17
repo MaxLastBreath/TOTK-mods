@@ -11,7 +11,7 @@ from modules.qt_config import modify_disabled_key, get_config_parser
 from modules.checkpath import checkpath, DetectOS
 from modules.backup import *
 from modules.logger import *
-from modules.config import save_user_choices, load_user_choices, write_yuzu_config
+from modules.config import *
 from configuration.settings import *
 from configuration.settings_config import Setting
 
@@ -988,26 +988,31 @@ class Manager:
                     with open(ini_file_path, 'w') as configfile:
                         config.write(configfile)
                     # 1 resolution scale
-                    write_yuzu_config(self.TOTKconfig, "Renderer", "resolution_setup", "2")
-                    height = self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1]
-                    layout = 1
-                    if int(height) <= 1080:
-                        layout = 0
-                    if int(height) <= 2160 and int(height) > 1080:
+                    if self.mode == "Yuzu":
+                        write_yuzu_config(self.TOTKconfig, "Renderer", "resolution_setup", "2")
+                        height = self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1]
                         layout = 1
-                    if int(height) > 2160:
-                        layout = 2
-                    # Extended memory layout for DFPS 1.5.5
-                    write_yuzu_config(self.TOTKconfig, "Core", "memory_layout_mode", f"{layout}")
+                        if int(height) <= 1080:
+                            layout = 0
+                        if int(height) <= 2160 and int(height) > 1080:
+                            layout = 1
+                        if int(height) > 2160:
+                            layout = 2
+                        # Extended memory layout for DFPS 1.5.5
+                        write_yuzu_config(self.TOTKconfig, "Core", "memory_layout_mode", f"{layout}")
+
+                    if self.mode == "Ryujinx":
+                        write_ryujinx_config(self.ryujinx_config, "res_scale", "1")
 
                 else:
+                    # Resolution scaling for MAX DFPS++
+                    patch_dict = self.upscale_options[-1]
+                    reso_dict = patch_dict.get("Scaling_Table")
+                    resolution = self.resolution_var.get()
+                    Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
+                    current_res = self.dfps_options.get("ResolutionValues", [""])[Resindex]
+                    # Yuzu settings
                     if self.mode == "Yuzu":
-                        # Resolution scaling for MAX DFPS++
-                        patch_dict = self.upscale_options[-1]
-                        reso_dict = patch_dict.get("Scaling_Table")
-                        resolution = self.resolution_var.get()
-                        Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
-                        current_res = self.dfps_options.get("ResolutionValues", [""])[Resindex]
                         try:
                             yuzu_scaling = reso_dict.get(current_res)
                         except Exception as e:
@@ -1016,7 +1021,19 @@ class Manager:
                         # custom resolution scale
                         write_yuzu_config(self.TOTKconfig, "Renderer", "resolution_setup", yuzu_scaling)
                         write_yuzu_config(self.TOTKconfig, "Core", "memory_layout_mode", "0")
+                    # Ryujinx setting.
                     if self.mode == "Ryujinx":
+                        ryudict = {
+                            "800x600": "1",
+                            "1280x720": "1",
+                            "1920x1080": "1",
+                            "2560x1440": "2",
+                            "3840x2160": "2",
+                            "5120x2880": "3",
+                            "7680x4320": "4"
+                        }
+                        scale = ryudict.get(current_res)
+                        write_ryujinx_config(self.ryujinx_config, "res_scale", scale)
                         log.info("Do nothing for now.")
 
             # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.

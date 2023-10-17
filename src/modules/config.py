@@ -1,5 +1,6 @@
 from modules.checkpath import checkpath
 from configuration.settings import *
+import os, json, uuid
 
 def save_user_choices(self, config_file, yuzu_path=None, mode=None):
     log.info(f"Saving user choices in {localconfig}")
@@ -104,3 +105,12 @@ def write_yuzu_config(configfile, section, setting, selection):
     yuzuconfig[f"{section}"][f"{setting}"] = selection
     with open(configfile, "w") as configfile:
         yuzuconfig.write(configfile, space_around_delimiters=False)
+
+def write_ryujinx_config(configfile, setting, selection):
+    with open(configfile, "r") as file:
+        data = json.load(file)
+        data[setting] = selection
+
+    os.remove(configfile)
+    with open(configfile, 'w') as f:
+        json.dump(data, f, indent=4)
