@@ -19,13 +19,13 @@
     },
     {
         "version": "1.1.2",
-        "resolution_patch": "00CECC0C 15000014",
+        "resolution_patch": "00CDD58C 15000014",
         "scaling_patch": "02A40A40 PATCH_here\n02A40A48 BF000014\n02A40D44 00083B1E\n02A40D48 21083B1E",
         "shadow_patch": "00BD2BFC PATCH_here\n00BD2C00 17000014"
     },
     {
         "version": "1.2.0",
-        "resolution_patch": "00CDD58C 15000014",
+        "resolution_patch": "00c34774 15000014",
         "scaling_patch": "02A348A0 PATCH_here\n02A348A8 BF000014\n02A34BA4 00083B1E\n02A34BA8 21083B1E",
         "shadow_patch": "00ccd368 PATCH_here\n00ccd36c 17000014"
     },
@@ -53,7 +53,7 @@
         },
         "Shadow_Table": {
             "-1": "0B808052",
-            "256": "0B208052",
+            "206": "0B208052",
             "512": "0B408052",
             "1024": "0B808052",
             "2048": "0B808052",
