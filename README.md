@@ -37,15 +37,18 @@
     - **Ultra (6K)**- 3080/3090+. Rx 6800/7800/7800xt.
 - Select Settings
   - Optimized settings for TOTK only.
-### **DFPS & Its Options.**
-- Recommended to use a version past 1.5.5
+### **New scaler & It's Options.**
+- Resolution
+   - All the resolutions require custom setting applied to Yuzu and a Custom mod, automatically done by the Optimizer.
+   - Yuzu external Yuzu/Ryujinx upscaler and an external patch for each different resolution to make it look good on all resolutions
+- FPS
+   - Currently limited to 60 FPS, dynamically changing without slowing down the game, for more FPS press CNTRL+U in game, or use an external limiter to get 30-45 FPS cap! 
+### **Legacy Scaling & It's Options.**
 - Resolution
    - Anything past 1080p requires external changes to Yuzu settings. This is done rather automatically by the Optimizer.
    - Uses internal Yuzu scaler present in DFPS 1.5.5!
 - FPS
-   - FPS, recommended to use 30 or 60 FPS! This is a setting from DFPS.
-- Camera Quality
-   - Increase the image size and quality by a large margin, could have potential Issues. 
+   - FPS, recommended to use 30 or 60 FPS! This is a setting from DFPS. 
 ### **Aspect Ratios & Ui**
 
 - Aspect ratios are section of combined mod files with certain UI and an Aspect Ratio mod.
