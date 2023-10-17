@@ -129,7 +129,10 @@ def delete_old_exe():
     current = exe_to_rename.split("\\")[-1]
     if current == "run.py":
         return
-    os.rename(exe_to_rename, name)
+    try:
+        os.rename(exe_to_rename, name)
+    except Exception as e:
+        log.warning(e)
     try:
         # Remove old versions of manager
         matching_files = glob.glob(os.path.join(executable_directory, "*.exe.tmp"))
