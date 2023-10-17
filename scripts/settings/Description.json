@@ -3,7 +3,7 @@
 
 	"Resolution": "Choose the desired resolution for Tears of The Kingdom.\nNOTE: This is an internal upscaler, using Dynamic FPS.\nExtended Memory layout in Yuzu is Mandatory.",
 	"FPS": "Choose the desired FPS LIMIT for Tears of The Kingdom.",
-	"Shadows": "Choose the desired SHADOW resolution for Tears of The Kingdom.\nNote: Recommended to use 1024x.",
+	"Shadows": "Choose the desired SHADOW resolution for Tears of The Kingdom.\nNote: Recommended to use 1024x.\nLegacy Upscaling can go to 8K shadows (unstable)\nNew Upscaling is limited to 1k Shadows (STABLE)",
 	"Camera Quality": "Increases camera Picture Quality.\nNote: Recommended to not use this mod, as it COULD cause issues.",
 	"UI": "Choose the button prompts for Tears of The Kingdom.\nNote: Recommended to use BlackscreenFIX, if you don't desire to use any other UI mod.",
 	"First Person": "Switches all cameras to First Person.",
@@ -72,5 +72,4 @@
 	"Movement speed 2x": "Movement speed 200%, \nNOTE: Affects horses.",
 	"Movement speed 1x": "Movement speed 100%, \nNOTE: Affects horses.",
 	"No skill CD": "Removes the skill CD of sages."
-
 }

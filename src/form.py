@@ -643,8 +643,8 @@ class Manager:
         )
 
         # Information text.
-        text_widgetoutline2 = canvas.create_text(scale(1001) - scale(20), scale(126) -scale(80), text=f"{self.mode} TOTK Optimizer", tags="information", fill="black", font=biggyfont, anchor="center", justify="center", width=scale(325))
-        text_widget2 = canvas.create_text(scale(1000)-scale(20), scale(126)-scale(80), text=f"{self.mode} TOTK Optimizer", tags="information", fill="#FBF8F3", font=biggyfont, anchor="center", justify="center", width=scale(325))
+        #text_widgetoutline2 = canvas.create_text(scale(1001) - scale(20), scale(126) -scale(80), text=f"{self.mode} TOTK Optimizer", tags="information", fill="black", font=biggyfont, anchor="center", justify="center", width=scale(325))
+        #text_widget2 = canvas.create_text(scale(1000)-scale(20), scale(126)-scale(80), text=f"{self.mode} TOTK Optimizer", tags="information", fill="#FBF8F3", font=biggyfont, anchor="center", justify="center", width=scale(325))
 
         text_widgetoutline1 = canvas.create_text(scale(1001) -scale(20) -scale(10), scale(126) + scale(10), text=self.text_content, fill="black", font=biggyfont, anchor="center", justify="center", width=scale(325))
         text_widget1 = canvas.create_text(scale(1000) - scale(20) -scale(10), scale(125) +scale(10), text=self.text_content, fill="#FBF8F3", font=biggyfont, anchor="center", justify="center", width=scale(325))
@@ -860,7 +860,7 @@ class Manager:
     def warning_window(self, setting_type):
         if self.mode == "Ryujinx":
             return
-        if self.DFPS_var.get() == "Legacy":
+        if self.DFPS_var.get() == "New":
             return
         warning_message = None
         configfile = self.TOTKconfig
@@ -882,12 +882,12 @@ class Manager:
 
             if 1080 < proper_res < 2160:
                 if newmemsetting < 1 or not res3 == 2 or not newmem1 == "false" or not newmem2 == "false":
-                    warning_message = f"Resolution {resolution}, requires 1x Yuzu renderer and extended memory layout 6GB to be enabled, otherwise it won't function properly and will cause artifacts, you currently have them disabled, do you want to enable them?"
+                    warning_message = f"Legacy Upscaling {resolution}, requires 1x Yuzu renderer and extended memory layout 6GB to be enabled, otherwise it won't function properly and will cause artifacts, you currently have them disabled, do you want to enable them?"
                 else:
                     log.info("Correct settings are already applied, no changes required!!")
             elif proper_res > 2160:
                 if newmemsetting < 2 or not res3 == 2 or not newmem1 == "false" or not newmem2 == "false":
-                    warning_message = f"Resolution {resolution}, requires 1x Yuzu renderer and extended memory layout 8GB to be enabled, otherwise it won't function properly and will cause artifacts, you currently have them disabled, do you want to enable them?"
+                    warning_message = f"Legacy Upscaling {resolution}, requires 1x Yuzu renderer and extended memory layout 8GB to be enabled, otherwise it won't function properly and will cause artifacts, you currently have them disabled, do you want to enable them?"
                 else:
                     log.info("Correct settings are already applied, no changes required!!")
 
@@ -1146,7 +1146,9 @@ class Manager:
                                     # Shadow Patch
                                     shadow_dict = patch_dict.get("Shadow_Table")
                                     try:
-                                        log.info(f"Applying shadow patch for {selected_shadow}")
+                                        if int(selected_shadow) > 1024:
+                                            selected_shadow = "1024"
+                                        log.info(f"Applying shadow patch for {selected_shadow} resolution shadows.")
                                         new_shadow_hex = shadow_dict.get(selected_shadow)
                                         shadow_patch = scaling_patch.replace("PATCH_here", new_shadow_hex)
                                         file.write(f"\n{shadow_patch}")

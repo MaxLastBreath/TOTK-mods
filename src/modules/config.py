@@ -73,7 +73,7 @@ def load_user_choices(self, config_file, mode=None):
     else:
         self.DFPS_var.set(config.get('Options', 'DFPS Version', fallback="New"))
 
-    self.cheat_version.set(config.get("Manager", "Cheat_Version", fallback="Version - 1.2.0"))
+    self.cheat_version.set(config.get("Manager", "Cheat_Version", fallback="Version - 1.2.1"))
     self.resolution_var.set(config.get('Options', 'Resolution', fallback=self.dfps_options.get("ResolutionNames", [""])[2]))
     self.aspect_ratio_var.set(config.get('Options', 'Aspect Ratio', fallback=AR_list[0]))
     self.fps_var.set(config.get('Options', 'FPS', fallback=str(self.dfps_options.get("FPS", [])[2])))
