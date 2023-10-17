@@ -896,7 +896,7 @@ class Manager:
                 return
             if mode== None:
                 log.info("Starting TASKs for Normal Patch..")
-                tasklist = [DownloadFP(), DownloadUI(), DownloadDFPS(), Create_Mod_Patch(), UpdateSettings(), Disable_Mods()]
+                tasklist = [DownloadFP(), DownloadUI(), DownloadDFPS(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods()]
                 if get_setting("auto-backup") in ["On"]:
                     tasklist.append(backup(self))
                 com = 100 // len(tasklist)
