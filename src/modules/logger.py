@@ -27,7 +27,8 @@ except Exception as e:
 # Print Memory
 try:
     memory_info = psutil.virtual_memory()
-    total_memory = memory_info.total//1000000000
+    total_memory = memory_info.total//1048576000
+    memory_used = memory_info.percent
 except Exception as e:
     log.warning(f"The System Memory was not detected, nothing to be concerned about. {e}")
     total_memory = "Undetected"
@@ -36,7 +37,7 @@ log.info(f"\n\n\n\nAttempting to start Application.\n"
          f"__SystemINFO__\n"
          f"System: {platform.system()}\n"
          f"GPU: {gpu_name}\n"
-         f"RAM: {total_memory} GB\n"
+         f"RAM: {total_memory} GB and used {memory_used}%\n"
          f"\n"
          )
 
