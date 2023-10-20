@@ -11,6 +11,7 @@ from modules.qt_config import modify_disabled_key, get_config_parser
 from modules.checkpath import checkpath, DetectOS
 from modules.backup import *
 from modules.logger import *
+from modules.launch import *
 from modules.config import *
 from configuration.settings import *
 from configuration.settings_config import Setting
@@ -318,6 +319,16 @@ class Manager:
             description_name="Apply", style="success",
             command=self.submit
         )
+
+        # Create a submit button
+        self.on_canvas.create_button(
+            master=self.window, canvas=canvas,
+            btn_text="Launch Game", tags=["Button", "Yuzu"],
+            row=520, cul=139, padding=10, width=9,
+            description_name="Launch Game", style="success",
+            command=lambda: launch_GAME(self)
+        )
+
         # Load Saved User Options.
         load_user_choices(self, self.config)
         return self.maincanvas
