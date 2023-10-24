@@ -42,7 +42,8 @@
    - All the resolutions require custom setting applied to Yuzu and a Custom mod, automatically done by the Optimizer.
    - Yuzu external Yuzu/Ryujinx upscaler and an external patch for each different resolution to make it look good on all resolutions
 - FPS
-   - Currently limited to 60 FPS, dynamically changing without slowing down the game, for more FPS press CNTRL+U in game, or use an external limiter to get 30-45 FPS cap! 
+   - Supports FPS cap between 20, 30, 60 FPS.
+   - CNTRL + U in game to unlock FPS. 
 ### **Legacy Scaling & It's Options.**
 - Resolution
    - Anything past 1080p requires external changes to Yuzu settings. This is done rather automatically by the Optimizer.
