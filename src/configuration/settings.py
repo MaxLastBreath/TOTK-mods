@@ -7,7 +7,7 @@ import logging
 from tkinter import messagebox
 import configparser
 
-Version = "manager-1.4.1"
+Version = "manager-1.4.2"
 repo_url_raw = 'https://github.com/MaxLastBreath/TOTK-mods'
 repo_url = 'https://api.github.com/repos/MaxLastBreath/TOTK-mods'
 localconfig = "Manager_Config.ini"

@@ -64,6 +64,7 @@ class Manager:
         self.Load_ImagePath()
         self.load_canvas()
         self.switchmode("false")
+        self.update_scaling_settings()
 
         #Window protocols
         self.window.protocol("WM_DELETE_WINDOW", lambda: self.on_canvas.on_closing(self.window))
@@ -145,7 +146,7 @@ class Manager:
                                         master=self.window, canvas=canvas,
                                         btn_text="Use Appdata",
                                         row=row, cul=cul_sel + 68, width=9,
-                                        tags=["Button", "yuzu"],
+                                        tags=["Button"],
                                         description_name="Reset",
                                         command=yuzu_appdata
                                         )
@@ -169,7 +170,7 @@ class Manager:
                                     master=self.window, canvas=canvas,
                                     btn_text="Backup",
                                     row=row, cul=backupbutton, width=7,
-                                    tags=["Button", "yuzu"],
+                                    tags=["Button"],
                                     description_name="Backup",
                                     command=lambda: backup(self)
         )
@@ -211,6 +212,7 @@ class Manager:
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
                                                             tags=["text"], tag=None,
                                                             description_name="Upscale",
+                                                            command=self.update_scaling_settings
                                                             )
         row += 40
 
@@ -235,15 +237,26 @@ class Manager:
                                                             )
         row += 40
 
-        # Create a label for FPS selection
-        values = self.dfps_options.get("FPS", [])
+        # Legacy FPS.
+        FPS_values_Legacy = self.dfps_options.get("FPS", [])
         self.fps_var = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
                                                             text="Select an FPS:",
-                                                            variable=value[0], values=values,
+                                                            variable=value[0], values=FPS_values_Legacy,
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
-                                                            tags=["text"], tag=None,
+                                                            tags=["text", "FPS_Legacy"], tag="FPS_Legacy",
                                                             description_name="FPS"
+                                                      )
+        # New Upscaling FPS.
+        self.FPS_values_New = ["20", "30", "60"]
+        self.fps_var_new = self.on_canvas.create_combobox(
+                                                            master=self.window, canvas=canvas,
+                                                            text="Select an FPS:",
+                                                            variable=value[0], values=self.FPS_values_New,
+                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                            tags=["text", "FPS_New"], tag="FPS_New",
+                                                            description_name="FPS",
+                                                            command=self.update_scaling_variable
                                                       )
 
         row += 40
@@ -319,19 +332,37 @@ class Manager:
             description_name="Apply", style="success",
             command=self.submit
         )
-
-        # Create a submit button
-        self.on_canvas.create_button(
-            master=self.window, canvas=canvas,
-            btn_text="Launch Game", tags=["Button", "Yuzu"],
-            row=520, cul=139, padding=10, width=9,
-            description_name="Launch Game", style="success",
-            command=lambda: launch_GAME(self)
-        )
+        if self.os_platform == "Windows":
+            # Create a submit button
+            self.on_canvas.create_button(
+                master=self.window, canvas=canvas,
+                btn_text="Launch Game", tags=["Button", "Yuzu"],
+                row=520, cul=139, padding=10, width=9,
+                description_name="Launch Game", style="success",
+                command=lambda: launch_GAME(self)
+            )
 
         # Load Saved User Options.
         load_user_choices(self, self.config)
         return self.maincanvas
+
+    def update_scaling_settings(self, something=None):
+        if self.DFPS_var.get() == "New":
+            for canvas in self.all_canvas:
+                canvas.itemconfig("FPS_Legacy", state="hidden")
+                canvas.itemconfig("FPS_New", state="normal")
+                self.fps_var_new.set(self.fps_var.get())
+                if self.fps_var_new.get() not in self.FPS_values_New:
+                    self.fps_var_new.set(self.FPS_values_New[2])
+        if self.DFPS_var.get() == "Legacy":
+            for canvas in self.all_canvas:
+                canvas.itemconfig("FPS_New", state="hidden")
+                canvas.itemconfig("FPS_Legacy", state="normal")
+                self.fps_var.set(self.fps_var_new.get())
+
+    def update_scaling_variable(self, something=None):
+        if self.DFPS_var.get() == "New":
+            self.fps_var.set(self.fps_var_new.get())
 
     def create_cheat_canvas(self):
         # Create Cheat Canvas
@@ -822,6 +853,7 @@ class Manager:
         # Open a file dialog to browse and select yuzu.exe
         if self.os_platform == "Windows":
             yuzu_path = filedialog.askopenfilename(
+                title=f"Please select {self.mode}.exe",
                 filetypes=[("Executable files", "*.exe"), ("All Files", "*.*")]
             )
             executable_name = yuzu_path
@@ -839,19 +871,20 @@ class Manager:
                 if any(item in os.listdir(fullpath) for item in ["user", "portable"]):
                     log.info(f"Successfully selected {self.mode}.exe! And a portable folder was found at {home_directory}!")
                     checkpath(self, self.mode)
-                    return
+                    return yuzu_path
                 else:
                     log.info(f"Portable folder for {self.mode} not found defaulting to appdata directory!")
                     checkpath(self, self.mode)
-                    return
+                    return yuzu_path
 
                 # Update the yuzu.exe path in the current session
                 self.yuzu_path = yuzu_path
             else:
                 checkpath(self, self.mode)
+                return None
             # Save the selected yuzu.exe path to a configuration file
             save_user_choices(self, self.config, yuzu_path)
-        return
+        return yuzu_path
     # Load Yuzu Dir
     def load_yuzu_path(self, config_file):
         if self.mode == "Yuzu":
@@ -904,10 +937,11 @@ class Manager:
                     task
                     time.sleep(0.05)
                 progress_window.destroy()
+                log.info("Tasks have been COMPLETED. Feel free to Launch the game.")
                 return
             if mode== None:
                 log.info("Starting TASKs for Normal Patch..")
-                tasklist = [DownloadFP(), DownloadUI(), DownloadDFPS(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods()]
+                tasklist = [Exe_Running(), DownloadFP(), DownloadUI(), DownloadDFPS(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods()]
                 if get_setting("auto-backup") in ["On"]:
                     tasklist.append(backup(self))
                 com = 100 // len(tasklist)
@@ -917,6 +951,7 @@ class Manager:
                     task
                     time.sleep(0.05)
                 progress_window.destroy()
+                log.info("Tasks have been COMPLETED. Feel free to Launch the game.")
                 return
 
         def Create_Mod_Patch(mode=None):
@@ -998,8 +1033,9 @@ class Manager:
                     # Legacy DFPS config file.
                     with open(ini_file_path, 'w') as configfile:
                         config.write(configfile)
-                    # 1 resolution scale
+
                     if self.mode == "Yuzu":
+                        # 1 resolution scale
                         write_yuzu_config(self.TOTKconfig, "Renderer", "resolution_setup", "2")
                         height = self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1]
                         layout = 1
@@ -1009,11 +1045,13 @@ class Manager:
                             layout = 1
                         if int(height) > 2160:
                             layout = 2
+
                         # Extended memory layout for DFPS 1.5.5
                         write_yuzu_config(self.TOTKconfig, "Core", "memory_layout_mode", f"{layout}")
 
                     if self.mode == "Ryujinx":
-                        write_ryujinx_config(self.ryujinx_config, "res_scale", "1")
+                        # needs to be fixed, problematic.
+                        write_ryujinx_config(self.ryujinx_config, "res_scale", 1)
 
                 else:
                     # Resolution scaling for MAX DFPS++
@@ -1035,17 +1073,35 @@ class Manager:
                     # Ryujinx setting.
                     if self.mode == "Ryujinx":
                         ryudict = {
-                            "800x600": "1",
-                            "1280x720": "1",
-                            "1920x1080": "1",
-                            "2560x1440": "2",
-                            "3840x2160": "2",
-                            "5120x2880": "3",
-                            "7680x4320": "4"
+                            "800x600": 1,
+                            "1280x720": 1,
+                            "1920x1080": 1,
+                            "2560x1440": 2,
+                            "3840x2160": 2,
+                            "5120x2880": 3,
+                            "7680x4320": 4
                         }
                         scale = ryudict.get(current_res)
                         write_ryujinx_config(self.ryujinx_config, "res_scale", scale)
                         log.info("Do nothing for now.")
+
+                    # set FPS for Max DFPS++
+                    ini_file_directory = os.path.join(self.load_dir, "Mod Manager Patch", "romfs", "dfps")
+                    os.makedirs(ini_file_directory, exist_ok=True)
+                    ini_file_path = os.path.join(ini_file_directory, "default.ini")
+
+                    # Remove the previous default.ini file if it exists - DFPS settings.
+                    if os.path.exists(ini_file_path):
+                        os.remove(ini_file_path)
+
+                    # Save the selected options to the INI file
+                    config = configparser.ConfigParser()
+                    config.optionxform = lambda option: option
+
+                    config['dFPS'] = {'MaxFramerate': fps}
+                    # Max DFPS++ config file.
+                    with open(ini_file_path, 'w') as configfile:
+                        config.write(configfile)
 
             # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.
             try:
@@ -1268,6 +1324,18 @@ class Manager:
             os.makedirs(Mod_directory, exist_ok=True)
             download_unzip(link, Mod_directory)
             log.info(f"Downloaded: {selected_fp_mod}")
+
+        def Exe_Running():
+            is_Program_Opened = is_process_running(self.mode + ".exe")
+            message = (f"{self.mode}.exe is Running, \n"
+                       f"The Optimizer Requires {self.mode}.exe to be closed."
+                       f"\nDo you wish to close {self.mode}.exe?")
+            if is_Program_Opened is True:
+                response = messagebox.askyesno("Warning", message, icon=messagebox.WARNING)
+                if response is True:
+                    subprocess.run(["taskkill", "/F", "/IM", f"{self.mode}.exe"], check=True)
+            if is_Program_Opened is False:
+                log.info(f"{self.mode}.exe is closed, working as expected.")
 
         def Disable_Mods():
             self.progress_var.set(f"Disabling old mods.")

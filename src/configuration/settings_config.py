@@ -5,6 +5,7 @@ from configuration.settings import *
 from modules.scaling import scale, sf
 from modules.colors import Color
 from modules.canvas import Canvas_Create
+from modules.launch import *
 
 class Setting:
     def __init__(self):
@@ -152,6 +153,16 @@ class Setting:
             row=row, cul=cul_tex,
             tags=["text"], tag=None,
             description_name="Gui Animations",
+        )
+        row += 40
+
+        self.canvas_create.create_label(
+            master=window, canvas=canvas_obj,
+            text="Select Game File",
+            row=row, cul=cul_tex,
+            tags=["Button"], tag=None,
+            description_name="Apply",
+            command=select_game_file
         )
         row += 40
 
