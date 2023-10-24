@@ -12,7 +12,7 @@ def is_process_running(process_name):
         else:
             return False
     except Exception as e:
-        log.info(f"Couldn`t detect if {process_name} is running.}")
+        log.info(f"Couldn`t detect if {process_name} is running.")
 
 def select_game_file(command=None):
     # Open a file dialog to browse and select yuzu.exe
