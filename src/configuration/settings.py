@@ -111,7 +111,7 @@ cheatsurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scri
 presetsurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/presets.json"
 versionurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/VersionNew.json"
 descurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/Description.json"
-upscale = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/New_Upscale.json"
+ultracam = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/UltraCam.json"
 
 # Download MAX DFPS++
 New_DFPS_Download = "https://github.com/MaxLastBreath/TOTK-mods/raw/main/scripts/Mods/Max%20DFPS/Max%20DFPS++.zip"

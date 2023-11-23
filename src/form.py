@@ -204,7 +204,7 @@ class Manager:
         row += 40
 
         # Create a label for resolution selection
-        self.upscale_list = ["New", "Legacy"]
+        self.upscale_list = ["UltraCam", "DFPS Legacy"]
         self.DFPS_var = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
                                                             text="Upscaling Method:",
@@ -244,18 +244,19 @@ class Manager:
                                                             text="Select an FPS:",
                                                             variable=value[0], values=FPS_values_Legacy,
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
-                                                            tags=["text", "FPS_Legacy"], tag="FPS_Legacy",
+                                                            tags=["text", "FPS_Legacy"], tag="Legacy",
                                                             description_name="FPS"
                                                       )
+
         # New Upscaling FPS.
-        self.FPS_values_New = ["20", "30", "60"]
+        self.FPS_values_New = self.ultracam_options.get("FPS", [])
 
         self.fps_var_new = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
                                                             text="Select an FPS:",
                                                             variable=value[0], values=self.FPS_values_New,
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
-                                                            tags=["text", "FPS_New"], tag="FPS_New",
+                                                            tags=["text", "UltraCam"], tag="UltraCam",
                                                             description_name="FPS",
                                                             command=self.update_scaling_variable
                                                       )
@@ -348,21 +349,21 @@ class Manager:
         return self.maincanvas
 
     def update_scaling_settings(self, something=None):
-        if self.DFPS_var.get() == "New":
+        if self.DFPS_var.get() == "UltraCam":
             for canvas in self.all_canvas:
-                canvas.itemconfig("FPS_Legacy", state="hidden")
-                canvas.itemconfig("FPS_New", state="normal")
+                canvas.itemconfig("Legacy", state="hidden")
+                canvas.itemconfig("UltraCam", state="normal")
                 self.fps_var_new.set(self.fps_var.get())
                 if self.fps_var_new.get() not in self.FPS_values_New:
                     self.fps_var_new.set(self.FPS_values_New[2])
-        if self.DFPS_var.get() == "Legacy":
+        if self.DFPS_var.get() == "DFPS Legacy":
             for canvas in self.all_canvas:
-                canvas.itemconfig("FPS_New", state="hidden")
-                canvas.itemconfig("FPS_Legacy", state="normal")
+                canvas.itemconfig("UltraCam", state="hidden")
+                canvas.itemconfig("Legacy", state="normal")
                 self.fps_var.set(self.fps_var_new.get())
 
     def update_scaling_variable(self, something=None):
-        if self.DFPS_var.get() == "New":
+        if self.DFPS_var.get() == "UltraCam":
             self.fps_var.set(self.fps_var_new.get())
 
     def create_cheat_canvas(self):
@@ -1001,7 +1002,7 @@ class Manager:
                 # Ensures that the patches are active and ensure that old versions of the mod folder is disabled.
                 self.remove_list.extend(["Mod Manager Patch"])
                 self.add_list.append("Visual Improvements")
-                if self.DFPS_var.get() == "Legacy":
+                if self.DFPS_var.get() == "DFPS Legacy":
                     # Determine the path to the INI file in the user's home directory
                     ini_file_directory = os.path.join(self.load_dir, "Mod Manager Patch", "romfs", "dfps")
                     os.makedirs(ini_file_directory, exist_ok=True)
@@ -1056,7 +1057,7 @@ class Manager:
 
                 else:
                     # Resolution scaling for MAX DFPS++
-                    patch_dict = self.upscale_options[-1]
+                    patch_dict = self.ultracam_options
                     reso_dict = patch_dict.get("Scaling_Table")
                     resolution = self.resolution_var.get()
                     Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
@@ -1086,10 +1087,11 @@ class Manager:
                         write_ryujinx_config(self.ryujinx_config, "res_scale", scale)
                         log.info("Do nothing for now.")
 
+
                     # set FPS for Max DFPS++
-                    ini_file_directory = os.path.join(self.load_dir, "Mod Manager Patch", "romfs", "dfps")
+                    ini_file_directory = os.path.join(self.load_dir, "Mod Manager Patch", "romfs", "ultracam")
                     os.makedirs(ini_file_directory, exist_ok=True)
-                    ini_file_path = os.path.join(ini_file_directory, "default.ini")
+                    ini_file_path = os.path.join(ini_file_directory, "maxlastbreath.ini")
 
                     # Remove the previous default.ini file if it exists - DFPS settings.
                     if os.path.exists(ini_file_path):
@@ -1099,7 +1101,13 @@ class Manager:
                     config = configparser.ConfigParser()
                     config.optionxform = lambda option: option
 
-                    config['dFPS'] = {'MaxFramerate': fps}
+                    config['DFPS'] = {'MaxFramerate': fps}
+                    config["Features"] = {
+                                        "Fov": 50,
+                                        "ResolutionScale": 1.0,
+                                        "ShadowResolution": 1024,
+                                        "DisableFog": "true"
+                                        }
                     # Max DFPS++ config file.
                     with open(ini_file_path, 'w') as configfile:
                         config.write(configfile)
@@ -1134,52 +1142,6 @@ class Manager:
                                 file.write("\n")
                             else:
                                 file.write(" ")
-                        # new upscale, method
-                        if self.DFPS_var.get() == "New":
-                            for each_version in self.upscale_options:
-                                upscale_version = each_version.get("version", "")
-                                if version.split("main")[1] == upscale_version:
-                                    print(upscale_version)
-                                    # Directory with patch information.
-                                    patch_dict = self.upscale_options[-1]
-                                    # hex patches, resolution, shadows, scaling.
-                                    resolution_patch = each_version.get("resolution_patch", "")
-                                    scaling_patch = each_version.get("scaling_patch", "")
-                                    shadow_patch = each_version.get("shadow_patch", "")
-
-                                    # Resolution Patch
-                                    file.write(f"\n{resolution_patch}")
-
-                                    # Upscale Patch
-                                    reso_dict = patch_dict.get("Resolution_Table")
-                                    resolution = self.resolution_var.get()
-                                    Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
-                                    current_res = self.dfps_options.get("ResolutionValues", [""])[Resindex]
-                                    try:
-                                        log.info(f"Applying resolution scaling patch for {current_res}")
-                                        new_resolution_hex = reso_dict.get(current_res)
-                                        new_scaling_patch = scaling_patch.replace("PATCH_here", new_resolution_hex)
-                                        file.write(f"\n{new_scaling_patch}")
-                                    except Exception as e:
-                                        log.info("Resolution below 4K selected, no scaling patch will be applied.")
-
-                                    ShadowIndex = self.dfps_options.get("ShadowResolutionNames").index(self.shadow_resolution_var.get())
-                                    selected_shadow = self.dfps_options.get("ShadowResolutionValues", [""])[ShadowIndex]
-
-                                    # Shadow Patch
-                                    shadow_dict = patch_dict.get("Shadow_Table")
-                                    try:
-                                        if int(selected_shadow) > 1024:
-                                            selected_shadow = "1024"
-                                        log.info(f"Applying shadow patch for {selected_shadow} resolution shadows.")
-                                        new_shadow_hex = shadow_dict.get(selected_shadow)
-                                        shadow_patch = shadow_patch.replace("PATCH_here", new_shadow_hex)
-                                        file.write(f"\n{shadow_patch}")
-                                    except Exception as e:
-                                        log.info("Shadow resolution set to default..")
-                        else:
-                            log.info("Using legacy upscaling.")
-                        file.write("\n@stop\n")
                 # Update Visual Improvements MOD.
             except PermissionError as e:
                 log.error(f"FAILED TO CREATE MOD PATCH: {e}")
@@ -1231,17 +1193,19 @@ class Manager:
 
         def DownloadDFPS():
             DFPS_ver = self.DFPS_var.get()
-            if DFPS_ver == "Legacy":
+            link = None
+            if DFPS_ver == "DFPS Legacy":
                 self.remove_list.append("DFPS")
                 self.add_list.append("Max DFPS++")
                 link = DFPS_dict.get("Latest")
-            if DFPS_ver == "New":
+            if DFPS_ver == "UltraCam":
                 self.remove_list.append("Max DFPS++")
                 self.add_list.append("DFPS")
                 link = New_DFPS_Download
 
             Mod_directory = os.path.join(self.load_dir)
             if link is None:
+                log.critical("Couldn't find a link to DFPS/UltraCam")
                 return
             set_setting(args="dfps", value=DFPS_ver)
 
