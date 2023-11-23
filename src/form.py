@@ -55,7 +55,7 @@ class Manager:
         self.presets = load_json("preset.json", presetsurl)
         self.version_options = load_json("Version.json", versionurl)
         self.cheat_options = load_json("Cheats.json", cheatsurl)
-        self.upscale_options = load_json("New_Upscale.json", upscale)
+        self.ultracam_options = load_json("UltraCam.json", ultracam)
 
         # Local text variable
         self.switch_text = ttk.StringVar(value="Switch to Ryujinx")
@@ -249,6 +249,7 @@ class Manager:
                                                       )
         # New Upscaling FPS.
         self.FPS_values_New = ["20", "30", "60"]
+
         self.fps_var_new = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
                                                             text="Select an FPS:",
