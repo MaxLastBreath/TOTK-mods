@@ -114,6 +114,6 @@ descurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/script
 ultracam = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/UltraCam.json"
 
 # Download MAX DFPS++
-New_DFPS_Download = "https://github.com/MaxLastBreath/TOTK-mods/raw/main/scripts/Mods/UltraCam/UltraCam%20.zip"
+New_DFPS_Download = "https://github.com/MaxLastBreath/TOTK-mods/raw/main/scripts/Mods/UltraCam/UltraCam.zip"
 
 description = load_json("Description.json", descurl)
