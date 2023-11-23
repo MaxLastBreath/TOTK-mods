@@ -270,9 +270,20 @@ class Manager:
                                                             text="Shadow Resolution:",
                                                             variable=value[0], values=values,
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
-                                                            tags=["text"], tag=None,
+                                                            tags=["text"], tag="Legacy",
                                                             description_name="Shadows"
                                                                     )
+
+        values = self.ultracam_options.get("ShadowResolutionNames", [""])
+        self.shadow_resolution_var_new = self.on_canvas.create_combobox(
+                                                            master=self.window, canvas=canvas,
+                                                            text="Shadow Resolution:",
+                                                            variable=value[0], values=values,
+                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                            tags=["text"], tag="UltraCam",
+                                                            description_name="Shadows"
+                                                                    )
+
         row += 40
 
         # Create a label for UI selection
@@ -356,6 +367,10 @@ class Manager:
                 self.fps_var_new.set(self.fps_var.get())
                 if self.fps_var_new.get() not in self.FPS_values_New:
                     self.fps_var_new.set(self.FPS_values_New[2])
+                self.fps_var.set(self.FPS_var_New.get())
+                
+
+
         if self.DFPS_var.get() == "DFPS Legacy":
             for canvas in self.all_canvas:
                 canvas.itemconfig("UltraCam", state="hidden")
