@@ -213,7 +213,7 @@
     "Item Pickup 8x": "[Item Pickup Multiplier (8x)]\n040A0000 0162A408 52800101\n",
     "Item Pickup 4x": "[Item Pickup Multiplier (4x)]\n040A0000 0162A408 52800081\n",
     "Item Pickup 2x": "[Item Pickup Multiplier (2x)]\n040A0000 0162A408 52800041\n",
-    "Infinite Zonai Devices": "[Inf. Zonai Devices]\n040A0000 00C6A3CC 52800028\n",
+    "Infinite Zonai Devices": "[Inf. Zonai Devices]\n040A0000 01A6949C 2A1F03E1\n",
     "Infinite Horse Stam": "[Inf. Horse Stamina]\n040A0000 01CADA90 D503201F\n",
     "Infinite Stamina": "[Inf. Stamina]\n040A0000 009F1DC4 1E204041\n",
     "Infinite Food Items": "[Inf. Food Items]\n040A0000 01A6D2C0 2A1F03E1\n040A0000 01A6D3D0 17FFFFE6\n",
