@@ -28,7 +28,7 @@
         "Remove FXAA": "Disable"
     },
     "Medium": {
-        "Resolution": "1440p QHD - Experimental",
+        "Resolution": "1440p QHD",
         "FPS": "30",
         "ShadowResolution": "High x1024",
         "CameraQuality": "Disable",
@@ -57,7 +57,7 @@
         "Remove FXAA": "Enable"
     },
     "Ultra": {
-        "Resolution": "6K QUHD - Experimental",
+        "Resolution": "6K QUHD",
         "FPS": "60",
         "ShadowResolution": "High x1024",
         "CameraQuality": "Disable",
@@ -88,7 +88,7 @@
         "Remove FXAA": "Disable"
     },
     "RTX 4090 SUPER HIGH": {
-        "Resolution": "6K QUHD - Experimental",
+        "Resolution": "6K QUHD",
         "FPS": "60",
         "ShadowResolution": "High x1024",
         "CameraQuality": "Disable",

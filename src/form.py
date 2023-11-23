@@ -264,21 +264,21 @@ class Manager:
         row += 40
 
         # Create a label for shadow resolution selection
-        values = self.dfps_options.get("ShadowResolutionNames", [""])
+        self.dfps_shadow_list = self.dfps_options.get("ShadowResolutionNames", [""])
         self.shadow_resolution_var = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
                                                             text="Shadow Resolution:",
-                                                            variable=value[0], values=values,
+                                                            variable=value[0], values=self.dfps_shadow_list,
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
                                                             tags=["text"], tag="Legacy",
                                                             description_name="Shadows"
                                                                     )
 
-        values = self.ultracam_options.get("ShadowResolutionNames", [""])
+        self.ultracam_shadow_list = self.ultracam_options.get("ShadowResolutionNames", [""])
         self.shadow_resolution_var_new = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
                                                             text="Shadow Resolution:",
-                                                            variable=value[0], values=values,
+                                                            variable=value[0], values=self.ultracam_shadow_list,
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
                                                             tags=["text"], tag="UltraCam",
                                                             description_name="Shadows"
@@ -367,15 +367,19 @@ class Manager:
                 self.fps_var_new.set(self.fps_var.get())
                 if self.fps_var_new.get() not in self.FPS_values_New:
                     self.fps_var_new.set(self.FPS_values_New[2])
-                self.fps_var.set(self.FPS_var_New.get())
-                
-
+                self.shadow_resolution_var_new.set(self.shadow_resolution_var.get())
+                if self.shadow_resolution_var.get() not in self.ultracam_shadow_list:
+                    self.shadow_resolution_var_new.set("High x1024")
+                    self.shadow_resolution_var.set("High x1024")
 
         if self.DFPS_var.get() == "DFPS Legacy":
             for canvas in self.all_canvas:
                 canvas.itemconfig("UltraCam", state="hidden")
                 canvas.itemconfig("Legacy", state="normal")
                 self.fps_var.set(self.fps_var_new.get())
+                if self.shadow_resolution_var_new.get() not in self.dfps_shadow_list:
+                    self.shadow_resolution_var.set("High x1024")
+                    self.shadow_resolution_var_new.set("High x1024")
 
     def update_scaling_variable(self, something=None):
         if self.DFPS_var.get() == "UltraCam":
@@ -928,6 +932,12 @@ class Manager:
         else:
             qtconfig = None
 
+        def update_values():
+            if self.DFPS_var.get() == "UltraCam":
+                log.info("Updating values for UltraCam")
+                self.fps_var.set(self.fps_var_new.get())
+                self.shadow_resolution_var.set(self.shadow_resolution_var_new.get())
+
         def mod_list(arg, mod):
             try:
                 if arg in ["r", "remove"]:
@@ -958,7 +968,7 @@ class Manager:
                 return
             if mode== None:
                 log.info("Starting TASKs for Normal Patch..")
-                tasklist = [Exe_Running(), DownloadFP(), DownloadUI(), DownloadDFPS(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods()]
+                tasklist = [Exe_Running(), update_values(), DownloadFP(), DownloadUI(), DownloadDFPS(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods()]
                 if get_setting("auto-backup") in ["On"]:
                     tasklist.append(backup(self))
                 com = 100 // len(tasklist)
@@ -1072,34 +1082,17 @@ class Manager:
 
                 else:
                     # Resolution scaling for MAX DFPS++
-                    patch_dict = self.ultracam_options
-                    reso_dict = patch_dict.get("Scaling_Table")
-                    resolution = self.resolution_var.get()
-                    Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
-                    current_res = self.dfps_options.get("ResolutionValues", [""])[Resindex]
+                    Resindex = self.ultracam_options.get("ResolutionNames").index(resolution)
+                    current_res = self.ultracam_options.get("ResolutionValues", [""])[Resindex]
                     # Yuzu settings
                     if self.mode == "Yuzu":
-                        try:
-                            yuzu_scaling = reso_dict.get(current_res)
-                        except Exception as e:
-                            yuzu_scaling = "2"
                         log.info(f"Applying {resolution} in Yuzu.")
                         # custom resolution scale
-                        write_yuzu_config(self.TOTKconfig, "Renderer", "resolution_setup", yuzu_scaling)
+                        write_yuzu_config(self.TOTKconfig, "Renderer", "resolution_setup", current_res)
                         write_yuzu_config(self.TOTKconfig, "Core", "memory_layout_mode", "0")
                     # Ryujinx setting.
                     if self.mode == "Ryujinx":
-                        ryudict = {
-                            "800x600": 1,
-                            "1280x720": 1,
-                            "1920x1080": 1,
-                            "2560x1440": 2,
-                            "3840x2160": 2,
-                            "5120x2880": 3,
-                            "7680x4320": 4
-                        }
-                        scale = ryudict.get(current_res)
-                        write_ryujinx_config(self.ryujinx_config, "res_scale", scale)
+                        write_ryujinx_config(self.ryujinx_config, "res_scale", current_res)
                         log.info("Do nothing for now.")
 
 
@@ -1115,12 +1108,16 @@ class Manager:
                     # Save the selected options to the INI file
                     config = configparser.ConfigParser()
                     config.optionxform = lambda option: option
+                    shadow_resolution = self.shadow_resolution_var_new.get()
+
+                    ShadowIndex = self.ultracam_options.get("ShadowResolutionNames").index(shadow_resolution)
+                    shadow_value = self.ultracam_options.get("ShadowResolutionValues")[ShadowIndex]
 
                     config['DFPS'] = {'MaxFramerate': fps}
                     config["Features"] = {
                                         "Fov": 50,
-                                        "ResolutionScale": 1.0,
-                                        "ShadowResolution": 1024,
+                                        "ResolutionScale": current_res,
+                                        "ShadowResolution": shadow_value,
                                         "DisableFog": "true"
                                         }
                     # Max DFPS++ config file.

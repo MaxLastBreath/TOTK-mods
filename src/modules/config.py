@@ -69,8 +69,8 @@ def load_user_choices(self, config_file, mode=None):
         return
 
     # Load the selected options
-    if config.get('Options', 'DFPS Version', fallback="New") not in ["New", "Legacy"]:
-        self.DFPS_var.set("Legacy")
+    if config.get('Options', 'DFPS Version', fallback="UltraCam") not in ["UltraCam", "DFPS Legacy"]:
+        self.DFPS_var.set("UltraCam")
     else:
         self.DFPS_var.set(config.get('Options', 'DFPS Version', fallback="New"))
 
@@ -78,7 +78,11 @@ def load_user_choices(self, config_file, mode=None):
     self.resolution_var.set(config.get('Options', 'Resolution', fallback=self.dfps_options.get("ResolutionNames", [""])[2]))
     self.aspect_ratio_var.set(config.get('Options', 'Aspect Ratio', fallback=AR_list[0]))
     self.fps_var.set(config.get('Options', 'FPS', fallback=str(self.dfps_options.get("FPS", [])[2])))
+    self.fps_var_new.set(config.get('Options', 'FPS', fallback=str(self.dfps_options.get("FPS", [])[2])))
     self.shadow_resolution_var.set(config.get('Options', 'ShadowResolution', fallback=self.dfps_options.get("ShadowResolutionNames", [""])[0])) # Shadow Auto
+    self.shadow_resolution_var_new.set(config.get('Options', 'ShadowResolution',
+                                              fallback=self.ultracam_options.get("ShadowResolutionNames", [""])[
+                                                  0]))  # Shadow Auto
     self.ui_var.set(config.get('Options', 'UI', fallback="None"))
     self.fp_var.set(config.get('Options', 'First Person', fallback="Off"))
     # Load the enable/disable choices
