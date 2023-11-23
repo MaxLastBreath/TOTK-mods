@@ -1208,10 +1208,10 @@ class Manager:
             link = None
             if DFPS_ver == "DFPS Legacy":
                 self.remove_list.append("DFPS")
-                self.add_list.append("Max DFPS++")
+                self.add_list.append("UltraCam")
                 link = DFPS_dict.get("Latest")
             if DFPS_ver == "UltraCam":
-                self.remove_list.append("Max DFPS++")
+                self.remove_list.append("UltraCam")
                 self.add_list.append("DFPS")
                 link = New_DFPS_Download
 
