@@ -41,7 +41,7 @@ class Manager:
 
         # Set neccesary variables.
         self.Yuzudir = None
-        self.is_Ani_running = True
+        self.is_Ani_running = False
         self.is_Ani_Paused = False
         self.tooltip_active = False
         self.warn_again = "yes"
@@ -338,6 +338,7 @@ class Manager:
                 cul_sel += 180
 
         # Create a submit button
+
         self.on_canvas.create_button(
             master=self.window, canvas=canvas,
             btn_text="APPLY", tags=["Button"],
@@ -523,15 +524,9 @@ class Manager:
         load_user_choices(self, self.config)
 
     def show_main_canvas(self):
-        self.on_canvas.is_Ani_Paused = False
+        self.on_canvas.is_Ani_Paused = True
         self.cheatcanvas.pack_forget()
         self.maincanvas.pack()
-
-        self.ani_2 = threading.Thread(name="mainbackground",
-                                    target=lambda: self.on_canvas.canvas_animation(self.window, self.maincanvas))
-        if not self.is_Ani_running == True:
-            self.is_Ani_running = True
-            self.ani_2.start()
 
     def show_cheat_canvas(self):
         self.on_canvas.is_Ani_Paused = False
@@ -542,7 +537,7 @@ class Manager:
                                     target=lambda: self.on_canvas.canvas_animation(self.window, self.cheatcanvas))
         if not self.is_Ani_running == True:
             self.is_Ani_running = True
-            #self.ani.start()
+            self.ani.start()
 
     def open_browser(self, web, event=None):
         url = "https://ko-fi.com/maxlastbreath#"
@@ -643,7 +638,7 @@ class Manager:
 
         self.background_image = self.on_canvas.Photo_Image(
             image_path=image_path,
-            width=1200, height=600, img_scale=2.0,
+            width=1200, height=600,
             blur=1
         )
 

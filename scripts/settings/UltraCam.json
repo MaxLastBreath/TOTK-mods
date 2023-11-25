@@ -4,7 +4,8 @@
   "FPS": [ 20, 30, 60],
   "ShadowResolutionNames": [ "Default", "Very Low x103", "Low x206", "Medium x512", "High x1024", "Ultra 1536"],
   "ShadowResolutionValues": [ "0", "103", "206", "512", "1024", "1536" ],
-  "Fov": [40, 120],
+  "Fov": [ 40, 120 ],
+  "Skip_Patches": [ "Improve LOD", "Remove FXAA", "Remove FSR", "Remove QuaReduction"],
   "RemoveFog": [ "Enable", "Disable" ],
   "UltraCam Version": "UltraCam Version 1.0.1"
 }
