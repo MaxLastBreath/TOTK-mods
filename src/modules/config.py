@@ -72,7 +72,7 @@ def load_user_choices(self, config_file, mode=None):
     if config.get('Options', 'DFPS Version', fallback="UltraCam") not in ["UltraCam", "DFPS Legacy"]:
         self.DFPS_var.set("UltraCam")
     else:
-        self.DFPS_var.set(config.get('Options', 'DFPS Version', fallback="New"))
+        self.DFPS_var.set(config.get('Options', 'DFPS Version', fallback="UltraCam"))
 
     self.cheat_version.set(config.get("Manager", "Cheat_Version", fallback="Version - 1.2.1"))
     self.resolution_var.set(config.get('Options', 'Resolution', fallback=self.dfps_options.get("ResolutionNames", [""])[2]))

@@ -180,6 +180,7 @@ class Canvas_Create:
             tags=[], tag=None,
             style="default", command=any,
                       ):
+
         # create text
         if tag is not None:
             tags.append(tag)
@@ -366,6 +367,7 @@ class Canvas_Create:
                                  justify="left"
                                  )
         tooltip_label.pack()
+
         self.tooltip_active = True
 
     def hide_tooltip(self, event):
@@ -385,8 +387,8 @@ class Canvas_Create:
         master.destroy()
 
     def canvas_animation(self, master, canvas):
-        canvas.bind("<Enter>", self.focus)
-        canvas.bind("<Leave>", self.un_focus)
+        master.bind("<Enter>", self.focus)
+        master.bind("<Leave>", self.un_focus)
         x = 0
         y = 0
         m = 1
@@ -453,6 +455,7 @@ class Canvas_Create:
             image = ImageOps.autocontrast(image)
         new_photo_image = ImageTk.PhotoImage(image)
         return new_photo_image
+
     def effect(self, canvas, img_list=list):
         self.is_effect_active = True
         while True:

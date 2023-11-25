@@ -41,7 +41,7 @@ class Manager:
 
         # Set neccesary variables.
         self.Yuzudir = None
-        self.is_Ani_running = False
+        self.is_Ani_running = True
         self.is_Ani_Paused = False
         self.tooltip_active = False
         self.warn_again = "yes"
@@ -103,7 +103,7 @@ class Manager:
         values = list(presets.keys())
         self.selected_preset = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
-                                                            text="Select Preset:",
+                                                            text="OPTIMIZER PESETS:",
                                                             variable=values[0], values=values,
                                                             row=row, cul=cul_tex,
                                                             tags=["text"], tag="Yuzu",
@@ -115,7 +115,7 @@ class Manager:
         value = ["No Change", "Steamdeck", "AMD", "Nvidia", "High End Nvidia"]
         self.selected_settings = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
-                                                            text="Select Settings:",
+                                                            text="YUZU SETTINGS:",
                                                             variable=value[0], values=value,
                                                             row=row, cul=340, drop_cul=480,
                                                             tags=["text"], tag="yuzu",
@@ -151,7 +151,7 @@ class Manager:
                                         command=yuzu_appdata
                                         )
             backupbutton = cul_sel + 165
-            text = "Select Yuzu.exe"
+            text = "SELECT Yuzu.exe"
             command = lambda event: self.select_yuzu_exe()
         else:
             text = "Backup Save Files"
@@ -207,7 +207,7 @@ class Manager:
         self.upscale_list = ["UltraCam", "DFPS Legacy"]
         self.DFPS_var = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
-                                                            text="Upscaling Method:",
+                                                            text="UPSCALING VERSION:",
                                                             variable=self.upscale_list[0], values=self.upscale_list,
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
                                                             tags=["text"], tag=None,
@@ -219,7 +219,7 @@ class Manager:
         values = self.dfps_options.get("ResolutionNames", [])
         self.resolution_var = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
-                                                            text="Select a Resolution:",
+                                                            text="RESOLUTION:",
                                                             variable=value[0], values=values,
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
                                                             tags=["text"], tag=None,
@@ -229,7 +229,7 @@ class Manager:
 
         self.aspect_ratio_var = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
-                                                            text="Screen Aspect Ratio:",
+                                                            text="ASPECT RATIO:",
                                                             variable=AR_list[0], values=AR_list,
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
                                                             tags=["text"], tag=None,
@@ -241,7 +241,7 @@ class Manager:
         FPS_values_Legacy = self.dfps_options.get("FPS", [])
         self.fps_var = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
-                                                            text="Select an FPS:",
+                                                            text="FPS:",
                                                             variable=value[0], values=FPS_values_Legacy,
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
                                                             tags=["text", "FPS_Legacy"], tag="Legacy",
@@ -253,7 +253,7 @@ class Manager:
 
         self.fps_var_new = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
-                                                            text="Select an FPS:",
+                                                            text="FPS:",
                                                             variable=value[0], values=self.FPS_values_New,
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
                                                             tags=["text", "UltraCam"], tag="UltraCam",
@@ -267,7 +267,7 @@ class Manager:
         self.dfps_shadow_list = self.dfps_options.get("ShadowResolutionNames", [""])
         self.shadow_resolution_var = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
-                                                            text="Shadow Resolution:",
+                                                            text="SHADOW RESOLUTION:",
                                                             variable=value[0], values=self.dfps_shadow_list,
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
                                                             tags=["text"], tag="Legacy",
@@ -277,7 +277,7 @@ class Manager:
         self.ultracam_shadow_list = self.ultracam_options.get("ShadowResolutionNames", [""])
         self.shadow_resolution_var_new = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
-                                                            text="Shadow Resolution:",
+                                                            text="SHADOW RESOLUTION:",
                                                             variable=value[0], values=self.ultracam_shadow_list,
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
                                                             tags=["text"], tag="UltraCam",
@@ -289,7 +289,7 @@ class Manager:
         # Create a label for UI selection
         self.ui_var = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
-                                                            text="Select an UI:",
+                                                            text="UI:",
                                                             variable=UI_list[0], values=UI_list,
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
                                                             tags=["text"], tag=None,
@@ -300,7 +300,7 @@ class Manager:
         # First Person and FOV
         self.fp_var = self.on_canvas.create_combobox(
                                                         master=self.window, canvas=canvas,
-                                                        text="Enable First Person:",
+                                                        text="FIRST PERSON:",
                                                         values=FP_list, variable=FP_list[0],
                                                         row=row, cul=cul_tex, drop_cul=cul_sel,
                                                         tags=["text"], tag=None,
@@ -340,9 +340,9 @@ class Manager:
         # Create a submit button
         self.on_canvas.create_button(
             master=self.window, canvas=canvas,
-            btn_text="Apply Mods", tags=["Button"],
-            row=520, cul=39, padding=10, width=9,
-            description_name="Apply", style="success",
+            btn_text="APPLY", tags=["Button"],
+            row=530, cul=25, padding=10, width=9,
+            description_name="Apply", style="warning",
             command=self.submit
         )
         if self.os_platform == "Windows":
@@ -350,8 +350,8 @@ class Manager:
             self.on_canvas.create_button(
                 master=self.window, canvas=canvas,
                 btn_text="Launch Game", tags=["Button", "Yuzu"],
-                row=520, cul=139, padding=10, width=9,
-                description_name="Launch Game", style="success",
+                row=530, cul=125, padding=10, width=9,
+                description_name="Launch Game", style="warning.outline.TButton",
                 command=lambda: launch_GAME(self)
             )
 
@@ -523,9 +523,15 @@ class Manager:
         load_user_choices(self, self.config)
 
     def show_main_canvas(self):
-        self.on_canvas.is_Ani_Paused = True
+        self.on_canvas.is_Ani_Paused = False
         self.cheatcanvas.pack_forget()
         self.maincanvas.pack()
+
+        self.ani_2 = threading.Thread(name="mainbackground",
+                                    target=lambda: self.on_canvas.canvas_animation(self.window, self.maincanvas))
+        if not self.is_Ani_running == True:
+            self.is_Ani_running = True
+            self.ani_2.start()
 
     def show_cheat_canvas(self):
         self.on_canvas.is_Ani_Paused = False
@@ -536,7 +542,7 @@ class Manager:
                                     target=lambda: self.on_canvas.canvas_animation(self.window, self.cheatcanvas))
         if not self.is_Ani_running == True:
             self.is_Ani_running = True
-            self.ani.start()
+            #self.ani.start()
 
     def open_browser(self, web, event=None):
         url = "https://ko-fi.com/maxlastbreath#"
@@ -603,9 +609,8 @@ class Manager:
             width=1200, height=600,
         )
 
-        # Create Gradiant for cheats.
-        self.background_Cheats = self.on_canvas.Photo_Image(
-            image_path="BG_Cheats.png",
+        self.background_UI_Cheats = self.on_canvas.Photo_Image(
+            image_path="BG_Left_Cheats.png",
             width=1200, height=600,
         )
 
@@ -638,7 +643,7 @@ class Manager:
 
         self.background_image = self.on_canvas.Photo_Image(
             image_path=image_path,
-            width=1200, height=600,
+            width=1200, height=600, img_scale=2.0,
             blur=1
         )
 
@@ -646,6 +651,8 @@ class Manager:
             image_path = "custom/cbg.jpg"
         elif os.path.exists("custom/cbg.png"):
             image_path = "custom/cbg.png"
+        else:
+            image_path = "image_cheats.png"
 
         self.blurbackground = self.on_canvas.Photo_Image(
             image_path=image_path,
@@ -713,7 +720,7 @@ class Manager:
     def Cheat_UI_elements(self, canvas):
         self.cheatbg = canvas.create_image(0, -scale(300), anchor="nw", image=self.blurbackground, tags="background")
         canvas.create_image(0, 0, anchor="nw", image=self.background_YuzuBG, tags="overlay-1")
-        canvas.create_image(0, 0, anchor="nw", image=self.background_UI, tags="overlay")
+        canvas.create_image(0, 0, anchor="nw", image=self.background_UI_Cheats, tags="overlay")
 
     def create_tab_buttons(self, canvas):
 
@@ -802,7 +809,7 @@ class Manager:
                 for canvas in self.all_canvas:
                     canvas.itemconfig("overlay-1", image=self.background_RyuBG)
                     canvas.itemconfig("information", text=f"{self.mode} TOTK Optimizer")
-                    canvas.itemconfig("Select-EXE", text=f"Select Ryujinx.exe")
+                    canvas.itemconfig("Select-EXE", text=f"SELECT Ryujinx.exe")
                     canvas.itemconfig("yuzu", state="hidden")
                 self.switch_text.set("Switch to Yuzu")
                 return
@@ -811,7 +818,7 @@ class Manager:
                 for canvas in self.all_canvas:
                     canvas.itemconfig("overlay-1", image=self.background_YuzuBG)
                     canvas.itemconfig("information", text=f"{self.mode} TOTK Optimizer")
-                    canvas.itemconfig("Select-EXE", text=f"Select Yuzu.exe")
+                    canvas.itemconfig("Select-EXE", text=f"SELECT Yuzu.exe")
                     canvas.itemconfig("yuzu", state="normal")
                 # change text
                 self.switch_text.set("Switch to Ryujinx")

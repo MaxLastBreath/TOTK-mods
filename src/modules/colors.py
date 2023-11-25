@@ -25,12 +25,13 @@ class Color(dict):
             "deep-green": "#40b800",
 
             "orange": "#FF9900",
-            "light-orange": "#ffb580",
+            "light-orange": "#FB6C47",
 
             "yellow": "#FFF481",
 
             "pink": "#FF8DF4",
             "deep-pink": "#FF11E7",
+
         }
         super().__init__(Colours)
 
