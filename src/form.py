@@ -1152,6 +1152,7 @@ class Manager:
                     # Resolution scaling for MAX DFPS++
                     Resindex = self.ultracam_options.get("ResolutionNames").index(resolution)
                     current_res = self.ultracam_options.get("ResolutionValues", [""])[Resindex]
+                    ultra_res = self.ultracam_options.get("UltraCamValues", [""])[Resindex]
                     # Yuzu settings
                     if self.mode == "Yuzu":
                         log.info(f"Applying {resolution} in Yuzu.")
@@ -1184,7 +1185,7 @@ class Manager:
                     config['DFPS'] = {'MaxFramerate': fps}
                     config["Features"] = {
                                         "Fov": self.fov_var.get(),
-                                        "ResolutionScale": current_res,
+                                        "ResolutionScale": ultra_res,
                                         "ShadowResolution": shadow_value,
                                         "DisableFog": self.fog_var.get(),
                                         }
