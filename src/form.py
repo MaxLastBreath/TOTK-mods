@@ -213,7 +213,7 @@ class Manager:
                                                             variable=self.upscale_list[0], values=self.upscale_list,
                                                             row=row, cul=cul_tex, drop_cul=cul_sel,
                                                             tags=["text"], tag=None,
-                                                            description_name="Upscale",
+                                                            description_name="Ultracam",
                                                             command=self.update_scaling_settings
                                                             )
         row += 40
@@ -1043,6 +1043,9 @@ class Manager:
                     task
                     time.sleep(0.05)
                 progress_window.destroy()
+
+
+
                 log.info("Tasks have been COMPLETED. Feel free to Launch the game.")
                 return
 

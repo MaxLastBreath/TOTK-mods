@@ -1,6 +1,6 @@
 {
   "ResolutionNames": [ "600p", "720p HD", "1080p FHD", "1440p QHD", "4K UHD", "6K QUHD", "8K UUHD" ],
-  "ResolutionValues": [ "0", "0", "1", "2", "2", "3", "4"],
+  "ResolutionValues": [ "1", "2", "3", "5", "5", "6", "7"],
   "FPS": [ 20, 30, 60],
   "ShadowResolutionNames": [ "Default", "Very Low x103", "Low x206", "Medium x512", "High x1024", "Ultra 1536"],
   "ShadowResolutionValues": [ "0", "103", "206", "512", "1024", "1536" ],

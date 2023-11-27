@@ -417,7 +417,7 @@ class Canvas_Create:
                         y = 0
                         canvas.move("background", scale(800), 0)
             else:
-                time.sleep(1)
+                time.sleep(0.2)
 
     def get_UI_path(self, file_name, folder_name="GUI"):
         if getattr(sys, 'frozen', False):
