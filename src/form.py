@@ -239,6 +239,41 @@ class Manager:
                                                             )
         row += 40
 
+        # Create a label for shadow resolution selection
+        self.dfps_shadow_list = self.dfps_options.get("ShadowResolutionNames", [""])
+        self.shadow_resolution_var = self.on_canvas.create_combobox(
+                                                            master=self.window, canvas=canvas,
+                                                            text="SHADOWS:",
+                                                            variable=value[0], values=self.dfps_shadow_list,
+                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                            tags=["text"], tag="Legacy",
+                                                            description_name="Shadows"
+                                                                    )
+
+        self.ultracam_shadow_list = self.ultracam_options.get("ShadowResolutionNames", [""])
+        self.shadow_resolution_var_new = self.on_canvas.create_combobox(
+                                                            master=self.window, canvas=canvas,
+                                                            text="SHADOWS:",
+                                                            variable=value[0], values=self.ultracam_shadow_list,
+                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                            tags=["text"], tag="UltraCam",
+                                                            description_name="Shadows"
+                                                                    )
+
+        row += 40
+
+        # First Person and FOV
+        self.fp_var = self.on_canvas.create_combobox(
+                                                        master=self.window, canvas=canvas,
+                                                        text="FIRST PERSON:",
+                                                        values=FP_list, variable=FP_list[0],
+                                                        row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                        tags=["text"], tag=None,
+                                                        description_name="First Person"
+                                                    )
+
+        row += 40
+
         # Legacy FPS.
         FPS_values_Legacy = self.dfps_options.get("FPS", [])
         self.fps_var = self.on_canvas.create_combobox(
@@ -265,41 +300,6 @@ class Manager:
 
         row += 40
 
-        # Create a label for shadow resolution selection
-        self.dfps_shadow_list = self.dfps_options.get("ShadowResolutionNames", [""])
-        self.shadow_resolution_var = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
-                                                            text="SHADOW RESOLUTION:",
-                                                            variable=value[0], values=self.dfps_shadow_list,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
-                                                            tags=["text"], tag="Legacy",
-                                                            description_name="Shadows"
-                                                                    )
-
-        self.ultracam_shadow_list = self.ultracam_options.get("ShadowResolutionNames", [""])
-        self.shadow_resolution_var_new = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
-                                                            text="SHADOW RESOLUTION:",
-                                                            variable=value[0], values=self.ultracam_shadow_list,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
-                                                            tags=["text"], tag="UltraCam",
-                                                            description_name="Shadows"
-                                                                    )
-
-        row += 40
-
-        # First Person and FOV
-        self.fp_var = self.on_canvas.create_combobox(
-                                                        master=self.window, canvas=canvas,
-                                                        text="FIRST PERSON:",
-                                                        values=FP_list, variable=FP_list[0],
-                                                        row=row, cul=cul_tex, drop_cul=cul_sel,
-                                                        tags=["text"], tag=None,
-                                                        description_name="First Person"
-                                                    )
-
-        row += 40
-
         # Create a label for UI selection
         self.ui_var = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
@@ -311,11 +311,11 @@ class Manager:
                                                     )
         row += 40
 
-        self.fov_list = self.ultracam_options.get("Fov", [""])
+        fov_list = self.ultracam_options.get("Fov", [""])
         self.fov_var = self.on_canvas.create_combobox(
             master=self.window, canvas=canvas,
             text="FOV:",
-            values=FP_list, variable=FP_list[0],
+            values=fov_list, variable=FP_list[0],
             row=row, cul=cul_tex, drop_cul=cul_sel,
             tags=["text"], tag="UltraCam",
             description_name="Fov"
@@ -1180,7 +1180,7 @@ class Manager:
 
                     config['DFPS'] = {'MaxFramerate': fps}
                     config["Features"] = {
-                                        "Fov": 50,
+                                        "Fov": self.fov_var.get(),
                                         "ResolutionScale": current_res,
                                         "ShadowResolution": shadow_value,
                                         "DisableFog": self.fog_var.get(),

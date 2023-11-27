@@ -48,6 +48,12 @@
 	"Auto Backup Cheats": "Backup save files, every time you click apply In the cheat Menu.",
 	"Gui Animations": "Removes GUI animation, specifically for cheat Menu.\nNote: There shouldn't be need to turn this off.",
 
+	"ULTRACAM - GROUP": "None",
+	"Ultracam": "UltraCam: a single mod featuring resolution scaling, shadow resolutions, dfps, fps, fov, freecam and more!\nZL + DOWN to go into freecam mode!\nZL+Y/A to change Fov\nThe Mod is kept up to date by me.\nA lot more features are available, check GItHub for more controls.\n DFPS Legacy (Outdated): ChucksSeedAndFeed Version of DFPS, featuring resolution scaling and shadow resolution.",
+
+	"Improve Fog": "Reduces the amount of on-screen fog, increasing visual fidelity. \n ULTRACAM- ONLY.",
+	"Fov": "Let's you set default FOV to your desired FOV. \nDoesn't Affect FOV Changes.\nULTRACAM- ONLY.",
+
 	"CHEATS - GROUP": "None",
 
 	"God Mode": "Turn on God Mode",

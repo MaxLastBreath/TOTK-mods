@@ -28,6 +28,7 @@ def save_user_choices(self, config_file, yuzu_path=None, mode=None):
     config['Options']['ShadowResolution'] = self.shadow_resolution_var.get()
     config['Options']['UI'] = self.ui_var.get()
     config['Options']['First Person'] = self.fp_var.get()
+    config['Options']['Fov'] = self.fov_var.get()
 
     # Save the enable/disable choices
     for option_name, option_var in self.selected_options.items():
@@ -83,6 +84,7 @@ def load_user_choices(self, config_file, mode=None):
     self.shadow_resolution_var_new.set(config.get('Options', 'ShadowResolution',
                                               fallback=self.ultracam_options.get("ShadowResolutionNames", [""])[
                                                   0]))  # Shadow Auto
+    self.fov_var.set(config.get('Options', 'Fov', fallback=50))  # FOV 50
     self.ui_var.set(config.get('Options', 'UI', fallback="None"))
     self.fp_var.set(config.get('Options', 'First Person', fallback="Off"))
     # Load the enable/disable choices
