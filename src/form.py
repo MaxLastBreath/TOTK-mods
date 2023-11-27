@@ -79,6 +79,8 @@ class Manager:
         self.maincanvas.pack()
         self.all_canvas.append(self.maincanvas)
 
+        self.selected_options = {}
+
         # Load UI Elements
         self.load_UI_elements(self.maincanvas)
         self.create_tab_buttons(self.maincanvas)
@@ -286,6 +288,18 @@ class Manager:
 
         row += 40
 
+        # First Person and FOV
+        self.fp_var = self.on_canvas.create_combobox(
+                                                        master=self.window, canvas=canvas,
+                                                        text="FIRST PERSON:",
+                                                        values=FP_list, variable=FP_list[0],
+                                                        row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                        tags=["text"], tag=None,
+                                                        description_name="First Person"
+                                                    )
+
+        row += 40
+
         # Create a label for UI selection
         self.ui_var = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
@@ -297,48 +311,21 @@ class Manager:
                                                     )
         row += 40
 
-        # First Person and FOV
-        self.fp_var = self.on_canvas.create_combobox(
-                                                        master=self.window, canvas=canvas,
-                                                        text="FIRST PERSON:",
-                                                        values=FP_list, variable=FP_list[0],
-                                                        row=row, cul=cul_tex, drop_cul=cul_sel,
-                                                        tags=["text"], tag=None,
-                                                        description_name="First Person"
-                                                    )
+        self.fov_list = self.ultracam_options.get("Fov", [""])
+        self.fov_var = self.on_canvas.create_combobox(
+            master=self.window, canvas=canvas,
+            text="FOV:",
+            values=FP_list, variable=FP_list[0],
+            row=row, cul=cul_tex, drop_cul=cul_sel,
+            tags=["text"], tag="UltraCam",
+            description_name="Fov"
+        )
+        row += 40
 
         # XYZ to generate patch.
-
-        row =120
-        cul_tex = 400
-        cul_sel = 550
-
-        # Create labels and enable/disable options for each entry
-        self.selected_options = {}
-        for version_option_name, version_option_value in self.version_options[0].items():
-
-            # Create label
-            if version_option_name not in ["Source", "nsobid", "offset", "version"]:
-
-                # Create checkbox
-                version_option_var = self.on_canvas.create_checkbutton(
-                                                                        master=self.window, canvas=canvas,
-                                                                        text=version_option_name,
-                                                                        variable="Off",
-                                                                        row=row + 40, cul=cul_tex, drop_cul=cul_sel,
-                                                                        tags=["text"], tag=None,
-                                                                        description_name=version_option_name
-                                                                       )
-                self.selected_options[version_option_name] = version_option_var
-                row += 40
-
-            if row >= 480:
-                row = 20
-                cul_tex += 180
-                cul_sel += 180
+        self.create_patches()
 
         # Create a submit button
-
         self.on_canvas.create_button(
             master=self.window, canvas=canvas,
             btn_text="APPLY", tags=["Button"],
@@ -362,6 +349,7 @@ class Manager:
 
     def update_scaling_settings(self, something=None):
         if self.DFPS_var.get() == "UltraCam":
+            self.create_patches()
             for canvas in self.all_canvas:
                 canvas.itemconfig("Legacy", state="hidden")
                 canvas.itemconfig("UltraCam", state="normal")
@@ -374,6 +362,7 @@ class Manager:
                     self.shadow_resolution_var.set("High x1024")
 
         if self.DFPS_var.get() == "DFPS Legacy":
+            self.create_patches()
             for canvas in self.all_canvas:
                 canvas.itemconfig("UltraCam", state="hidden")
                 canvas.itemconfig("Legacy", state="normal")
@@ -381,6 +370,80 @@ class Manager:
                 if self.shadow_resolution_var_new.get() not in self.dfps_shadow_list:
                     self.shadow_resolution_var.set("High x1024")
                     self.shadow_resolution_var_new.set("High x1024")
+
+    def create_patches(self):
+        versionvalues = []
+
+        try:
+            for key_var, value in self.selected_options.items():
+                value = value.get()
+                self.old_patches[key_var] = value
+        except AttributeError as e:
+            self.old_patches = {}
+
+        # Delete the patches before making new ones.
+        self.maincanvas.delete("patches")
+
+        row = 120
+        cul_tex = 400
+        cul_sel = 550
+
+        # Make UltraCam Patches First.
+
+        if self.DFPS_var.get() == "UltraCam":
+            UltraCam_Option = "Improve Fog"
+            self.fog_var = self.on_canvas.create_checkbutton(
+                    master=self.window, canvas=self.maincanvas,
+                    text=UltraCam_Option,
+                    variable="Off",
+                    row=row + 40, cul=cul_tex, drop_cul=cul_sel,
+                    tags=["text"], tag="patches",
+                    description_name="Improve Fog"
+            )
+
+            self.selected_options[UltraCam_Option] = self.fog_var
+            try:
+                if self.old_patches.get(UltraCam_Option) == "On" and not self.old_patches == {}:
+                    self.fog_var.set("On")
+            except AttributeError as e:
+                self.old_patches = {}
+            row += 40
+
+        # Create labels and enable/disable options for each entry
+        for version_option_name, version_option_value in self.version_options[0].items():
+
+            # Create label
+            if version_option_name not in ["Source", "nsobid", "offset", "version"]:
+
+                if self.DFPS_var.get() == "UltraCam" and version_option_name in self.ultracam_options.get(
+                        "Skip_Patches"):
+                    continue
+
+                # Create checkbox
+                version_option_var = self.on_canvas.create_checkbutton(
+                    master=self.window, canvas=self.maincanvas,
+                    text=version_option_name,
+                    variable="Off",
+                    row=row + 40, cul=cul_tex, drop_cul=cul_sel,
+                    tags=["text"], tag="patches",
+                    description_name=version_option_name
+                )
+                self.selected_options[version_option_name] = version_option_var
+
+
+                try:
+                    if self.old_patches.get(version_option_name) == "On" and not self.old_patches == {}:
+                        version_option_var.set("On")
+                except AttributeError as e:
+                    self.old_patches = {}
+
+                # Increase +40 space for each patch.
+                row += 40
+
+            if row >= 480:
+                row = 20
+                cul_tex += 180
+                cul_sel += 180
 
     def update_scaling_variable(self, something=None):
         if self.DFPS_var.get() == "UltraCam":
@@ -1120,7 +1183,7 @@ class Manager:
                                         "Fov": 50,
                                         "ResolutionScale": current_res,
                                         "ShadowResolution": shadow_value,
-                                        "DisableFog": "true"
+                                        "DisableFog": self.fog_var.get(),
                                         }
                     # Max DFPS++ config file.
                     with open(ini_file_path, 'w') as configfile:
@@ -1142,6 +1205,11 @@ class Manager:
                         file.write(version_option.get("nsobid", "") + "\n")
                         file.write(version_option.get("offset", "") + "\n")
                         for key, value in version_option.items():
+
+                            if self.DFPS_var.get() == "UltraCam" and key in self.ultracam_options.get(
+                                    "Skip_Patches"):
+                                continue
+
                             if key not in ["Source", "nsobid", "offset", "version", "Version"] and not self.selected_options[key].get() == "Off":
                                 pattern = r"@enabled\n([\da-fA-F\s]+)\n@stop"
                                 matches = re.findall(pattern, value)
@@ -1156,6 +1224,7 @@ class Manager:
                                 file.write("\n")
                             else:
                                 file.write(" ")
+                        file.write("\n@stop\n")
                 # Update Visual Improvements MOD.
             except PermissionError as e:
                 log.error(f"FAILED TO CREATE MOD PATCH: {e}")

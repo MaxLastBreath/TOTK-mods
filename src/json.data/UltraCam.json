@@ -42,6 +42,12 @@
         40,
         120
     ],
+    "Skip_Patches": [
+        "Improve LOD",
+        "Remove FXAA",
+        "Remove FSR",
+        "Remove QuaReduction"
+    ],
     "RemoveFog": [
         "Enable",
         "Disable"
