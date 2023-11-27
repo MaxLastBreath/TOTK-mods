@@ -38,7 +38,7 @@ class Canvas_Create:
 
     def create_combobox(self, canvas,
                         text, master, description_name=None, variable=any, values=[],
-                        row=40, cul=40, drop_cul=180, width=150,
+                        row=40, cul=40, drop_cul=180, width=150, style="warning",
                         tags=[], tag=None, command=None, is_active=True):
         # create text
         active_color_new = active_color
@@ -79,6 +79,7 @@ class Canvas_Create:
                                 textvariable=new_variable,
                                 values=values,
                                 state="readonly",
+                                bootstyle = style,
                                 )
 
         dropdown_window = canvas.create_window(
@@ -214,7 +215,7 @@ class Canvas_Create:
 
     def create_label(self, master, canvas,
                         text, description_name=None, font=textfont, color=textcolor, active_fill=None,
-                        row=40, cul=40,
+                        row=40, cul=40, anchor="w", justify="left",
                         tags=[], tag=None, outline_tag=None, command=None
                      ):
         # create text
@@ -230,7 +231,8 @@ class Canvas_Create:
                            scale(cul) + scale(1),
                            scale(row) + scale(1),
                            text=text,
-                           anchor="w",
+                           anchor=anchor,
+                           justify=justify,
                            fill=outline_color,
                            font=font,
                            tags=outline_tag,
@@ -240,7 +242,8 @@ class Canvas_Create:
                                        scale(cul),
                                        scale(row),
                                        text=text,
-                                       anchor="w",
+                                       anchor=anchor,
+                                       justify=justify,
                                        fill=color,
                                        font=font,
                                        tags=tags,
@@ -465,3 +468,64 @@ class Canvas_Create:
                 time.sleep(0.5)
             if self.is_effect_active is False:
                 break
+
+class CustomDialog(ttk.Toplevel):
+    def __init__(self, parent, title, message, custom_yes, custom_no, width, height):
+        super().__init__(parent)
+        self.result = None
+        self.title(title)
+        self.geometry(f"{width}x{height}")
+
+        self.on_canvas = Canvas_Create()
+
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+
+        x_coordinate = (screen_width - self.winfo_reqwidth()) // 2
+        y_coordinate = (screen_height - self.winfo_reqheight()) // 2
+        self.geometry(f"+{x_coordinate}+{y_coordinate}")
+
+        canvas = ttk.Canvas(self, width=width, height=height)
+        canvas.pack()
+
+        self.background = self.on_canvas.Photo_Image(
+            image_path="BG_ASK.png",
+            width=width, height=height,
+        )
+
+        canvas.create_image(0, 0, anchor="nw", image=self.background, tags="overlay")
+
+        self.on_canvas.create_label(
+                                    master=self, canvas=canvas,
+                                    text=message, font=("bahnschrift", 15), color=textcolor,
+                                    row=65, cul=width // 2, anchor="c", justify="center",
+                                    tags=["None"]
+                                    )
+
+        self.on_canvas.create_button(
+            master=self, canvas=canvas,
+            btn_text=custom_yes,
+            row=height-40, cul=20, width=8,
+            style="success",
+            tags=["Ask_Yes"],
+            command=self.on_yes
+        )
+
+        self.on_canvas.create_button(
+            master=self, canvas=canvas,
+            btn_text=custom_no,
+            row=height-40, cul=width-(20+80), width=8,
+            style="danger",
+            tags=["Ask_No"],
+            command=self.on_no
+        )
+
+        self.resizable(width=False, height=False)
+
+    def on_yes(self):
+        self.destroy()
+        self.result = True
+
+    def on_no(self):
+        self.destroy()
+        self.result = False

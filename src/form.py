@@ -6,7 +6,7 @@ import re
 from tkinter import filedialog, Toplevel
 from ttkbootstrap.constants import *
 from ttkbootstrap import Style
-from modules.canvas import Canvas_Create
+from modules.canvas import *
 from modules.qt_config import modify_disabled_key, get_config_parser
 from modules.checkpath import checkpath, DetectOS
 from modules.backup import *
@@ -15,7 +15,6 @@ from modules.launch import *
 from modules.config import *
 from configuration.settings import *
 from configuration.settings_config import Setting
-
 
 class Manager:
     def __init__(self, window):
@@ -88,7 +87,7 @@ class Manager:
         # Create Text Position
         row = 40
         cul_tex = 40
-        cul_sel = 180
+        cul_sel = 200
 
         # Run Scripts for checking OS and finding location
         checkpath(self, self.mode)
@@ -105,7 +104,7 @@ class Manager:
         values = list(presets.keys())
         self.selected_preset = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
-                                                            text="OPTIMIZER PESETS:",
+                                                            text="OPTIMIZER PRESETS:",
                                                             variable=values[0], values=values,
                                                             row=row, cul=cul_tex,
                                                             tags=["text"], tag="Yuzu",
@@ -158,6 +157,7 @@ class Manager:
         else:
             text = "Backup Save Files"
             command = None
+
         self.on_canvas.create_label(
                                     master=self.window, canvas=canvas,
                                     text=text,
@@ -211,7 +211,7 @@ class Manager:
                                                             master=self.window, canvas=canvas,
                                                             text="UPSCALING VERSION:",
                                                             variable=self.upscale_list[0], values=self.upscale_list,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
                                                             tags=["text"], tag=None,
                                                             description_name="Ultracam",
                                                             command=self.update_scaling_settings
@@ -223,7 +223,7 @@ class Manager:
                                                             master=self.window, canvas=canvas,
                                                             text="RESOLUTION:",
                                                             variable=value[0], values=values,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
                                                             tags=["text"], tag=None,
                                                             description_name="Resolution",
                                                             )
@@ -233,7 +233,7 @@ class Manager:
                                                             master=self.window, canvas=canvas,
                                                             text="ASPECT RATIO:",
                                                             variable=AR_list[0], values=AR_list,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
                                                             tags=["text"], tag=None,
                                                             description_name="Aspect Ratio",
                                                             )
@@ -245,7 +245,7 @@ class Manager:
                                                             master=self.window, canvas=canvas,
                                                             text="SHADOWS:",
                                                             variable=value[0], values=self.dfps_shadow_list,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
                                                             tags=["text"], tag="Legacy",
                                                             description_name="Shadows"
                                                                     )
@@ -255,7 +255,7 @@ class Manager:
                                                             master=self.window, canvas=canvas,
                                                             text="SHADOWS:",
                                                             variable=value[0], values=self.ultracam_shadow_list,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
                                                             tags=["text"], tag="UltraCam",
                                                             description_name="Shadows"
                                                                     )
@@ -267,7 +267,7 @@ class Manager:
                                                         master=self.window, canvas=canvas,
                                                         text="FIRST PERSON:",
                                                         values=FP_list, variable=FP_list[0],
-                                                        row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                        row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
                                                         tags=["text"], tag=None,
                                                         description_name="First Person"
                                                     )
@@ -280,7 +280,7 @@ class Manager:
                                                             master=self.window, canvas=canvas,
                                                             text="FPS:",
                                                             variable=value[0], values=FPS_values_Legacy,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
                                                             tags=["text", "FPS_Legacy"], tag="Legacy",
                                                             description_name="FPS"
                                                       )
@@ -292,7 +292,7 @@ class Manager:
                                                             master=self.window, canvas=canvas,
                                                             text="FPS:",
                                                             variable=value[0], values=self.FPS_values_New,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
                                                             tags=["text", "UltraCam"], tag="UltraCam",
                                                             description_name="FPS",
                                                             command=self.update_scaling_variable
@@ -305,7 +305,7 @@ class Manager:
                                                             master=self.window, canvas=canvas,
                                                             text="UI:",
                                                             variable=UI_list[0], values=UI_list,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,
+                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
                                                             tags=["text"], tag=None,
                                                             description_name="UI"
                                                     )
@@ -316,7 +316,7 @@ class Manager:
             master=self.window, canvas=canvas,
             text="FOV:",
             values=fov_list, variable=FP_list[0],
-            row=row, cul=cul_tex, drop_cul=cul_sel,
+            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
             tags=["text"], tag="UltraCam",
             description_name="Fov"
         )
@@ -702,7 +702,7 @@ class Manager:
         self.background_image = self.on_canvas.Photo_Image(
             image_path=image_path,
             width=1200, height=600,
-            blur=1
+            blur=2
         )
 
         if os.path.exists("custom/cbg.jpg"):
@@ -1043,8 +1043,13 @@ class Manager:
                     task
                     time.sleep(0.05)
                 progress_window.destroy()
+                message = (f"MODS HAVE BEEN APPLIED!\n\n"
 
-
+                           )
+                dialog = CustomDialog(self, "TOTK Optimizer Tasks Completed", message, "Donate", "No Thanks", width=300, height=200)
+                dialog.wait_window()
+                if dialog.result:
+                    self.open_browser("kofi")
 
                 log.info("Tasks have been COMPLETED. Feel free to Launch the game.")
                 return
