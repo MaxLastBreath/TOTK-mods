@@ -298,8 +298,6 @@ class Canvas_Create:
                                               image_path=new_item_path,
                                               width=img_1.width(), height=img_1.height(),
                                              )
-
-
         return tag_1, tag_2
 
     def set_image(self, canvas,
@@ -470,7 +468,7 @@ class Canvas_Create:
                 break
 
 class CustomDialog(ttk.Toplevel):
-    def __init__(self, parent, title, message, custom_yes, custom_no, width, height):
+    def __init__(self, parent, title, message, custom_yes = str, custom_no = str, yes_img_1 = None, yes_img_2=None, width = int, height = int):
         super().__init__(parent)
         self.result = None
         self.title(title)
@@ -498,34 +496,42 @@ class CustomDialog(ttk.Toplevel):
         self.on_canvas.create_label(
                                     master=self, canvas=canvas,
                                     text=message, font=("bahnschrift", 15), color=textcolor,
-                                    row=65, cul=width // 2, anchor="c", justify="center",
+                                    row=10, anchor="nw", justify="center",
                                     tags=["None"]
                                     )
 
-        self.on_canvas.create_button(
-            master=self, canvas=canvas,
-            btn_text=custom_yes,
-            row=height-40, cul=20, width=8,
-            style="success",
-            tags=["Ask_Yes"],
-            command=self.on_yes
-        )
+        if (yes_img_1 is not None and yes_img_2 is not None):
+            self.on_canvas.image_Button(
+                canvas=canvas,
+                row=height - (yes_img_1.height()+50), cul=20,
+                img_1=yes_img_1, img_2=yes_img_2,
+                command=self.on_yes
+            )
+        else:
+            self.on_canvas.create_button(
+                master=self, canvas=canvas,
+                btn_text=custom_yes,
+                row=height-60, cul=20 - (20+80), width=8,
+                style="danger",
+                tags=["Ask_No"],
+                command=self.on_yes
+            )
 
         self.on_canvas.create_button(
             master=self, canvas=canvas,
             btn_text=custom_no,
-            row=height-40, cul=width-(20+80), width=8,
-            style="danger",
+            row=height-60, cul=width-(20+80), width=8,
+            style="warning",
             tags=["Ask_No"],
             command=self.on_no
         )
 
         self.resizable(width=False, height=False)
 
-    def on_yes(self):
+    def on_yes(self, dummy=None):
         self.destroy()
         self.result = True
 
-    def on_no(self):
+    def on_no(self, dummy=None):
         self.destroy()
         self.result = False

@@ -943,7 +943,7 @@ class Manager:
                 filetypes=[("Executable files", "*.exe"), ("All Files", "*.*")]
             )
             executable_name = yuzu_path
-            if executable_name.endswith("Ryujinx.exe"):
+            if executable_name.endswith("Ryujinx.exe") or executable_name.endswith("Ryujinx.Ava.exe"):
                 if self.mode == "Yuzu":
                     self.switchmode("true")
             if executable_name.endswith("yuzu.exe"):
@@ -1043,10 +1043,30 @@ class Manager:
                     task
                     time.sleep(0.05)
                 progress_window.destroy()
-                message = (f"MODS HAVE BEEN APPLIED!\n\n"
-
+                message = (f"MODS HAVE BEEN APPLIED!\n"
+                           f"If you like TOTK Optimizer\n"
+                           f"And the UltraCam Mod.\n"
+                           f"Feel free to check out my Kofi.\n"
                            )
-                dialog = CustomDialog(self, "TOTK Optimizer Tasks Completed", message, "Donate", "No Thanks", width=300, height=200)
+                # Kofi button.
+                element_1 = self.on_canvas.Photo_Image(
+                    image_path="support.png",
+                    width=70, height=48,
+                )
+
+                element_2 = self.on_canvas.Photo_Image(
+                    image_path="support_active.png",
+                    width=70, height=48,
+                )
+
+                dialog = CustomDialog(self, "TOTK Optimizer Tasks Completed",
+                                      message,
+                                      yes_img_1=element_1,
+                                      yes_img_2=element_2,
+                                      custom_no="No Thanks",
+                                      width=300,
+                                      height=200
+                                      )
                 dialog.wait_window()
                 if dialog.result:
                     self.open_browser("kofi")

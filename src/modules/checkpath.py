@@ -52,6 +52,7 @@ def checkpath(self, mode):
                 self.load_dir = os.path.join(f"{self.Globaldir}", "mods", "contents", "0100f2c0115b6000")
                 self.Yuzudir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents",
                                             "0100f2c0115b6000")
+                self.ryujinx_config = os.path.join(self.Globaldir, "Config.json")
                 return
 
             self.configdir = None
@@ -59,6 +60,7 @@ def checkpath(self, mode):
             self.nand_dir = os.path.join(f"{self.Globaldir}", "bis", "user", "save")
             self.load_dir = os.path.join(f"{self.Globaldir}", "mods", "contents", "0100f2C0115B6000")
             self.Yuzudir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents", "0100f2C0115B6000")
+            self.ryujinx_config = os.path.join(self.Globaldir, "Config.json")
             return
     # Default Dir for Windows or user folder.
     elif self.os_platform == "Windows":
