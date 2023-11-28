@@ -10,6 +10,8 @@ config.read(localconfig)
 w_scale = config.get("Settings", "scale", fallback="On")
 
 def Auto_SF():
+    if w_scale == "Off":
+        return 1.0
     sf = 1.0
     if w_scale == "1.0x":
         sf = 1.0
@@ -43,6 +45,5 @@ sf = Auto_SF()
 def scale(scale):
     if sf == 1.0:
         return scale
-    true_vr = float(scale * sf)
-    return int(true_vr)
+    return int(float(scale * sf))
 

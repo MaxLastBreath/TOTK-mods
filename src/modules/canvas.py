@@ -468,11 +468,11 @@ class Canvas_Create:
                 break
 
 class CustomDialog(ttk.Toplevel):
-    def __init__(self, parent, title, message, custom_yes = str, custom_no = str, yes_img_1 = None, yes_img_2=None, width = int, height = int):
+    def __init__(self, parent, title, message, custom_yes = str, custom_no = str, yes_img_1 = None, yes_img_2=None, no_img_1= None, no_img_2= None, width = int, height = int):
         super().__init__(parent)
         self.result = None
         self.title(title)
-        self.geometry(f"{width}x{height}")
+        self.geometry(f"{scale(width)}x{scale(height)}")
 
         self.on_canvas = Canvas_Create()
 
@@ -483,7 +483,7 @@ class CustomDialog(ttk.Toplevel):
         y_coordinate = (screen_height - self.winfo_reqheight()) // 2
         self.geometry(f"+{x_coordinate}+{y_coordinate}")
 
-        canvas = ttk.Canvas(self, width=width, height=height)
+        canvas = ttk.Canvas(self, width=scale(width), height=scale(height))
         canvas.pack()
 
         self.background = self.on_canvas.Photo_Image(
@@ -496,14 +496,14 @@ class CustomDialog(ttk.Toplevel):
         self.on_canvas.create_label(
                                     master=self, canvas=canvas,
                                     text=message, font=("bahnschrift", 15), color=textcolor,
-                                    row=10, anchor="nw", justify="center",
+                                    row=scale(10), anchor="nw", justify="center",
                                     tags=["None"]
                                     )
 
         if (yes_img_1 is not None and yes_img_2 is not None):
             self.on_canvas.image_Button(
                 canvas=canvas,
-                row=height - (yes_img_1.height()+50), cul=20,
+                row=scale(height - (yes_img_1.height()+50)), cul=scale(20),
                 img_1=yes_img_1, img_2=yes_img_2,
                 command=self.on_yes
             )
@@ -511,20 +511,28 @@ class CustomDialog(ttk.Toplevel):
             self.on_canvas.create_button(
                 master=self, canvas=canvas,
                 btn_text=custom_yes,
-                row=height-60, cul=20 - (20+80), width=8,
+                row=scale(height-60), cul=scale(20 - (20+80)), width=8,
                 style="danger",
-                tags=["Ask_No"],
+                tags=["Ask_Yes"],
                 command=self.on_yes
             )
 
-        self.on_canvas.create_button(
-            master=self, canvas=canvas,
-            btn_text=custom_no,
-            row=height-60, cul=width-(20+80), width=8,
-            style="warning",
-            tags=["Ask_No"],
-            command=self.on_no
-        )
+        if (no_img_1 is not None and no_img_2 is not None):
+            self.on_canvas.image_Button(
+                canvas=canvas,
+                row=scale(height - (no_img_1.height()+50)), cul=scale(width-(20+no_img_1.width())),
+                img_1=no_img_1, img_2=no_img_2,
+                command=self.on_no
+            )
+        else:
+            self.on_canvas.create_button(
+                master=self, canvas=canvas,
+                btn_text=custom_yes,
+                row=scale(height-60), cul=scale(width-(20)), width=8,
+                style="warning",
+                tags=["Ask_No"],
+                command=self.on_no
+            )
 
         self.resizable(width=False, height=False)
 

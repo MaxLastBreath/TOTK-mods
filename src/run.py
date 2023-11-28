@@ -7,8 +7,8 @@ if __name__ == "__main__":
     window = ttk.Window(scaling=sf)
     window.title(f"TOTK Optimizer {textver}")
     main = Manager(window)
-    window_width = scale(1200)
-    window_height = scale(600)
+    window_width = 1200
+    window_height = 600
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
     x_position = (screen_width - window_width) // 2
