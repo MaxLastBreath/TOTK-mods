@@ -1196,11 +1196,13 @@ class Manager:
                         # custom resolution scale
                         write_yuzu_config(self.TOTKconfig, "Renderer", "resolution_setup", current_res)
                         write_yuzu_config(self.TOTKconfig, "Core", "memory_layout_mode", "0")
+
                     # Ryujinx setting.
                     if self.mode == "Ryujinx":
-                        write_ryujinx_config(self.ryujinx_config, "res_scale", current_res)
-                        log.info("Do nothing for now.")
-
+                        try:
+                            write_ryujinx_config(self.ryujinx_config, "res_scale", current_res)
+                        except Exception as e:
+                            log.error("Ryujinx config_file not found, operation will continue without resolution cahnges.")
 
                     # set FPS for Max DFPS++
                     ini_file_directory = os.path.join(self.load_dir, "Mod Manager Patch", "romfs", "ultracam")
@@ -1320,10 +1322,13 @@ class Manager:
             link = None
             if DFPS_ver == "DFPS Legacy":
                 self.remove_list.append("DFPS")
+                self.add_list.append("Max DFPS++")
                 self.add_list.append("UltraCam")
+
                 link = DFPS_dict.get("Latest")
             if DFPS_ver == "UltraCam":
                 self.remove_list.append("UltraCam")
+                self.add_list.append("Max DFPS++")
                 self.add_list.append("DFPS")
                 link = New_DFPS_Download
 

@@ -102,7 +102,6 @@ outline_color = html_color[toutline]
 active_color = html_color[tactive]
 BigTextcolor = html_color["light-green"]
 
-
 style = "danger"
 
 # URLS
@@ -113,7 +112,7 @@ versionurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scr
 descurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/Description.json"
 ultracam = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/UltraCam.json"
 
-# Download MAX DFPS++
+# Download UltraCam
 New_DFPS_Download = "https://github.com/MaxLastBreath/TOTK-mods/raw/main/scripts/Mods/UltraCam/UltraCam.zip"
 
 description = load_json("Description.json", descurl)
