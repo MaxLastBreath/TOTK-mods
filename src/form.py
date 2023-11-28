@@ -1240,7 +1240,7 @@ class Manager:
                             log.error("Ryujinx config_file not found, operation will continue without resolution cahnges.")
 
                     # set FPS for Max DFPS++
-                    ini_file_directory = os.path.join(self.load_dir, "Mod Manager Patch", "romfs", "ultracam")
+                    ini_file_directory = os.path.join(self.load_dir, "Mod Manager Patch", "romfs", "UltraCam")
                     os.makedirs(ini_file_directory, exist_ok=True)
                     ini_file_path = os.path.join(ini_file_directory, "maxlastbreath.ini")
 
