@@ -520,7 +520,7 @@ class CustomDialog(ttk.Toplevel):
         if (no_img_1 is not None and no_img_2 is not None):
             self.on_canvas.image_Button(
                 canvas=canvas,
-                row=scale(height - (no_img_1.height()+50)), cul=scale(width-(20+no_img_1.width())),
+                row=scale(height - (no_img_1.height()+50)), cul=scale(width-(20+scale(no_img_1.width()))),
                 img_1=no_img_1, img_2=no_img_2,
                 command=self.on_no
             )
