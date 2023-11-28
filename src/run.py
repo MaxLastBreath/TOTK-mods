@@ -13,6 +13,7 @@ if __name__ == "__main__":
     screen_height = window.winfo_screenheight()
     x_position = (screen_width - window_width) // 2
     y_position = (screen_height - window_height) // 2
+    window.minsize(window_width, window_height)
     window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
     window.resizable(True, True)
     ttk.Style().configure('TButton', foreground='white', font=('Comic Sans MS', 10, 'bold'))
