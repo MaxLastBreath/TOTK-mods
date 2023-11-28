@@ -325,23 +325,58 @@ class Manager:
         # XYZ to generate patch.
         self.create_patches()
 
-        # Create a submit button
-        self.on_canvas.create_button(
-            master=self.window, canvas=canvas,
-            btn_text="APPLY", tags=["Button"],
-            row=530, cul=25, padding=10, width=9,
-            description_name="Apply", style="warning",
-            command=self.submit
+        self.apply_element = self.on_canvas.Photo_Image(
+                        image_path="apply.png",
+                        width=int(70*1.5), height=int(48*1.5),
+                        )
+
+        self.apply_element_active = self.on_canvas.Photo_Image(
+                        image_path="apply_active.png",
+                        width=int(70*1.5), height=int(48*1.5),
+                        )
+
+        self.launch_element = self.on_canvas.Photo_Image(
+                        image_path="launch.png",
+                        width=int(70*1.5), height=int(48*1.5),
+                        )
+        self.launch_element_active = self.on_canvas.Photo_Image(
+                        image_path="launch_active.png",
+                        width=int(70*1.5), height=int(48*1.5),
+                        )
+
+        self.on_canvas.image_Button(
+            canvas=canvas,
+            row=510, cul=25,
+            img_1=self.apply_element, img_2=self.apply_element_active,
+            command=lambda event: self.submit()
         )
-        if self.os_platform == "Windows":
-            # Create a submit button
-            self.on_canvas.create_button(
-                master=self.window, canvas=canvas,
-                btn_text="Launch Game", tags=["Button", "Yuzu"],
-                row=530, cul=125, padding=10, width=9,
-                description_name="Launch Game", style="warning.outline.TButton",
-                command=lambda: launch_GAME(self)
-            )
+
+        self.on_canvas.image_Button(
+            canvas=canvas,
+            row=510, cul=25 + self.apply_element.width(),
+            img_1=self.launch_element, img_2=self.launch_element_active,
+            command=lambda event: launch_GAME(self)
+        )
+
+
+        # Create a submit button
+        #self.on_canvas.create_button(
+        #    master=self.window, canvas=canvas,
+        #    btn_text="APPLY", tags=["Button"],
+        #    row=530, cul=25, padding=10, width=9,
+        #    description_name="Apply", style="warning",
+        #    command=self.submit
+        #)
+
+        #if self.os_platform == "Windows":
+        #    # Create a submit button
+        #    self.on_canvas.create_button(
+        #        master=self.window, canvas=canvas,
+        #        btn_text="Launch Game", tags=["Button", "Yuzu"],
+        #        row=530, cul=125, padding=10, width=9,
+        #        description_name="Launch Game", style="warning.outline.TButton",
+        #        command=lambda: launch_GAME(self)
+        #    )
 
         # Load Saved User Options.
         load_user_choices(self, self.config)

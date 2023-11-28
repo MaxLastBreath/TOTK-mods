@@ -120,7 +120,7 @@ def checkpath(self, mode):
                 self.ryujinx_config = os.path.join(portablefolder, "Config.json")
                 self.nand_dir = os.path.join(f"{portablefolder}", "bis", "user", "save")
                 self.load_dir = os.path.join(f"{portablefolder}", "mods", "contents", "0100f2C0115b6000")
-                self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", "0100f2C0115B6000")
+                self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", z"Ryujinx", "mods", "contents", "0100f2C0115B6000")
                 return
             else:
                 self.Globaldir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx")
