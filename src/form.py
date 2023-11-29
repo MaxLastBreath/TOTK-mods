@@ -1103,20 +1103,21 @@ class Manager:
                     image_path="no_thanks_active.png",
                     width=70, height=48,
                 )
-
-                dialog = CustomDialog(self, "TOTK Optimizer Tasks Completed",
-                                      message,
-                                      yes_img_1=element_1,
-                                      yes_img_2=element_2,
-                                      no_img_1=element_3,
-                                      no_img_2=element_4,
-                                      custom_no="No Thanks",
-                                      width=300,
-                                      height=200
-                                      )
-                dialog.wait_window()
-                if dialog.result:
-                    self.open_browser("kofi")
+                
+                if not self.os_platform == "Linux":
+                    dialog = CustomDialog(self, "TOTK Optimizer Tasks Completed",
+                                          message,
+                                          yes_img_1=element_1,
+                                          yes_img_2=element_2,
+                                          no_img_1=element_3,
+                                          no_img_2=element_4,
+                                          custom_no="No Thanks",
+                                          width=300,
+                                          height=200
+                                          )
+                    dialog.wait_window()
+                    if dialog.result:
+                        self.open_browser("kofi")
 
                 log.info("Tasks have been COMPLETED. Feel free to Launch the game.")
                 return
