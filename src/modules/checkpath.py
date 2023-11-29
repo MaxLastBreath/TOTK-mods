@@ -36,9 +36,9 @@ def checkpath(self, mode):
 
             config_parser = configparser.ConfigParser()
             config_parser.read(self.configdir)
-            self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory',fallback=os.path.join(self.Globaldir, "nand")))
-            self.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=os.path.join(self.Globaldir, "load", "0100F2C0115B6000"))))
-            self.Yuzudir = os.path.join(home_directory, ".local", "share", "yuzu", "load", "0100F2C0115B6000")
+            self.nand_dir = os.path.normpath(os.path.join(self.Globaldir, "nand"))
+            self.load_dir = os.path.normpath(os.path.join(self.Globaldir, "load", "0100F2C0115B6000"))
+            self.Yuzudir = os.path.normpath(os.path.join(home_directory, ".local", "share", "yuzu", "load", "0100F2C0115B6000"))
             return
 
         if mode == "Ryujinx":
