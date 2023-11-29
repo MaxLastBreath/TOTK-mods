@@ -1,4 +1,4 @@
-__TOTAL DOWNLOADS__ 47778
+__TOTAL DOWNLOADS__ 47829
 manager-1.0.0 - Date: 2023-07-23T02:22:07Z
 Total Count: 1880
 Linux Downloads: 117
@@ -55,48 +55,48 @@ Linux Downloads: 285
 Windows Downloads: 1917
 
 manager-1.3.3 - Date: 2023-09-07T19:31:00Z
-Total Count: 29384
+Total Count: 29386
 Linux Downloads: 1633
-Windows Downloads: 10376
+Windows Downloads: 10378
 
 manager-1.3.4 - Date: 2023-10-16T17:44:08Z
-Total Count: 29603
+Total Count: 29605
 Linux Downloads: 39
 Windows Downloads: 180
 
 manager-1.4.0 - Date: 2023-10-17T11:04:45Z
-Total Count: 33706
-Linux Downloads: 604
-Windows Downloads: 3499
+Total Count: 33714
+Linux Downloads: 605
+Windows Downloads: 3504
 
 manager-1.4.1 - Date: 2023-10-17T18:19:41Z
-Total Count: 36221
+Total Count: 36229
 Linux Downloads: 347
 Windows Downloads: 2168
 
 manager-1.4.2 - Date: 2023-10-24T01:46:18Z
-Total Count: 37319
+Total Count: 37331
 Linux Downloads: 180
-Windows Downloads: 918
+Windows Downloads: 922
 
 manager-1.4.3 - Date: 2023-10-24T14:32:55Z
-Total Count: 47405
+Total Count: 47418
 Linux Downloads: 1387
-Windows Downloads: 8699
+Windows Downloads: 8700
 
 manager-1.5.0 - Date: 2023-11-28T16:19:31Z
-Total Count: 47773
-Linux Downloads: 44
-Windows Downloads: 324
+Total Count: 47804
+Linux Downloads: 45
+Windows Downloads: 341
 
-manager-1.5.1 - Date: 2023-11-29T08:26:10Z
-Total Count: 47778
-Linux Downloads: 1
-Windows Downloads: 4
+manager-1.5.1 - Date: 2023-11-29T09:04:35Z
+Total Count: 47829
+Linux Downloads: 2
+Windows Downloads: 23
 
 
 
 --TOTAL VERSION COUNT--
-Of which Linux has: 6308 and 12% Downloads
-Of which Windows has 41470 and 76% Downloads
-As of <built-in function ctime> Total download count is: 47778
+Of which Linux has: 6311 and 12% Downloads
+Of which Windows has 41518 and 76% Downloads
+As of <built-in function ctime> Total download count is: 47829
