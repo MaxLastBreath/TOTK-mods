@@ -37,10 +37,9 @@ def checkpath(self, mode):
             config_parser = configparser.ConfigParser()
             config_parser.read(self.configdir)
             self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{self.Globaldir}/nand'))
-            self.load_dir = os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'No Config'))
-            if self.load_dir == "No Config":
-                self.nand_dir = os.path.normpath(os.path.join(self.Globaldir, "nand"))
-                self.load_dir = os.path.normpath(os.path.join(self.Globaldir, "load"))
+            self.load_dir = os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{self.Globaldir}/load'))
+            if self.load_dir.startswith('"'):
+                self.load_dir = self.load_dir.strip('"')
             self.load_dir = os.path.join(self.load_dir, "0100F2C0115B6000")
 
             self.Yuzudir = os.path.normpath(os.path.join(home_directory, ".local", "share", "yuzu", "load", "0100F2C0115B6000"))
