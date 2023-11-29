@@ -351,9 +351,10 @@ class Manager:
             command=lambda event: self.submit()
         )
 
+        # reverse scale.
         self.on_canvas.image_Button(
             canvas=canvas,
-            row=510, cul=25 + self.apply_element.width(),
+            row=510, cul=25 + int(self.apply_element.width() / sf),
             img_1=self.launch_element, img_2=self.launch_element_active,
             command=lambda event: launch_GAME(self)
         )
@@ -1103,7 +1104,7 @@ class Manager:
                     image_path="no_thanks_active.png",
                     width=70, height=48,
                 )
-                
+
                 if not self.os_platform == "Linux":
                     dialog = CustomDialog(self, "TOTK Optimizer Tasks Completed",
                                           message,
