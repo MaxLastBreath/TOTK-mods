@@ -50,8 +50,10 @@
    - Adjusts FPS Dynamically to avoid slow downs
 - Triple Buffer
    - Forces TOTK Double Buffer to a Triple Buffer helping eliminate stuttering and makes the game run smoother.
-Improve Fog
+- Improve Fog
    - Improves the ingame fog layer around link, making the game look cleaner.
+- Fov
+   - Let's you set any FOV you desire, as well as change it in game, in real time.
 ### **Legacy Scaling & It's Options.**
 - Resolution
    - Anything past 1080p requires external changes to Yuzu settings. This is done rather automatically by the Optimizer.
