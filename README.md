@@ -38,17 +38,17 @@
 - Select Settings
   - Optimized settings for TOTK only.
 ### **UltraCam & It's Options.**
-Freecam
+- Freecam
    - Pad Down + ZL, unlocks the camera. (More options below)
 - Resolution
    - All the resolutions require custom setting applied to Yuzu and a Custom mod, automatically done by the Optimizer.
    - Yuzu external Yuzu/Ryujinx upscaler and an external patch for each different resolution to make it look good on all resolutions
 - FPS
-   - Supports FPS cap between 20, 30, 60 FPS.
+   - Supports FPS cap between 20, 30, 60.
    - CNTRL + U in game to unlock FPS.
-Dynamic FPS
+- Dynamic FPS
    - Adjusts FPS Dynamically to avoid slow downs
-Triple Buffer
+- Triple Buffer
    - Forces TOTK Double Buffer to a Triple Buffer helping eliminate stuttering and makes the game run smoother.
 Improve Fog
    - Improves the ingame fog layer around link, making the game look cleaner.
