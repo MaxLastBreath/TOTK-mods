@@ -88,7 +88,7 @@
 # <p align=center> ⭐ [Changelogs](https://github.com/MaxLastBreath/TOTK-mods/releases) ⭐ </p>
 
 # Copyright Source & Credits
-- [Triple Buffering](https://github.com/masagrator)
+- [Triple Buffering - MasaGratoR](https://github.com/masagrator)
 - [Dynamic FPS Mod](https://www.reddit.com/user/ChucksFeedAndSeed/)
 - [Blackscreen FIX](https://www.reddit.com/user/MarethyuX)
 - [Controller UI mods](https://gamebanana.com/members/1944248)
