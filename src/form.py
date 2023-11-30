@@ -1237,7 +1237,7 @@ class Manager:
                     # Ryujinx setting.
                     if self.mode == "Ryujinx":
                         try:
-                            write_ryujinx_config(self.ryujinx_config, "res_scale", current_res)
+                            write_ryujinx_config(self.ryujinx_config, "res_scale", int(current_res))
                         except Exception as e:
                             log.error("Ryujinx config_file not found, operation will continue without resolution cahnges.")
 
