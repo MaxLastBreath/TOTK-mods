@@ -1,0 +1,9 @@
+pyinstaller
+requests
+Pillow
+patool
+tk
+ttkbootstrap
+screeninfo
+psutil
+GPUtil
