@@ -1233,10 +1233,19 @@ class Manager:
                         # custom resolution scale
                         write_yuzu_config(self.TOTKconfig, "Renderer", "resolution_setup", current_res)
                         write_yuzu_config(self.TOTKconfig, "Core", "memory_layout_mode", "0")
+                        if resolution == "1440p QHD":
+                            write_yuzu_config(self.TOTKconfig, "System", "use_docked_mode", "0")
+                        else:
+                            write_yuzu_config(self.TOTKconfig, "System", "use_docked_mode", "1")
+
 
                     # Ryujinx setting.
                     if self.mode == "Ryujinx":
                         try:
+                            if resolution == "1440p QHD":
+                                write_ryujinx_config(self.ryujinx_config, "docked_mode", "false")
+                            else:
+                                write_ryujinx_config(self.ryujinx_config, "docked_mode", "true")
                             write_ryujinx_config(self.ryujinx_config, "res_scale", int(current_res))
                         except Exception as e:
                             log.error("Ryujinx config_file not found, operation will continue without resolution cahnges.")
