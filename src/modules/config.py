@@ -5,7 +5,7 @@ import os, json, uuid
 def save_user_choices(self, config_file, yuzu_path=None, mode=None):
     log.info(f"Saving user choices in {localconfig}")
     config = configparser.ConfigParser()
-    if os.path.exists(config_file, encoding="utf-8"):
+    if os.path.exists(config_file):
         config.read(config_file)
 
     if mode == "Cheats":
