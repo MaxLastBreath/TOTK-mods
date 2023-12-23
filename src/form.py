@@ -350,14 +350,14 @@ class Manager:
             img_1=self.apply_element, img_2=self.apply_element_active,
             command=lambda event: self.submit()
         )
-
-        # reverse scale.
-        self.on_canvas.image_Button(
-            canvas=canvas,
-            row=510, cul=25 + int(self.apply_element.width() / sf),
-            img_1=self.launch_element, img_2=self.launch_element_active,
-            command=lambda event: launch_GAME(self)
-        )
+        if self.os_platform == "Windows":
+            # reverse scale.
+            self.on_canvas.image_Button(
+                canvas=canvas,
+                row=510, cul=25 + int(self.apply_element.width() / sf),
+                img_1=self.launch_element, img_2=self.launch_element_active,
+                command=lambda event: launch_GAME(self)
+            )
 
 
         # Create a submit button
