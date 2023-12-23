@@ -1011,12 +1011,12 @@ class Manager:
     def load_yuzu_path(self, config_file):
         if self.mode == "Yuzu":
             config = configparser.ConfigParser()
-            config.read(config_file)
+            config.read(config_file, encoding="utf-8")
             yuzu_path = config.get('Paths', 'yuzupath', fallback="Appdata")
             return yuzu_path
         if self.mode == "Ryujinx":
             config = configparser.ConfigParser()
-            config.read(config_file)
+            config.read(config_file, encoding="utf-8")
             ryujinx_path = config.get('Paths', 'ryujinxpath', fallback="Appdata")
             return ryujinx_path
 

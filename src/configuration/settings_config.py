@@ -190,7 +190,7 @@ class Setting:
         get_setting()
 
         config = configparser.ConfigParser()
-        config.read(localconfig)
+        config.read(localconfig, encoding="utf-8")
         if not config.has_section("Settings"):
             config["Settings"] = {}
         config["Settings"]["font"] = self.font_var.get()
@@ -223,7 +223,7 @@ class Setting:
 
     def loadconfig(self, canvas):
         config = configparser.ConfigParser()
-        config.read(localconfig)
+        config.read(localconfig, encoding="utf-8")
 
         self.font_var.set(config.get("Settings", "font", fallback=font))
         self.color_var.set(config.get("Settings", "color", fallback=tcolor))

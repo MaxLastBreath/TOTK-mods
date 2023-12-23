@@ -5,7 +5,7 @@ import os, json, uuid
 def save_user_choices(self, config_file, yuzu_path=None, mode=None):
     log.info(f"Saving user choices in {localconfig}")
     config = configparser.ConfigParser()
-    if os.path.exists(config_file):
+    if os.path.exists(config_file, encoding="utf-8"):
         config.read(config_file)
 
     if mode == "Cheats":
@@ -56,7 +56,7 @@ def save_user_choices(self, config_file, yuzu_path=None, mode=None):
 
 def load_user_choices(self, config_file, mode=None):
     config = configparser.ConfigParser()
-    config.read(config_file)
+    config.read(config_file, encoding="utf-8")
 
     if mode == "Cheats":
         self.cheat_version.set(config.get("Manager", "Cheat_Version", fallback="Version - 1.2.0"))
@@ -103,7 +103,7 @@ def load_user_choices(self, config_file, mode=None):
 
 def write_yuzu_config(configfile, section, setting, selection):
     yuzuconfig = configparser.ConfigParser()
-    yuzuconfig.read(configfile)
+    yuzuconfig.read(configfile, encoding="utf-8")
     if not yuzuconfig.has_section(section):
         yuzuconfig[f"{section}"] = {}
     yuzuconfig[f"{section}"][f"{setting}\\use_global"] = "false"

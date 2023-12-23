@@ -57,7 +57,7 @@ def load_json(name, url):
 
 
 time_config = configparser.ConfigParser()
-time_config.read(localconfig)
+time_config.read(localconfig, encoding="utf-8")
 
 old_time = float(time_config.get("Time", "api", fallback=0))
 

@@ -36,7 +36,7 @@ def get_setting(args=None):
         fall_scale = "Off"
 
     config = configparser.ConfigParser()
-    config.read(localconfig)
+    config.read(localconfig, encoding="utf-8")
     font = config.get("Settings", "font", fallback=fall_font)
     tcolor = config.get("Settings", "color", fallback="white")
     toutline = config.get("Settings", "shadow_color", fallback="light-orange")
@@ -62,7 +62,7 @@ def get_setting(args=None):
 
 def set_setting(args, value):
     config = configparser.ConfigParser()
-    config.read(localconfig)
+    config.read(localconfig, encoding="utf-8")
     if args == "dfps":
         if not config.has_section("Updates"):
             config.add_section("Updates")

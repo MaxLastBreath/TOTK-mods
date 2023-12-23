@@ -22,7 +22,7 @@ def select_game_file(command=None):
     )
     if game_path:
         config = configparser.ConfigParser()
-        config.read(localconfig)
+        config.read(localconfig, encoding="utf-8")
 
         if not config.has_section("Paths"):
             config.add_section("Paths")
@@ -35,7 +35,7 @@ def select_game_file(command=None):
 
 def launch_GAME(self):
     config = configparser.ConfigParser()
-    config.read(localconfig)
+    config.read(localconfig, encoding="utf-8")
     Game_PATH = config.get("Paths", "game_path", fallback="None")
 
     if not os.path.exists(Game_PATH):
