@@ -203,7 +203,7 @@ class Setting:
         config["Settings"]["cheat-backup"] = self.backup_cheat_var.get()
         config["Settings"]["animation"] = self.ani_var.get()
 
-        with open(localconfig, 'w') as file:
+        with open(localconfig, 'w', encoding="utf-8") as file:
             config.write(file)
 
         color = Color()

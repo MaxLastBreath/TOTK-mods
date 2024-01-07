@@ -28,17 +28,17 @@ def load_json(name, url):
         data = response.json()
 
         if os.path.exists(json_options_file_path):
-            with open(json_options_file_path, "r") as file:
+            with open(json_options_file_path, "r", encoding="utf-8") as file:
                 local_json_options = json.load(file)
 
             if data != local_json_options:
-                with open(json_options_file_path, "w") as file:
+                with open(json_options_file_path, "w", encoding="utf-8") as file:
                     json.dump(data, file, indent=4)
                     json_options = data
             else:
                 json_options = local_json_options
         else:
-            with open(json_options_file_path, "w") as file:
+            with open(json_options_file_path, "w", encoding="utf-8") as file:
                 json.dump(data, file, indent=4)
                 json_options = data
 
@@ -77,12 +77,12 @@ def load_values_from_json():
     json_file_path = 'json.data/api.json'
     try:
         logging.info(f"Loading api.json file..")
-        with open(json_file_path, "r") as json_file:
+        with open(json_file_path, "r", encoding="utf-8") as json_file:
             api_json = json.load(json_file)
     except Exception as e:
         json_file_path = fetch_local_json("api.json")
         logging.info(f"api.json file not found, loading internal data.")
-        with open(json_file_path, "r") as json_file:
+        with open(json_file_path, "r", encoding="utf-8") as json_file:
             api_json = json.load(json_file)
 
     AR_list = api_json["AR_list"]
@@ -161,7 +161,7 @@ try:
             os.makedirs("json.data")
         try:
             logging.info(f"Creating api.json file..")
-            with open("json.data/api.json", "w") as json_file:
+            with open("json.data/api.json", "w", encoding="utf-8") as json_file:
                 json.dump(api_json, json_file, indent=4)
         except PermissionError as e:
             logging.error(f"Permission error has been detected while "
@@ -172,7 +172,7 @@ try:
             time_config["Time"] = {}
         logging.info(f"Adding API time to config_file. {time.ctime()}.")
         time_config["Time"]["api"] = f"{time.time()}"
-        with open(localconfig, 'w') as file:
+        with open(localconfig, 'w', encoding="utf-8") as file:
             time_config.write(file)
     else:
         logging.info(f"Attempting to load local api.json..")

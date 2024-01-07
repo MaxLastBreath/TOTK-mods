@@ -186,5 +186,5 @@ def modify_disabled_key(configdir, directory, config, title_id, entry, action='a
 
 
 def write_config_file(configdir, config):
-    with open(configdir, 'w') as config_file:
+    with open(configdir, 'w', encoding="utf-8") as config_file:
         config.write(config_file, space_around_delimiters=False)

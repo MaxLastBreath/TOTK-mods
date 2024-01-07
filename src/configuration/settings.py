@@ -68,7 +68,7 @@ def set_setting(args, value):
             config.add_section("Updates")
         config.set("Updates", "dfps", value)
 
-    with open(localconfig, 'w') as config_file:
+    with open(localconfig, 'w', encoding="utf-8") as config_file:
         config.write(config_file, space_around_delimiters=False)
 
 

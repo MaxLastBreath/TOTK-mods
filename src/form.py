@@ -1144,7 +1144,7 @@ class Manager:
                     filename = os.path.join(mod_path, f"{version}.txt")
                     all_values = []
                     try:
-                        with open(filename, "w") as file:
+                        with open(filename, "w", encoding="utf-8") as file:
                             file.flush()
                             # file.write(version_option.get("Source", "") + "\n") - makes cheats not work
                             for key, value in version_option.items():
@@ -1200,7 +1200,7 @@ class Manager:
                         selected_options[option_name] = option_var.get()
 
                     # Legacy DFPS config file.
-                    with open(ini_file_path, 'w') as configfile:
+                    with open(ini_file_path, 'w', encoding="utf-8") as configfile:
                         config.write(configfile)
 
                     if self.mode == "Yuzu":
@@ -1275,7 +1275,7 @@ class Manager:
                                         "DisableFog": self.fog_var.get(),
                                         }
                     # Max DFPS++ config file.
-                    with open(ini_file_path, 'w') as configfile:
+                    with open(ini_file_path, 'w', encoding="utf-8") as configfile:
                         config.write(configfile)
 
             # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.
@@ -1289,7 +1289,7 @@ class Manager:
 
                     filename = os.path.join(mod_path, f"{version}.pchtxt")
                     all_values = []
-                    with open(filename, "w") as file:
+                    with open(filename, "w", encoding="utf-8") as file:
                         file.write(version_option.get("Source", "") + "\n")
                         file.write(version_option.get("nsobid", "") + "\n")
                         file.write(version_option.get("offset", "") + "\n")
@@ -1352,7 +1352,7 @@ class Manager:
                     response = requests.get(raw_url)
                     if response.status_code == 200:
                         try:
-                            with open(Setting_directory, "wb") as file:
+                            with open(Setting_directory, "wb", encoding="utf-8") as file:
                                 file.write(response.content)
                         except Exception as e:
                             log.error(f"FAILED TO CREATE SETTINGS FILE: {e}")

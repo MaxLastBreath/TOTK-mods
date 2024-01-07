@@ -13,7 +13,7 @@ def download_file(url, save_path):
     try:
         response = requests.get(url, stream=True)
         if response.status_code == 200:
-            with open(save_path, "wb") as file:
+            with open(save_path, "wb", encoding="utf-8") as file:
                 for chunk in response.iter_content(chunk_size=8192):
                     file.write(chunk)
             print(f"Downloaded file: {save_path}")
@@ -57,7 +57,7 @@ def download_folders(api_url, dir):
 
             file_response = requests.get(file_url)
             if file_response.status_code == 200:
-                with open(file_name, 'wb') as file:
+                with open(file_name, 'wb', encoding="utf-8") as file:
                     file.write(file_response.content)
                 log.info(f'copied file: {file_name}')
 

@@ -49,7 +49,7 @@ def save_user_choices(self, config_file, yuzu_path=None, mode=None):
     log.info("User choices saved in Memory,"
              "Attempting to write into file.")
     # Write the updated configuration back to the file
-    with open(config_file, 'w') as file:
+    with open(config_file, 'w', encoding="utf-8") as file:
         config.write(file)
     log.info("Successfully written into log file")
 
@@ -109,14 +109,14 @@ def write_yuzu_config(configfile, section, setting, selection):
     yuzuconfig[f"{section}"][f"{setting}\\use_global"] = "false"
     yuzuconfig[f"{section}"][f"{setting}\\default"] = "false"
     yuzuconfig[f"{section}"][f"{setting}"] = selection
-    with open(configfile, "w") as configfile:
+    with open(configfile, "w", encoding="utf-8") as configfile:
         yuzuconfig.write(configfile, space_around_delimiters=False)
 
 def write_ryujinx_config(configfile, setting, selection):
-    with open(configfile, "r") as file:
+    with open(configfile, "r", encoding="utf-8") as file:
         data = json.load(file)
         data[setting] = selection
 
     os.remove(configfile)
-    with open(configfile, 'w') as f:
+    with open(configfile, 'w', encoding="utf-8") as f:
         json.dump(data, f, indent=2)

@@ -44,7 +44,7 @@ log.info(f"\n\n\n\nAttempting to start Application.\n"
 
 def write_data(file_name, data, mode, space=None):
     try:
-        with open(file_name, mode) as file:
+        with open(file_name, mode, encoding="utf-8") as file:
             file.write(data, space_around_delimiters=False)
         logging.info(f"Successfully wrote %d bytes into %s", len(data), file_name)
     except FileNotFoundError:
