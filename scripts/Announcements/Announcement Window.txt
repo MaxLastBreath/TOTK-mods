@@ -1,5 +1,5 @@
 ~FULL TOTK Version 1.2.1 SUPPORT~
 UltraCam 2.0 UP on Kofi
 Internal Resolution
-FPS Locker
-More...
+Dynamic FPS Lock
+DFPS Improvements & more..
