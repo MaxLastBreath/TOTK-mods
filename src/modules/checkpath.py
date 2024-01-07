@@ -37,9 +37,11 @@ def checkpath(self, mode):
             config_parser = configparser.ConfigParser()
             config_parser.read(self.configdir, encoding="utf-8")
             self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{self.Globaldir}/nand'))
+            if self.nand_dir.startswith('"'):
+                self.nand_dir = self.nand_dir.strip('"')[0]
             self.load_dir = os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{self.Globaldir}/load'))
-            if self.load_dir.startswith('"'):
-                self.load_dir = self.load_dir.strip('"')
+            if self.nand_dir.startswith('"'):
+                self.nand_dir = self.nand_dir.strip('"')[0]
             self.load_dir = os.path.join(self.load_dir, "0100F2C0115B6000")
 
             self.Yuzudir = os.path.normpath(os.path.join(home_directory, ".local", "share", "yuzu", "load", "0100F2C0115B6000"))
@@ -79,7 +81,11 @@ def checkpath(self, mode):
                 config_parser = configparser.ConfigParser()
                 config_parser.read(self.configdir, encoding="utf-8")
                 self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{os.path.join(yuzupath, "../user/nand")}'))
+                if self.nand_dir.startswith('"'):
+                    self.nand_dir = self.nand_dir.strip('"')[0]
                 self.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{os.path.join(yuzupath, "../user/nand")}')), "0100F2C0115B6000")
+                if self.load_dir.startswith('"'):
+                    self.load_dir = self.load_dir.strip('"')[0]
                 self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "yuzu", "load", "0100F2C0115B6000")
                 NEWyuzu_path = os.path.normpath(os.path.join(userfolder, "../"))
                 self.Globaldir = os.path.join(NEWyuzu_path, "user")
@@ -114,7 +120,11 @@ def checkpath(self, mode):
                 config_parser = configparser.ConfigParser()
                 config_parser.read(self.configdir, encoding="utf-8")
                 self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{self.Globaldir}/nand'))
+                if self.nand_dir.startswith('"'):
+                    self.nand_dir = self.nand_dir.strip('"')[0]
                 self.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{self.Globaldir}/load')), "0100F2C0115B6000")
+                if self.load_dir.startswith('"'):
+                    self.load_dir = self.load_dir.strip('"')[0]
                 self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "yuzu", "load", "0100F2C0115B6000")
                 return
         if mode == "Ryujinx":
