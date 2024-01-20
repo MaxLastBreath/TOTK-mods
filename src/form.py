@@ -1352,7 +1352,7 @@ class Manager:
                     response = requests.get(raw_url)
                     if response.status_code == 200:
                         try:
-                            with open(Setting_directory, "wb", encoding="utf-8") as file:
+                            with open(Setting_directory, "wb") as file:
                                 file.write(response.content)
                         except Exception as e:
                             log.error(f"FAILED TO CREATE SETTINGS FILE: {e}")
