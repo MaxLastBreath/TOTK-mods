@@ -69,6 +69,7 @@ def launch_GAME(self):
         ryujinx_path = self.load_yuzu_path(localconfig)
         if os.path.exists(ryujinx_path):
             Ryujinx_PATH = ryujinx_path.split("/Ryujinx.exe")[0]
+            Ryujinx_PATH = Ryujinx_PATH.split("/RyujinxAva.exe")[0]
         else:
             Ryujinx_PATH = self.select_yuzu_exe()
             if Ryujinx_PATH is None: return
