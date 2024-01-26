@@ -21,6 +21,8 @@ class Manager:
         # Define the Manager window.
         self.window = window
 
+        self.DFPS_var = "UltraCam"
+
         # Configure the Style of the entire window.
         self.constyle = Style(theme=theme.lower())
         self.constyle.configure("TButton", font=btnfont)
@@ -205,19 +207,6 @@ class Manager:
                                     )
         row += 40
 
-        # Create a label for resolution selection
-        self.upscale_list = ["UltraCam", "DFPS Legacy"]
-        self.DFPS_var = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
-                                                            text="UPSCALING VERSION:",
-                                                            variable=self.upscale_list[0], values=self.upscale_list,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                                                            tags=["text"], tag=None,
-                                                            description_name="Ultracam",
-                                                            command=self.update_scaling_settings
-                                                            )
-        row += 40
-
         values = self.dfps_options.get("ResolutionNames", [])
         self.resolution_var = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
@@ -384,7 +373,7 @@ class Manager:
         return self.maincanvas
 
     def update_scaling_settings(self, something=None):
-        if self.DFPS_var.get() == "UltraCam":
+        if self.DFPS_var == "UltraCam":
             self.create_patches()
             for canvas in self.all_canvas:
                 canvas.itemconfig("Legacy", state="hidden")
@@ -396,16 +385,6 @@ class Manager:
                 if self.shadow_resolution_var.get() not in self.ultracam_shadow_list:
                     self.shadow_resolution_var_new.set("High x1024")
                     self.shadow_resolution_var.set("High x1024")
-
-        if self.DFPS_var.get() == "DFPS Legacy":
-            self.create_patches()
-            for canvas in self.all_canvas:
-                canvas.itemconfig("UltraCam", state="hidden")
-                canvas.itemconfig("Legacy", state="normal")
-                self.fps_var.set(self.fps_var_new.get())
-                if self.shadow_resolution_var_new.get() not in self.dfps_shadow_list:
-                    self.shadow_resolution_var.set("High x1024")
-                    self.shadow_resolution_var_new.set("High x1024")
 
     def create_patches(self):
         versionvalues = []
@@ -426,24 +405,23 @@ class Manager:
 
         # Make UltraCam Patches First.
 
-        if self.DFPS_var.get() == "UltraCam":
-            UltraCam_Option = "Improve Fog"
-            self.fog_var = self.on_canvas.create_checkbutton(
-                    master=self.window, canvas=self.maincanvas,
-                    text=UltraCam_Option,
-                    variable="Off",
-                    row=row + 40, cul=cul_tex, drop_cul=cul_sel,
-                    tags=["text"], tag="patches",
-                    description_name="Improve Fog"
-            )
+        UltraCam_Option = "Improve Fog"
+        self.fog_var = self.on_canvas.create_checkbutton(
+                master=self.window, canvas=self.maincanvas,
+                text=UltraCam_Option,
+                variable="Off",
+                row=row + 40, cul=cul_tex, drop_cul=cul_sel,
+                tags=["text"], tag="patches",
+                description_name="Improve Fog"
+        )
 
-            self.selected_options[UltraCam_Option] = self.fog_var
-            try:
-                if self.old_patches.get(UltraCam_Option) == "On" and not self.old_patches == {}:
-                    self.fog_var.set("On")
-            except AttributeError as e:
-                self.old_patches = {}
-            row += 40
+        self.selected_options[UltraCam_Option] = self.fog_var
+        try:
+            if self.old_patches.get(UltraCam_Option) == "On" and not self.old_patches == {}:
+                self.fog_var.set("On")
+        except AttributeError as e:
+            self.old_patches = {}
+        row += 40
 
         # Create labels and enable/disable options for each entry
         for version_option_name, version_option_value in self.version_options[0].items():
@@ -451,7 +429,7 @@ class Manager:
             # Create label
             if version_option_name not in ["Source", "nsobid", "offset", "version"]:
 
-                if self.DFPS_var.get() == "UltraCam" and version_option_name in self.ultracam_options.get(
+                if self.DFPS_var == "UltraCam" and version_option_name in self.ultracam_options.get(
                         "Skip_Patches"):
                     continue
 
@@ -482,7 +460,7 @@ class Manager:
                 cul_sel += 180
 
     def update_scaling_variable(self, something=None):
-        if self.DFPS_var.get() == "UltraCam":
+        if self.DFPS_var == "UltraCam":
             self.fps_var.set(self.fps_var_new.get())
 
     def create_cheat_canvas(self):
@@ -1034,7 +1012,7 @@ class Manager:
             qtconfig = None
 
         def update_values():
-            if self.DFPS_var.get() == "UltraCam":
+            if self.DFPS_var == "UltraCam":
                 log.info("Updating values for UltraCam")
                 self.fps_var.set(self.fps_var_new.get())
                 self.shadow_resolution_var.set(self.shadow_resolution_var_new.get())
@@ -1169,7 +1147,7 @@ class Manager:
                 # Ensures that the patches are active and ensure that old versions of the mod folder is disabled.
                 self.remove_list.extend(["Mod Manager Patch"])
                 self.add_list.append("Visual Improvements")
-                if self.DFPS_var.get() == "DFPS Legacy":
+                if self.DFPS_var == "DFPS Legacy":
                     # Determine the path to the INI file in the user's home directory
                     ini_file_directory = os.path.join(self.load_dir, "Mod Manager Patch", "romfs", "dfps")
                     os.makedirs(ini_file_directory, exist_ok=True)
@@ -1295,7 +1273,7 @@ class Manager:
                         file.write(version_option.get("offset", "") + "\n")
                         for key, value in version_option.items():
 
-                            if self.DFPS_var.get() == "UltraCam" and key in self.ultracam_options.get(
+                            if self.DFPS_var == "UltraCam" and key in self.ultracam_options.get(
                                     "Skip_Patches"):
                                 continue
 
@@ -1364,31 +1342,25 @@ class Manager:
                 log.warning("Selected option has no associated setting folder.")
 
         def DownloadDFPS():
-            DFPS_ver = self.DFPS_var.get()
-            link = None
-            if DFPS_ver == "DFPS Legacy":
-                self.remove_list.append("DFPS")
-                self.add_list.append("Max DFPS++")
-                self.add_list.append("UltraCam")
-
-                link = DFPS_dict.get("Latest")
-            if DFPS_ver == "UltraCam":
+            try:
                 self.remove_list.append("UltraCam")
                 self.add_list.append("Max DFPS++")
                 self.add_list.append("DFPS")
                 link = New_DFPS_Download
 
-            Mod_directory = os.path.join(self.load_dir)
-            if link is None:
-                log.critical("Couldn't find a link to DFPS/UltraCam")
-                return
-            set_setting(args="dfps", value=DFPS_ver)
+                Mod_directory = os.path.join(self.load_dir)
+                if link is None:
+                    log.critical("Couldn't find a link to DFPS/UltraCam")
+                    return
+                set_setting(args="dfps", value="UltraCam")
 
-            self.progress_var.set(f"Downloading DFPS: {DFPS_ver}")
-            log.info(f"Downloading DFPS: {DFPS_ver}")
-            os.makedirs(Mod_directory, exist_ok=True)
-            download_unzip(link, Mod_directory)
-            log.info(f"Downloaded DFPS: {DFPS_ver}")
+                self.progress_var.set(f"Downloading DFPS: UltraCam")
+                log.info(f"Downloading: UltraCam")
+                os.makedirs(Mod_directory, exist_ok=True)
+                download_unzip(link, Mod_directory)
+                log.info(f"Downloaded: UltraCam")
+            except Exception as e:
+                log.warning("FAILED TO DOWNLOAD ULTRACAM!")
 
         def DownloadUI():
             log.info(f"starting the search for UI folder link.")
