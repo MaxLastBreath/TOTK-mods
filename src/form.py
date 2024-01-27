@@ -263,20 +263,7 @@ class Manager:
 
         row += 40
 
-        # Legacy FPS.
-        FPS_values_Legacy = self.dfps_options.get("FPS", [])
-        self.fps_var = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
-                                                            text="FPS:",
-                                                            variable=value[0], values=FPS_values_Legacy,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                                                            tags=["text", "FPS_Legacy"], tag="Legacy",
-                                                            description_name="FPS"
-                                                      )
-
-        # New Upscaling FPS.
         self.FPS_values_New = self.ultracam_options.get("FPS", [])
-
         self.fps_var_new = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
                                                             text="FPS:",
@@ -286,7 +273,6 @@ class Manager:
                                                             description_name="FPS",
                                                             command=self.update_scaling_variable
                                                       )
-
         row += 40
 
         # Create a label for UI selection
