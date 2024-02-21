@@ -52,6 +52,6 @@ if __name__ == "__main__":
                     write_print(f"Windows Downloads: {current_windows_amount}\n\n")
 
         write_print(f"\n\n--TOTAL VERSION COUNT--\n"
-                  f"Of which Linux has: {count_linux} and {math.ceil((total_count / count_windows*10))}% Downloads\n"
-                  f"Of which Windows has {count_windows} and {math.ceil((total_count / count_linux*10))}% Downloads\n"
+                  f"Of which Linux has: {count_linux} and {round((count_linux / total_count) * 100)}% Downloads\n"
+                  f"Of which Windows has {count_windows} and {round((count_windows / total_count) * 100)}% Downloads\n"
                   f"As of {time.ctime} Total download count is: {total_count}\n")
