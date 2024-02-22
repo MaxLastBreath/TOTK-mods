@@ -1,72 +1,140 @@
 {
-    "ResolutionNames": [
-        "600p",
-        "720p HD",
-        "1080p FHD",
-        "1440p QHD",
-        "4K UHD",
-        "6K QUHD",
-        "8K UUHD"
-    ],
-    "ResolutionValues": [
-        "0",
-        "1",
-        "2",
-        "4",
-        "4",
-        "5",
-        "6"
-    ],
-    "UltraCamValues": [
-        "0",
-        "0",
-        "1",
-        "2",
-        "2",
-        "3",
-        "4"
-    ],
-    "FPS": [
-        20,
-        30,
-        60
-    ],
-    "ShadowResolutionNames": [
-        "Default",
-        "Very Low x103",
-        "Low x206",
-        "Medium x512",
-        "High x1024",
-        "Ultra 1536"
-    ],
-    "ShadowResolutionValues": [
-        "0",
-        "103",
-        "206",
-        "512",
-        "1024",
-        "1536"
-    ],
-    "Fov": [
-        40,
-        50,
-        60,
-        70,
-        80,
-        90,
-        100,
-        110,
-        120
-    ],
-    "Skip_Patches": [
-        "Improve LOD",
-        "Remove FXAA",
-        "Remove FSR",
-        "Remove QuaReduction"
-    ],
-    "RemoveFog": [
-        "Enable",
-        "Disable"
-    ],
-    "UltraCam Version": "UltraCam Version 1.0.1"
+  "Keys": [
+  {
+  "Name":  "FPS",
+  "Class": "scale",
+  "Auto": false,
+  "Values": [20, 120],
+  "Default": 60,
+  "Increments": 5,
+  "Description": "UltraCam_FPS",
+  "Config_Class": ["Resolution", "MaxFramerate"]
+  },
+  {
+  "Name":  "Menu FPS",
+  "Class": "scale",
+  "Auto": false,
+  "Values": [20, 120],
+  "Default": 60,
+  "Increments": 5,
+  "Description": "UltraCam_MenuFPS",
+  "Config_Class": ["Features", "MenuFPSLock"]
+  },
+  {
+  "Name":  "FOV",
+  "Class": "scale",
+  "Auto": false,
+  "Values": [20, 120],
+  "Default": 50,
+  "Increments": 5,
+  "Description": "UltraCam_FOV",
+  "Config_Class": ["Features", "Fov"]
+  },
+  {
+    "Name":  "Resolution",
+    "Class": "dropdown",
+    "Auto": false,
+    "Name_Values": ["720p", "900p", "1080p", "1440p", "4k", "6k", "8k"],
+    "Values": ["1280x720", "1920x1080", "2560x1440", "3840x2160", "6144x3456", "7680x4320"],
+    "Default": 3,
+    "Description": "UltraCam_Resolution",
+    "Config_Class": ["Resolution", "Width", "Height"]
+  },
+  {
+    "Name":  "Aspect Ratio",
+    "Class": "Scale",
+    "Auto": false,
+    "Name_Values": ["4x4", "4x5", "16x9", "16x10", "21x9", "32x9"],
+    "Values": ["4x4", "4x5", "16x9", "16x10", "21x9", "32x9"],
+    "Default": 3,
+    "Description": "UltraCam_Resolution",
+    "Config_Class": ["NONE"]
+  },
+  {
+    "Name":  "Shadow Resolution",
+    "Class": "dropdown",
+    "Auto": false,
+    "Name_Values": ["103x", "206x", "512x", "1024x", "1536x", "2048x", "4096x", "8192x"],
+    "Values": [103, 206, 512, 1024, 1536, 2048, 4096, 8192],
+    "Default": 4,
+    "Description": "UltraCam_Shadows",
+    "Config_Class": ["Resolution", "ShadowResolution"]
+  },
+  {
+    "Name":  "Render Distance",
+    "Class": "dropdown",
+    "Auto": false,
+    "Name_Values": ["VERY LOW", "LOW", "MEDIUM", "DEFAULT", "INCREASED"],
+    "Values": [1000, 5000, 12500, 25000, 50000],
+    "Default": 4,
+    "Description": "UltraCam_RenderDistance",
+    "Config_Class": ["Resolution", "RenderDistance"]
+  }
+  ],
+  "bool_Keys": [
+    {
+      "Name":  "Improve Fog",
+      "Class": "bool",
+      "Auto": false,
+      "Default": false,
+      "Description": "UltraCam_DisableFog",
+      "Config_Class": ["Features", "DisableFog"]
+    },
+    {
+      "Name":  "Slow Time",
+      "Class": "bool",
+      "Auto": false,
+      "Default": false,
+      "Description": "UltraCam_IsTimeSlower",
+      "Config_Class": ["Features", "IsTimeSlower"]
+    },
+    {
+      "Name":  "Auto Hide UI in FreeCam",
+      "Class": "bool",
+      "Auto": false,
+      "Default": true,
+      "Description": "UltraCam_IsTimeSlower",
+      "Config_Class": ["UltraCam", "AutoHideUI"]
+    },
+    {
+      "Name":  "FreeCam",
+      "Class": "bool",
+      "Auto": false,
+      "Default": true,
+      "Description": "UltraCam_FreeCam",
+      "Config_Class": ["UltraCam", "TriggerWithController"]
+    },
+    {
+      "Name":  "Quality Improvements",
+      "Class": "bool",
+      "Auto": false,
+      "Default": true,
+      "Description": "UltraCam_QualityImprovements",
+      "Config_Class": ["Resolution", "QualityImprovements"]
+    },
+    {
+      "Name":  "Triple Buffer",
+      "Class": "bool",
+      "Auto": false,
+      "Default": false,
+      "Description": "UltraCam_TripleBuffer",
+      "Config_Class": ["Resolution", "TripleBuffer"]
+    },
+    {
+      "Name":  "Remove Depth Of Field",
+      "Class": "bool",
+      "Auto": false,
+      "Default": false,
+      "Description": "UltraCam_DepthOfField",
+      "Config_Class": ["Resolution", "RemoveDepthOfField"]
+    },
+    {
+      "Name":  "Remove Lens flare",
+      "Class": "bool",
+      "Auto": false,
+      "Default": false,
+      "Description": "UltraCam_RemoveLensflare",
+      "Config_Class": ["Resolution", "RemoveLensflare"]
+    }
+  ]
 }
