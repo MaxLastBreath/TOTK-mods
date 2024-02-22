@@ -19,7 +19,7 @@ from configuration.settings_config import Setting
 class Manager:
     def __init__(self, window):
         # ULTRACAM 2.0 PATCHES ARE SAVED HERE.
-        self.NEW_Patches = {}
+        self.BEYOND_Patches = {}
 
 
         # Define the Manager window.
@@ -95,6 +95,11 @@ class Manager:
         row = 40
         cul_tex = 40
         cul_sel = 200
+
+        # Used for 2nd column.
+        row_2 = 120
+        cul_tex_2 = 400
+        cul_sel_2 = 550
 
         # Run Scripts for checking OS and finding location
         checkpath(self, self.mode)
@@ -212,13 +217,18 @@ class Manager:
                                     )
 
         row += 40
+
         ##              AUTO PATCH INFO STARTS HERE ALL CONTROLLED IN JSON FILE.
         ##              THIS IS FOR ULTRACAM BEYOND GRAPHICS AND PERFORMANCE (2.0)
         ##              REMOVED DFPS, SINCE ULTRACAM BEYOND DOES IT ALL AND SO MUCH BETTER.
         ##
-        
+        ##
+        ##
+
         keys = self.ultracam_beyond.get("Keys", [""])
+
         for dicts in keys:
+            patch_var = None
             patch_list = dicts.get("Name_Values", [""])
             patch_values = dicts.get("Values")
             patch_name = dicts.get("Name")
@@ -227,7 +237,7 @@ class Manager:
             patch_default_index = dicts.get("Default")
             if patch_auto is True:
                 continue
-            if dicts["Class"] == "dropdown":
+            if dicts["Class"].lower() == "dropdown":
                 patch_var = self.on_canvas.create_combobox(
                             master=self.window, canvas=canvas,
                             text=patch_name,
@@ -237,26 +247,37 @@ class Manager:
                             description_name=patch_description
                             )
                 log.info(patch_var.get())
-            if dicts["Class"] == "scale":
+                row += 40
+            if dicts["Class"].lower() == "scale":
                 patch_var = self.on_canvas.create_scale(
                     master=self.window, canvas=canvas,
                     text=patch_name,
                     scale_from=patch_values[0], scale_to=patch_values[1],
                     row=row, cul=cul_tex, drop_cul=cul_sel, width=100,
-                    tags=["dropdown"], tag="UltraCam",
+                    tags=["scale"], tag="UltraCam",
                     description_name=patch_description
                 )
                 patch_var.set(patch_default_index)
                 canvas.itemconfig(patch_name, text=f"{patch_default_index}")
                 log.info(patch_var.get())
-            row += 40
+                row += 40
+            if dicts["Class"].lower() == "bool":
+                self.fog_var = self.on_canvas.create_checkbutton(
+                    master=self.window, canvas=canvas,
+                    text=patch_name,
+                    variable="Off",
+                    row=row_2 + 40, cul=cul_tex_2, drop_cul=cul_sel_2,
+                    tags=["bool"], tag="UltraCam",
+                    description_name=patch_description
+                )
+                row_2 += 40
+            if patch_var is None:
+                continue
+            self.BEYOND_Patches[patch_name] = patch_var
 
 
-
-
-
-        # XYZ to generate patch.
-        self.create_patches()
+        # XYZ create patches, not used anymore though.
+        #self.create_patches()
 
         self.apply_element = self.on_canvas.Photo_Image(
                         image_path="apply.png",
@@ -315,7 +336,7 @@ class Manager:
         load_user_choices(self, self.config)
         return self.maincanvas
 
-    def create_patches(self):
+    def create_patches(self, row = 120, cul_tex= 400, cul_sel = 550):
         versionvalues = []
 
         try:
@@ -327,11 +348,6 @@ class Manager:
 
         # Delete the patches before making new ones.
         self.maincanvas.delete("patches")
-
-        row = 120
-        cul_tex = 400
-        cul_sel = 550
-
         # Make UltraCam Patches First.
 
         UltraCam_Option = "Improve Fog"
