@@ -54,7 +54,7 @@ class Canvas_Create:
         self.is_Ani_Paused = False
 
     def create_combobox(self, canvas,
-                        text, master, description_name=None, variable=any, values=[],
+                        text, master, description_name=None, text_description= None, variable=any, values=[],
                         row=40, cul=40, drop_cul=180, width=150, style="warning",
                         tags=[], tag=None, command=None, is_active=True):
         # create text
@@ -115,6 +115,7 @@ class Canvas_Create:
         self.read_description(
                               canvas=canvas,
                               option=description_name,
+                              text= text_description,
                               position_list=[dropdown, text_line],
                               master=master
                               )
@@ -125,7 +126,7 @@ class Canvas_Create:
         return new_variable
 
     def create_scale(self, canvas,
-                        text, master, description_name=None, variable=any, scale_from= 1, scale_to= 100, increments = 5,
+                        text, master, description_name=None, text_description= None, variable=any, scale_from= 1, scale_to= 100, increments = 5,
                         row=40, cul=40, drop_cul=180, width=150, style="warning",
                         tags=[], tag=None, command=None, is_active=True):
         # create text
@@ -221,6 +222,7 @@ class Canvas_Create:
         self.read_description(
             canvas=canvas,
             option=description_name,
+            text= text_description,
             position_list=[scale_box, text_line],
             master=master
         )
@@ -259,7 +261,7 @@ class Canvas_Create:
 
     def create_checkbutton(
             self, master, canvas,
-            text, description_name=None, variable=any,
+            text, description_name=None, text_description = None, variable=any,
             row=40, cul=40, drop_cul=180,
             tags=[], tag=None, command=None, is_active=True, style="success"):
         # create text
@@ -322,6 +324,7 @@ class Canvas_Create:
                               canvas=canvas,
                               option=description_name,
                               position_list=[checkbutton, text_line],
+                              text=text_description,
                               master=master
                               )
         row += 40
@@ -329,7 +332,7 @@ class Canvas_Create:
 
     def create_button(
             self, master, canvas,
-            btn_text, description_name=None, textvariable=None,
+            btn_text, description_name=None, text_description = None, textvariable=None,
             row=40, cul=40, width=None, padding=None, pos="w",
             tags=[], tag=None,
             style="default", command=any,
@@ -362,12 +365,13 @@ class Canvas_Create:
             canvas=canvas,
             option=description_name,
             position_list=[button],
+            text=text_description,
             master=master
         )
         return
 
     def create_label(self, master, canvas,
-                        text, description_name=None, font=textfont, color=textcolor, active_fill=None,
+                        text, description_name=None, text_description = None, font=textfont, color=textcolor, active_fill=None,
                         row=40, cul=40, anchor="w", justify="left",
                         tags=[], tag=None, outline_tag=None, command=None
                      ):
@@ -407,6 +411,7 @@ class Canvas_Create:
                               canvas=canvas,
                               option=description_name,
                               position_list=[text_line],
+                              text=text_description,
                               master=master
                               )
 
@@ -474,19 +479,27 @@ class Canvas_Create:
             canvas.itemconfig(tag_1, state="normal")
             canvas.itemconfig(tag_2, state="hidden")
 
-    def read_description(self, canvas, option, position_list=list, master=any):
-        if f"{option}" not in description:
+    def read_description(self, canvas, option, text = None, position_list=list, master=any):
+        if f"{option}" not in description and text is None:
             return
         for position in position_list:
             try:
                 canvas_item = canvas.find_withtag(position)
                 if canvas_item:
-                    hover = description[f"{option}"]
-                    self.create_tooltip(canvas, position, hover, master)
+                    if text is not None:
+                        hover = text
+                        self.create_tooltip(canvas, position, hover, master)
+                    else:
+                        hover = description[f"{option}"]
+                        self.create_tooltip(canvas, position, hover, master)
                     break
             except TclError as e:
-                hover = description[f"{option}"]
-                Hovertip(position, f"{hover}", hover_delay=Hoverdelay)
+                if text is not None:
+                    hover = text
+                    Hovertip(position, f"{hover}", hover_delay=Hoverdelay)
+                else:
+                    hover = text
+                    Hovertip(position, f"{hover}", hover_delay=Hoverdelay)
 
     def create_tooltip(self, canvas, position, hover, master):
 

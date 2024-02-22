@@ -246,6 +246,7 @@ class Manager:
             patch_description = dicts.get("Description")
             patch_default_index = dicts.get("Default")
             if patch_auto is True:
+                self.BEYOND_Patches[name] = "auto"
                 continue
             if dicts["Class"].lower() == "dropdown":
                 patch_var = self.on_canvas.create_combobox(
@@ -254,7 +255,7 @@ class Manager:
                             values=patch_list, variable=patch_list[patch_default_index],
                             row=row, cul=cul_tex, drop_cul=cul_sel, width=100,
                             tags=["dropdown"], tag="UltraCam",
-                            description_name=patch_description
+                            text_description=patch_description
                             )
                 log.info(patch_var.get())
                 row += 40
@@ -266,7 +267,7 @@ class Manager:
                     scale_from=patch_values[0], scale_to=patch_values[1],
                     row=row, cul=cul_tex, drop_cul=cul_sel, width=100,
                     tags=["scale"], tag="UltraCam",
-                    description_name=patch_description
+                    text_description=patch_description
                 )
                 patch_var.set(patch_default_index)
                 canvas.itemconfig(patch_name, text=f"{patch_default_index}")
@@ -280,7 +281,7 @@ class Manager:
                     variable="Off",
                     row=self.row_2 + 40, cul=self.cul_tex_2, drop_cul=self.cul_sel_2,
                     tags=["bool"], tag="UltraCam",
-                    description_name=patch_description
+                    text_description=patch_description
                 )
                 if patch_default_index:
                     patch_var.set("On")
@@ -1141,13 +1142,20 @@ class Manager:
                 for patch in self.BEYOND_Patches:
                     if patch.lower() in ["resolution", "aspect ratio"]:
                         continue
+
                     patch_dict = patch_info[patch]
                     patch_class = patch_dict["Class"]
                     patch_Config = patch_dict["Config_Class"]
+                    patch_Default = patch_dict["Default"]
 
+                    # In case we have an auto patch.
+                    if self.BEYOND_Patches[patch] == "auto":
+                        config[patch_Config[0]][patch_Config[1]] = patch_Default
+                        continue
 
                     if patch_class.lower() == "bool" or patch_class.lower() == "scale":
                         config[patch_Config[0]][patch_Config[1]] = self.BEYOND_Patches[patch].get()
+
                     if patch_class.lower() == "dropdown":
                         # exclusive to dropdown.
                         patch_Names = patch_dict["Name_Values"]
