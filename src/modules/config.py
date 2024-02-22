@@ -34,6 +34,22 @@ def save_user_choices(self, config_file, yuzu_path=None, mode=None):
 
     # Save the manager selected mode I.E Ryujinx/Yuzu
     config["Mode"] = {"ManagerMode": self.mode}
+
+    if not config.has_section("Beyond"):
+        config["Beyond"] = {}
+
+    # UltraCam Beyond new patches.
+    patch_info = self.ultracam_beyond.get("Keys", [""])
+    for patch in self.BEYOND_Patches:
+        patch_dict = patch_info[patch]
+        patch_class = patch_dict["Class"]
+        if patch_class.lower() == "dropdown":
+            patch_Names = patch_dict["Name_Values"]
+            index = patch_Names.index(self.BEYOND_Patches[patch].get())
+            config["Beyond"][patch] = str(index)
+            continue
+        config["Beyond"][patch] = self.BEYOND_Patches[patch].get()
+
     log.info("User choices saved in Memory,"
              "Attempting to write into file.")
     # Write the updated configuration back to the file
@@ -67,6 +83,19 @@ def load_user_choices(self, config_file, mode=None):
     #self.fov_var.set(config.get('Options', 'Fov', fallback=50))  # FOV 50
     #self.ui_var.set(config.get('Options', 'UI', fallback="None"))
     #self.fp_var.set(config.get('Options', 'First Person', fallback="Off"))
+
+    # Load UltraCam Beyond new patches.
+    patch_info = self.ultracam_beyond.get("Keys", [""])
+    for patch in self.BEYOND_Patches:
+        patch_dict = patch_info[patch]
+        patch_class = patch_dict["Class"]
+        if patch_class.lower() == "dropdown":
+            patch_Names = patch_dict["Name_Values"]
+            self.BEYOND_Patches[patch].set(patch_Names[int(config["Beyond"][patch])])
+            continue
+        self.BEYOND_Patches[patch].set(config["Beyond"][patch])
+
+
     # Load the enable/disable choices
     for option_name, option_var in self.selected_options.items():
         option_value = config.get('Options', option_name, fallback="Off")
