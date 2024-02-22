@@ -69,38 +69,12 @@
                 "6144x3456",
                 "7680x4320"
             ],
-            "Default": 3,
+            "Default": 2,
             "Description": "UltraCam_Resolution",
             "Config_Class": [
                 "Resolution",
                 "Width",
                 "Height"
-            ]
-        },
-        {
-            "Name": "Aspect Ratio",
-            "Class": "Scale",
-            "Auto": false,
-            "Name_Values": [
-                "4x4",
-                "4x5",
-                "16x9",
-                "16x10",
-                "21x9",
-                "32x9"
-            ],
-            "Values": [
-                "4x4",
-                "4x5",
-                "16x9",
-                "16x10",
-                "21x9",
-                "32x9"
-            ],
-            "Default": 3,
-            "Description": "UltraCam_Resolution",
-            "Config_Class": [
-                "NONE"
             ]
         },
         {
@@ -127,11 +101,37 @@
                 4096,
                 8192
             ],
-            "Default": 4,
+            "Default": 3,
             "Description": "UltraCam_Shadows",
             "Config_Class": [
                 "Resolution",
                 "ShadowResolution"
+            ]
+        },
+        {
+            "Name": "Aspect Ratio",
+            "Class": "dropdown",
+            "Auto": false,
+            "Name_Values": [
+                "4x4",
+                "4x5",
+                "16x9",
+                "16x10",
+                "21x9",
+                "32x9"
+            ],
+            "Values": [
+                "4x4",
+                "4x5",
+                "16x9",
+                "16x10",
+                "21x9",
+                "32x9"
+            ],
+            "Default": 3,
+            "Description": "UltraCam_Resolution",
+            "Config_Class": [
+                "NONE"
             ]
         },
         {
@@ -152,7 +152,7 @@
                 25000,
                 50000
             ],
-            "Default": 4,
+            "Default": 3,
             "Description": "UltraCam_RenderDistance",
             "Config_Class": [
                 "Resolution",

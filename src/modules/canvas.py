@@ -21,6 +21,21 @@ def next_index(event, var, list=list, command=None):
     if command is not None:
         command(event)
 
+def change_scale(event, var, max, min, increments = int, command=None):
+    new_value = float(var.get()) + increments
+    if new_value > min:
+        new_value = min
+
+    if new_value < max:
+        new_value = max
+
+    var.set(str(new_value))
+    log.info(new_value)
+    if command is not None:
+        command(event)
+def update_text(event, canvas, name, var):
+    var.set(round(float(var.get())))
+    canvas.itemconfig(name, text=int(var.get()))
 
 def toggle(event, var):
     if var.get() == "On":
@@ -60,6 +75,7 @@ class Canvas_Create:
                            font=textfont,
                            tags=outline_tag
                            )
+
         # create the text and the variable for the dropdown.
         new_variable = tk.StringVar(master=master, value=variable)
         text_line = canvas.create_text(
@@ -102,6 +118,127 @@ class Canvas_Create:
                               )
         canvas.tag_bind(text_line, "<Button-1>", lambda event: next_index(event, new_variable, values, command))
         row += 40
+        return new_variable
+
+    def create_scale(self, canvas,
+                        text, master, description_name=None, variable=any, scale_from= 1, scale_to= 100, increments = 5,
+                        row=40, cul=40, drop_cul=180, width=150, style="warning",
+                        tags=[], tag=None, command=None, is_active=True):
+        # create text
+        active_color_new = active_color
+        if tag is not None:
+            tags.append(tag)
+        if is_active is False:
+            active_color_new = None
+        elif is_active is True:
+            tags.append("active_text")
+
+        # add outline and user-tag to the outlined text.
+        outline_tag = ["outline", tag]
+        # create an outline to the text.
+        canvas.create_text(
+            scale(cul) + scale(1),
+            scale(row) + scale(1),
+            text=text,
+            anchor="w",
+            fill=outline_color,
+            font=textfont,
+            tags=outline_tag
+        )
+        # create the text and the variable for the dropdown.
+        new_variable = tk.StringVar(master=master, value=variable)
+        text_line = canvas.create_text(
+            scale(cul),
+            scale(row),
+            text=text,
+            anchor="w",
+            fill=textcolor,
+            font=textfont,
+            tags=tags,
+            activefil=active_color_new
+        )
+        update_text_command = lambda event: update_text(event, canvas, text, new_variable)
+        # create scale box
+        scale_box = ttk.Scale(
+            master=master,
+            from_=scale_from,
+            to=scale_to,
+            command=update_text_command,
+            length=width,
+            style=style,
+            variable=new_variable
+        )
+
+        canvas.create_window(
+            scale(drop_cul),
+            scale(row),
+            anchor="w",
+            window=scale_box,
+            width=scale(width),
+            height=CBHEIGHT,
+            tags=tag,
+        )
+
+        # bind canvas
+        scale_box.bind("<<ComboboxSelected>>", command)
+        # attempt to make a Hovertip
+        self.read_description(
+            canvas=canvas,
+            option=description_name,
+            position_list=[scale_box, text_line],
+            master=master
+        )
+
+        tags.append(text)
+        # Shows the value from the scale.
+        text_line_value = canvas.create_text(
+            scale(cul + width + 20),
+            scale(row),
+            text=f"NOT SET",
+            anchor="w",
+            fill=textcolor,
+            font=textfont,
+            tags=tags,
+            activefil=active_color_new
+        )
+
+        self.read_description(
+            canvas=canvas,
+            option=description_name,
+            position_list=[scale_box, text_line],
+            master=master
+        )
+
+
+        canvas.tag_bind(text_line, "<Button-1>", lambda event: change_scale(event,
+                                                                            new_variable,
+                                                                            max=scale_from,
+                                                                            min=scale_to,
+                                                                            increments=increments,
+                                                                            command=update_text_command)
+                        )
+        canvas.tag_bind(text_line, "<Button-3>", lambda event: change_scale(event,
+                                                                            new_variable,
+                                                                            max=scale_from,
+                                                                            min=scale_to,
+                                                                            increments=-increments,
+                                                                            command=update_text_command)
+                        )
+        canvas.tag_bind(text_line_value, "<Button-1>", lambda event: change_scale(event,
+                                                                            new_variable,
+                                                                            max=scale_from,
+                                                                            min=scale_to,
+                                                                            increments=increments,
+                                                                            command=update_text_command)
+                        )
+        canvas.tag_bind(text_line_value, "<Button-3>", lambda event: change_scale(event,
+                                                                            new_variable,
+                                                                            max=scale_from,
+                                                                            min=scale_to,
+                                                                            increments=-increments,
+                                                                            command=update_text_command)
+                        )
+
         return new_variable
 
     def create_checkbutton(

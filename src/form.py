@@ -169,16 +169,15 @@ class Manager:
         row += 40
         keys = self.ultracam_beyond.get("Keys", [""])
         for dicts in keys:
+            patch_list = dicts.get("Name_Values", [""])
+            patch_values = dicts.get("Values")
+            patch_name = dicts.get("Name")
+            patch_auto = dicts.get("Auto")
+            patch_description = dicts.get("Description")
+            patch_default_index = dicts.get("Default")
+            if patch_auto is True:
+                continue
             if dicts["Class"] == "dropdown":
-                patch_list = dicts.get("Name_Values", [""])
-                patch_values = dicts.get("Values")
-                patch_name = dicts.get("Name")
-                patch_auto = dicts.get("Auto")
-                patch_description = dicts.get("Description")
-                patch_default_index = dicts.get("Default")
-                if patch_auto is True:
-                    continue
-
                 patch_var = self.on_canvas.create_combobox(
                             master=self.window, canvas=canvas,
                             text=patch_name,
@@ -187,11 +186,21 @@ class Manager:
                             tags=["dropdown"], tag="UltraCam",
                             description_name=patch_description
                             )
+                log.info(patch_var.get())
             if dicts["Class"] == "scale":
-                print("Wee")
-
-
+                patch_var = self.on_canvas.create_scale(
+                    master=self.window, canvas=canvas,
+                    text=patch_name,
+                    scale_from=patch_values[0], scale_to=patch_values[1],
+                    row=row, cul=cul_tex, drop_cul=cul_sel, width=100,
+                    tags=["dropdown"], tag="UltraCam",
+                    description_name=patch_description
+                )
+                patch_var.set(patch_default_index)
+                canvas.itemconfig(patch_name, text=f"{patch_default_index}")
+                log.info(patch_var.get())
             row += 40
+
 
 
 
@@ -232,7 +241,6 @@ class Manager:
                 img_1=self.launch_element, img_2=self.launch_element_active,
                 command=lambda event: launch_GAME(self)
             )
-
 
         # Create a submit button
         #self.on_canvas.create_button(
