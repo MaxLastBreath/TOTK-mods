@@ -190,11 +190,23 @@ class Canvas_Create:
         )
 
         tags.append(text)
+        outline_tag.append(text)
+
         # Shows the value from the scale.
+        canvas.create_text(
+            scale(cul + width + 30) + scale(1),
+            scale(row) + scale(1),
+            text="NOT SET",
+            anchor="w",
+            fill=outline_color,
+            font=textfont,
+            tags=outline_tag
+        )
+
         text_line_value = canvas.create_text(
-            scale(cul + width + 20),
+            scale(cul + width + 30),
             scale(row),
-            text=f"NOT SET",
+            text="NOT SET",
             anchor="w",
             fill=textcolor,
             font=textfont,

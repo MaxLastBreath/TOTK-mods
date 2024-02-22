@@ -25,7 +25,7 @@ class Manager:
         # Define the Manager window.
         self.window = window
 
-        self.DFPS_var = "UltraCam"
+        self.DFPS_var = "BEYOND"
 
         # Configure the Style of the entire window.
         self.constyle = Style(theme=theme.lower())
@@ -97,9 +97,17 @@ class Manager:
         cul_sel = 200
 
         # Used for 2nd column.
-        row_2 = 120
-        cul_tex_2 = 400
-        cul_sel_2 = 550
+        self.row_2 = 120
+        self.cul_tex_2 = 400
+        self.cul_sel_2 = 550
+
+        def increase_row_2():
+            self.row_2 += 40
+            if self.row_2 >= 480:
+                self.row_2 = 20
+                self.cul_tex_2 += 180
+                self.cul_sel_2 += 180
+
 
         # Run Scripts for checking OS and finding location
         checkpath(self, self.mode)
@@ -248,6 +256,7 @@ class Manager:
                             )
                 log.info(patch_var.get())
                 row += 40
+
             if dicts["Class"].lower() == "scale":
                 patch_var = self.on_canvas.create_scale(
                     master=self.window, canvas=canvas,
@@ -261,19 +270,48 @@ class Manager:
                 canvas.itemconfig(patch_name, text=f"{patch_default_index}")
                 log.info(patch_var.get())
                 row += 40
+
             if dicts["Class"].lower() == "bool":
-                self.fog_var = self.on_canvas.create_checkbutton(
+                patch_var = self.on_canvas.create_checkbutton(
                     master=self.window, canvas=canvas,
                     text=patch_name,
                     variable="Off",
-                    row=row_2 + 40, cul=cul_tex_2, drop_cul=cul_sel_2,
+                    row=self.row_2 + 40, cul=self.cul_tex_2, drop_cul=self.cul_sel_2,
                     tags=["bool"], tag="UltraCam",
                     description_name=patch_description
                 )
-                row_2 += 40
+                if patch_default_index:
+                    patch_var.set("On")
+                increase_row_2()
+
             if patch_var is None:
                 continue
             self.BEYOND_Patches[patch_name] = patch_var
+
+
+        for patch in self.BEYOND_Patches:
+            log.info(f"{patch}: {self.BEYOND_Patches[patch].get()}")
+
+        # Extra Patches. FP and Ui.
+        self.fp_var = self.on_canvas.create_checkbutton(
+                        master=self.window, canvas=canvas,
+                        text="First Person",
+                        variable="Off",
+                        row=self.row_2 + 40, cul=self.cul_tex_2, drop_cul=self.cul_sel_2,
+                        tags=["bool"], tag="External",
+                        description_name="First Person"
+                )
+        increase_row_2()
+
+        self.ui_var = self.on_canvas.create_combobox(
+                        master=self.window, canvas=canvas,
+                        text="UI:",
+                        variable=UI_list[0], values=UI_list,
+                        row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
+                        tags=["text"], tag=None,
+                        description_name="UI"
+                                                    )
+        row += 40
 
 
         # XYZ create patches, not used anymore though.
@@ -956,12 +994,6 @@ class Manager:
         else:
             qtconfig = None
 
-        def update_values():
-            if self.DFPS_var == "UltraCam":
-                log.info("Updating values for UltraCam")
-                self.fps_var.set(self.fps_var_new.get())
-                self.shadow_resolution_var.set(self.shadow_resolution_var_new.get())
-
         def mod_list(arg, mod):
             try:
                 if arg in ["r", "remove"]:
@@ -992,7 +1024,7 @@ class Manager:
                 return
             if mode== None:
                 log.info("Starting TASKs for Normal Patch..")
-                tasklist = [Exe_Running(), update_values(), DownloadFP(), DownloadUI(), DownloadDFPS(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods()]
+                tasklist = [Exe_Running(), DownloadFP(), DownloadUI(), DownloadDFPS(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods()]
                 if get_setting("auto-backup") in ["On"]:
                     tasklist.append(backup(self))
                 com = 100 // len(tasklist)
@@ -1085,124 +1117,50 @@ class Manager:
                 log.info("Starting Mod Creator.")
                 # Update progress bar
                 self.progress_var.set("Creating Mod ManagerPatch.")
-                resolution = self.resolution_var.get()
-                fps = self.fps_var.get()
-                shadow_resolution = self.shadow_resolution_var.get()
 
                 # Ensures that the patches are active and ensure that old versions of the mod folder is disabled.
-                self.remove_list.extend(["Mod Manager Patch"])
+                self.remove_list.extend(["TOTK Optimizer"])
                 self.add_list.append("Visual Improvements")
-                if self.DFPS_var == "DFPS Legacy":
-                    # Determine the path to the INI file in the user's home directory
-                    ini_file_directory = os.path.join(self.load_dir, "Mod Manager Patch", "romfs", "dfps")
-                    os.makedirs(ini_file_directory, exist_ok=True)
-                    ini_file_path = os.path.join(ini_file_directory, "default.ini")
-
-                    # Remove the previous default.ini file if it exists - DFPS settings.
-                    if os.path.exists(ini_file_path):
-                        os.remove(ini_file_path)
-
-                    # Save the selected options to the INI file
-                    config = configparser.ConfigParser()
-                    config.optionxform = lambda option: option
-
-                    # Add the selected resolution, FPS, shadow resolution, and camera quality
-                    Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
-                    ShadowIndex = self.dfps_options.get("ShadowResolutionNames").index(shadow_resolution)
-
-                    config['Graphics'] = {
-                        'ResolutionWidth': self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[0],
-                        'ResolutionHeight': self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1],
-                        'ResolutionShadows': self.dfps_options.get("ShadowResolutionValues", [""])[ShadowIndex]
-                    }
-                    config['dFPS'] = {'MaxFramerate': fps}
-
-                    selected_options = {}
-
-                    for option_name, option_var in self.selected_options.items():
-                        selected_options[option_name] = option_var.get()
-
-                    # Legacy DFPS config file.
-                    with open(ini_file_path, 'w', encoding="utf-8") as configfile:
-                        config.write(configfile)
-
-                    if self.mode == "Yuzu":
-                        # 1 resolution scale
-                        write_yuzu_config(self.TOTKconfig, "Renderer", "resolution_setup", "2")
-                        height = self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1]
-                        layout = 1
-                        if int(height) <= 1080:
-                            layout = 0
-                        if int(height) <= 2160 and int(height) > 1080:
-                            layout = 1
-                        if int(height) > 2160:
-                            layout = 2
-
-                        # Extended memory layout for DFPS 1.5.5
-                        write_yuzu_config(self.TOTKconfig, "Core", "memory_layout_mode", f"{layout}")
-
-                    if self.mode == "Ryujinx":
-                        # needs to be fixed, problematic.
-                        write_ryujinx_config(self.ryujinx_config, "res_scale", 1)
-
-                else:
-                    # Resolution scaling for MAX DFPS++
-                    Resindex = self.ultracam_options.get("ResolutionNames").index(resolution)
-                    current_res = self.ultracam_options.get("ResolutionValues", [""])[Resindex]
-                    ultra_res = self.ultracam_options.get("UltraCamValues", [""])[Resindex]
-                    # Yuzu settings
-                    if self.mode == "Yuzu":
-                        log.info(f"Applying {resolution} in Yuzu.")
-                        # custom resolution scale
-                        write_yuzu_config(self.TOTKconfig, "Renderer", "resolution_setup", current_res)
-                        write_yuzu_config(self.TOTKconfig, "Core", "memory_layout_mode", "0")
-                        if resolution == "1440p QHD":
-                            write_yuzu_config(self.TOTKconfig, "System", "use_docked_mode", "0")
-                        else:
-                            write_yuzu_config(self.TOTKconfig, "System", "use_docked_mode", "1")
+                self.add_list.append("Mod Manager Patch")
 
 
-                    # Ryujinx setting.
-                    if self.mode == "Ryujinx":
-                        try:
-                            if resolution == "1440p QHD":
-                                write_ryujinx_config(self.ryujinx_config, "docked_mode", "false")
-                            else:
-                                write_ryujinx_config(self.ryujinx_config, "docked_mode", "true")
-                            write_ryujinx_config(self.ryujinx_config, "res_scale", int(current_res))
-                        except Exception as e:
-                            log.error("Ryujinx config_file not found, operation will continue without resolution cahnges.")
+                ini_file_directory = os.path.join(self.load_dir, "TOTK Optimizer", "romfs", "UltraCam")
+                os.makedirs(ini_file_directory, exist_ok=True)
+                ini_file_path = os.path.join(ini_file_directory, "maxlastbreath.ini")
 
-                    # set FPS for Max DFPS++
-                    ini_file_directory = os.path.join(self.load_dir, "Mod Manager Patch", "romfs", "UltraCam")
-                    os.makedirs(ini_file_directory, exist_ok=True)
-                    ini_file_path = os.path.join(ini_file_directory, "maxlastbreath.ini")
 
-                    # Remove the previous default.ini file if it exists - DFPS settings.
-                    if os.path.exists(ini_file_path):
-                        os.remove(ini_file_path)
+                config = configparser.ConfigParser()
 
-                    # Save the selected options to the INI file
-                    config = configparser.ConfigParser()
-                    config.optionxform = lambda option: option
-                    shadow_resolution = self.shadow_resolution_var_new.get()
 
-                    ShadowIndex = self.ultracam_options.get("ShadowResolutionNames").index(shadow_resolution)
-                    shadow_value = self.ultracam_options.get("ShadowResolutionValues")[ShadowIndex]
+                if self.mode == "Yuzu":
+                    # 1 resolution scale
+                    write_yuzu_config(self.TOTKconfig, "Renderer", "resolution_setup", "1")
+                    #height = self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1]
+                    layout = 1
 
-                    config['DFPS'] = {'MaxFramerate': fps}
-                    config["Features"] = {
-                                        "Fov": self.fov_var.get(),
-                                        "ResolutionScale": ultra_res,
-                                        "ShadowResolution": shadow_value,
-                                        "DisableFog": self.fog_var.get(),
-                                        }
+                    #f int(height) <= 1080:
+                    #    layout = 0
+                    #if int(height) <= 2160 and int(height) > 1080:
+                    #    layout = 1
+                    #if int(height) > 2160:
+                    #    layout = 2
+
+                    # Extended memory layout for DFPS 1.5.5
+                    write_yuzu_config(self.TOTKconfig, "Core", "memory_layout_mode", f"{layout}")
+
+                if self.mode == "Ryujinx":
+                    write_ryujinx_config(self.ryujinx_config, "res_scale", 1)
+
                     # Max DFPS++ config file.
                     with open(ini_file_path, 'w', encoding="utf-8") as configfile:
                         config.write(configfile)
 
             # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.
             try:
+                if self.DFPS_var == "BEYOND":
+                    log.info("FINISHED APPLYING PATCHES")
+                    return
+
                 for version_option in self.version_options:
                     version = version_option.get("version", "")
                     mod_path = os.path.join(self.load_dir, "Mod Manager Patch", "exefs")
@@ -1217,7 +1175,6 @@ class Manager:
                         file.write(version_option.get("nsobid", "") + "\n")
                         file.write(version_option.get("offset", "") + "\n")
                         for key, value in version_option.items():
-
                             if self.DFPS_var == "UltraCam" and key in self.ultracam_options.get(
                                     "Skip_Patches"):
                                 continue
@@ -1314,7 +1271,7 @@ class Manager:
             for item in AR_dict:
                 new_list.append(item)
 
-            if any(item in self.aspect_ratio_var.get().split(" ") for item in ["16-9", "16x9"]):
+            if any(item in self.ultracam_beyond.get("Keys") for item in ["16-9", "16x9"]):
                 log.info("Selected default Aspect Ratio.")
                 if self.ui_var.get().lower() in ["none", "switch"]:
                     self.add_list.extend(new_list)
@@ -1339,7 +1296,7 @@ class Manager:
                         selected_ui = ""
 
                 # search
-                new_folder = f"{self.aspect_ratio_var.get()}{selected_ui}"
+                new_folder = f"{self.BEYOND_Patches['Aspect Ratio']}{selected_ui}"
                 new_list.extend(UI_list)
                 # fetch
                 link = AR_dict.get(new_folder)

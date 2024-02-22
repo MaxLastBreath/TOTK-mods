@@ -56,7 +56,7 @@
       "Auto": false,
       "Name_Values": [ "4x4", "4x5", "16x9", "16x10", "21x9", "32x9" ],
       "Values": [ "4x4", "4x5", "16x9", "16x10", "21x9", "32x9" ],
-      "Default": 3,
+      "Default": 2,
       "Description": "UltraCam_Resolution",
       "Config_Class": [ "ASPECT RATIO" ]
     },
@@ -71,68 +71,68 @@
       "Config_Class": [ "Resolution", "RenderDistance" ]
     },
     {
-      "Name":  "Improve Fog",
-      "Class": "bool",
-      "Auto": false,
-      "Default": false,
-      "Description": "UltraCam_DisableFog",
-      "Config_Class": ["Features", "DisableFog"]
-    },
-    {
-      "Name":  "Slow Time",
-      "Class": "bool",
-      "Auto": false,
-      "Default": false,
-      "Description": "UltraCam_IsTimeSlower",
-      "Config_Class": ["Features", "IsTimeSlower"]
-    },
-    {
-      "Name":  "Auto Hide UI in FreeCam",
-      "Class": "bool",
-      "Auto": false,
-      "Default": true,
-      "Description": "UltraCam_IsTimeSlower",
-      "Config_Class": ["UltraCam", "AutoHideUI"]
-    },
-    {
-      "Name":  "FreeCam",
+      "Name": "FreeCam",
       "Class": "bool",
       "Auto": false,
       "Default": true,
       "Description": "UltraCam_FreeCam",
-      "Config_Class": ["UltraCam", "TriggerWithController"]
+      "Config_Class": [ "UltraCam", "TriggerWithController" ]
     },
     {
-      "Name":  "Quality Improvements",
+      "Name": "Auto Hide UI in FreeCam",
+      "Class": "bool",
+      "Auto": false,
+      "Default": true,
+      "Description": "UltraCam_IsTimeSlower",
+      "Config_Class": [ "UltraCam", "AutoHideUI" ]
+    },
+    {
+      "Name": "Quality Improvements",
       "Class": "bool",
       "Auto": false,
       "Default": true,
       "Description": "UltraCam_QualityImprovements",
-      "Config_Class": ["Resolution", "QualityImprovements"]
+      "Config_Class": [ "Resolution", "QualityImprovements" ]
     },
     {
-      "Name":  "Triple Buffer",
+      "Name": "Triple Buffer",
       "Class": "bool",
       "Auto": false,
       "Default": false,
       "Description": "UltraCam_TripleBuffer",
-      "Config_Class": ["Resolution", "TripleBuffer"]
+      "Config_Class": [ "Resolution", "TripleBuffer" ]
     },
     {
-      "Name":  "Remove Depth Of Field",
+      "Name": "Remove Depth Of Field",
       "Class": "bool",
       "Auto": false,
       "Default": false,
       "Description": "UltraCam_DepthOfField",
-      "Config_Class": ["Resolution", "RemoveDepthOfField"]
+      "Config_Class": [ "Resolution", "RemoveDepthOfField" ]
     },
     {
-      "Name":  "Remove Lens flare",
+      "Name": "Remove Lens flare",
       "Class": "bool",
       "Auto": false,
       "Default": false,
       "Description": "UltraCam_RemoveLensflare",
-      "Config_Class": ["Resolution", "RemoveLensflare"]
+      "Config_Class": [ "Resolution", "RemoveLensflare" ]
+    },
+    {
+      "Name": "Improve Fog",
+      "Class": "bool",
+      "Auto": false,
+      "Default": false,
+      "Description": "UltraCam_DisableFog",
+      "Config_Class": [ "Features", "DisableFog" ]
+    },
+    {
+      "Name": "Slow Time",
+      "Class": "bool",
+      "Auto": false,
+      "Default": false,
+      "Description": "UltraCam_IsTimeSlower",
+      "Config_Class": [ "Features", "IsTimeSlower" ]
     }
   ]
 }
