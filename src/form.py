@@ -235,7 +235,9 @@ class Manager:
 
         keys = self.ultracam_beyond.get("Keys", [""])
 
-        for dicts in keys:
+        for name in keys:
+            dicts = keys[name]
+
             patch_var = None
             patch_list = dicts.get("Name_Values", [""])
             patch_values = dicts.get("Values")
@@ -286,7 +288,7 @@ class Manager:
 
             if patch_var is None:
                 continue
-            self.BEYOND_Patches[patch_name] = patch_var
+            self.BEYOND_Patches[name] = patch_var
 
 
         for patch in self.BEYOND_Patches:
@@ -1128,8 +1130,41 @@ class Manager:
                 os.makedirs(ini_file_directory, exist_ok=True)
                 ini_file_path = os.path.join(ini_file_directory, "maxlastbreath.ini")
 
-
                 config = configparser.ConfigParser()
+                config.optionxform = lambda option: option
+                if os.path.exists(ini_file_path):
+                    config.read(ini_file_path)
+
+
+                ## TOTK UC BEYOND AUTO PATCHER
+                patch_info = self.ultracam_beyond.get("Keys", [""])
+                for patch in self.BEYOND_Patches:
+                    if patch.lower() in ["resolution", "aspect ratio"]:
+                        continue
+                    patch_dict = patch_info[patch]
+                    patch_class = patch_dict["Class"]
+                    patch_Config = patch_dict["Config_Class"]
+
+
+                    if patch_class.lower() == "bool" or patch_class.lower() == "scale":
+                        config[patch_Config[0]][patch_Config[1]] = self.BEYOND_Patches[patch].get()
+                    if patch_class.lower() == "dropdown":
+                        # exclusive to dropdown.
+                        patch_Names = patch_dict["Name_Values"]
+                        patch_Values = patch_dict["Values"]
+                        index = patch_Names.index(self.BEYOND_Patches[patch].get())
+                        config[patch_Config[0]][patch_Config[1]] = str(patch_Values[index])
+
+
+
+
+
+
+
+                ## WRITE IN CONFIG FILE FOR UC 2.0
+                with open(ini_file_path, 'w', encoding="utf-8") as configfile:
+                    config.write(configfile)
+
 
 
                 if self.mode == "Yuzu":

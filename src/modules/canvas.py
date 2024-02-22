@@ -10,13 +10,15 @@ import random
 import ttkbootstrap as ttk
 
 
-def next_index(event, var, list=list, command=None):
+def next_index(event, var, list=list, increase = 1, command=None):
     value = str(var.get())
     string_list = [str(item) for item in list]
     index = string_list.index(value)
-    index += 1
+    index += increase
     if index == len(list):
         index = 0
+    if index < 0:
+        index = len(list) -1
     var.set(list[index])
     if command is not None:
         command(event)
@@ -116,7 +118,9 @@ class Canvas_Create:
                               position_list=[dropdown, text_line],
                               master=master
                               )
-        canvas.tag_bind(text_line, "<Button-1>", lambda event: next_index(event, new_variable, values, command))
+        canvas.tag_bind(text_line, "<Button-1>", lambda event: next_index(event, new_variable, values, 1, command))
+        canvas.tag_bind(text_line, "<Button-3>", lambda event: next_index(event, new_variable, values, -1, command))
+
         row += 40
         return new_variable
 
