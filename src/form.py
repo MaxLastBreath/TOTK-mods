@@ -165,8 +165,58 @@ class Manager:
             text = "Backup Save Files"
             command = None
 
-        # Create Patch Info.
+        self.on_canvas.create_label(
+                                    master=self.window, canvas=canvas,
+                                    text=text,
+                                    description_name="Browse",
+                                    row=row, cul=cul_tex,
+                                    tags=["text"], tag=["Select-EXE"], outline_tag="outline",
+                                    command=command
+                                    )
+
+        # Create a Backup button
+        self.on_canvas.create_button(
+                                    master=self.window, canvas=canvas,
+                                    btn_text="Backup",
+                                    row=row, cul=backupbutton, width=7,
+                                    tags=["Button"],
+                                    description_name="Backup",
+                                    command=lambda: backup(self)
+        )
+
+        self.on_canvas.create_button(
+                                    master=self.window, canvas=canvas,
+                                    btn_text="Clear Shaders",
+                                    row=row, cul=backupbutton+78, width=9,
+                                    tags=["Button", "yuzu"],
+                                    description_name="Shaders",
+                                    command=lambda: clean_shaders(self)
+        )
         row += 40
+
+        # Create big TEXT label.
+        self.on_canvas.create_label(
+                                    master=self.window, canvas=canvas,
+                                    text="Graphics", font=bigfont, color=BigTextcolor,
+                                    description_name="Display Settings",
+                                    row=row, cul=cul_tex+100,
+                                    tags=["Big-Text"]
+                                    )
+
+        self.on_canvas.create_label(
+                                    master=self.window, canvas=canvas,
+                                    text="Tweaks & More", font=bigfont, color=BigTextcolor,
+                                    description_name="Mod Improvements",
+                                    row=row, cul=400+100,
+                                    tags=["Big-Text"]
+                                    )
+
+        row += 40
+        ##              AUTO PATCH INFO STARTS HERE ALL CONTROLLED IN JSON FILE.
+        ##              THIS IS FOR ULTRACAM BEYOND GRAPHICS AND PERFORMANCE (2.0)
+        ##              REMOVED DFPS, SINCE ULTRACAM BEYOND DOES IT ALL AND SO MUCH BETTER.
+        ##
+        
         keys = self.ultracam_beyond.get("Keys", [""])
         for dicts in keys:
             patch_list = dicts.get("Name_Values", [""])
