@@ -18,18 +18,6 @@ def save_user_choices(self, config_file, yuzu_path=None, mode=None):
             config.write(file)
         return
 
-    # Save the selected options
-    if not config.has_section("Options"):
-        config["Options"] = {}
-    config['Options']['DFPS Version'] = self.DFPS_var.get()
-    config['Options']['Resolution'] = self.resolution_var.get()
-    config['Options']['Aspect Ratio'] = self.aspect_ratio_var.get()
-    config['Options']['FPS'] = self.fps_var.get()
-    config['Options']['ShadowResolution'] = self.shadow_resolution_var.get()
-    config['Options']['UI'] = self.ui_var.get()
-    config['Options']['First Person'] = self.fp_var.get()
-    config['Options']['Fov'] = self.fov_var.get()
-
     # Save the enable/disable choices
     for option_name, option_var in self.selected_options.items():
         config['Options'][option_name] = option_var.get()
@@ -69,18 +57,16 @@ def load_user_choices(self, config_file, mode=None):
             handle = e
         return
 
-    self.cheat_version.set(config.get("Manager", "Cheat_Version", fallback="Version - 1.2.1"))
-    self.resolution_var.set(config.get('Options', 'Resolution', fallback=self.dfps_options.get("ResolutionNames", [""])[2]))
-    self.aspect_ratio_var.set(config.get('Options', 'Aspect Ratio', fallback=AR_list[0]))
-    self.fps_var.set(config.get('Options', 'FPS', fallback=str(self.dfps_options.get("FPS", [])[2])))
-    self.fps_var_new.set(config.get('Options', 'FPS', fallback=str(self.dfps_options.get("FPS", [])[2])))
-    self.shadow_resolution_var.set(config.get('Options', 'ShadowResolution', fallback=self.dfps_options.get("ShadowResolutionNames", [""])[0])) # Shadow Auto
-    self.shadow_resolution_var_new.set(config.get('Options', 'ShadowResolution',
-                                              fallback=self.ultracam_options.get("ShadowResolutionNames", [""])[
-                                                  0]))  # Shadow Auto
-    self.fov_var.set(config.get('Options', 'Fov', fallback=50))  # FOV 50
-    self.ui_var.set(config.get('Options', 'UI', fallback="None"))
-    self.fp_var.set(config.get('Options', 'First Person', fallback="Off"))
+    #self.cheat_version.set(config.get("Manager", "Cheat_Version", fallback="Version - 1.2.1"))
+    #self.resolution_var.set(config.get('Options', 'Resolution', fallback=self.dfps_options.get("ResolutionNames", [""])[2]))
+    #self.aspect_ratio_var.set(config.get('Options', 'Aspect Ratio', fallback=AR_list[0]))
+    #self.shadow_resolution_var.set(config.get('Options', 'ShadowResolution', fallback=self.dfps_options.get("ShadowResolutionNames", [""])[0])) # Shadow Auto
+    #self.shadow_resolution_var_new.set(config.get('Options', 'ShadowResolution',
+    #                                          fallback=self.ultracam_options.get("ShadowResolutionNames", [""])[
+    #                                              0]))  # Shadow Auto
+    #self.fov_var.set(config.get('Options', 'Fov', fallback=50))  # FOV 50
+    #self.ui_var.set(config.get('Options', 'UI', fallback="None"))
+    #self.fp_var.set(config.get('Options', 'First Person', fallback="Off"))
     # Load the enable/disable choices
     for option_name, option_var in self.selected_options.items():
         option_value = config.get('Options', option_name, fallback="Off")

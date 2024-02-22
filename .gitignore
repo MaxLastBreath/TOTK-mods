@@ -20,3 +20,5 @@ scripts/Mods/FP Mods/First Person FOV 90
 scripts/Mods/UI Mods/Black Screen Fix
 scripts/Mods/UI Mods/Playstation UI
 scripts/Mods/UI Mods/Xbox UI
+*.iml
+*.xml

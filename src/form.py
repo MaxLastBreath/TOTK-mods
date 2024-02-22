@@ -18,6 +18,10 @@ from configuration.settings_config import Setting
 
 class Manager:
     def __init__(self, window):
+        # ULTRACAM 2.0 PATCHES ARE SAVED HERE.
+        self.NEW_Patches = {}
+
+
         # Define the Manager window.
         self.window = window
 
@@ -33,6 +37,7 @@ class Manager:
 
         # Append all canvas in Manager class.
         self.all_canvas = []
+
 
         # Load the Config.
         self.config = localconfig
@@ -57,6 +62,7 @@ class Manager:
         self.version_options = load_json("Version.json", versionurl)
         self.cheat_options = load_json("Cheats.json", cheatsurl)
         self.ultracam_options = load_json("UltraCam.json", ultracam)
+        self.ultracam_beyond = load_json("UltraCam_Template.json", ultracambeyond)
 
         # Local text variable
         self.switch_text = ttk.StringVar(value="Switch to Ryujinx")
@@ -65,7 +71,6 @@ class Manager:
         self.Load_ImagePath()
         self.load_canvas()
         self.switchmode("false")
-        self.update_scaling_settings()
 
         #Window protocols
         self.window.protocol("WM_DELETE_WINDOW", lambda: self.on_canvas.on_closing(self.window))
@@ -160,142 +165,36 @@ class Manager:
             text = "Backup Save Files"
             command = None
 
-        self.on_canvas.create_label(
-                                    master=self.window, canvas=canvas,
-                                    text=text,
-                                    description_name="Browse",
-                                    row=row, cul=cul_tex,
-                                    tags=["text"], tag=["Select-EXE"], outline_tag="outline",
-                                    command=command
-                                    )
-
-        # Create a Backup button
-        self.on_canvas.create_button(
-                                    master=self.window, canvas=canvas,
-                                    btn_text="Backup",
-                                    row=row, cul=backupbutton, width=7,
-                                    tags=["Button"],
-                                    description_name="Backup",
-                                    command=lambda: backup(self)
-        )
-
-        self.on_canvas.create_button(
-                                    master=self.window, canvas=canvas,
-                                    btn_text="Clear Shaders",
-                                    row=row, cul=backupbutton+78, width=9,
-                                    tags=["Button", "yuzu"],
-                                    description_name="Shaders",
-                                    command=lambda: clean_shaders(self)
-        )
+        # Create Patch Info.
         row += 40
+        keys = self.ultracam_beyond.get("Keys", [""])
+        for dicts in keys:
+            if dicts["Class"] == "dropdown":
+                patch_list = dicts.get("Name_Values", [""])
+                patch_values = dicts.get("Values")
+                patch_name = dicts.get("Name")
+                patch_auto = dicts.get("Auto")
+                patch_description = dicts.get("Description")
+                patch_default_index = dicts.get("Default")
+                if patch_auto is True:
+                    continue
 
-        # Create big TEXT label.
-        self.on_canvas.create_label(
-                                    master=self.window, canvas=canvas,
-                                    text="Display Settings", font=bigfont, color=BigTextcolor,
-                                    description_name="Display Settings",
-                                    row=row, cul=cul_tex+100,
-                                    tags=["Big-Text"]
-                                    )
+                patch_var = self.on_canvas.create_combobox(
+                            master=self.window, canvas=canvas,
+                            text=patch_name,
+                            values=patch_list, variable=patch_list[patch_default_index],
+                            row=row, cul=cul_tex, drop_cul=cul_sel, width=100,
+                            tags=["dropdown"], tag="UltraCam",
+                            description_name=patch_description
+                            )
+            if dicts["Class"] == "scale":
+                print("Wee")
 
-        self.on_canvas.create_label(
-                                    master=self.window, canvas=canvas,
-                                    text="Mod Improvements", font=bigfont, color=BigTextcolor,
-                                    description_name="Mod Improvements",
-                                    row=row, cul=400+100,
-                                    tags=["Big-Text"]
-                                    )
-        row += 40
 
-        values = self.dfps_options.get("ResolutionNames", [])
-        self.resolution_var = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
-                                                            text="RESOLUTION:",
-                                                            variable=value[0], values=values,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                                                            tags=["text"], tag=None,
-                                                            description_name="Resolution",
-                                                            )
-        row += 40
+            row += 40
 
-        self.aspect_ratio_var = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
-                                                            text="ASPECT RATIO:",
-                                                            variable=AR_list[0], values=AR_list,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                                                            tags=["text"], tag=None,
-                                                            description_name="Aspect Ratio",
-                                                            )
-        row += 40
 
-        # Create a label for shadow resolution selection
-        self.dfps_shadow_list = self.dfps_options.get("ShadowResolutionNames", [""])
-        self.shadow_resolution_var = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
-                                                            text="SHADOWS:",
-                                                            variable=value[0], values=self.dfps_shadow_list,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                                                            tags=["text"], tag="Legacy",
-                                                            description_name="Shadows"
-                                                                    )
 
-        self.ultracam_shadow_list = self.ultracam_options.get("ShadowResolutionNames", [""])
-        self.shadow_resolution_var_new = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
-                                                            text="SHADOWS:",
-                                                            variable=value[0], values=self.ultracam_shadow_list,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                                                            tags=["text"], tag="UltraCam",
-                                                            description_name="Shadows"
-                                                                    )
-
-        row += 40
-
-        # First Person and FOV
-        self.fp_var = self.on_canvas.create_combobox(
-                                                        master=self.window, canvas=canvas,
-                                                        text="FIRST PERSON:",
-                                                        values=FP_list, variable=FP_list[0],
-                                                        row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                                                        tags=["text"], tag=None,
-                                                        description_name="First Person"
-                                                    )
-
-        row += 40
-
-        self.FPS_values_New = self.ultracam_options.get("FPS", [])
-        self.fps_var_new = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
-                                                            text="FPS:",
-                                                            variable=value[0], values=self.FPS_values_New,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                                                            tags=["text", "UltraCam"], tag="UltraCam",
-                                                            description_name="FPS",
-                                                            command=self.update_scaling_variable
-                                                      )
-        row += 40
-
-        # Create a label for UI selection
-        self.ui_var = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
-                                                            text="UI:",
-                                                            variable=UI_list[0], values=UI_list,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                                                            tags=["text"], tag=None,
-                                                            description_name="UI"
-                                                    )
-        row += 40
-
-        fov_list = self.ultracam_options.get("Fov", [""])
-        self.fov_var = self.on_canvas.create_combobox(
-            master=self.window, canvas=canvas,
-            text="FOV:",
-            values=fov_list, variable=FP_list[0],
-            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-            tags=["text"], tag="UltraCam",
-            description_name="Fov"
-        )
-        row += 40
 
         # XYZ to generate patch.
         self.create_patches()
@@ -357,20 +256,6 @@ class Manager:
         # Load Saved User Options.
         load_user_choices(self, self.config)
         return self.maincanvas
-
-    def update_scaling_settings(self, something=None):
-        if self.DFPS_var == "UltraCam":
-            self.create_patches()
-            for canvas in self.all_canvas:
-                canvas.itemconfig("Legacy", state="hidden")
-                canvas.itemconfig("UltraCam", state="normal")
-                self.fps_var_new.set(self.fps_var.get())
-                if self.fps_var_new.get() not in self.FPS_values_New:
-                    self.fps_var_new.set(self.FPS_values_New[2])
-                self.shadow_resolution_var_new.set(self.shadow_resolution_var.get())
-                if self.shadow_resolution_var.get() not in self.ultracam_shadow_list:
-                    self.shadow_resolution_var_new.set("High x1024")
-                    self.shadow_resolution_var.set("High x1024")
 
     def create_patches(self):
         versionvalues = []
