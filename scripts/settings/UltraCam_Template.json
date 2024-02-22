@@ -36,7 +36,7 @@
         "Class": "dropdown",
         "Auto": false,
         "Name_Values": [ "720p", "900p", "1080p", "1440p", "4k", "6k", "8k" ],
-        "Values": [ "1280x720", "1920x1080", "2560x1440", "3840x2160", "6144x3456", "7680x4320" ],
+        "Values": [ "1280x720", "1600x900","1920x1080", "2560x1440", "3840x2160", "6144x3456", "7680x4320" ],
         "Default": 2,
         "Description": "UltraCam Beyond NEW Resolution Scaling uses internal resolution\nWARNING: ANYTHING OVER 1440P REQUIRES EXTENDED MEMORY",
         "Config_Class": [ "Resolution", "Width", "Height" ]
@@ -132,7 +132,7 @@
         "Class": "bool",
         "Auto": false,
         "Default": false,
-        "Description": "UltraCam Beyond SlowTime.\n This is controlled by a time scale.\n",
+        "Description": "UltraCam Beyond SlowTime.\n This is controlled by a time scale.",
         "Config_Class": [ "Features", "IsTimeSlower" ]
       }
     }

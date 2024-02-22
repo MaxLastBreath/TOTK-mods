@@ -10,7 +10,7 @@
             ],
             "Default": 60,
             "Increments": 5,
-            "Description": "UltraCam_FPS",
+            "Description": "UltraCam Beyond New FPS setting.\nLet's you set to any FPS\nWARNING: SET TO 120 FPS FOR UNCAPPED.\nRecommended 30, 60 FPS caps for best FRAMETIMES.",
             "Config_Class": [
                 "Resolution",
                 "MaxFramerate"
@@ -26,7 +26,7 @@
             ],
             "Default": 60,
             "Increments": 5,
-            "Description": "UltraCam_MenuFPS",
+            "Description": "UltraCam Beyond NEW MENU FPS CAP. Set to your desire.",
             "Config_Class": [
                 "Features",
                 "MenuFPSLock"
@@ -42,7 +42,7 @@
             ],
             "Default": 50,
             "Increments": 5,
-            "Description": "UltraCam_FOV",
+            "Description": "UltraCam Beyond NEW FOV setting, allows you to set FOV to anything\nThis now also scales up everything related to FOV.",
             "Config_Class": [
                 "Features",
                 "Fov"
@@ -70,7 +70,7 @@
                 "7680x4320"
             ],
             "Default": 2,
-            "Description": "UltraCam_Resolution",
+            "Description": "UltraCam Beyond NEW Resolution Scaling uses internal resolution\nWARNING: ANYTHING OVER 1440P REQUIRES EXTENDED MEMORY",
             "Config_Class": [
                 "Resolution",
                 "Width",
@@ -102,7 +102,7 @@
                 8192
             ],
             "Default": 3,
-            "Description": "UltraCam_Shadows",
+            "Description": "UltraCam Beyond NEW SHADOW resolution setting let's you set shadows up to 8K\nWARNING: REQUIRES EXTENDED MEMORY LAYOUT FOR SHADOWS OVER 1536.",
             "Config_Class": [
                 "Resolution",
                 "ShadowResolution"
@@ -129,7 +129,7 @@
                 "32x9"
             ],
             "Default": 2,
-            "Description": "UltraCam_Resolution",
+            "Description": "UltraCam Beyond ASPECT ratios. It now sets the aspect RATIOS internally\nThis is superior to any other AR patches As it will use internal resolution.",
             "Config_Class": [
                 "ASPECT RATIO"
             ]
@@ -153,7 +153,7 @@
                 50000
             ],
             "Default": 3,
-            "Description": "UltraCam_RenderDistance",
+            "Description": "UltraCam Beyond Render Distance.\nDefault is 25000. Increased is 50000.\nMay see a small benefit on low, up to 20% fps.\nExpect the game to use fog like rendering Minecraft.",
             "Config_Class": [
                 "Resolution",
                 "RenderDistance"
@@ -164,7 +164,7 @@
             "Class": "bool",
             "Auto": false,
             "Default": true,
-            "Description": "UltraCam_FreeCam",
+            "Description": "UltraCam Beyond Freecam! NEWLY IMPROVED FREECAM from 2.0\nTurning this off will, not let you trigger freecam with controller.\n",
             "Config_Class": [
                 "UltraCam",
                 "TriggerWithController"
@@ -175,7 +175,7 @@
             "Class": "bool",
             "Auto": false,
             "Default": true,
-            "Description": "UltraCam_IsTimeSlower",
+            "Description": "UltraCam Beyond AUTO Hide UI, this will automatically hide the UI in freecam mode.",
             "Config_Class": [
                 "UltraCam",
                 "AutoHideUI"
@@ -186,7 +186,7 @@
             "Class": "bool",
             "Auto": false,
             "Default": true,
-            "Description": "UltraCam_QualityImprovements",
+            "Description": "UltraCam Beyond Quality Improvements. This disables FXAA, FSR and Dynamic Resolution\nWARNING: SHOULD ALWAYS BE TURNED ON WITH HIGH RESOLUTION",
             "Config_Class": [
                 "Resolution",
                 "QualityImprovements"
@@ -197,7 +197,7 @@
             "Class": "bool",
             "Auto": false,
             "Default": false,
-            "Description": "UltraCam_TripleBuffer",
+            "Description": "UltraCam Triple Buffer.\nWARNING: KEEP IT TURNED OFF ON SWITCH.",
             "Config_Class": [
                 "Resolution",
                 "TripleBuffer"
@@ -208,7 +208,7 @@
             "Class": "bool",
             "Auto": false,
             "Default": false,
-            "Description": "UltraCam_DepthOfField",
+            "Description": "UltraCam Beyond Remove Depth of Field.",
             "Config_Class": [
                 "Resolution",
                 "RemoveDepthOfField"
@@ -219,7 +219,7 @@
             "Class": "bool",
             "Auto": false,
             "Default": false,
-            "Description": "UltraCam_RemoveLensflare",
+            "Description": "UltraCam Beyond Remove Lens Flare.",
             "Config_Class": [
                 "Resolution",
                 "RemoveLensflare"
@@ -230,7 +230,7 @@
             "Class": "bool",
             "Auto": false,
             "Default": false,
-            "Description": "UltraCam_DisableFog",
+            "Description": "UltraCam Beyond Remove Fog.",
             "Config_Class": [
                 "Features",
                 "DisableFog"
@@ -241,7 +241,7 @@
             "Class": "bool",
             "Auto": false,
             "Default": false,
-            "Description": "UltraCam_IsTimeSlower",
+            "Description": "UltraCam Beyond SlowTime.\n This is controlled by a time scale.\n",
             "Config_Class": [
                 "Features",
                 "IsTimeSlower"

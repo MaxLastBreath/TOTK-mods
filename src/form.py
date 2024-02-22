@@ -13,6 +13,7 @@ from modules.backup import *
 from modules.logger import *
 from modules.launch import *
 from modules.config import *
+from modules.util import *
 from configuration.settings import *
 from configuration.settings_config import Setting
 
@@ -1122,12 +1123,12 @@ class Manager:
                 self.progress_var.set("Creating Mod ManagerPatch.")
 
                 # Ensures that the patches are active and ensure that old versions of the mod folder is disabled.
-                self.remove_list.extend(["TOTK Optimizer"])
+                self.remove_list.extend(["!!!TOTK Optimizer"])
                 self.add_list.append("Visual Improvements")
                 self.add_list.append("Mod Manager Patch")
 
 
-                ini_file_directory = os.path.join(self.load_dir, "TOTK Optimizer", "romfs", "UltraCam")
+                ini_file_directory = os.path.join(self.load_dir, "!!!TOTK Optimizer", "romfs", "UltraCam")
                 os.makedirs(ini_file_directory, exist_ok=True)
                 ini_file_path = os.path.join(ini_file_directory, "maxlastbreath.ini")
 
@@ -1148,6 +1149,10 @@ class Manager:
                     patch_Config = patch_dict["Config_Class"]
                     patch_Default = patch_dict["Default"]
 
+                    # Ensure we have the section required.
+                    if not config.has_section(patch_Config[0]):
+                        config[patch_Config[0]] = {}
+
                     # In case we have an auto patch.
                     if self.BEYOND_Patches[patch] == "auto":
                         config[patch_Config[0]][patch_Config[1]] = patch_Default
@@ -1163,9 +1168,32 @@ class Manager:
                         index = patch_Names.index(self.BEYOND_Patches[patch].get())
                         config[patch_Config[0]][patch_Config[1]] = str(patch_Values[index])
 
+                resolution = self.BEYOND_Patches["Resolution"].get()
+                ARR = self.BEYOND_Patches["Aspect Ratio"].get().split("x")
+                New_Resolution = patch_info["Resolution"]["Values"][patch_info["Resolution"]["Name_Values"].index(resolution)].split("x")
+                New_Resolution = convert_resolution(int(New_Resolution[0]), int(New_Resolution[1]), int(ARR[0]), int(ARR[1]))
 
+                scale_1080 = 1920*1080
+                New_Resolution_scale = int(New_Resolution[0]) * int(New_Resolution[1])
+                new_scale = New_Resolution_scale / int(1920*1080)
 
+                layout = 0
+                if(new_scale < 0):
+                    layout = 0
+                if(new_scale > 2):
+                    layout = 1
+                if(new_scale > 6):
+                    layout = 2
 
+                if self.mode == "Yuzu":
+                    write_yuzu_config(self.TOTKconfig, "Renderer", "resolution_setup", "1")
+                    write_yuzu_config(self.TOTKconfig, "Core", "memory_layout_mode", f"{layout}")
+
+                if self.mode == "Ryujinx":
+                    write_ryujinx_config(self.ryujinx_config, "res_scale", 1)
+
+                config["Resolution"]["Width"] = str(New_Resolution[0])
+                config["Resolution"]["Height"] = str(New_Resolution[1])
 
 
 
@@ -1173,30 +1201,6 @@ class Manager:
                 with open(ini_file_path, 'w', encoding="utf-8") as configfile:
                     config.write(configfile)
 
-
-
-                if self.mode == "Yuzu":
-                    # 1 resolution scale
-                    write_yuzu_config(self.TOTKconfig, "Renderer", "resolution_setup", "1")
-                    #height = self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1]
-                    layout = 1
-
-                    #f int(height) <= 1080:
-                    #    layout = 0
-                    #if int(height) <= 2160 and int(height) > 1080:
-                    #    layout = 1
-                    #if int(height) > 2160:
-                    #    layout = 2
-
-                    # Extended memory layout for DFPS 1.5.5
-                    write_yuzu_config(self.TOTKconfig, "Core", "memory_layout_mode", f"{layout}")
-
-                if self.mode == "Ryujinx":
-                    write_ryujinx_config(self.ryujinx_config, "res_scale", 1)
-
-                    # Max DFPS++ config file.
-                    with open(ini_file_path, 'w', encoding="utf-8") as configfile:
-                        config.write(configfile)
 
             # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.
             try:
