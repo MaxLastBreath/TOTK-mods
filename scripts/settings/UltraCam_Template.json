@@ -135,6 +135,6 @@
         "Description": "UltraCam_IsTimeSlower",
         "Config_Class": [ "Features", "IsTimeSlower" ]
       }
+    }
   ]
-  }
 }
