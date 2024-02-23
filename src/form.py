@@ -98,8 +98,8 @@ class Manager:
 
         # Create Text Position
         row = 40
-        cul_tex = 40
-        cul_sel = 200
+        cul_tex = 40 + 20
+        cul_sel = 200 + 20
 
         # Used for 2nd column.
         self.row_2 = 120
@@ -108,7 +108,7 @@ class Manager:
 
         def increase_row_2():
             self.row_2 += 40
-            if self.row_2 >= 480:
+            if self.row_2 >= 440:
                 self.row_2 = 120
                 self.cul_tex_2 += 180
                 self.cul_sel_2 += 180
@@ -131,7 +131,7 @@ class Manager:
                                                             master=self.window, canvas=canvas,
                                                             text="OPTIMIZER PRESETS:",
                                                             variable=values[0], values=values,
-                                                            row=row, cul=cul_tex,
+                                                            row=row, cul=cul_tex - 20,
                                                             tags=["text"], tag="Yuzu",
                                                             description_name="Presets",
                                                             command=self.apply_selected_preset
@@ -155,7 +155,7 @@ class Manager:
             self.on_canvas.create_button(
                                         master=self.window, canvas=canvas,
                                         btn_text="Browse",
-                                        row=row, cul=cul_sel, width=6,
+                                        row=row, cul=cul_sel - 20, width=6,
                                         tags=["Button"],
                                         description_name="Browse",
                                         command=self.select_yuzu_exe
@@ -171,7 +171,7 @@ class Manager:
             self.on_canvas.create_button(
                                         master=self.window, canvas=canvas,
                                         btn_text="Use Appdata",
-                                        row=row, cul=cul_sel + 68, width=9,
+                                        row=row, cul=cul_sel + 68  - 20, width=9,
                                         tags=["Button"],
                                         description_name="Reset",
                                         command=yuzu_appdata
@@ -187,7 +187,7 @@ class Manager:
                                     master=self.window, canvas=canvas,
                                     text=text,
                                     description_name="Browse",
-                                    row=row, cul=cul_tex,
+                                    row=row, cul=cul_tex - 20,
                                     tags=["text"], tag=["Select-EXE"], outline_tag="outline",
                                     command=command
                                     )
@@ -196,7 +196,7 @@ class Manager:
         self.on_canvas.create_button(
                                     master=self.window, canvas=canvas,
                                     btn_text="Backup",
-                                    row=row, cul=backupbutton, width=7,
+                                    row=row, cul=backupbutton - 20, width=7,
                                     tags=["Button"],
                                     description_name="Backup",
                                     command=lambda: backup(self)
@@ -205,7 +205,7 @@ class Manager:
         self.on_canvas.create_button(
                                     master=self.window, canvas=canvas,
                                     btn_text="Clear Shaders",
-                                    row=row, cul=backupbutton+78, width=9,
+                                    row=row, cul=backupbutton+78 - 20, width=9,
                                     tags=["Button", "yuzu"],
                                     description_name="Shaders",
                                     command=lambda: clean_shaders(self)
