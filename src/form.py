@@ -45,6 +45,7 @@ class Manager:
 
         # Read the Current Emulator Mode.
         self.mode = config.get("Mode", "managermode", fallback="Yuzu")
+        self.all_pages = ["main", "extra", "randomizer"]
 
         # Set neccesary variables.
         self.Yuzudir = None
@@ -102,17 +103,17 @@ class Manager:
         cul_sel = 200 + 20
 
         # Used for 2nd column.
-        self.row_2 = 120
-        self.cul_tex_2 = 400
-        self.cul_sel_2 = 550
+        row_2 = 120
+        cul_tex_2 = 400
+        cul_sel_2 = 550
 
-        def increase_row_2():
-            self.row_2 += 40
-            if self.row_2 >= 440:
-                self.row_2 = 120
-                self.cul_tex_2 += 180
-                self.cul_sel_2 += 180
-
+        def increase_row(row, cul_sel, cul_tex):
+            row += 40
+            if row >= 480:
+                row = 120
+                cul_tex += 180
+                cul_sel += 180
+            return row, cul_sel, cul_tex
 
         # Run Scripts for checking OS and finding location
         checkpath(self, self.mode)
@@ -247,14 +248,14 @@ class Manager:
             canvas=canvas,
             row=row - 35, cul=cul_tex - 10,
             img_1=self.graphics_element, img_2=self.graphics_element_active,
-            command=lambda event: self.submit()
+            command=lambda event: self.toggle_page(event, "main")
         )
 
         self.on_canvas.image_Button(
             canvas=canvas,
             row=row - 35, cul=cul_tex + 160,
             img_1=self.extra_element, img_2=self.extra_element_active,
-            command=lambda event: self.submit()
+            command=lambda event: self.toggle_page(event, "extra")
         )
 
         # BIG TEXT.
@@ -275,6 +276,11 @@ class Manager:
         ##
         ##
 
+        pos_dict = {
+            "main": [row,  cul_tex, cul_sel, row_2, cul_tex_2, cul_sel_2],
+            "extra": [row, cul_tex, cul_sel,  row_2, cul_tex_2, cul_sel_2]
+        }
+
         keys = self.ultracam_beyond.get("Keys", [""])
 
         for name in keys:
@@ -285,54 +291,69 @@ class Manager:
             patch_values = dicts.get("Values")
             patch_name = dicts.get("Name")
             patch_auto = dicts.get("Auto")
+            section_auto = dicts.get("Section")
             patch_description = dicts.get("Description")
             patch_default_index = dicts.get("Default")
+            log.info(section_auto)
+            pos = pos_dict[section_auto]
             if patch_auto is True:
                 self.BEYOND_Patches[name] = "auto"
                 continue
+
             if dicts["Class"].lower() == "dropdown":
                 patch_var = self.on_canvas.create_combobox(
                             master=self.window, canvas=canvas,
                             text=patch_name,
                             values=patch_list, variable=patch_list[patch_default_index],
-                            row=row, cul=cul_tex, drop_cul=cul_sel, width=100,
-                            tags=["dropdown"], tag="UltraCam",
+                            row=pos[0], cul=pos[1], drop_cul=pos[2], width=100,
+                            tags=["dropdown"], tag=section_auto,
                             text_description=patch_description
                             )
                 log.info(patch_var.get())
-                row += 40
+                new_pos = increase_row(pos[0], pos[1], pos[2])
+                pos[0] = new_pos[0]
+                pos[1] = new_pos[1]
+                pos[2] = new_pos[2]
 
             if dicts["Class"].lower() == "scale":
                 patch_var = self.on_canvas.create_scale(
                     master=self.window, canvas=canvas,
                     text=patch_name,
                     scale_from=patch_values[0], scale_to=patch_values[1],
-                    row=row, cul=cul_tex, drop_cul=cul_sel, width=100,
-                    tags=["scale"], tag="UltraCam",
+                    row=pos[0], cul=pos[1], drop_cul=pos[2], width=100,
+                    tags=["scale"], tag=section_auto,
                     text_description=patch_description
                 )
                 patch_var.set(patch_default_index)
                 canvas.itemconfig(patch_name, text=f"{patch_default_index}")
                 log.info(patch_var.get())
-                row += 40
+                new_pos = increase_row(pos[0], pos[1], pos[2])
+                pos[0] = new_pos[0]
+                pos[1] = new_pos[1]
+                pos[2] = new_pos[2]
 
             if dicts["Class"].lower() == "bool":
                 patch_var = self.on_canvas.create_checkbutton(
                     master=self.window, canvas=canvas,
                     text=patch_name,
                     variable="Off",
-                    row=self.row_2 + 40, cul=self.cul_tex_2, drop_cul=self.cul_sel_2,
-                    tags=["bool"], tag="UltraCam",
+                    row=pos[3] + 40, cul=pos[4], drop_cul=pos[5],
+                    tags=["bool"], tag=section_auto,
                     text_description=patch_description
                 )
                 if patch_default_index:
                     patch_var.set("On")
-                increase_row_2()
+                new_pos = increase_row(pos[3], pos[4], pos[5])
+                pos[3] = new_pos[0]
+                pos[4] = new_pos[1]
+                pos[5] = new_pos[2]
 
             if patch_var is None:
                 continue
             self.BEYOND_Patches[name] = patch_var
 
+        row = pos_dict["main"][0]
+        row_2 = pos_dict["main"][3]
 
         for patch in self.BEYOND_Patches:
             log.info(f"{patch}: {self.BEYOND_Patches[patch].get()}")
@@ -342,18 +363,21 @@ class Manager:
                         master=self.window, canvas=canvas,
                         text="First Person",
                         variable="Off",
-                        row=self.row_2 + 40, cul=self.cul_tex_2, drop_cul=self.cul_sel_2,
-                        tags=["bool"], tag="External",
+                        row=row_2 + 40, cul=cul_tex_2, drop_cul=cul_sel_2,
+                        tags=["bool"], tag="main",
                         description_name="First Person"
                 )
-        increase_row_2()
+        new_pos = increase_row(row_2, cul_sel_2, cul_tex_2)
+        row_2 = new_pos[0]
+        cul_sel_2 = new_pos[1]
+        cul_tex_2 = new_pos[2]
 
         self.ui_var = self.on_canvas.create_combobox(
                         master=self.window, canvas=canvas,
                         text="UI:",
                         variable=UI_list[0], values=UI_list,
                         row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                        tags=["text"], tag=None,
+                        tags=["text"], tag="main",
                         description_name="UI"
                                                     )
         row += 40
@@ -416,6 +440,7 @@ class Manager:
         #    )
 
         # Load Saved User Options.
+        self.toggle_page(0, "main")
         load_user_choices(self, self.config)
         return self.maincanvas
 
@@ -632,6 +657,13 @@ class Manager:
         self.on_canvas.is_Ani_Paused = True
         self.cheatcanvas.pack_forget()
         self.maincanvas.pack()
+
+    def toggle_page(self, event, show):
+        self.maincanvas.itemconfig(show, state="normal")
+        log.info(show)
+        for state in self.all_pages:
+            if state is not show:
+                self.maincanvas.itemconfig(state, state="hidden")
 
     def show_cheat_canvas(self):
         self.on_canvas.is_Ani_Paused = False

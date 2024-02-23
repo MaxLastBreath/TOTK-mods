@@ -65,6 +65,7 @@ class Canvas_Create:
             active_color_new = None
         elif is_active is True:
             tags.append("active_text")
+
         # add outline and user-tag to the outlined text.
         outline_tag = ["outline", tag]
         # create an outline to the text.
