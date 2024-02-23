@@ -29,7 +29,7 @@ def select_game_file(command=None):
         config.set("Paths", "game_path", game_path)
     else:
         return
-    with open(localconfig, "w") as configfile:
+    with open(localconfig, "w", encoding="utf-8") as configfile:
         config.write(configfile, space_around_delimiters=False)
     return game_path
 

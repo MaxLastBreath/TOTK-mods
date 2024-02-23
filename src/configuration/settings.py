@@ -10,7 +10,7 @@ import configparser
 Version = "manager-2.0"
 repo_url_raw = 'https://github.com/MaxLastBreath/TOTK-mods'
 repo_url = 'https://api.github.com/repos/MaxLastBreath/TOTK-mods'
-localconfig = "Manager_Config.ini"
+localconfig = "TOTKOptimizer.ini"
 
 # Read Config File.
 font = ""
@@ -115,5 +115,8 @@ ultracambeyond = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main
 
 # Download UltraCam
 New_UCBeyond_Download = f"{repo_url_raw}/raw/main/scripts/Mods/UltraCam/UltraCamBeyond.zip"
+
+# FP download:
+FP_Mod = f"{repo_url_raw}/raw/main/scripts/Mods/FP%20Mods/First%20Person.zip"
 
 description = load_json("Description.json", descurl)

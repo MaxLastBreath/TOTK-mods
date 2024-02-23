@@ -19,6 +19,7 @@ if __name__ == "__main__":
         window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
         window.resizable(False, False)
         ttk.Style().configure('TButton', foreground='white', font=('Comic Sans MS', 10, 'bold'))
+
         # Delete any old executables
         delete_old_exe()
         check_for_updates()

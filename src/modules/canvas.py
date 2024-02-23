@@ -163,6 +163,9 @@ class Canvas_Create:
             activefil=active_color_new
         )
         update_text_command = lambda event: update_text(event, canvas, text, new_variable)
+
+        master.wm_attributes('-transparentcolor', '#ab23ff')
+
         # create scale box
         scale_box = ttk.Scale(
             master=master,
@@ -171,16 +174,16 @@ class Canvas_Create:
             command=update_text_command,
             length=width,
             style=style,
-            variable=new_variable
+            variable=new_variable,
         )
 
-        canvas.create_window(
+        win = canvas.create_window(
             scale(drop_cul),
             scale(row),
             anchor="w",
             window=scale_box,
             width=scale(width),
-            height=CBHEIGHT,
+            height=scale(12),
             tags=tag,
         )
 
@@ -316,6 +319,8 @@ class Canvas_Create:
                                                scale(row),
                                                anchor="w",
                                                window=checkbutton,
+                                               width = scale(11),
+                                               height = scale(11),
                                                tags=tag
                                                )
         # attempt to make a Hover tip

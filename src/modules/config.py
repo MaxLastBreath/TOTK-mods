@@ -12,11 +12,17 @@ def save_user_choices(self, config_file, yuzu_path=None, mode=None):
         config["Cheats"] = {}
         for option_name, option_var in self.selected_cheats.items():
             config['Cheats'][option_name] = option_var.get()
-        with open(config_file, 'w') as file:
+        with open(config_file, 'w', encoding="utf-8") as file:
             config["Manager"] = {}
             config["Manager"]["Cheat_Version"] = self.cheat_version.get()
             config.write(file)
         return
+
+    # This is only required for the UI and FP mods.
+    if not config.has_section("Options"):
+        config["Options"] = {}
+    config['Options']['UI'] = self.ui_var.get()
+    config['Options']['First Person'] = self.fp_var.get()
 
     # Save the enable/disable choices
     for option_name, option_var in self.selected_options.items():
@@ -61,7 +67,6 @@ def save_user_choices(self, config_file, yuzu_path=None, mode=None):
 def load_user_choices(self, config_file, mode=None):
     config = configparser.ConfigParser()
     config.read(config_file, encoding="utf-8")
-
     if mode == "Cheats":
         self.cheat_version.set(config.get("Manager", "Cheat_Version", fallback="Version - 1.2.0"))
         try:
@@ -73,6 +78,10 @@ def load_user_choices(self, config_file, mode=None):
             handle = e
         return
 
+    # Load Ui and FP
+    self.ui_var.set(config.get('Options', 'UI', fallback="None"))
+    self.fp_var.set(config.get('Options', 'First Person', fallback="Off"))
+
     # Load UltraCam Beyond new patches.
     patch_info = self.ultracam_beyond.get("Keys", [""])
     for patch in self.BEYOND_Patches:
@@ -80,13 +89,15 @@ def load_user_choices(self, config_file, mode=None):
         patch_class = patch_dict["Class"]
         if patch_class.lower() == "dropdown":
             patch_Names = patch_dict["Name_Values"]
-            self.BEYOND_Patches[patch].set(patch_Names[int(config["Beyond"][patch])])
+            try:
+                self.BEYOND_Patches[patch].set(patch_Names[int(config["Beyond"][patch])])
+            except KeyError:
+                pass
             continue
         try:
             self.BEYOND_Patches[patch].set(config["Beyond"][patch])
         except KeyError:
             pass
-
 
     # Load the enable/disable choices
     for option_name, option_var in self.selected_options.items():
@@ -112,6 +123,7 @@ def write_yuzu_config(configfile, section, setting, selection):
     yuzuconfig[f"{section}"][f"{setting}"] = selection
     with open(configfile, "w", encoding="utf-8") as configfile:
         yuzuconfig.write(configfile, space_around_delimiters=False)
+
 
 def write_ryujinx_config(configfile, setting, selection):
     with open(configfile, "r", encoding="utf-8") as file:

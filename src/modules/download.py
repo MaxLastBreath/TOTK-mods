@@ -69,7 +69,6 @@ def download_folders(api_url, dir):
             log.info(sub_folder_contents)
             download_folders(sub_folder_contents, folder_name)
 
-
 def get_zip_list_and_dict(url, skip=[]):
     # accepting only single word list.
     full_list = []

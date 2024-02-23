@@ -66,7 +66,7 @@ class Manager:
         self.ultracam_beyond = load_json("UltraCam_Template.json", ultracambeyond)
 
         if os.path.exists(os.path.join("UltraCam/UltraCam_Template.json")):
-            with open("UltraCam/UltraCam_Template.json", "r") as file:
+            with open("UltraCam/UltraCam_Template.json", "r", encoding="utf-8") as file:
                 self.ultracam_beyond = json.load(file)
 
         # Local text variable
@@ -121,6 +121,7 @@ class Manager:
         # FOR DEBUGGING PURPOSES
         def onCanvasClick(event):
             print(f"CRODS = X={event.x} + Y={event.y} + {event.widget}")
+
         self.maincanvas.bind("<Button-3>", onCanvasClick)
         # Start of CANVAS options.
 
@@ -213,14 +214,50 @@ class Manager:
         row += 40
 
         # Create big TEXT label.
-        self.on_canvas.create_label(
-                                    master=self.window, canvas=canvas,
-                                    text="Graphics", font=bigfont, color=BigTextcolor,
-                                    description_name="Display Settings",
-                                    row=row, cul=cul_tex+100,
-                                    tags=["Big-Text"]
-                                    )
+        #self.on_canvas.create_label(
+        #                            master=self.window, canvas=canvas,
+        #                            text="Graphics", font=bigfont, color=BigTextcolor,
+        #                            description_name="Display Settings",
+        #                            row=row, cul=cul_tex+100,
+        #                            tags=["Big-Text"]
+        #                            )
 
+        self.graphics_element = self.on_canvas.Photo_Image(
+            image_path="graphics.png",
+            width=int(70*1.6), height=int(48*1.6),
+        )
+
+        self.graphics_element_active = self.on_canvas.Photo_Image(
+            image_path="graphics_active.png",
+            width=int(70*1.6), height=int(48*1.6),
+        )
+
+        self.extra_element = self.on_canvas.Photo_Image(
+            image_path="extra.png",
+            width=int(70*1.6), height=int(48*1.6),
+        )
+
+        self.extra_element_active = self.on_canvas.Photo_Image(
+            image_path="extra_active.png",
+            width=int(70*1.6), height=int(48*1.6),
+        )
+
+        # Graphics & Extra & More
+        self.on_canvas.image_Button(
+            canvas=canvas,
+            row=row - 35, cul=cul_tex - 10,
+            img_1=self.graphics_element, img_2=self.graphics_element_active,
+            command=lambda event: self.submit()
+        )
+
+        self.on_canvas.image_Button(
+            canvas=canvas,
+            row=row - 35, cul=cul_tex + 160,
+            img_1=self.extra_element, img_2=self.extra_element_active,
+            command=lambda event: self.submit()
+        )
+
+        # BIG TEXT.
         self.on_canvas.create_label(
                                     master=self.window, canvas=canvas,
                                     text="Tweaks & More", font=bigfont, color=BigTextcolor,
@@ -1197,11 +1234,15 @@ class Manager:
                     layout = 2
 
                 if self.mode == "Yuzu":
-                    write_yuzu_config(self.TOTKconfig, "Renderer", "resolution_setup", "1")
+                    write_yuzu_config(self.TOTKconfig, "Renderer", "resolution_setup", "2")
                     write_yuzu_config(self.TOTKconfig, "Core", "memory_layout_mode", f"{layout}")
 
                 if self.mode == "Ryujinx":
                     write_ryujinx_config(self.ryujinx_config, "res_scale", 1)
+                    if (layout > 0):
+                        write_ryujinx_config(self.ryujinx_config, "expand_ram", True)
+                    else:
+                        write_ryujinx_config(self.ryujinx_config, "expand_ram", False)
 
                 config["Resolution"]["Width"] = str(New_Resolution[0])
                 config["Resolution"]["Height"] = str(New_Resolution[1])
@@ -1291,7 +1332,7 @@ class Manager:
                     response = requests.get(raw_url)
                     if response.status_code == 200:
                         try:
-                            with open(Setting_directory, "wb") as file:
+                            with open(Setting_directory, "wb", encoding="utf-8") as file:
                                 file.write(response.content)
                         except Exception as e:
                             log.error(f"FAILED TO CREATE SETTINGS FILE: {e}")
@@ -1333,18 +1374,19 @@ class Manager:
                 log.warning(f"FAILED TO DOWNLOAD ULTRACAM BEYOND! {e}")
 
         def DownloadUI():
+            selected_ui = "NONE"
             log.info(f"starting the search for UI folder link.")
             new_list = []
             new_list.extend(UI_list)
             for item in AR_dict:
                 new_list.append(item)
 
-            if any(item in self.ultracam_beyond.get("Keys") for item in ["16-9", "16x9"]):
+            if self.BEYOND_Patches["aspect ratio"].get() in ["16-9", "16x9"]:
                 log.info("Selected default Aspect Ratio.")
                 if self.ui_var.get().lower() in ["none", "switch"]:
                     self.add_list.extend(new_list)
                     return
-                new_folder = self.ui_var.get()
+                new_folder = self.BEYOND_Patches["aspect ratio"].get()
                 link = UI_dict.get(new_folder)
             else:
                 # define
@@ -1353,18 +1395,14 @@ class Manager:
                     "STEAMDECK": ["steamdeck", "deck"],
                     "XBOX": ["xbox", "xboxone"],
                 }
-
-                string_list = self.ui_var.get().lower().split(" ")
-
+                string = self.ui_var.get().lower().split(" ")[0]
+                log.info(string)
                 for ui, tags in UIs.items():
-                    if any(tag in string_list for tag in tags):
+                    if string in tags:
                         selected_ui = f" {ui} UI"
-                        break
-                    else:
-                        selected_ui = ""
 
                 # search
-                new_folder = f"{self.BEYOND_Patches['aspect ratio']}{selected_ui}"
+                new_folder = f"Aspect Ratio {self.BEYOND_Patches['aspect ratio'].get().replace('x', '-')}{selected_ui}"
                 new_list.extend(UI_list)
                 # fetch
                 link = AR_dict.get(new_folder)
@@ -1386,26 +1424,25 @@ class Manager:
                 return
             # download
             os.makedirs(Mod_directory, exist_ok=True)
+            log.info(link)
             download_unzip(link, Mod_directory)
             log.info(f"Downloaded: {new_folder}")
 
         def DownloadFP():
             selected_fp_mod = self.fp_var.get()
-            self.add_list.extend(FP_list)
-            mod_list("a", selected_fp_mod)
-            mod_list("r", selected_fp_mod)
-            link = FP_dict.get(selected_fp_mod)
-            Mod_directory = os.path.join(self.load_dir)
-            full_dir = os.path.join(Mod_directory, selected_fp_mod)
-            if link is None:
-                return
-            if os.path.exists(full_dir):
-                return
-            self.progress_var.set(f"Downloading: {selected_fp_mod}\n(May take some time)")
-            log.info(f"Downloading: {selected_fp_mod}")
-            os.makedirs(Mod_directory, exist_ok=True)
-            download_unzip(link, Mod_directory)
-            log.info(f"Downloaded: {selected_fp_mod}")
+
+            Mod_directory = os.path.join(self.load_dir, "!!!TOTK Optimizer")
+            if selected_fp_mod.lower() == "on":
+                link = FP_Mod
+                self.progress_var.set(f"Downloading: {selected_fp_mod}\n(May take some time)")
+                log.info(f"Downloading: {selected_fp_mod}")
+                os.makedirs(Mod_directory, exist_ok=True)
+                download_unzip(link, Mod_directory)
+                log.info(f"Downloaded: {selected_fp_mod}")
+
+            fp_dir = os.path.join(Mod_directory, "romfs", "Pack", "Actor", "PlayerCamera.pack.zs")
+            if selected_fp_mod.lower() == "off" and os.path.exists(fp_dir):
+                os.remove(fp_dir)
 
         def Exe_Running():
             is_Program_Opened = is_process_running(self.mode + ".exe")
