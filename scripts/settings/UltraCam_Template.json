@@ -1,7 +1,7 @@
 {
   "Keys": 
     {
-      "FPS": {
+      "fps": {
         "Name": "FPS",
         "Class": "scale",
         "Auto": false,
@@ -11,7 +11,7 @@
         "Description": "UltraCam Beyond New FPS setting.\nLet's you set to any FPS\nWARNING: SET TO 120 FPS FOR UNCAPPED.\nRecommended 30, 60 FPS caps for best FRAMETIMES.",
         "Config_Class": [ "Resolution", "MaxFramerate" ]
       },
-      "MENU FPS": {
+      "menu fps": {
         "Name": "Menu FPS",
         "Class": "scale",
         "Auto": false,
@@ -21,7 +21,7 @@
         "Description": "UltraCam Beyond NEW MENU FPS CAP. Set to your desire.",
         "Config_Class": [ "Features", "MenuFPSLock" ]
       },
-      "FOV": {
+      "fov": {
         "Name": "FOV",
         "Class": "scale",
         "Auto": false,
@@ -31,7 +31,7 @@
         "Description": "UltraCam Beyond NEW FOV setting, allows you to set FOV to anything\nThis now also scales up everything related to FOV.",
         "Config_Class": [ "Features", "Fov" ]
       },
-      "Resolution": {
+      "resolution": {
         "Name": "Resolution",
         "Class": "dropdown",
         "Auto": false,
@@ -41,7 +41,7 @@
         "Description": "UltraCam Beyond NEW Resolution Scaling uses internal resolution\nWARNING: ANYTHING OVER 1440P REQUIRES EXTENDED MEMORY",
         "Config_Class": [ "Resolution", "Width", "Height" ]
       },
-      "Shadow Resolution": {
+      "shadow resolution": {
         "Name": "Shadow Resolution",
         "Class": "dropdown",
         "Auto": false,
@@ -51,7 +51,7 @@
         "Description": "UltraCam Beyond NEW SHADOW resolution setting let's you set shadows up to 8K\nWARNING: REQUIRES EXTENDED MEMORY LAYOUT FOR SHADOWS OVER 1536.",
         "Config_Class": [ "Resolution", "ShadowResolution" ]
       },
-      "Aspect Ratio": {
+      "aspect ratio": {
         "Name": "Aspect Ratio",
         "Class": "dropdown",
         "Auto": false,
@@ -61,7 +61,7 @@
         "Description": "UltraCam Beyond ASPECT ratios. It now sets the aspect RATIOS internally\nThis is superior to any other AR patches As it will use internal resolution.",
         "Config_Class": [ "ASPECT RATIO" ]
       },
-      "Render Distance": {
+      "render distance": {
         "Name": "Render Distance",
         "Class": "dropdown",
         "Auto": false,
@@ -71,7 +71,7 @@
         "Description": "UltraCam Beyond Render Distance.\nDefault is 25000. Increased is 50000.\nMay see a small benefit on low, up to 20% fps.\nExpect the game to use fog like rendering Minecraft.",
         "Config_Class": [ "Resolution", "RenderDistance" ]
       },
-      "FreeCam": {
+      "freecam": {
         "Name": "FreeCam",
         "Class": "bool",
         "Auto": false,
@@ -79,7 +79,7 @@
         "Description": "UltraCam Beyond Freecam! NEWLY IMPROVED FREECAM from 2.0\nTurning this off will, not let you trigger freecam with controller.\n",
         "Config_Class": [ "UltraCam", "TriggerWithController" ]
       },
-      "Hide UI": {
+      "hide ui": {
         "Name": "Auto Hide UI in FreeCam",
         "Class": "bool",
         "Auto": false,
@@ -87,7 +87,7 @@
         "Description": "UltraCam Beyond AUTO Hide UI, this will automatically hide the UI in freecam mode.",
         "Config_Class": [ "UltraCam", "AutoHideUI" ]
       },
-      "Quality Improvements": {
+      "quality improvements": {
         "Name": "Quality Improvements",
         "Class": "bool",
         "Auto": false,
@@ -95,7 +95,7 @@
         "Description": "UltraCam Beyond Quality Improvements. This disables FXAA, FSR and Dynamic Resolution\nWARNING: SHOULD ALWAYS BE TURNED ON WITH HIGH RESOLUTION",
         "Config_Class": [ "Resolution", "QualityImprovements" ]
       },
-      "Triple Buffer": {
+      "triple buffer": {
         "Name": "Triple Buffer",
         "Class": "bool",
         "Auto": false,
@@ -103,7 +103,7 @@
         "Description": "UltraCam Triple Buffer.\nWARNING: KEEP IT TURNED OFF ON SWITCH.",
         "Config_Class": [ "Resolution", "TripleBuffer" ]
       },
-      "DepthOfField": {
+      "depthoffield": {
         "Name": "Remove Depth Of Field",
         "Class": "bool",
         "Auto": false,
@@ -111,7 +111,7 @@
         "Description": "UltraCam Beyond Remove Depth of Field.",
         "Config_Class": [ "Resolution", "RemoveDepthOfField" ]
       },
-      "Lensflare": {
+      "lensflare": {
         "Name": "Remove Lens flare",
         "Class": "bool",
         "Auto": false,
@@ -119,7 +119,7 @@
         "Description": "UltraCam Beyond Remove Lens Flare.",
         "Config_Class": [ "Resolution", "RemoveLensflare" ]
       },
-      "Fog": {
+      "fog": {
         "Name": "Improve Fog",
         "Class": "bool",
         "Auto": false,
@@ -127,7 +127,7 @@
         "Description": "UltraCam Beyond Remove Fog.",
         "Config_Class": [ "Features", "DisableFog" ]
       },
-      "SlowTime": {
+      "slowtime": {
         "Name": "Slow Time",
         "Class": "bool",
         "Auto": false,

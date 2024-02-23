@@ -73,17 +73,6 @@ def load_user_choices(self, config_file, mode=None):
             handle = e
         return
 
-    #self.cheat_version.set(config.get("Manager", "Cheat_Version", fallback="Version - 1.2.1"))
-    #self.resolution_var.set(config.get('Options', 'Resolution', fallback=self.dfps_options.get("ResolutionNames", [""])[2]))
-    #self.aspect_ratio_var.set(config.get('Options', 'Aspect Ratio', fallback=AR_list[0]))
-    #self.shadow_resolution_var.set(config.get('Options', 'ShadowResolution', fallback=self.dfps_options.get("ShadowResolutionNames", [""])[0])) # Shadow Auto
-    #self.shadow_resolution_var_new.set(config.get('Options', 'ShadowResolution',
-    #                                          fallback=self.ultracam_options.get("ShadowResolutionNames", [""])[
-    #                                              0]))  # Shadow Auto
-    #self.fov_var.set(config.get('Options', 'Fov', fallback=50))  # FOV 50
-    #self.ui_var.set(config.get('Options', 'UI', fallback="None"))
-    #self.fp_var.set(config.get('Options', 'First Person', fallback="Off"))
-
     # Load UltraCam Beyond new patches.
     patch_info = self.ultracam_beyond.get("Keys", [""])
     for patch in self.BEYOND_Patches:
@@ -93,7 +82,10 @@ def load_user_choices(self, config_file, mode=None):
             patch_Names = patch_dict["Name_Values"]
             self.BEYOND_Patches[patch].set(patch_Names[int(config["Beyond"][patch])])
             continue
-        self.BEYOND_Patches[patch].set(config["Beyond"][patch])
+        try:
+            self.BEYOND_Patches[patch].set(config["Beyond"][patch])
+        except KeyError:
+            pass
 
 
     # Load the enable/disable choices

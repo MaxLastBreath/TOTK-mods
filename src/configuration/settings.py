@@ -114,6 +114,6 @@ ultracam = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scrip
 ultracambeyond = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/UltraCam_Template.json"
 
 # Download UltraCam
-New_DFPS_Download = "https://github.com/MaxLastBreath/TOTK-mods/raw/main/scripts/Mods/UltraCam/UltraCam.zip"
+New_UCBeyond_Download = f"{repo_url_raw}/raw/main/scripts/Mods/UltraCam/UltraCamBeyond.zip"
 
 description = load_json("Description.json", descurl)

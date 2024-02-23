@@ -31,6 +31,7 @@ def download_unzip(url, target_directory):
         with zipfile.ZipFile(zip_content, 'r') as zip_ref:
             # Extract all contents to a target directory
             zip_ref.extractall(target_directory)
+
     except urllib.error.URLError as e:
         log.error(
                 f"Invalid download URL {url}, possibly due to no internet connection."

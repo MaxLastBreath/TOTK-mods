@@ -65,6 +65,10 @@ class Manager:
         self.ultracam_options = load_json("UltraCam.json", ultracam)
         self.ultracam_beyond = load_json("UltraCam_Template.json", ultracambeyond)
 
+        if os.path.exists(os.path.join("UltraCam/UltraCam_Template.json")):
+            with open("UltraCam/UltraCam_Template.json", "r") as file:
+                self.ultracam_beyond = json.load(file)
+
         # Local text variable
         self.switch_text = ttk.StringVar(value="Switch to Ryujinx")
 
@@ -105,7 +109,7 @@ class Manager:
         def increase_row_2():
             self.row_2 += 40
             if self.row_2 >= 480:
-                self.row_2 = 20
+                self.row_2 = 120
                 self.cul_tex_2 += 180
                 self.cul_sel_2 += 180
 
@@ -1028,7 +1032,7 @@ class Manager:
                 return
             if mode== None:
                 log.info("Starting TASKs for Normal Patch..")
-                tasklist = [Exe_Running(), DownloadFP(), DownloadUI(), DownloadDFPS(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods()]
+                tasklist = [Exe_Running(), DownloadFP(), DownloadUI(), DownloadBEYOND(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods()]
                 if get_setting("auto-backup") in ["On"]:
                     tasklist.append(backup(self))
                 com = 100 // len(tasklist)
@@ -1168,14 +1172,21 @@ class Manager:
                         index = patch_Names.index(self.BEYOND_Patches[patch].get())
                         config[patch_Config[0]][patch_Config[1]] = str(patch_Values[index])
 
-                resolution = self.BEYOND_Patches["Resolution"].get()
-                ARR = self.BEYOND_Patches["Aspect Ratio"].get().split("x")
-                New_Resolution = patch_info["Resolution"]["Values"][patch_info["Resolution"]["Name_Values"].index(resolution)].split("x")
+                resolution = self.BEYOND_Patches["resolution"].get()
+                shadows = int(self.BEYOND_Patches["shadow resolution"].get().split("x")[0])
+
+                ARR = self.BEYOND_Patches["aspect ratio"].get().split("x")
+                New_Resolution = patch_info["resolution"]["Values"][patch_info["resolution"]["Name_Values"].index(resolution)].split("x")
                 New_Resolution = convert_resolution(int(New_Resolution[0]), int(New_Resolution[1]), int(ARR[0]), int(ARR[1]))
 
                 scale_1080 = 1920*1080
+                scale_shadows = round(shadows / 1024)
                 New_Resolution_scale = int(New_Resolution[0]) * int(New_Resolution[1])
-                new_scale = New_Resolution_scale / int(1920*1080)
+                new_scale = New_Resolution_scale / scale_1080
+
+                if (scale_shadows > new_scale):
+                    new_scale = scale_shadows
+                    log.info(f"scale:{new_scale}")
 
                 layout = 0
                 if(new_scale < 0):
@@ -1204,6 +1215,7 @@ class Manager:
 
             # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.
             try:
+                # This logic is disabled with UltraCam Beyond.
                 if self.DFPS_var == "BEYOND":
                     log.info("FINISHED APPLYING PATCHES")
                     return
@@ -1290,26 +1302,35 @@ class Manager:
             else:
                 log.warning("Selected option has no associated setting folder.")
 
-        def DownloadDFPS():
+        def DownloadBEYOND():
             try:
-                self.remove_list.append("UltraCam")
+                self.add_list.append("UltraCam")
                 self.add_list.append("Max DFPS++")
                 self.add_list.append("DFPS")
-                link = New_DFPS_Download
+                link = New_UCBeyond_Download
 
-                Mod_directory = os.path.join(self.load_dir)
+                Mod_directory = os.path.join(self.load_dir, "!!!TOTK Optimizer")
                 if link is None:
                     log.critical("Couldn't find a link to DFPS/UltraCam")
                     return
                 set_setting(args="dfps", value="UltraCam")
 
-                self.progress_var.set(f"Downloading DFPS: UltraCam")
+                # Apply UltraCam from local folder.
+                if os.path.exists("UltraCam/exefs"):
+                    log.info("Found a local UltraCam Folder. COPYING to !!!TOTK Optimizer.")
+                    if os.path.exists(os.path.join(Mod_directory, "exefs")):
+                        shutil.rmtree(os.path.join(Mod_directory, "exefs"))
+                    shutil.copytree(os.path.join("UltraCam/exefs"), os.path.join(Mod_directory, "exefs"))
+                    log.info("Applied New UltraCam.")
+                    return
+
+                self.progress_var.set(f"Downloading UltraCam BEYOND")
                 log.info(f"Downloading: UltraCam")
                 os.makedirs(Mod_directory, exist_ok=True)
                 download_unzip(link, Mod_directory)
                 log.info(f"Downloaded: UltraCam")
             except Exception as e:
-                log.warning("FAILED TO DOWNLOAD ULTRACAM!")
+                log.warning(f"FAILED TO DOWNLOAD ULTRACAM BEYOND! {e}")
 
         def DownloadUI():
             log.info(f"starting the search for UI folder link.")
@@ -1343,7 +1364,7 @@ class Manager:
                         selected_ui = ""
 
                 # search
-                new_folder = f"{self.BEYOND_Patches['Aspect Ratio']}{selected_ui}"
+                new_folder = f"{self.BEYOND_Patches['aspect ratio']}{selected_ui}"
                 new_list.extend(UI_list)
                 # fetch
                 link = AR_dict.get(new_folder)
