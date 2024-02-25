@@ -6,11 +6,11 @@
   "Low": {
     "First Person": false,
     "fps": 30,
-    "shadow resolution": 2, // 512
-    "resolution": 1, //900p
-    "render distance": 3, // 25000
+    "shadow resolution": 2,
+    "resolution": 1,
+    "render distance": 3,
     "quality improvements": false,
-    "triple buffer": false, // set to false because of bugs with switch rn. Ideally should be left to on.
+    "triple buffer": false,
     "depthoffield": false,
     "lensflare": true,
     "fog": false,
