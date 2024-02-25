@@ -7,10 +7,10 @@
 
 # <p align=center> [![Download](https://img.shields.io/github/downloads/MaxLastBreath/TOTK-mods/total?style=for-the-badge&logoColor=%23ffffff&label=Download&labelColor=%232d89cf&color=%23de3e21)](https://github.com/MaxLastBreath/TOTK-mods/releases/latest) - [![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/invite/7MMv4yGfhM)  - [![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/maxlastbreath#) - [![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)](https://www.youtube.com/channel/UC9-81HNX9HfWHUsXBz5xYsQ) - [![Reddit](https://img.shields.io/badge/Reddit-%23FF4500.svg?style=for-the-badge&logo=Reddit&logoColor=white)](https://www.reddit.com/user/Maxlastbreath) </p>
 
-### <p align=center> Previous Mod Folder releases are still available and can be found in [Rentry](https://rentry.org/ModFolder). </p>
+### <p align=center> [Get Access to new Features Early](https://ko-fi.com/maxlastbreath). </p>
 
 
-# <p align=center> 🐾 Installation Guide 🐾 </p>
+# <p align=center> 🐾 Quick Installation Guide 🐾 </p>
 
 **Download the Provided AppImage or .exe File from [releases](https://github.com/MaxLastBreath/TOTK-mods/releases)**
 - Run the executable.
@@ -21,13 +21,13 @@
       - **Ultra (6K)**- 3080ti/3090+. Rx 6800/7800/7800xt. (AT LEAST 12gb+ VRAM)
       - **EXTREME (8k)**- 3090/4090. Rx 7900xt/7900xtx. (AT LEAST 16gb+ VRAM)
    - If you desire further changes, feel free to tweak the settings.
+- (WARNING) Select Yuzu.exe or Ryujinx.exe if you are using them in portable MODE.
 - Click **apply and open TOTK from yuzu.exe/ryujinx.exe**!
 
 **If you can't get the AppImage to Open for Linux**
 - Right click, properties, permissions, run as executable
 
-
-# <p align=center> 🐬 Advanced Setup 🐬 </p>
+# <p align=center> 🐬 More Information 🐬 </p>
 ## <p align=center> 🐋 Display Settings 🐋 </p>
 ### **Presets and Preset Settings**
 - Select Preset
@@ -39,13 +39,19 @@
      - **EXTREME (8k)**: 3090/4090. Rx 7900xt/7900xtx. (AT LEAST 16gb+ VRAM)
 - Select Settings
   - Optimized settings for TOTK only.
+
 ### **UltraCam Beyond**
 - Beyond UltraCam (Freecam)
-   - Pad Down + ZL, unlocks the camera. (More things below)
+  - Completely reworked MATH.
+- Sequencer Beyond.
+  - Allows for the placement of keyframes and creation of custom animations with FOV controls and speed controls.
+  - Now also has a fadeout setting.
+  - Now also interpolates FOV.
 - Resolution Beyond
    - Internal resolution, forces the game to RENDER. not upscale to different resolutions.
    - Automatically adjusts the Memory in the game to allocate for different resolutions.
    - Requires extended Memory or a switch with more than 4gb for resolutions over 1440p
+   - Improves SSAO and OTHER visual effects as well.
 - Shadow Resolution Beyond
   - Internal shadow resolution can now go up to 8K even with 1080p :). (IT LOOKS INSANE)
 - FPS Beyond (Hybrid DFPS)
@@ -86,12 +92,39 @@
     - Benchmarks are saved on switch's SD card (sdmc yuzu)
 
 ### **Aspect Ratios & Ui**
-
 - Aspect ratios are section of combined mod files with certain UI and an Aspect Ratio mod.
 - UI mods are mods that change the look of your buttons (PS4, Xbox, Steamdeck)
 
-### **Camera Mods**
+### **Camera Mods** (TO BE REPLACED)
 - First Person, completely transforms the game into First Person! Horses, Steering stick and more!
+
+### ***UltraCam Beyond Controls***
+- Left Trigger (HOLD), Pad Down (PRESS) - Unlocks Freecam. - (U)
+- L (PRESS) and R (PRESS) - Move UP/Down. - (CNTRL) (SPACE)
+- Pad Left (PRESS), Pad Right (PRESS) - Camera Speed. - (1) (2)
+- Pad Down (PRESS)(TOGGLE) - Allows Control over link. - (L)
+- Plus (PRESS), Minus (PRESS) - Controls Time. - (NONE)
+- ZL (HOLD) Or ZR (HOLD) - Acceleration/De-Acceleration for Movement and Time. - (SHIFT) (ALT)
+- ZR (HOLD) + Plus (Press) - Change Weather. (Takes a few seconds) - (NONE)
+- ZR (HOLD) + Down (PRESS) - Teleport Link. (Opens Glider) - (O)
+- Pad Down (HOLD) - Y (HOLD) or A (HOLD) - Changes FOV. - (J) (K)
+- Y (PRESS) or A (PRESS) - Controls Tilt. - (3) (4)
+- Left Stick (PRESS) - Resets FOV, Tilt. - (5)
+- Hide UI - (H)
+### [EARLY ACCESS FEATURES (and lots more)](https://ko-fi.com/maxlastbreath)
+- ZL (HOLD) + Minus (PRESS) - Pause Game. - (P)
+- UP (PRESS) - Focus to any OBJECT or NPC. - (V)
+
+### ***Sequencer Beyond Controls***
+- X (PRESS) - Create Keyframe. - (6)
+- B (PRESS) - Delete Keyframe. - (7)
+- Right Stick (PRESS) - Play Sequence. - (8)
+- Delete Sequence. - (0)
+- L (PRESS)(SEQUENCE) - Pause. - (SPACE)
+- L (PRESS)(SEQUENCE) - Reverse. - (BACKSPACE)
+- Pad Left (PRESS) - Slow Down. - (1)
+- Pad Right (PRESS) - Speed Up. - (2)
+- ZL (HOLD) or ZR (HOLD) - Accelerate/De-accelerate. - (SHIFT) (ALT)
 
 ## <p align=center> 🔧 Optimizer Settings 🔧 </p>
 ### Text Settings
@@ -128,8 +161,8 @@
 - Meeko on my Discord Server for testing Steamdeck.
 
 # Switch modders, I'm thankful to.
-- [StevensND](https://github.com/StevensND)
+- [StevensND](https://linktr.ee/stevensmods)
 - [MasaGratoR](https://github.com/masagrator)
 - [KeatonTheBot](https://linktr.ee/keatonthebot)
-- [Fl4sh](https://github.com/Fl4sh9174/Switch-Ultrawide-Mods)
+- [Fl4sh](https://github.com/Fl4sh9174)
 - [fayaz12g](https://github.com/fayaz12g)
