@@ -136,7 +136,7 @@ class Manager:
                                                             row=row, cul=cul_tex - 20,
                                                             tags=["text"], tag="Yuzu",
                                                             description_name="Presets",
-                                                            command=self.apply_selected_preset
+                                                            command=lambda event: apply_selected_preset(self)
                                                         )
 
         # Setting Preset - returns variable.
@@ -294,10 +294,9 @@ class Manager:
             section_auto = dicts.get("Section")
             patch_description = dicts.get("Description")
             patch_default_index = dicts.get("Default")
-            log.info(section_auto)
             pos = pos_dict[section_auto]
             if patch_auto is True:
-                self.BEYOND_Patches[name] = "auto"
+                self.BEYOND_Patches[name] = tk.StringVar(master=self.window, value="auto")
                 continue
 
             if dicts["Class"].lower() == "dropdown":
@@ -309,24 +308,24 @@ class Manager:
                             tags=["dropdown"], tag=section_auto,
                             text_description=patch_description
                             )
-                log.info(patch_var.get())
                 new_pos = increase_row(pos[0], pos[1], pos[2])
                 pos[0] = new_pos[0]
                 pos[1] = new_pos[1]
                 pos[2] = new_pos[2]
 
             if dicts["Class"].lower() == "scale":
+                patch_type = dicts.get("Type")
+                patch_increments = dicts.get("Increments")
                 patch_var = self.on_canvas.create_scale(
                     master=self.window, canvas=canvas,
                     text=patch_name,
-                    scale_from=patch_values[0], scale_to=patch_values[1],
-                    row=pos[0], cul=pos[1], drop_cul=pos[2], width=100,
+                    scale_from=patch_values[0], scale_to=patch_values[1], type=patch_type,
+                    row=pos[0], cul=pos[1], drop_cul=pos[2], width=100, increments=float(patch_increments),
                     tags=["scale"], tag=section_auto,
                     text_description=patch_description
                 )
                 patch_var.set(patch_default_index)
                 canvas.itemconfig(patch_name, text=f"{patch_default_index}")
-                log.info(patch_var.get())
                 new_pos = increase_row(pos[0], pos[1], pos[2])
                 pos[0] = new_pos[0]
                 pos[1] = new_pos[1]
@@ -355,8 +354,8 @@ class Manager:
         row = pos_dict["main"][0]
         row_2 = pos_dict["main"][3]
 
-        for patch in self.BEYOND_Patches:
-            log.info(f"{patch}: {self.BEYOND_Patches[patch].get()}")
+        #for patch in self.BEYOND_Patches:
+        #    log.info(f"{patch}: {self.BEYOND_Patches[patch].get()}")
 
         # Extra Patches. FP and Ui.
         self.fp_var = self.on_canvas.create_checkbutton(
@@ -676,6 +675,58 @@ class Manager:
             self.is_Ani_running = True
             self.ani.start()
 
+    def apply_preset(self, preset_options):
+        self.fetch_var(self.ui_var, preset_options, "UI")
+        self.fetch_var(self.fp_var, preset_options, "First Person")
+        self.fetch_var(self.selected_settings, preset_options, "Settings")
+        patch_info = self.ultracam_beyond.get("Keys", [""])
+
+        for option_key, option_value in preset_options.items():
+            if option_key in self.selected_options:
+                self.selected_options[option_key].set(option_value)
+            else:
+                continue
+
+        selected_preset = self.selected_preset.get()
+
+        if selected_preset.lower() == "default":
+            for option_key in self.BEYOND_Patches:
+                patch_dict = patch_info[option_key.lower()]
+                patch_class = patch_dict["Class"]
+                patch_default = patch_dict["Default"]
+
+                if patch_class == "dropdown":
+                    patch_names = patch_dict["Name_Values"]
+                    self.BEYOND_Patches[option_key.lower()].set(patch_names[patch_default])
+                elif patch_class == "scale":
+                    self.maincanvas.itemconfig(patch_dict["Name"], text=patch_default)
+                    self.BEYOND_Patches[option_key.lower()].set(patch_default)
+                else:
+                    if patch_class == "bool":
+                        if patch_default is True: patch_default = "On"
+                        if patch_default is False: patch_default = "Off"
+                    self.BEYOND_Patches[option_key.lower()].set(patch_default)
+
+        for option_key, option_value in preset_options.items():
+            if option_key.lower() in self.BEYOND_Patches:
+                patch_dict = patch_info[option_key.lower()]
+                patch_class = patch_dict["Class"]
+                patch_default = patch_dict["Default"]
+
+                if patch_class == "dropdown":
+                    patch_Names = patch_dict["Name_Values"]
+                    self.BEYOND_Patches[option_key.lower()].set(patch_Names[int(option_value)])
+                elif patch_class == "scale":
+                    self.maincanvas.itemconfig(patch_dict["Name"], text=option_value)
+                    self.BEYOND_Patches[option_key.lower()].set(option_value)
+                else:
+                    if patch_class == "bool":
+                        if option_value is True: option_value = "On"
+                        if option_value is False: option_value = "Off"
+                    self.BEYOND_Patches[option_key.lower()].set(option_value)
+            else:
+                continue
+
     def open_browser(self, web, event=None):
         url = "https://ko-fi.com/maxlastbreath#"
         if web == "Kofi":
@@ -967,46 +1018,10 @@ class Manager:
         elif command == "Mode":
             return self.mode
 
-    def apply_selected_preset(self, event=None):
-        try:
-            selected_preset = self.selected_preset.get()
-        except AttributeError as e:
-            selected_preset = "Saved"
-            log.error(f"Failed to apply selected preset: {e}")
-
-        if selected_preset == "Saved":
-            load_user_choices(self, self.config)
-
-        elif selected_preset in self.presets:
-            preset_to_apply = self.presets[selected_preset]
-            for key, value in preset_to_apply.items():
-                if value.lower() in ["enable", "enabled", "on"]:
-                    preset_to_apply[key] = "On"
-                elif value.lower() in ["disable", "disabled", "off"]:
-                    preset_to_apply[key] = "Off"
-            # Apply the selected preset from the online presets
-            self.apply_preset(self.presets[selected_preset])
     def fetch_var(self, var, dict, option):
         if not dict.get(option, "") == "":
             var.set(dict.get(option, ""))
         return
-
-    def apply_preset(self, preset_options):
-        self.fetch_var(self.resolution_var, preset_options, "Resolution")
-        self.fetch_var(self.fps_var, preset_options, "FPS")
-        self.fetch_var(self.ui_var, preset_options, "UI")
-        self.fetch_var(self.aspect_ratio_var, preset_options, "Aspect Ratio")
-        self.fetch_var(self.fp_var, preset_options, "First Person")
-        self.fetch_var(self.selected_settings, preset_options, "Settings")
-
-        skip_keys = ["Resolution", "FPS", "ShadowResolution", "CameraQuality", "UI"]
-
-        for option_key, option_value in preset_options.items():
-            # Check if the option exists in the self.selected_options dictionary and not in the skip_keys
-            if option_key in self.selected_options and option_key not in skip_keys:
-                self.selected_options[option_key].set(option_value)
-            else:
-                continue
 
     # Select Yuzu Dir
     def select_yuzu_exe(self):
@@ -1456,7 +1471,6 @@ class Manager:
                 return
             # download
             os.makedirs(Mod_directory, exist_ok=True)
-            log.info(link)
             download_unzip(link, Mod_directory)
             log.info(f"Downloaded: {new_folder}")
 

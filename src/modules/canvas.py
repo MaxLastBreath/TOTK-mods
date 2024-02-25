@@ -23,21 +23,32 @@ def next_index(event, var, list=list, increase = 1, command=None):
     if command is not None:
         command(event)
 
-def change_scale(event, var, max, min, increments = int, command=None):
+def change_scale(event, var, max, min, increments = float, command=None):
     new_value = float(var.get()) + increments
-    if new_value > min:
-        new_value = min
+    if new_value > float(min):
+        new_value = float(min)
 
-    if new_value < max:
-        new_value = max
+    if new_value < float(max):
+        new_value = float(max)
+
+    old_value = new_value
+    round(new_value)
+    while new_value < old_value:
+        new_value += increments
+
+    log.info(f"{new_value}, {old_value}, {increments}")
 
     var.set(str(new_value))
-    log.info(new_value)
     if command is not None:
         command(event)
-def update_text(event, canvas, name, var):
-    var.set(round(float(var.get())))
-    canvas.itemconfig(name, text=int(var.get()))
+
+def update_text(event, canvas, name, var, type = "s32"):
+    if type == "s32":
+        var.set(round(float(var.get())))
+        canvas.itemconfig(name, text=int(var.get()))
+    if type == "f32":
+        var.set(round(float(var.get())* 10) / 10)
+        canvas.itemconfig(name, text=float(var.get()))
 
 def toggle(event, var):
     if var.get() == "On":
@@ -128,7 +139,7 @@ class Canvas_Create:
 
     def create_scale(self, canvas,
                         text, master, description_name=None, text_description= None, variable=any, scale_from= 1, scale_to= 100, increments = 5,
-                        row=40, cul=40, drop_cul=180, width=150, style="warning",
+                        row=40, cul=40, drop_cul=180, width=150, style="warning", type = "s32",
                         tags=[], tag=None, command=None, is_active=True):
         # create text
         active_color_new = active_color
@@ -163,7 +174,7 @@ class Canvas_Create:
             tags=tags,
             activefil=active_color_new
         )
-        update_text_command = lambda event: update_text(event, canvas, text, new_variable)
+        update_text_command = lambda event: update_text(event, canvas, text, new_variable, type=type)
 
         master.wm_attributes('-transparentcolor', '#ab23ff')
 

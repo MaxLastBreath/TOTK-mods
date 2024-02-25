@@ -63,12 +63,11 @@ def save_user_choices(self, config_file, yuzu_path=None, mode=None):
         config.write(file)
     log.info("Successfully written into log file")
 
-
 def load_user_choices(self, config_file, mode=None):
     config = configparser.ConfigParser()
     config.read(config_file, encoding="utf-8")
     if mode == "Cheats":
-        self.cheat_version.set(config.get("Manager", "Cheat_Version", fallback="Version - 1.2.0"))
+        self.cheat_version.set(config.get("Manager", "Cheat_Version", fallback="Version - 1.2.1"))
         try:
             for option_name, option_var in self.selected_cheats.items():
                 option_value = config.get('Cheats', option_name, fallback="Off")
@@ -94,6 +93,9 @@ def load_user_choices(self, config_file, mode=None):
             except KeyError:
                 pass
             continue
+        if patch_class.lower() == "scale":
+            # use name for tag accuracy
+            self.maincanvas.itemconfig(patch_dict["Name"], text=self.BEYOND_Patches[patch].get())
         try:
             self.BEYOND_Patches[patch].set(config["Beyond"][patch])
         except KeyError:
@@ -112,6 +114,29 @@ def load_user_choices(self, config_file, mode=None):
     except AttributeError as e:
         # continue, not important.
         handle = e
+
+def apply_selected_preset(self, event=None):
+    try:
+        selected_preset = self.selected_preset.get()
+    except AttributeError as e:
+        selected_preset = "Saved"
+        log.error(f"Failed to apply selected preset: {e}")
+
+    if selected_preset.lower() == "saved":
+        load_user_choices(self, self.config)
+    elif selected_preset in self.presets:
+        preset_to_apply = self.presets[selected_preset]
+        for key, value in preset_to_apply.items():
+            if value is True:
+                preset_to_apply[key] = "On"
+            elif value is False:
+                preset_to_apply[key] = "Off"
+            elif not isinstance(value, int) and not isinstance(value, float) and value.lower() in ["enable", "enabled", "on"]:
+                preset_to_apply[key] = "On"
+            elif not isinstance(value, int) and not isinstance(value, float) and value.lower() in ["disable", "disabled", "off"]:
+                preset_to_apply[key] = "Off"
+        # Apply the selected preset from the online presets
+        self.apply_preset(self.presets[selected_preset])
 
 def write_yuzu_config(configfile, section, setting, selection):
     yuzuconfig = configparser.ConfigParser()

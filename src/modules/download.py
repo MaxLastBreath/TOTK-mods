@@ -41,7 +41,6 @@ def download_unzip(url, target_directory):
     except Exception as e:
         log.error(f"FAILED TO DOWNLOAD FILE: {url} GOT ERROR: {e}")
 
-
 def download_folders(api_url, dir):
 
     response = requests.get(api_url)
