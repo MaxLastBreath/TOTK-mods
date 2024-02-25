@@ -3,6 +3,19 @@
     "UI": "Switch",
     "First Person": false
   },
+  "EXTREMELY Low": {
+    "fps": 30,
+    "fov": 50,
+    "shadow resolution": 0,
+    "resolution": 0,
+    "render distance": 0,
+    "quality improvements": false,
+    "triple buffer": true,
+    "depthoffield": true,
+    "lensflare": true,
+    "fog": true,
+    "handheldresolution": true
+  },
   "Low": {
     "fps": 30,
     "fov": 50,
@@ -42,6 +55,19 @@
     "fog": true,
     "handheldresolution": true
   },
+  "High Balanced": {
+    "fps": 60,
+    "fov": 50,
+    "shadow resolution": 2,
+    "resolution": 4,
+    "render distance": 3,
+    "quality improvements": true,
+    "triple buffer": true,
+    "depthoffield": true,
+    "lensflare": true,
+    "fog": true,
+    "handheldresolution": true
+  },
   "Ultra": {
     "fps": 60,
     "fov": 50,
@@ -58,7 +84,7 @@
   "EXTREME (UNSTABLE)": {
     "fps": 60,
     "fov": 50,
-    "shadow resolution": 8,
+    "shadow resolution": 7,
     "resolution": 6,
     "render distance": 4,
     "quality improvements": true,
