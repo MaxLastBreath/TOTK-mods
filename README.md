@@ -146,7 +146,7 @@
 # <p align=center> ⭐ [Changelogs](https://github.com/MaxLastBreath/TOTK-mods/releases) ⭐ </p>
 
 # Copyright Source & Credits
-- [ULTRACAM/DFPS (me)](https://linktr.ee/maxlastbreath)
+- [UltraCam/DFPS/TOTK Optimizer (me)](https://linktr.ee/maxlastbreath)
 - [Triple Buffering - MasaGratoR](https://github.com/masagrator)
 - [Help With Internal Res](https://linktr.ee/keatonthebot)
 - [Controller UI mods](https://gamebanana.com/members/1944248)
