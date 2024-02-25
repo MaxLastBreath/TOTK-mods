@@ -45,7 +45,7 @@
   "High": {
     "fps": 60,
     "fov": 50,
-    "shadow resolution": 5,
+    "shadow resolution": 6,
     "resolution": 4,
     "render distance": 3,
     "quality improvements": true,
@@ -58,7 +58,7 @@
   "High Balanced": {
     "fps": 60,
     "fov": 50,
-    "shadow resolution": 2,
+    "shadow resolution": 3,
     "resolution": 4,
     "render distance": 3,
     "quality improvements": true,
