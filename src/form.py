@@ -100,8 +100,8 @@ class Manager:
 
         # Create Text Position
         row = 40
-        cul_tex = 40
-        cul_sel = 200
+        cul_tex = 60
+        cul_sel = 220
 
         # Used for 2nd column.
         row_2 = 120
@@ -134,7 +134,7 @@ class Manager:
                                                             master=self.window, canvas=canvas,
                                                             text="OPTIMIZER PRESETS:",
                                                             variable=values[0], values=values,
-                                                            row=row, cul=cul_tex,
+                                                            row=row, cul=cul_tex - 20,
                                                             tags=["text"], tag="Yuzu",
                                                             description_name="Presets",
                                                             command=lambda event: apply_selected_preset(self)
@@ -192,7 +192,7 @@ class Manager:
                                     master=self.window, canvas=canvas,
                                     text=text,
                                     description_name="Browse",
-                                    row=row, cul=cul_tex,
+                                    row=row, cul=cul_tex - 20,
                                     tags=["text"], tag=["Select-EXE"], outline_tag="outline",
                                     command=command
                                     )
@@ -246,17 +246,17 @@ class Manager:
             width=int(70*1.6), height=int(48*1.6),
         )
 
-        # Graphics & Extra & More
+        # Graphics & Extra & More - the -20 is extra
         self.on_canvas.image_Button(
             canvas=canvas,
-            row=row - 35, cul=cul_tex - 10,
+            row=row - 35, cul=cul_tex - 10 - 20,
             img_1=self.graphics_element, img_2=self.graphics_element_active,
             command=lambda event: self.toggle_page(event, "main")
         )
 
         self.on_canvas.image_Button(
             canvas=canvas,
-            row=row - 35, cul=cul_tex + 190,
+            row=row - 35, cul=cul_tex + 190 - 10,
             img_1=self.extra_element, img_2=self.extra_element_active,
             command=lambda event: self.toggle_page(event, "extra")
         )
@@ -432,7 +432,7 @@ class Manager:
         # extract
         self.on_canvas.image_Button(
             canvas=canvas,
-            row=510, cul=25 + int(8 + int(self.apply_element.width() / sf) * 2),
+            row=510, cul=25 + int(7 + int(self.apply_element.width() / sf) * 2),
             img_1=self.extract_element, img_2=self.extract_element_active,
             command=lambda event: self.extract_patches()
         )
