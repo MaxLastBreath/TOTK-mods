@@ -59,10 +59,11 @@ class Manager:
 
         # Initialize Json Files.
         self.description = load_json("Description.json", descurl)
-        self.presets = load_json("preset.json", presetsurl)
+        self.presets = load_json("beyond_presets.json", presetsurl)
         self.version_options = load_json("Version.json", versionurl)
         self.cheat_options = load_json("Cheats.json", cheatsurl)
         self.ultracam_beyond = load_json("UltraCam_Template.json", ultracambeyond)
+        self.yuzu_settings = load_json("yuzu_presets.json", yuzu_presets_url)
 
         if os.path.exists(os.path.join("UltraCam/UltraCam_Template.json")):
             with open("UltraCam/UltraCam_Template.json", "r", encoding="utf-8") as file:
@@ -125,7 +126,7 @@ class Manager:
         # Start of CANVAS options.
 
         # Create preset menu.
-        presets = {"Saved": {}} | load_json("preset.json", presetsurl)
+        presets = {"Saved": {}} | load_json("beyond_presets.json", presetsurl)
         values = list(presets.keys())
         self.selected_preset = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
@@ -138,7 +139,10 @@ class Manager:
                                                         )
 
         # Setting Preset - returns variable.
-        value = ["No Change", "Steamdeck", "AMD", "Nvidia", "High End Nvidia"]
+
+        value = ["No Change"]
+        for item in self.yuzu_settings:
+            value.append(item)
         self.selected_settings = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
                                                             text="YUZU SETTINGS:",
@@ -160,7 +164,6 @@ class Manager:
                                         description_name="Browse",
                                         command=self.select_yuzu_exe
                                         )
-
 
             # Reset to Appdata
             def yuzu_appdata():
@@ -1205,7 +1208,7 @@ class Manager:
             elif mode == None:
                 log.info("Starting Mod Creator.")
                 # Update progress bar
-                self.progress_var.set("Creating Mod ManagerPatch.")
+                self.progress_var.set("TOTK Optimizer Patch.")
 
                 # Ensures that the patches are active and ensure that old versions of the mod folder is disabled.
                 self.remove_list.extend(["!!!TOTK Optimizer"])
@@ -1349,49 +1352,17 @@ class Manager:
                 log.error(f"FAILED TO CREATE MOD PATCH: {e}")
 
         def UpdateSettings():
-            if self.mode == "Ryujinx":
-                print("Ryujinx Doesn't support custom settings as it, doesn't require them.")
+            log.info("Checking for Settings...")
+            self.progress_var.set("Creating Settings..")
+            if self.selected_settings.get() == "No Change":
+                self.progress_var.set("No Settings Required..")
                 return
-            Setting_folder = None
-            SettingGithubFolder = None
-            Setting_selection = self.selected_settings.get()
-            if Setting_selection == "No Change":
-                log.info("Settings selection is None. Returning!")
-                return
-            elif Setting_selection == "Steamdeck":
-                     Setting_folder = "Steamdeck"
-                     SettingGithubFolder = "scripts/settings/Applied%20Settings/Steamdeck/0100F2C0115B6000.ini"
-                     log.info("Installing steamdeck Yuzu preset")
-            elif Setting_selection == "AMD":
-                     Setting_folder = "AMD"
-                     SettingGithubFolder = 'scripts/settings/Applied%20Settings/AMD/0100F2C0115B6000.ini'
-                     log.info("Installing AMD Yuzu Preset")
-            elif Setting_selection == "Nvidia":
-                     Setting_folder = "Nvidia"
-                     SettingGithubFolder = 'scripts/settings/Applied%20Settings/Nvidia/0100F2C0115B6000.ini'
-                     log.info("Installing Nvidia Yuzu Preset")
-            elif Setting_selection == "High End Nvidia":
-                     Setting_folder = "High End Nvidia"
-                     SettingGithubFolder = 'scripts/settings/Applied%20Settings/High%20End%20Nvidia/0100F2C0115B6000.ini'
-                     log.info("Installing High End Nvidia Yuzu Preset")
-
-            if Setting_selection is not None:
-                    self.progress_var.set(f"Downloading and applying settings for {Setting_selection}.")
-                    Setting_directory = os.path.join(self.TOTKconfig, self.title_id)
-                    raw_url = f'{repo_url_raw}/raw/main/{SettingGithubFolder}'
-                    response = requests.get(raw_url)
-                    if response.status_code == 200:
-                        try:
-                            with open(Setting_directory, "wb", encoding="utf-8") as file:
-                                file.write(response.content)
-                        except Exception as e:
-                            log.error(f"FAILED TO CREATE SETTINGS FILE: {e}")
-                        log.info("Successfully Installed TOTK Yuzu preset settings!")
-                    else:
-                        log.error(f"Failed to download file from {raw_url}. Status code: {response.status_code}")
-                        return
-            else:
-                log.warning("Selected option has no associated setting folder.")
+            if self.mode == "Yuzu":
+                setting_preset = self.yuzu_settings[self.selected_settings.get()]
+                for section in setting_preset:
+                    for option in setting_preset[section]:
+                        write_yuzu_config(self.TOTKconfig, self.title_id, section, option, str(setting_preset[section][option]))
+            self.progress_var.set("Finished Creating Settings..")
 
         def DownloadBEYOND():
             try:

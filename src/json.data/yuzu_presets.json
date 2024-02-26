@@ -1,0 +1,130 @@
+{
+    "Steamdeck": {
+        "Renderer": {
+            "vram_usage_mode": 0,
+            "resolution_setup": 2,
+            "max_anisotropy": 5,
+            "astc_recompression": 0,
+            "gpu_accuracy": 0,
+            "anti_aliasing": 2,
+            "scaling_filter": 2,
+            "aspect_ratio": 3,
+            "accelerate_astc": 1,
+            "use_fast_gpu_time": "true",
+            "use_asynchronous_gpu_emulation": "true",
+            "use_disk_shader_cache": "true",
+            "barrier_feedback_loops": "true",
+            "use_asynchronous_shaders": "false",
+            "use_reactive_flushing": "true",
+            "force_max_clock": "false",
+            "use_video_framerate": "true",
+            "use_vulkan_driver_pipeline_cache": "true"
+        },
+        "Core": {
+            "use_multi_core": "true",
+            "speed_limit": 100
+        },
+        "System": {
+            "use_docked_mode": 1
+        },
+        "Cpu": {
+            "cpu_accuracy": 1
+        }
+    },
+    "Balanced Nvidia": {
+        "Renderer": {
+            "vram_usage_mode": 0,
+            "resolution_setup": 2,
+            "max_anisotropy": 5,
+            "astc_recompression": 0,
+            "gpu_accuracy": 0,
+            "anti_aliasing": 2,
+            "scaling_filter": 2,
+            "aspect_ratio": 0,
+            "accelerate_astc": 1,
+            "use_fast_gpu_time": "true",
+            "use_asynchronous_gpu_emulation": "true",
+            "use_disk_shader_cache": "true",
+            "barrier_feedback_loops": "true",
+            "use_asynchronous_shaders": "false",
+            "use_reactive_flushing": "true",
+            "force_max_clock": "false",
+            "use_video_framerate": "true",
+            "use_vulkan_driver_pipeline_cache": "true"
+        },
+        "Core": {
+            "use_multi_core": "true",
+            "speed_limit": 100
+        },
+        "System": {
+            "use_docked_mode": 1
+        },
+        "Cpu": {
+            "cpu_accuracy": 1
+        }
+    },
+    "Balanced AMD": {
+        "Renderer": {
+            "vram_usage_mode": 0,
+            "resolution_setup": 2,
+            "max_anisotropy": 5,
+            "astc_recompression": 0,
+            "gpu_accuracy": 0,
+            "anti_aliasing": 2,
+            "scaling_filter": 2,
+            "aspect_ratio": 0,
+            "accelerate_astc": 1,
+            "use_fast_gpu_time": "true",
+            "use_asynchronous_gpu_emulation": "true",
+            "use_disk_shader_cache": "true",
+            "barrier_feedback_loops": "true",
+            "use_asynchronous_shaders": "false",
+            "use_reactive_flushing": "true",
+            "force_max_clock": "true",
+            "use_video_framerate": "true",
+            "use_vulkan_driver_pipeline_cache": "true"
+        },
+        "Core": {
+            "use_multi_core": "true",
+            "speed_limit": 100
+        },
+        "System": {
+            "use_docked_mode": 1
+        },
+        "Cpu": {
+            "cpu_accuracy": 1
+        }
+    },
+    "Optimized Low End": {
+        "Renderer": {
+            "vram_usage_mode": 0,
+            "resolution_setup": 2,
+            "max_anisotropy": 5,
+            "astc_recompression": 2,
+            "gpu_accuracy": 0,
+            "anti_aliasing": 0,
+            "scaling_filter": 2,
+            "aspect_ratio": 0,
+            "accelerate_astc": 1,
+            "use_fast_gpu_time": "true",
+            "use_asynchronous_gpu_emulation": "true",
+            "use_disk_shader_cache": "true",
+            "barrier_feedback_loops": "true",
+            "use_asynchronous_shaders": "true",
+            "use_reactive_flushing": "true",
+            "force_max_clock": "false",
+            "use_video_framerate": "true",
+            "use_vulkan_driver_pipeline_cache": "true"
+        },
+        "Core": {
+            "use_multi_core": "true",
+            "speed_limit": 100
+        },
+        "System": {
+            "use_docked_mode": 1
+        },
+        "Cpu": {
+            "cpu_accuracy": 1
+        }
+    }
+}
