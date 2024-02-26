@@ -138,7 +138,9 @@ def apply_selected_preset(self, event=None):
         # Apply the selected preset from the online presets
         self.apply_preset(self.presets[selected_preset])
 
-def write_yuzu_config(configfile, title_id, section, setting, selection):
+def write_yuzu_config(self, configfile, title_id, section, setting, selection):
+    if self.is_extracting is True:
+        return
     os.makedirs(configfile, exist_ok=True)
     Custom_Config = os.path.join(configfile, f"{title_id}.ini")
     yuzuconfig = configparser.ConfigParser()
@@ -151,7 +153,10 @@ def write_yuzu_config(configfile, title_id, section, setting, selection):
     with open(Custom_Config, "w", encoding="utf-8") as configfile:
         yuzuconfig.write(configfile, space_around_delimiters=False)
 
-def write_ryujinx_config(configfile, setting, selection):
+def write_ryujinx_config(self, configfile, setting, selection):
+    if self.is_extracting is True:
+        return
+
     with open(configfile, "r", encoding="utf-8") as file:
         data = json.load(file)
         data[setting] = selection

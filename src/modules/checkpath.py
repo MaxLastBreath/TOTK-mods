@@ -8,6 +8,15 @@ from tkinter import messagebox
 
 # Define Directories for different OS or Yuzu Folders, Check if User has correct paths for User Folder.
 def checkpath(self, mode):
+    if self.is_extracting is True:
+        self.configdir = None
+        self.TOTKconfig = None
+        self.nand_dir = None
+        self.ryujinx_config = None
+        self.load_dir = os.getcwd()
+        self.Yuzudir = os.getcwd()
+        return
+
     home_directory = os.path.expanduser("~")
     # Default Dir for Linux/SteamOS
     self.os_platform = platform.system()

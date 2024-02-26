@@ -26,6 +26,8 @@ class Manager:
         # Define the Manager window.
         self.window = window
 
+        self.is_extracting = False
+
         self.DFPS_var = "BEYOND"
 
         # Configure the Style of the entire window.
@@ -132,7 +134,7 @@ class Manager:
                                                             master=self.window, canvas=canvas,
                                                             text="OPTIMIZER PRESETS:",
                                                             variable=values[0], values=values,
-                                                            row=row, cul=cul_tex - 20,
+                                                            row=row, cul=cul_tex,
                                                             tags=["text"], tag="Yuzu",
                                                             description_name="Presets",
                                                             command=lambda event: apply_selected_preset(self)
@@ -159,7 +161,7 @@ class Manager:
             self.on_canvas.create_button(
                                         master=self.window, canvas=canvas,
                                         btn_text="Browse",
-                                        row=row, cul=cul_sel - 20, width=6,
+                                        row=row, cul=cul_sel, width=6,
                                         tags=["Button"],
                                         description_name="Browse",
                                         command=self.select_yuzu_exe
@@ -174,7 +176,7 @@ class Manager:
             self.on_canvas.create_button(
                                         master=self.window, canvas=canvas,
                                         btn_text="Use Appdata",
-                                        row=row, cul=cul_sel + 68  - 20, width=9,
+                                        row=row, cul=cul_sel + 68, width=9,
                                         tags=["Button"],
                                         description_name="Reset",
                                         command=yuzu_appdata
@@ -190,7 +192,7 @@ class Manager:
                                     master=self.window, canvas=canvas,
                                     text=text,
                                     description_name="Browse",
-                                    row=row, cul=cul_tex - 20,
+                                    row=row, cul=cul_tex,
                                     tags=["text"], tag=["Select-EXE"], outline_tag="outline",
                                     command=command
                                     )
@@ -199,7 +201,7 @@ class Manager:
         self.on_canvas.create_button(
                                     master=self.window, canvas=canvas,
                                     btn_text="Backup",
-                                    row=row, cul=backupbutton - 20, width=7,
+                                    row=row, cul=backupbutton, width=7,
                                     tags=["Button"],
                                     description_name="Backup",
                                     command=lambda: backup(self)
@@ -208,7 +210,7 @@ class Manager:
         self.on_canvas.create_button(
                                     master=self.window, canvas=canvas,
                                     btn_text="Clear Shaders",
-                                    row=row, cul=backupbutton+78 - 20, width=9,
+                                    row=row, cul=backupbutton+78, width=9,
                                     tags=["Button", "yuzu"],
                                     description_name="Shaders",
                                     command=lambda: clean_shaders(self)
@@ -254,7 +256,7 @@ class Manager:
 
         self.on_canvas.image_Button(
             canvas=canvas,
-            row=row - 35, cul=cul_tex + 160,
+            row=row - 35, cul=cul_tex + 190,
             img_1=self.extra_element, img_2=self.extra_element_active,
             command=lambda event: self.toggle_page(event, "extra")
         )
@@ -273,7 +275,6 @@ class Manager:
         ##              AUTO PATCH INFO STARTS HERE ALL CONTROLLED IN JSON FILE.
         ##              THIS IS FOR ULTRACAM BEYOND GRAPHICS AND PERFORMANCE (2.0)
         ##              REMOVED DFPS, SINCE ULTRACAM BEYOND DOES IT ALL AND SO MUCH BETTER.
-        ##
         ##
 
         pos_dict = {
@@ -404,20 +405,37 @@ class Manager:
                         width=int(70*1.5), height=int(48*1.5),
                         )
 
+        self.extract_element = self.on_canvas.Photo_Image(
+                        image_path="extract.png",
+                        width=int(70*1.5), height=int(48*1.5),
+                        )
+        self.extract_element_active = self.on_canvas.Photo_Image(
+                        image_path="extract_active.png",
+                        width=int(70*1.5), height=int(48*1.5),
+                        )
+
         self.on_canvas.image_Button(
             canvas=canvas,
             row=510, cul=25,
             img_1=self.apply_element, img_2=self.apply_element_active,
             command=lambda event: self.submit()
         )
-        if self.os_platform == "Windows":
-            # reverse scale.
-            self.on_canvas.image_Button(
-                canvas=canvas,
-                row=510, cul=25 + int(self.apply_element.width() / sf),
-                img_1=self.launch_element, img_2=self.launch_element_active,
-                command=lambda event: launch_GAME(self)
-            )
+
+        # reverse scale.
+        self.on_canvas.image_Button(
+            canvas=canvas,
+            row=510, cul=25 + int(self.apply_element.width() / sf),
+            img_1=self.launch_element, img_2=self.launch_element_active,
+            command=lambda event: launch_GAME(self)
+        )
+
+        # extract
+        self.on_canvas.image_Button(
+            canvas=canvas,
+            row=510, cul=25 + int(8 + int(self.apply_element.width() / sf) * 2),
+            img_1=self.extract_element, img_2=self.extract_element_active,
+            command=lambda event: self.extract_patches()
+        )
 
         # Create a submit button
         #self.on_canvas.create_button(
@@ -769,22 +787,22 @@ class Manager:
 
         self.master_sword_element_active = self.on_canvas.Photo_Image(
             image_path="Master_Sword_active.png",
-            width=155, height=88,
+            width=int(155 * 1.0), height=int(88* 1.0),
         )
 
         self.master_sword_element2_active = self.on_canvas.Photo_Image(
             image_path="Master_Sword_active2.png", mirror=True,
-            width=155, height=88,
+            width=int(155* 1.0), height=int(88* 1.0),
         )
 
         self.hylian_element = self.on_canvas.Photo_Image(
             image_path="Hylian_Shield.png",
-            width=72, height=114,
+            width=int(72 * 1.2), height=int(114 * 1.2),
         )
 
         self.hylian_element_active = self.on_canvas.Photo_Image(
             image_path="Hylian_Shield_Active.png",
-            width=72, height=114,
+            width=int(72 * 1.2), height=int(114 * 1.2),
         )
 
         self.background_UI_element = self.on_canvas.Photo_Image(
@@ -794,12 +812,6 @@ class Manager:
 
         self.background_UI_Cheats = self.on_canvas.Photo_Image(
             image_path="BG_Left_Cheats.png",
-            width=1200, height=600,
-        )
-
-        # Create a transparent black background
-        self.background_UI2 = self.on_canvas.Photo_Image(
-            image_path="BG_Right.png",
             width=1200, height=600,
         )
 
@@ -868,7 +880,6 @@ class Manager:
         canvas.create_image(0, 0, anchor="nw", image=self.background_UI_element, tags="overlay")
 
         # Info text BG
-        canvas.create_image(0-scale(20), 0, anchor="nw", image=self.background_UI2, tags="overlay")
         canvas.create_image(0-scale(20), 0, anchor="nw", image=self.background_UI3, tags="overlay")
 
         # Create Active Buttons.
@@ -1074,6 +1085,12 @@ class Manager:
             return ryujinx_path
 
     # Submit the results, run download manager. Open a Loading screen.
+
+    def extract_patches(self):
+        self.is_extracting = True
+        checkpath(self, self.mode)
+        self.submit()
+
     def submit(self, mode=None):
         self.add_list = []
         self.remove_list = []
@@ -1082,7 +1099,9 @@ class Manager:
         if self.mode == "Yuzu":
             qtconfig = get_config_parser()
             qtconfig.optionxform = lambda option: option
-            qtconfig.read(self.configdir)
+            try:
+                qtconfig.read(self.configdir)
+            except Exception as e: log.warning(f"Couldn't' find QT-config {e}")
         else:
             qtconfig = None
 
@@ -1116,7 +1135,10 @@ class Manager:
                 return
             if mode== None:
                 log.info("Starting TASKs for Normal Patch..")
-                tasklist = [Exe_Running(), DownloadFP(), DownloadUI(), DownloadBEYOND(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods()]
+                def stop_extracting():
+                    self.is_extracting = False
+
+                tasklist = [Exe_Running(), DownloadFP(), DownloadUI(), DownloadBEYOND(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods(), stop_extracting()]
                 if get_setting("auto-backup") in ["On"]:
                     tasklist.append(backup(self))
                 com = 100 // len(tasklist)
@@ -1281,21 +1303,21 @@ class Manager:
                     layout = 2
 
                 if self.mode == "Yuzu":
-                    write_yuzu_config(self.TOTKconfig, self.title_id, "Renderer", "resolution_setup", "2")
-                    write_yuzu_config(self.TOTKconfig, self.title_id,"Core", "memory_layout_mode", f"{layout}")
+                    write_yuzu_config(self, self.TOTKconfig, self.title_id, "Renderer", "resolution_setup", "2")
+                    write_yuzu_config(self, self.TOTKconfig, self.title_id,"Core", "memory_layout_mode", f"{layout}")
 
                     if layout > 0:
-                        write_yuzu_config(self.TOTKconfig, self.title_id,"System", "use_docked_mode", "true")
-                        write_yuzu_config(self.TOTKconfig, self.title_id,"Renderer", "vram_usage_mode", "1")
+                        write_yuzu_config(self, self.TOTKconfig, self.title_id,"System", "use_docked_mode", "true")
+                        write_yuzu_config(self, self.TOTKconfig, self.title_id,"Renderer", "vram_usage_mode", "1")
                     else:
-                        write_yuzu_config(self.TOTKconfig, self.title_id,"Renderer", "vram_usage_mode", "0")
+                        write_yuzu_config(self, self.TOTKconfig, self.title_id,"Renderer", "vram_usage_mode", "0")
 
                 if self.mode == "Ryujinx":
-                    write_ryujinx_config(self.ryujinx_config, "res_scale", 1)
+                    write_ryujinx_config(self, self.ryujinx_config, "res_scale", 1)
                     if (layout > 0):
-                        write_ryujinx_config(self.ryujinx_config, "expand_ram", True)
+                        write_ryujinx_config(self, self.ryujinx_config, "expand_ram", True)
                     else:
-                        write_ryujinx_config(self.ryujinx_config, "expand_ram", False)
+                        write_ryujinx_config(self, self.ryujinx_config, "expand_ram", False)
 
                 config["Resolution"]["Width"] = str(New_Resolution[0])
                 config["Resolution"]["Height"] = str(New_Resolution[1])
@@ -1361,7 +1383,7 @@ class Manager:
                 setting_preset = self.yuzu_settings[self.selected_settings.get()]
                 for section in setting_preset:
                     for option in setting_preset[section]:
-                        write_yuzu_config(self.TOTKconfig, self.title_id, section, option, str(setting_preset[section][option]))
+                        write_yuzu_config(self, self.TOTKconfig, self.title_id, section, option, str(setting_preset[section][option]))
             self.progress_var.set("Finished Creating Settings..")
 
         def DownloadBEYOND():
@@ -1487,14 +1509,13 @@ class Manager:
                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, item, action="add")
                 for item in self.remove_list:
                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, item, action="remove")
-            if self.mode == "Ryujinx" or platform.system() == "Linux":
+            if self.mode == "Ryujinx" or platform.system() == "Linux" and not self.is_extracting:
                 for item in self.add_list:
                     item_dir = os.path.join(self.load_dir, item)
                     if os.path.exists(item_dir):
                         shutil.rmtree(item_dir)
             self.add_list.clear()
             self.remove_list.clear()
-
 
         # Execute tasks and make a Progress Window.
         progress_window = Toplevel(self.window)
