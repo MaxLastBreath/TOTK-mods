@@ -58,12 +58,10 @@ class Manager:
         self.cheat_version = ttk.StringVar(value="Version - 1.2.00")
 
         # Initialize Json Files.
-        self.dfps_options = load_json("DFPS.json", dfpsurl)
         self.description = load_json("Description.json", descurl)
         self.presets = load_json("preset.json", presetsurl)
         self.version_options = load_json("Version.json", versionurl)
         self.cheat_options = load_json("Cheats.json", cheatsurl)
-        self.ultracam_options = load_json("UltraCam.json", ultracam)
         self.ultracam_beyond = load_json("UltraCam_Template.json", ultracambeyond)
 
         if os.path.exists(os.path.join("UltraCam/UltraCam_Template.json")):
@@ -99,8 +97,8 @@ class Manager:
 
         # Create Text Position
         row = 40
-        cul_tex = 40 + 20
-        cul_sel = 200 + 20
+        cul_tex = 40
+        cul_sel = 200
 
         # Used for 2nd column.
         row_2 = 120
@@ -261,7 +259,7 @@ class Manager:
         # BIG TEXT.
         self.on_canvas.create_label(
                                     master=self.window, canvas=canvas,
-                                    text="Tweaks & More", font=bigfont, color=BigTextcolor,
+                                    text="Toggle Options", font=bigfont, color=BigTextcolor,
                                     description_name="Mod Improvements",
                                     row=row, cul=400+100,
                                     tags=["Big-Text"]
@@ -272,7 +270,6 @@ class Manager:
         ##              AUTO PATCH INFO STARTS HERE ALL CONTROLLED IN JSON FILE.
         ##              THIS IS FOR ULTRACAM BEYOND GRAPHICS AND PERFORMANCE (2.0)
         ##              REMOVED DFPS, SINCE ULTRACAM BEYOND DOES IT ALL AND SO MUCH BETTER.
-        ##
         ##
         ##
 
@@ -1281,8 +1278,14 @@ class Manager:
                     layout = 2
 
                 if self.mode == "Yuzu":
-                    write_yuzu_config(self.TOTKconfig, "Renderer", "resolution_setup", "2")
-                    write_yuzu_config(self.TOTKconfig, "Core", "memory_layout_mode", f"{layout}")
+                    write_yuzu_config(self.TOTKconfig, self.title_id, "Renderer", "resolution_setup", "2")
+                    write_yuzu_config(self.TOTKconfig, self.title_id,"Core", "memory_layout_mode", f"{layout}")
+
+                    if layout > 0:
+                        write_yuzu_config(self.TOTKconfig, self.title_id,"System", "use_docked_mode", "true")
+                        write_yuzu_config(self.TOTKconfig, self.title_id,"Renderer", "vram_usage_mode", "1")
+                    else:
+                        write_yuzu_config(self.TOTKconfig, self.title_id,"Renderer", "vram_usage_mode", "0")
 
                 if self.mode == "Ryujinx":
                     write_ryujinx_config(self.ryujinx_config, "res_scale", 1)
@@ -1374,7 +1377,7 @@ class Manager:
 
             if Setting_selection is not None:
                     self.progress_var.set(f"Downloading and applying settings for {Setting_selection}.")
-                    Setting_directory = self.TOTKconfig
+                    Setting_directory = os.path.join(self.TOTKconfig, self.title_id)
                     raw_url = f'{repo_url_raw}/raw/main/{SettingGithubFolder}'
                     response = requests.get(raw_url)
                     if response.status_code == 200:

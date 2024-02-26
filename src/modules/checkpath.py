@@ -18,19 +18,19 @@ def checkpath(self, mode):
 
             self.Globaldir = os.path.join(home_directory, ".local", "share", "yuzu")
             self.configdir = os.path.join(self.Globaldir, "config", "qt-config.ini")
-            self.TOTKconfig = os.path.join(self.Globaldir, "config", "custom", "0100F2C0115B6000.ini")
+            self.TOTKconfig = os.path.join(self.Globaldir, "config", "custom")
 
             # Assume it's a steamdeck
             if os.path.exists(steamdeckdir):
                 log.info("Detected a steamdeck!")
                 self.configdir = steamdeckdir
-                self.TOTKconfig = os.path.join(home_directory, ".config", "yuzu", "custom", "0100F2C0115B6000.ini")
+                self.TOTKconfig = os.path.join(home_directory, ".config", "yuzu", "custom")
 
             # Check for a flatpak.
             if os.path.exists(flatpak):
                 log.info("Detected a Yuzu flatpak!")
                 self.configdir = os.path.join(flatpak, "qt-config.ini")
-                self.TOTKconfig = os.path.join(flatpak, "custom", "0100F2C0115B6000.ini")
+                self.TOTKconfig = os.path.join(flatpak, "custom")
                 new_path = os.path.dirname(os.path.dirname(flatpak))
                 self.Globaldir = os.path.join(new_path, "data", "yuzu")
 
@@ -77,7 +77,7 @@ def checkpath(self, mode):
         if mode == "Yuzu":
             if os.path.exists(userfolder):
                 self.configdir = os.path.join(yuzupath, "../user/config/qt-config.ini")
-                self.TOTKconfig = os.path.join(self.configdir, "../custom/0100F2C0115B6000.ini")
+                self.TOTKconfig = os.path.join(self.configdir, "../custom")
                 config_parser = configparser.ConfigParser()
                 config_parser.read(self.configdir, encoding="utf-8")
                 self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{os.path.join(yuzupath, "../user/nand")}'))
@@ -116,7 +116,7 @@ def checkpath(self, mode):
             else:
                 self.Globaldir = os.path.join(home_directory, "AppData", "Roaming", "yuzu")
                 self.configdir = os.path.join(self.Globaldir, "config", "qt-config.ini")
-                self.TOTKconfig = os.path.join(self.configdir, "../custom/0100F2C0115B6000.ini")
+                self.TOTKconfig = os.path.join(self.configdir, "../custom")
                 config_parser = configparser.ConfigParser()
                 config_parser.read(self.configdir, encoding="utf-8")
                 self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{self.Globaldir}/nand'))
