@@ -16,6 +16,7 @@ def checkpath(self, mode):
         self.sdmc = None
         self.load_dir = os.getcwd()
         self.Yuzudir = os.getcwd()
+        self.Globaldir = os.getcwd()
         return
 
     home_directory = os.path.expanduser("~")
@@ -94,7 +95,7 @@ def checkpath(self, mode):
                 config_parser = configparser.ConfigParser()
                 config_parser.read(self.configdir, encoding="utf-8")
                 self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{os.path.join(yuzupath, "../user/nand")}'))
-                self.sdmc_dir = os.path.normpath(config_parser.get('Data%20Storage', 'sdmc_directory', fallback=f'{self.Globaldir}/sdmc'))
+                self.sdmc_dir = os.path.normpath(config_parser.get('Data%20Storage', 'sdmc_directory', fallback=f'{os.path.join(yuzupath, "../user/sdmc")}'))
                 if self.nand_dir.startswith('"'):
                     self.nand_dir = self.nand_dir.strip('"')[0]
                 self.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{os.path.join(yuzupath, "../user/nand")}')), "0100F2C0115B6000")

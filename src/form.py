@@ -59,6 +59,15 @@ class Manager:
         self.old_cheats = {}
         self.cheat_version = ttk.StringVar(value="Version - 1.2.00")
 
+        self.configdir = None
+        self.TOTKconfig = None
+        self.nand_dir = None
+        self.ryujinx_config = None
+        self.sdmc = None
+        self.load_dir = os.getcwd()
+        self.Yuzudir = os.getcwd()
+        self.Globaldir = os.getcwd()
+
         # Initialize Json Files.
         self.description = load_json("Description.json", descurl)
         self.presets = load_json("beyond_presets.json", presetsurl)
@@ -1295,11 +1304,12 @@ class Manager:
                         config[patch_Config[0]] = {}
 
                     # In case we have an auto patch.
-                    if self.BEYOND_Patches[patch] == "auto":
-                        config[patch_Config[0]][patch_Config[1]] = str(patch_Default)
-                        continue
-                    elif self.BEYOND_Patches[patch].get() == "auto":
-                        config[patch_Config[0]][patch_Config[1]] = str(patch_Default)
+                    if self.BEYOND_Patches[patch] == "auto" or self.BEYOND_Patches[patch].get() == "auto":
+                        if patch_class.lower() == "dropdown":
+                            patch_Names = patch_dict["Name_Values"]
+                            config[patch_Config[0]][patch_Config[1]] = str(patch_Names[patch_Default])
+                        else:
+                            config[patch_Config[0]][patch_Config[1]] = str(patch_Default)
                         continue
 
                     if patch_class.lower() == "bool" or patch_class.lower() == "scale":

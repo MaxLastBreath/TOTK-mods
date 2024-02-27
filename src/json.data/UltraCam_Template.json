@@ -255,7 +255,7 @@
             "Default": 1,
             "Description": "UltraCam Beyond handheld resolution, set to AUTO.",
             "Config_Class": [
-                "Resolution",
+                "Handheld",
                 "Width"
             ]
         },
@@ -285,7 +285,7 @@
             "Default": 0,
             "Description": "UltraCam Beyond handheld resolution, set to AUTO.",
             "Config_Class": [
-                "Resolution",
+                "Handheld",
                 "Height"
             ]
         },
