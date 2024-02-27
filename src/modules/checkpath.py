@@ -5,7 +5,43 @@ from modules.logger import *
 from configuration.settings import localconfig
 from tkinter import messagebox
 
+def select_yuzu_exe(self):
+    # Open a file dialog to browse and select yuzu.exe
+    if self.os_platform == "Windows":
+        yuzu_path = filedialog.askopenfilename(
+            title=f"Please select {self.mode}.exe",
+            filetypes=[("Executable files", "*.exe"), ("All Files", "*.*")]
+        )
+        executable_name = yuzu_path
+        if executable_name.endswith("Ryujinx.exe") or executable_name.endswith("Ryujinx.Ava.exe"):
+            if self.mode == "Yuzu":
+                self.switchmode("true")
+        if executable_name.endswith("yuzu.exe"):
+            if self.mode == "Ryujinx":
+                self.switchmode("true")
+        if yuzu_path:
+            # Save the selected yuzu.exe path to a configuration file
+            save_user_choices(self, self.config, yuzu_path)
+            home_directory = os.path.dirname(yuzu_path)
+            fullpath = os.path.dirname(yuzu_path)
+            if any(item in os.listdir(fullpath) for item in ["user", "portable"]):
+                log.info(
+                    f"Successfully selected {self.mode}.exe! And a portable folder was found at {home_directory}!")
+                checkpath(self, self.mode)
+                return yuzu_path
+            else:
+                log.info(f"Portable folder for {self.mode} not found defaulting to appdata directory!")
+                checkpath(self, self.mode)
+                return yuzu_path
 
+            # Update the yuzu.exe path in the current session
+            self.yuzu_path = yuzu_path
+        else:
+            checkpath(self, self.mode)
+            return None
+        # Save the selected yuzu.exe path to a configuration file
+        save_user_choices(self, self.config, yuzu_path)
+    return yuzu_path
 # Define Directories for different OS or Yuzu Folders, Check if User has correct paths for User Folder.
 def checkpath(self, mode):
     if self.is_extracting is True:
@@ -84,7 +120,7 @@ def checkpath(self, mode):
             return
     # Default Dir for Windows or user folder.
     elif self.os_platform == "Windows":
-        yuzupath = self.load_yuzu_path(localconfig)
+        yuzupath = load_yuzu_path(self, localconfig)
         userfolder = os.path.join(yuzupath, "../user/")
         portablefolder = os.path.join(yuzupath, "../portable/")
         # Check for user folder
@@ -185,3 +221,15 @@ def DetectOS(self, mode):
             else:
                 log.warning("qt-config.ini not found, the script will assume default appdata directories, "
                             "please reopen Yuzu for consistency and make sure TOTK is present..!")
+
+def load_yuzu_path(self, config_file):
+    if self.mode == "Yuzu":
+        config = configparser.ConfigParser()
+        config.read(config_file, encoding="utf-8")
+        yuzu_path = config.get('Paths', 'yuzupath', fallback="Appdata")
+        return yuzu_path
+    if self.mode == "Ryujinx":
+        config = configparser.ConfigParser()
+        config.read(config_file, encoding="utf-8")
+        ryujinx_path = config.get('Paths', 'ryujinxpath', fallback="Appdata")
+        return ryujinx_path

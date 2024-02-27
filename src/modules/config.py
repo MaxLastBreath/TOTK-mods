@@ -2,6 +2,58 @@ from modules.checkpath import checkpath
 from configuration.settings import *
 import os, json, uuid
 
+def apply_preset(self, preset_options):
+    self.fetch_var(self.ui_var, preset_options, "UI")
+    self.fetch_var(self.fp_var, preset_options, "First Person")
+    self.fetch_var(self.selected_settings, preset_options, "Settings")
+    patch_info = self.ultracam_beyond.get("Keys", [""])
+
+    for option_key, option_value in preset_options.items():
+        if option_key in self.selected_options:
+            self.selected_options[option_key].set(option_value)
+        else:
+            continue
+
+    selected_preset = self.selected_preset.get()
+
+    if selected_preset.lower() == "default":
+        for option_key in self.BEYOND_Patches:
+            patch_dict = patch_info[option_key.lower()]
+            patch_class = patch_dict["Class"]
+            patch_default = patch_dict["Default"]
+
+            if patch_class == "dropdown":
+                patch_names = patch_dict["Name_Values"]
+                self.BEYOND_Patches[option_key.lower()].set(patch_names[patch_default])
+            elif patch_class == "scale":
+                self.maincanvas.itemconfig(patch_dict["Name"], text=patch_default)
+                self.BEYOND_Patches[option_key.lower()].set(patch_default)
+            else:
+                if patch_class == "bool":
+                    if patch_default is True: patch_default = "On"
+                    if patch_default is False: patch_default = "Off"
+                self.BEYOND_Patches[option_key.lower()].set(patch_default)
+
+    for option_key, option_value in preset_options.items():
+        if option_key.lower() in self.BEYOND_Patches:
+            patch_dict = patch_info[option_key.lower()]
+            patch_class = patch_dict["Class"]
+            patch_default = patch_dict["Default"]
+
+            if patch_class == "dropdown":
+                patch_Names = patch_dict["Name_Values"]
+                self.BEYOND_Patches[option_key.lower()].set(patch_Names[int(option_value)])
+            elif patch_class == "scale":
+                self.maincanvas.itemconfig(patch_dict["Name"], text=option_value)
+                self.BEYOND_Patches[option_key.lower()].set(option_value)
+            else:
+                if patch_class == "bool":
+                    if option_value is True: option_value = "On"
+                    if option_value is False: option_value = "Off"
+                self.BEYOND_Patches[option_key.lower()].set(option_value)
+        else:
+            continue
+
 def save_user_choices(self, config_file, yuzu_path=None, mode=None):
     log.info(f"Saving user choices in {localconfig}")
     config = configparser.ConfigParser()
@@ -149,7 +201,7 @@ def apply_selected_preset(self, event=None):
             elif not isinstance(value, int) and not isinstance(value, float) and value.lower() in ["disable", "disabled", "off"]:
                 preset_to_apply[key] = "Off"
         # Apply the selected preset from the online presets
-        self.apply_preset(self.presets[selected_preset])
+        apply_preset(self, self.presets[selected_preset])
 
 def write_yuzu_config(self, configfile, title_id, section, setting, selection):
     if self.is_extracting is True:

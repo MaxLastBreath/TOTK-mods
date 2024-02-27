@@ -1,21 +1,12 @@
 import threading
-import tkinter
-import ttkbootstrap as ttk
 import webbrowser
 import re
-from tkinter import filedialog, Toplevel
-from ttkbootstrap.constants import *
-from ttkbootstrap import Style
-from modules.canvas import *
-from modules.qt_config import modify_disabled_key, get_config_parser
-from modules.checkpath import checkpath, DetectOS
-from modules.backup import *
-from modules.logger import *
-from modules.launch import *
-from modules.config import *
-from modules.util import *
 from configuration.settings import *
 from configuration.settings_config import Setting
+from modules.modules import * # imports all needed files.
+from src.modules.canvas import Canvas_Create
+from src.modules.config import write_yuzu_config
+
 
 class Manager:
     def __init__(self, window):
@@ -59,15 +50,6 @@ class Manager:
         self.old_cheats = {}
         self.cheat_version = ttk.StringVar(value="Version - 1.2.00")
 
-        self.configdir = None
-        self.TOTKconfig = None
-        self.nand_dir = None
-        self.ryujinx_config = None
-        self.sdmc = None
-        self.load_dir = os.getcwd()
-        self.Yuzudir = os.getcwd()
-        self.Globaldir = os.getcwd()
-
         # Initialize Json Files.
         self.description = load_json("Description.json", descurl)
         self.presets = load_json("beyond_presets.json", presetsurl)
@@ -86,7 +68,7 @@ class Manager:
         self.switch_text = ttk.StringVar(value="Switch to Ryujinx")
 
         # Load Canvas
-        self.Load_ImagePath()
+        Load_ImagePath(self)
         self.load_canvas()
         self.switchmode("false")
 
@@ -106,8 +88,8 @@ class Manager:
         self.selected_options = {}
 
         # Load UI Elements
-        self.load_UI_elements(self.maincanvas)
-        self.create_tab_buttons(self.maincanvas)
+        load_UI_elements(self, self.maincanvas)
+        create_tab_buttons(self, self.maincanvas)
 
         # Create Text Position
         row = 40
@@ -175,7 +157,7 @@ class Manager:
                                         row=row, cul=cul_sel, width=6,
                                         tags=["Button"],
                                         description_name="Browse",
-                                        command=self.select_yuzu_exe
+                                        command=lambda e: select_yuzu_exe(self)
                                         )
 
             # Reset to Appdata
@@ -194,7 +176,7 @@ class Manager:
                                         )
             backupbutton = cul_sel + 165
             text = "SELECT Yuzu.exe"
-            command = lambda event: self.select_yuzu_exe()
+            command = lambda event: select_yuzu_exe(self)
         else:
             text = "Backup Save Files"
             command = None
@@ -394,7 +376,7 @@ class Manager:
         row += 40
 
         # XYZ create patches, not used anymore though.
-        #self.create_patches()
+        #create_patches(self)
 
         self.apply_element = self.on_canvas.Photo_Image(
                         image_path="apply.png",
@@ -471,74 +453,6 @@ class Manager:
         load_user_choices(self, self.config)
         return self.maincanvas
 
-    def create_patches(self, row = 120, cul_tex= 400, cul_sel = 550):
-        versionvalues = []
-
-        try:
-            for key_var, value in self.selected_options.items():
-                value = value.get()
-                self.old_patches[key_var] = value
-        except AttributeError as e:
-            self.old_patches = {}
-
-        # Delete the patches before making new ones.
-        self.maincanvas.delete("patches")
-        # Make UltraCam Patches First.
-
-        UltraCam_Option = "Improve Fog"
-        self.fog_var = self.on_canvas.create_checkbutton(
-                master=self.window, canvas=self.maincanvas,
-                text=UltraCam_Option,
-                variable="Off",
-                row=row + 40, cul=cul_tex, drop_cul=cul_sel,
-                tags=["text"], tag="patches",
-                description_name="Improve Fog"
-        )
-
-        self.selected_options[UltraCam_Option] = self.fog_var
-        try:
-            if self.old_patches.get(UltraCam_Option) == "On" and not self.old_patches == {}:
-                self.fog_var.set("On")
-        except AttributeError as e:
-            self.old_patches = {}
-        row += 40
-
-        # Create labels and enable/disable options for each entry
-        for version_option_name, version_option_value in self.version_options[0].items():
-
-            # Create label
-            if version_option_name not in ["Source", "nsobid", "offset", "version"]:
-
-                if self.DFPS_var == "UltraCam" and version_option_name in self.ultracam_options.get(
-                        "Skip_Patches"):
-                    continue
-
-                # Create checkbox
-                version_option_var = self.on_canvas.create_checkbutton(
-                    master=self.window, canvas=self.maincanvas,
-                    text=version_option_name,
-                    variable="Off",
-                    row=row + 40, cul=cul_tex, drop_cul=cul_sel,
-                    tags=["text"], tag="patches",
-                    description_name=version_option_name
-                )
-                self.selected_options[version_option_name] = version_option_var
-
-
-                try:
-                    if self.old_patches.get(version_option_name) == "On" and not self.old_patches == {}:
-                        version_option_var.set("On")
-                except AttributeError as e:
-                    self.old_patches = {}
-
-                # Increase +40 space for each patch.
-                row += 40
-
-            if row >= 480:
-                row = 20
-                cul_tex += 180
-                cul_sel += 180
-
     def update_scaling_variable(self, something=None):
         if self.DFPS_var == "UltraCam":
             self.fps_var.set(self.fps_var_new.get())
@@ -552,7 +466,7 @@ class Manager:
 
         # Create UI elements.
         self.Cheat_UI_elements(self.cheatcanvas)
-        self.create_tab_buttons(self.cheatcanvas)
+        create_tab_buttons(self, self.cheatcanvas)
 
         # Push every version in combobox
         versionvalues = []
@@ -703,58 +617,6 @@ class Manager:
             self.is_Ani_running = True
             self.ani.start()
 
-    def apply_preset(self, preset_options):
-        self.fetch_var(self.ui_var, preset_options, "UI")
-        self.fetch_var(self.fp_var, preset_options, "First Person")
-        self.fetch_var(self.selected_settings, preset_options, "Settings")
-        patch_info = self.ultracam_beyond.get("Keys", [""])
-
-        for option_key, option_value in preset_options.items():
-            if option_key in self.selected_options:
-                self.selected_options[option_key].set(option_value)
-            else:
-                continue
-
-        selected_preset = self.selected_preset.get()
-
-        if selected_preset.lower() == "default":
-            for option_key in self.BEYOND_Patches:
-                patch_dict = patch_info[option_key.lower()]
-                patch_class = patch_dict["Class"]
-                patch_default = patch_dict["Default"]
-
-                if patch_class == "dropdown":
-                    patch_names = patch_dict["Name_Values"]
-                    self.BEYOND_Patches[option_key.lower()].set(patch_names[patch_default])
-                elif patch_class == "scale":
-                    self.maincanvas.itemconfig(patch_dict["Name"], text=patch_default)
-                    self.BEYOND_Patches[option_key.lower()].set(patch_default)
-                else:
-                    if patch_class == "bool":
-                        if patch_default is True: patch_default = "On"
-                        if patch_default is False: patch_default = "Off"
-                    self.BEYOND_Patches[option_key.lower()].set(patch_default)
-
-        for option_key, option_value in preset_options.items():
-            if option_key.lower() in self.BEYOND_Patches:
-                patch_dict = patch_info[option_key.lower()]
-                patch_class = patch_dict["Class"]
-                patch_default = patch_dict["Default"]
-
-                if patch_class == "dropdown":
-                    patch_Names = patch_dict["Name_Values"]
-                    self.BEYOND_Patches[option_key.lower()].set(patch_Names[int(option_value)])
-                elif patch_class == "scale":
-                    self.maincanvas.itemconfig(patch_dict["Name"], text=option_value)
-                    self.BEYOND_Patches[option_key.lower()].set(option_value)
-                else:
-                    if patch_class == "bool":
-                        if option_value is True: option_value = "On"
-                        if option_value is False: option_value = "Off"
-                    self.BEYOND_Patches[option_key.lower()].set(option_value)
-            else:
-                continue
-
     def open_browser(self, web, event=None):
         url = "https://ko-fi.com/maxlastbreath#"
         if web == "Kofi":
@@ -766,275 +628,17 @@ class Manager:
         webbrowser.open(url)
         return
 
-
-    def load_benchmark(self):
-        keywords = ["Kakariko", "Great Sky Island", "Lookout Landing"]
-        benchmark_file = os.path.join(self.sdmc_dir, "TOTKBenchmark.txt")
-        try:
-            with open(benchmark_file, "r") as benchmarks:
-                for line in benchmarks:
-                    log.info(line.strip())
-                    for keyword in keywords:
-                        if keyword not in line:
-                            continue
-                        next_line = next(benchmarks).strip()
-                        pattern = r"(\d+(\.\d+)?)"
-                        frames = re.findall(pattern, next_line)
-                        numbers = [float(num[0]) if '.' in num[0] else int(num[0]) for num in frames]
-                        self.benchmarks[keyword] = {
-                            "Total Frames": numbers[0],
-                            "Average FPS": numbers[1],
-                            "1% Low FPS" : numbers[2],
-                            "0.1% Lowest FPS": numbers[3],
-                        }
-        except FileNotFoundError:
-            log.info("No Benchmarks detected.")
-        print(self.benchmarks)
-
-
     def load_canvas(self):
         # Main
         self.create_canvas()
         self.create_cheat_canvas()
         self.cheatcanvas.pack_forget()
-        self.load_benchmark()
-
-    def Load_ImagePath(self):
-        # Create a Gradiant for Yuzu.
-        self.background_YuzuBG = self.on_canvas.Photo_Image(
-            image_path="Yuzu_BG.png",
-            width=1200, height=600,
-        )
-
-        # Create a Gradiant for Ryujinx.
-        self.background_RyuBG = self.on_canvas.Photo_Image(
-            image_path="Ryujinx_BG.png",
-            width=1200, height=600,
-        )
-
-        # UI Elements/Buttons
-        self.master_sword_element = self.on_canvas.Photo_Image(
-            image_path="Master_Sword.png",
-            width=155, height=88,
-        )
-        self.master_sword_element2 = self.on_canvas.Photo_Image(
-            image_path="Master_Sword2.png", mirror=True,
-            width=155, height=88,
-        )
-
-        self.master_sword_element_active = self.on_canvas.Photo_Image(
-            image_path="Master_Sword_active.png",
-            width=int(155 * 1.0), height=int(88* 1.0),
-        )
-
-        self.master_sword_element2_active = self.on_canvas.Photo_Image(
-            image_path="Master_Sword_active2.png", mirror=True,
-            width=int(155* 1.0), height=int(88* 1.0),
-        )
-
-        self.hylian_element = self.on_canvas.Photo_Image(
-            image_path="Hylian_Shield.png",
-            width=int(72 * 1.2), height=int(114 * 1.2),
-        )
-
-        self.hylian_element_active = self.on_canvas.Photo_Image(
-            image_path="Hylian_Shield_Active.png",
-            width=int(72 * 1.2), height=int(114 * 1.2),
-        )
-
-        self.background_UI_element = self.on_canvas.Photo_Image(
-            image_path="BG_Left_2.png",
-            width=1200, height=600,
-        )
-
-        self.background_UI_Cheats = self.on_canvas.Photo_Image(
-            image_path="BG_Left_Cheats.png",
-            width=1200, height=600,
-        )
-
-        # Create a Gradiant background.
-        self.background_UI = self.on_canvas.Photo_Image(
-            image_path="BG_Left.png",
-            width=1200, height=600,
-        )
-
-        # Create a transparent black background
-        self.background_UI3 = self.on_canvas.Photo_Image(
-            image_path="BG_Right_UI.png",
-            width=1200, height=600,
-        )
-
-        # Attempt to load images from custom folder.
-        if os.path.exists("custom/bg.jpg"):
-            image_path = "custom/bg.jpg"
-        elif os.path.exists("custom/bg.png"):
-            image_path = "custom/bg.png"
-        else:
-            # Load and set the image as the background
-            image_path ="image.png"
-
-        self.background_image = self.on_canvas.Photo_Image(
-            image_path=image_path,
-            width=1200, height=600,
-            blur=2
-        )
-
-        if os.path.exists("custom/cbg.jpg"):
-            image_path = "custom/cbg.jpg"
-        elif os.path.exists("custom/cbg.png"):
-            image_path = "custom/cbg.png"
-        else:
-            image_path = "image_cheats.png"
-
-        self.blurbackground = self.on_canvas.Photo_Image(
-            image_path=image_path,
-            width=1200, height=600, img_scale=2.0,
-            blur=3
-        )
-
-        # Handle Text Window
-        def fetch_text_from_github(file_url):
-            try:
-                response = requests.get(file_url)
-                if response.status_code == 200:
-                    return response.text
-                else:
-                    log.error("Error: Unable to fetch text from Github")
-            except requests.exceptions.RequestException as e:
-                log.error(f"Error occurred while fetching text: {e}")
-
-            return ""
-        # Information text
-        file_url = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Announcements/Announcement%20Window.txt"
-        self.text_content = fetch_text_from_github(file_url)
-        # Info Element
-
-    def load_UI_elements(self, canvas):
-        # Images and Effects
-        canvas.create_image(0, 0, anchor="nw", image=self.background_image, tags="background")
-        canvas.create_image(0, 0, anchor="nw", image=self.background_YuzuBG, tags="overlay-1")
-        canvas.create_image(0, 0, anchor="nw", image=self.background_UI, tags="overlay")
-        canvas.create_image(0, 0, anchor="nw", image=self.background_UI_element, tags="overlay")
-
-        # Info text BG
-        canvas.create_image(0-scale(20), 0, anchor="nw", image=self.background_UI3, tags="overlay")
-
-        # Create Active Buttons.
-        self.on_canvas.image_Button(
-            canvas=canvas,
-            row=162, cul=794,
-            img_1=self.master_sword_element, img_2=self.master_sword_element_active, effect_folder="effect1",
-            command=lambda event: self.open_browser("Kofi")
-        )
-
-        self.on_canvas.image_Button(
-            canvas=canvas,
-            row=162, cul=1007,
-            img_1=self.master_sword_element2, img_2=self.master_sword_element2_active,
-            command=lambda event: self.open_browser("Github")
-        )
-
-        self.on_canvas.image_Button(
-            canvas=canvas,
-            row=220, cul=978, anchor="c",
-            img_1=self.hylian_element, img_2=self.hylian_element_active,
-            command=lambda event: self.open_browser("Discord")
-        )
-
-        # Information text.
-        self.on_canvas.create_label(
-                                        master=self.window, canvas=canvas,
-                                        text=self.text_content,
-                                        description_name="Info_Label",
-                                        justify = "center",
-                                        row=113, cul=1001 - 153, font=biggyfont,
-                                        tags=["Info_Label"], tag=["Info_Label"], outline_tag="Info_Label"
-                                    )
+        load_benchmark(self)
 
     def Cheat_UI_elements(self, canvas):
         self.cheatbg = canvas.create_image(0, -scale(300), anchor="nw", image=self.blurbackground, tags="background")
         canvas.create_image(0, 0, anchor="nw", image=self.background_YuzuBG, tags="overlay-1")
         canvas.create_image(0, 0, anchor="nw", image=self.background_UI_Cheats, tags="overlay")
-
-    def create_tab_buttons(self, canvas):
-
-        if not canvas == self.maincanvas:
-            # Kofi Button
-            self.on_canvas.create_button(
-                master=self.window, canvas=canvas,
-                btn_text="Donate", textvariable=self.switch_text,
-                style="success",
-                row=1130, cul=520, width=60, padding=10, pos="center",
-                tags=["Button"],
-                description_name="Kofi",
-                command=lambda: self.open_browser("Kofi")
-            )
-            # Github Button
-            self.on_canvas.create_button(
-                master=self.window, canvas=canvas,
-                btn_text="Github", textvariable=self.switch_text,
-                style="success",
-                row=1066, cul=520, width=60, padding=10, pos="center",
-                tags=["Button"],
-                description_name="Github",
-                command=lambda: self.open_browser("Github")
-            )
-
-        # Create tabs
-
-        # Switch mode between Ryujinx and Yuzu
-        self.on_canvas.create_button(
-            master=self.window, canvas=canvas,
-            btn_text="Switch", textvariable=self.switch_text,
-            style="Danger",
-            row=11, cul=138, width=12,
-            tags=["Button"],
-            description_name="Switch",
-            command=self.switchmode
-        )
-        # Make the button active for current canvas.
-        button1style = "default"
-        button2style = "default"
-        button3style = "default"
-        active_button_style = "secondary"
-        try:
-            if canvas == self.maincanvas:
-                button1style = active_button_style
-            if canvas == self.cheatcanvas:
-                button2style = active_button_style
-        except AttributeError as e:
-            e = "n"
-
-        # 1 - Main
-        self.on_canvas.create_button(
-            master=self.window, canvas=canvas,
-            btn_text="Main",
-            style=button1style,
-            row=11, cul=26, width=5,
-            tags=["Button"],
-            description_name="Main",
-            command=self.show_main_canvas
-        )
-        # 2 - Cheats
-        self.on_canvas.create_button(
-            master=self.window, canvas=canvas,
-            btn_text="Cheats",
-            style=button2style,
-            row=11, cul=77, width=6,
-            tags=["Button"],
-            description_name="Cheats",
-            command=self.show_cheat_canvas
-        )
-        # 3 - Settings
-        self.on_canvas.create_button(
-            master=self.window, canvas=canvas,
-            btn_text="Settings",
-            style=button3style,
-            row=11, cul=257, width=8,
-            tags=["Button"],
-            description_name="Settings",
-            command=lambda: self.setting.settingswindow(self.constyle, self.all_canvas)
-        )
 
     def switchmode(self, command="true"):
         if command == "true":
@@ -1073,56 +677,6 @@ class Manager:
         if not dict.get(option, "") == "":
             var.set(dict.get(option, ""))
         return
-
-    # Select Yuzu Dir
-    def select_yuzu_exe(self):
-        # Open a file dialog to browse and select yuzu.exe
-        if self.os_platform == "Windows":
-            yuzu_path = filedialog.askopenfilename(
-                title=f"Please select {self.mode}.exe",
-                filetypes=[("Executable files", "*.exe"), ("All Files", "*.*")]
-            )
-            executable_name = yuzu_path
-            if executable_name.endswith("Ryujinx.exe") or executable_name.endswith("Ryujinx.Ava.exe"):
-                if self.mode == "Yuzu":
-                    self.switchmode("true")
-            if executable_name.endswith("yuzu.exe"):
-                if self.mode == "Ryujinx":
-                    self.switchmode("true")
-            if yuzu_path:
-                # Save the selected yuzu.exe path to a configuration file
-                save_user_choices(self, self.config, yuzu_path)
-                home_directory = os.path.dirname(yuzu_path)
-                fullpath = os.path.dirname(yuzu_path)
-                if any(item in os.listdir(fullpath) for item in ["user", "portable"]):
-                    log.info(f"Successfully selected {self.mode}.exe! And a portable folder was found at {home_directory}!")
-                    checkpath(self, self.mode)
-                    return yuzu_path
-                else:
-                    log.info(f"Portable folder for {self.mode} not found defaulting to appdata directory!")
-                    checkpath(self, self.mode)
-                    return yuzu_path
-
-                # Update the yuzu.exe path in the current session
-                self.yuzu_path = yuzu_path
-            else:
-                checkpath(self, self.mode)
-                return None
-            # Save the selected yuzu.exe path to a configuration file
-            save_user_choices(self, self.config, yuzu_path)
-        return yuzu_path
-    # Load Yuzu Dir
-    def load_yuzu_path(self, config_file):
-        if self.mode == "Yuzu":
-            config = configparser.ConfigParser()
-            config.read(config_file, encoding="utf-8")
-            yuzu_path = config.get('Paths', 'yuzupath', fallback="Appdata")
-            return yuzu_path
-        if self.mode == "Ryujinx":
-            config = configparser.ConfigParser()
-            config.read(config_file, encoding="utf-8")
-            ryujinx_path = config.get('Paths', 'ryujinxpath', fallback="Appdata")
-            return ryujinx_path
 
     # Submit the results, run download manager. Open a Loading screen.
 
@@ -1273,10 +827,9 @@ class Manager:
                 self.progress_var.set("TOTK Optimizer Patch.")
 
                 # Ensures that the patches are active and ensure that old versions of the mod folder is disabled.
-                self.remove_list.extend(["!!!TOTK Optimizer"])
+                self.remove_list.append("!!!TOTK Optimizer")
                 self.add_list.append("Visual Improvements")
                 self.add_list.append("Mod Manager Patch")
-
 
                 ini_file_directory = os.path.join(self.load_dir, "!!!TOTK Optimizer", "romfs", "UltraCam")
                 os.makedirs(ini_file_directory, exist_ok=True)
@@ -1286,7 +839,6 @@ class Manager:
                 config.optionxform = lambda option: option
                 if os.path.exists(ini_file_path):
                     config.read(ini_file_path)
-
 
                 ## TOTK UC BEYOND AUTO PATCHER
                 patch_info = self.ultracam_beyond.get("Keys", [""])
