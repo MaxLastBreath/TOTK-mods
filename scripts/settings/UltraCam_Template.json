@@ -152,7 +152,7 @@
       "Values": [ "1280", "1600", "1920", "2560", "3840", "6144", "7680" ],
       "Default": 1,
       "Description": "UltraCam Beyond handheld resolution, set to AUTO.",
-      "Config_Class": [ "Resolution", "Width" ]
+      "Config_Class": [ "Handheld", "Width" ]
     },
     "handheldheight": {
       "Name": "Handheld Width",
@@ -163,7 +163,7 @@
       "Values": [ "720", "900", "1080", "1440", "2160", "3456", "4320" ],
       "Default": 0,
       "Description": "UltraCam Beyond handheld resolution, set to AUTO.",
-      "Config_Class": [ "Resolution", "Height" ]
+      "Config_Class": [ "Handheld", "Height" ]
     },
     "shadow resolution": {
       "Name": "Shadow Resolution",
