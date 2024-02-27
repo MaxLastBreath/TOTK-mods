@@ -49,6 +49,14 @@ def save_user_choices(self, config_file, yuzu_path=None, mode=None):
     for patch in self.BEYOND_Patches:
         patch_dict = patch_info[patch]
         patch_class = patch_dict["Class"]
+
+        if self.BEYOND_Patches[patch] == "auto":
+            config["Beyond"][patch] = str(patch_dict["Default"])
+            continue
+        elif self.BEYOND_Patches[patch].get() == "auto":
+            config["Beyond"][patch] = str(patch_dict["Default"])
+            continue
+
         if patch_class.lower() == "dropdown":
             patch_Names = patch_dict["Name_Values"]
             index = patch_Names.index(self.BEYOND_Patches[patch].get())
@@ -86,12 +94,17 @@ def load_user_choices(self, config_file, mode=None):
     for patch in self.BEYOND_Patches:
         patch_dict = patch_info[patch]
         patch_class = patch_dict["Class"]
+        patch_default = patch_dict["Default"]
         if patch_class.lower() == "dropdown":
             patch_Names = patch_dict["Name_Values"]
             try:
                 self.BEYOND_Patches[patch].set(patch_Names[int(config["Beyond"][patch])])
             except KeyError:
                 pass
+            except ValueError:
+                if config["Beyond"][patch] == "auto":
+                    self.BEYOND_Patches[patch].set(patch_Names[int(patch_default)])
+                    continue
             continue
         if patch_class.lower() == "scale":
             # use name for tag accuracy

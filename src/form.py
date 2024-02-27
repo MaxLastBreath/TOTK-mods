@@ -1296,7 +1296,10 @@ class Manager:
 
                     # In case we have an auto patch.
                     if self.BEYOND_Patches[patch] == "auto":
-                        config[patch_Config[0]][patch_Config[1]] = patch_Default
+                        config[patch_Config[0]][patch_Config[1]] = str(patch_Default)
+                        continue
+                    elif self.BEYOND_Patches[patch].get() == "auto":
+                        config[patch_Config[0]][patch_Config[1]] = str(patch_Default)
                         continue
 
                     if patch_class.lower() == "bool" or patch_class.lower() == "scale":

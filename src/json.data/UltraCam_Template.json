@@ -3,11 +3,13 @@
         "fps": {
             "Name": "FPS",
             "Class": "scale",
+            "Section": "main",
             "Auto": false,
             "Values": [
                 20,
-                120
+                240
             ],
+            "Type": "s32",
             "Default": 60,
             "Increments": 5,
             "Description": "UltraCam Beyond New FPS setting.\nLet's you set to any FPS\nWARNING: SET TO 120 FPS FOR UNCAPPED.\nRecommended 30, 60 FPS caps for best FRAMETIMES.",
@@ -19,11 +21,13 @@
         "menu fps": {
             "Name": "Menu FPS",
             "Class": "scale",
+            "Section": "main",
             "Auto": false,
             "Values": [
                 20,
-                120
+                240
             ],
+            "Type": "s32",
             "Default": 60,
             "Increments": 5,
             "Description": "UltraCam Beyond NEW MENU FPS CAP. Set to your desire.",
@@ -35,11 +39,13 @@
         "fov": {
             "Name": "FOV",
             "Class": "scale",
+            "Section": "main",
             "Auto": false,
             "Values": [
                 20,
                 120
             ],
+            "Type": "s32",
             "Default": 50,
             "Increments": 5,
             "Description": "UltraCam Beyond NEW FOV setting, allows you to set FOV to anything\nThis now also scales up everything related to FOV.",
@@ -48,9 +54,154 @@
                 "Fov"
             ]
         },
+        "vertical r stick": {
+            "Name": "V Camera Sensitivity",
+            "Class": "scale",
+            "Section": "extra",
+            "Auto": false,
+            "Values": [
+                0.25,
+                3
+            ],
+            "Type": "f32",
+            "Default": 1.0,
+            "Increments": 0.25,
+            "Description": "Increase Vertical Camera Speed.",
+            "Config_Class": [
+                "Gameplay",
+                "Stick_Horizontal_Speed"
+            ]
+        },
+        "horizontal r stick": {
+            "Name": "H Camera Sensitivity",
+            "Class": "scale",
+            "Section": "extra",
+            "Auto": false,
+            "Values": [
+                0.25,
+                3
+            ],
+            "Type": "f32",
+            "Default": 1.0,
+            "Increments": 0.25,
+            "Description": "Increase Horizontal Camera Speed.",
+            "Config_Class": [
+                "Gameplay",
+                "Stick_Horizontal_Speed"
+            ]
+        },
+        "freecam sens": {
+            "Name": "Freecam Sensitivity",
+            "Class": "scale",
+            "Section": "extra",
+            "Auto": false,
+            "Values": [
+                10,
+                100
+            ],
+            "Type": "s32",
+            "Default": 30,
+            "Increments": 5,
+            "Description": "Increase Freecam Sensitivity.",
+            "Config_Class": [
+                "UltraCam",
+                "CameraSpeed"
+            ]
+        },
+        "freecam speed": {
+            "Name": "Freecam Speed",
+            "Class": "scale",
+            "Section": "extra",
+            "Auto": false,
+            "Values": [
+                1,
+                20
+            ],
+            "Type": "s32",
+            "Default": 5,
+            "Increments": 1,
+            "Description": "Increase Camera Movement Speed.",
+            "Config_Class": [
+                "UltraCam",
+                "Speed"
+            ]
+        },
+        "time speed": {
+            "Name": "Time Speed",
+            "Class": "scale",
+            "Section": "extra",
+            "Auto": false,
+            "Values": [
+                1,
+                100
+            ],
+            "Type": "s32",
+            "Default": 1,
+            "Increments": 5,
+            "Description": "Increase or decrease time speed\nistimeSlower bool acts as a decrease.",
+            "Config_Class": [
+                "Features",
+                "TimeSpeed"
+            ]
+        },
+        "ani smoothing": {
+            "Name": "Sequence Smoothing",
+            "Class": "scale",
+            "Section": "extra",
+            "Auto": true,
+            "Values": [
+                0.1,
+                0.5
+            ],
+            "Type": "f32",
+            "Default": 0.25,
+            "Increments": 0.05,
+            "Description": "Animation Smoothing set to auto for now.",
+            "Config_Class": [
+                "UltraCam",
+                "AnimationSmoothing"
+            ]
+        },
+        "rsdbheap": {
+            "Name": "RSDB Heap size",
+            "Class": "scale",
+            "Section": "extra",
+            "Auto": false,
+            "Values": [
+                1,
+                10
+            ],
+            "Type": "f32",
+            "Default": 1.0,
+            "Increments": 0.25,
+            "Description": "Increase RSDB heap size, useful for merging romfs mods..",
+            "Config_Class": [
+                "Heaps",
+                "RSDB"
+            ]
+        },
+        "gametexturesheap": {
+            "Name": "Textures Heap size",
+            "Class": "scale",
+            "Section": "extra",
+            "Auto": false,
+            "Values": [
+                1,
+                4
+            ],
+            "Type": "f32",
+            "Default": 1.0,
+            "Increments": 0.25,
+            "Description": "(WARNING), don't touch unless you know what you are doing\nIncrease GameTextures heap size, useful for merging romfs mods..\nSHOULD only be used with 8gb EXTENDED MEMORY LAYOUT",
+            "Config_Class": [
+                "Heaps",
+                "GameTextures"
+            ]
+        },
         "resolution": {
             "Name": "Resolution",
             "Class": "dropdown",
+            "Section": "main",
             "Auto": false,
             "Name_Values": [
                 "720p",
@@ -78,9 +229,70 @@
                 "Height"
             ]
         },
+        "handheldwidth": {
+            "Name": "Handheld Width",
+            "Class": "dropdown",
+            "Section": "main",
+            "Auto": true,
+            "Name_Values": [
+                "720p",
+                "900p",
+                "1080p",
+                "1440p",
+                "4k",
+                "6k",
+                "8k"
+            ],
+            "Values": [
+                "1280",
+                "1600",
+                "1920",
+                "2560",
+                "3840",
+                "6144",
+                "7680"
+            ],
+            "Default": 1,
+            "Description": "UltraCam Beyond handheld resolution, set to AUTO.",
+            "Config_Class": [
+                "Resolution",
+                "Width"
+            ]
+        },
+        "handheldheight": {
+            "Name": "Handheld Width",
+            "Class": "dropdown",
+            "Section": "main",
+            "Auto": true,
+            "Name_Values": [
+                "720p",
+                "900p",
+                "1080p",
+                "1440p",
+                "4k",
+                "6k",
+                "8k"
+            ],
+            "Values": [
+                "720",
+                "900",
+                "1080",
+                "1440",
+                "2160",
+                "3456",
+                "4320"
+            ],
+            "Default": 0,
+            "Description": "UltraCam Beyond handheld resolution, set to AUTO.",
+            "Config_Class": [
+                "Resolution",
+                "Height"
+            ]
+        },
         "shadow resolution": {
             "Name": "Shadow Resolution",
             "Class": "dropdown",
+            "Section": "main",
             "Auto": false,
             "Name_Values": [
                 "103x",
@@ -112,6 +324,7 @@
         "aspect ratio": {
             "Name": "Aspect Ratio",
             "Class": "dropdown",
+            "Section": "main",
             "Auto": false,
             "Name_Values": [
                 "4x4",
@@ -138,6 +351,7 @@
         "render distance": {
             "Name": "Render Distance",
             "Class": "dropdown",
+            "Section": "main",
             "Auto": false,
             "Name_Values": [
                 "VERY LOW",
@@ -160,9 +374,36 @@
                 "RenderDistance"
             ]
         },
+        "benchmark": {
+            "Name": "Benchmark Selection",
+            "Class": "dropdown",
+            "Section": "extra",
+            "Auto": false,
+            "Name_Values": [
+                "Kakariko",
+                "Great Sky Island",
+                "Lookout Landing",
+                "Goron City",
+                "Korok Forest"
+            ],
+            "Values": [
+                0,
+                1,
+                2,
+                3,
+                4
+            ],
+            "Default": 1,
+            "Description": "UltraCam Beyond preset default benchmark.\nTrigger when you press G",
+            "Config_Class": [
+                "Benchmark",
+                "Benchmark"
+            ]
+        },
         "freecam": {
             "Name": "FreeCam",
             "Class": "bool",
+            "Section": "main",
             "Auto": false,
             "Default": true,
             "Description": "UltraCam Beyond Freecam! NEWLY IMPROVED FREECAM from 2.0\nTurning this off will, not let you trigger freecam with controller.\n",
@@ -171,9 +412,22 @@
                 "TriggerWithController"
             ]
         },
+        "handheldresolution": {
+            "Name": "Override Handheld Res",
+            "Class": "bool",
+            "Section": "main",
+            "Auto": false,
+            "Default": false,
+            "Description": "UltraCam Beyond overrides the resolution of handheld to docked.",
+            "Config_Class": [
+                "Handheld",
+                "OverrideHandheld_Resolution"
+            ]
+        },
         "hide ui": {
             "Name": "Auto Hide UI in FreeCam",
             "Class": "bool",
+            "Section": "extra",
             "Auto": false,
             "Default": true,
             "Description": "UltraCam Beyond AUTO Hide UI, this will automatically hide the UI in freecam mode.",
@@ -185,6 +439,7 @@
         "quality improvements": {
             "Name": "Quality Improvements",
             "Class": "bool",
+            "Section": "main",
             "Auto": false,
             "Default": true,
             "Description": "UltraCam Beyond Quality Improvements. This disables FXAA, FSR and Dynamic Resolution\nWARNING: SHOULD ALWAYS BE TURNED ON WITH HIGH RESOLUTION",
@@ -196,6 +451,7 @@
         "triple buffer": {
             "Name": "Triple Buffer",
             "Class": "bool",
+            "Section": "main",
             "Auto": false,
             "Default": false,
             "Description": "UltraCam Triple Buffer.\nWARNING: KEEP IT TURNED OFF ON SWITCH.",
@@ -207,6 +463,7 @@
         "depthoffield": {
             "Name": "Remove Depth Of Field",
             "Class": "bool",
+            "Section": "main",
             "Auto": false,
             "Default": false,
             "Description": "UltraCam Beyond Remove Depth of Field.",
@@ -218,6 +475,7 @@
         "lensflare": {
             "Name": "Remove Lens flare",
             "Class": "bool",
+            "Section": "main",
             "Auto": false,
             "Default": false,
             "Description": "UltraCam Beyond Remove Lens Flare.",
@@ -229,6 +487,7 @@
         "fog": {
             "Name": "Improve Fog",
             "Class": "bool",
+            "Section": "main",
             "Auto": false,
             "Default": false,
             "Description": "UltraCam Beyond Remove Fog.",
@@ -237,11 +496,24 @@
                 "DisableFog"
             ]
         },
+        "animationfadeout": {
+            "Name": "Last Keyframe Fadeout",
+            "Class": "bool",
+            "Section": "extra",
+            "Auto": false,
+            "Default": false,
+            "Description": "Improves the smoothness of the last Keyframe for UltraCam sequencer.",
+            "Config_Class": [
+                "UltraCam",
+                "AnimationFadeout"
+            ]
+        },
         "slowtime": {
             "Name": "Slow Time",
             "Class": "bool",
+            "Section": "extra",
             "Auto": false,
-            "Default": false,
+            "Default": true,
             "Description": "UltraCam Beyond SlowTime.\n This is controlled by a time scale.",
             "Config_Class": [
                 "Features",
