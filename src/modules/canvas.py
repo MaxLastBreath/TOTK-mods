@@ -479,6 +479,7 @@ class Canvas_Create:
                      row, cul, anchor="nw",
                      img=any,
                      tag=None,
+                     state="normal"
                      ):
 
         if tag is None:
@@ -486,7 +487,7 @@ class Canvas_Create:
                            string.digits, k=8)
             tag = ''.join(tag)
 
-        canvas.create_image(scale(cul), scale(row), anchor=anchor, image=img, state="normal", tags=tag)
+        canvas.create_image(scale(cul), scale(row), anchor=anchor, image=img, state=state, tags=[tag])
 
     def toggle_img(self, canvas, mode, tag_1, tag_2, event=None):
         if mode.lower() == "enter":

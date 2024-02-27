@@ -25,12 +25,17 @@ def Load_ImagePath(self):
         width=int(100 * m), height=int(40 * m),
     )
 
+    self.default_benchmark = self.on_canvas.Photo_Image(
+        image_path="benchmarks_first.png",
+        width=int(100 * m), height=int(40 * m),
+    )
+
     self.benchmark_dicts = {
-        "Korok": self.image_korok,
+        "Korok Forest": self.image_korok,
         "Lookout Landing": self.image_Lookout,
         "Kakariko": self.image_Kakariko,
         "Great Sky Island": self.image_GSI,
-        "Goron": self.image_Goron,
+        "Goron City": self.image_Goron,
     }
 
     # Create a Gradiant for Yuzu.

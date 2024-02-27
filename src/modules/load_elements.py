@@ -16,8 +16,40 @@ def load_UI_elements(self, canvas):
             row=285, cul=980,
             anchor="c",
             img=image,
-            tag=location
+            tag=location,
+            state="hidden"
         )
+
+    self.on_canvas.set_image(
+        canvas=canvas,
+        row=285, cul=980,
+        anchor="c",
+        img=self.default_benchmark,
+        tag="no_benchmark",
+    )
+
+    self.on_canvas.create_label(
+        master=self.window, canvas=canvas,
+        text=f"{gpu_name}\n"
+              f"{w.Win32_Processor()[0].Name}\n"
+              f"Memory: {total_memory}GB {w.Win32_PhysicalMemory()[0].ConfiguredClockSpeed} MHz",
+        description_name="Benchmarks",
+        anchor="nw",
+        row=310, cul=820, font=biggyfont, active_fill= "cyan",
+        tags=["PC_info"], tag=["PC_info"], outline_tag="PC_info"
+    )
+
+    self.on_canvas.create_label(
+        master=self.window, canvas=canvas,
+        text=f"Turn on Direct Keyboard.\n"
+             f"Press G after loading in game.\n"
+             f"Select your Benchmark in Advanced Settings.\n"
+             f"Clicking this text copies your results.\n",
+        description_name="Benchmarks",
+        anchor="nw",
+        row=400, cul=820, font=biggyfont, active_fill= "cyan",
+        tags=["benchmark_info"], tag=["benchmark_info"], outline_tag="benchmark_info"
+    )
 
     # Create Active Buttons.
     self.on_canvas.image_Button(

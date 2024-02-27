@@ -3,16 +3,13 @@ import webbrowser
 import re
 from configuration.settings import *
 from configuration.settings_config import Setting
-from modules.modules import * # imports all needed files.
-from src.modules.canvas import Canvas_Create
-from src.modules.config import write_yuzu_config
+from modules.TOTK_Optimizer_Modules import * # imports all needed files.
 
 
 class Manager:
     def __init__(self, window):
         # ULTRACAM 2.0 PATCHES ARE SAVED HERE.
         self.BEYOND_Patches = {}
-
 
         # Define the Manager window.
         self.window = window
@@ -48,7 +45,7 @@ class Manager:
         self.warn_again = "yes"
         self.title_id = title_id
         self.old_cheats = {}
-        self.cheat_version = ttk.StringVar(value="Version - 1.2.00")
+        self.cheat_version = ttk.StringVar(value="Version - 1.2.1")
 
         # Initialize Json Files.
         self.description = load_json("Description.json", descurl)
