@@ -67,6 +67,8 @@ class Manager:
         self.ultracam_beyond = load_json("UltraCam_Template.json", ultracambeyond)
         self.yuzu_settings = load_json("yuzu_presets.json", yuzu_presets_url)
 
+        self.benchmarks = {}
+
         if os.path.exists(os.path.join("UltraCam/UltraCam_Template.json")):
             with open("UltraCam/UltraCam_Template.json", "r", encoding="utf-8") as file:
                 self.ultracam_beyond = json.load(file)
@@ -381,7 +383,6 @@ class Manager:
                         description_name="UI"
                                                     )
         row += 40
-
 
         # XYZ create patches, not used anymore though.
         #self.create_patches()
@@ -756,11 +757,38 @@ class Manager:
         webbrowser.open(url)
         return
 
+
+    def load_benchmark(self):
+        keywords = ["Kakariko", "Great Sky Island", "Lookout Landing"]
+        benchmark_file = os.path.join(self.sdmc_dir, "TOTKBenchmark.txt")
+        try:
+            with open(benchmark_file, "r") as benchmarks:
+                for line in benchmarks:
+                    log.info(line.strip())
+                    for keyword in keywords:
+                        if keyword not in line:
+                            continue
+                        next_line = next(benchmarks).strip()
+                        pattern = r"(\d+(\.\d+)?)"
+                        frames = re.findall(pattern, next_line)
+                        numbers = [float(num[0]) if '.' in num[0] else int(num[0]) for num in frames]
+                        self.benchmarks[keyword] = {
+                            "Total Frames": numbers[0],
+                            "Average FPS": numbers[1],
+                            "1% Low FPS" : numbers[2],
+                            "0.1% Lowest FPS": numbers[3],
+                        }
+        except FileNotFoundError:
+            log.info("No Benchmarks detected.")
+        print(self.benchmarks)
+
+
     def load_canvas(self):
         # Main
         self.create_canvas()
         self.create_cheat_canvas()
         self.cheatcanvas.pack_forget()
+        self.load_benchmark()
 
     def Load_ImagePath(self):
         # Create a Gradiant for Yuzu.
@@ -885,31 +913,34 @@ class Manager:
         # Create Active Buttons.
         self.on_canvas.image_Button(
             canvas=canvas,
-            row=182, cul=794,
+            row=162, cul=794,
             img_1=self.master_sword_element, img_2=self.master_sword_element_active, effect_folder="effect1",
             command=lambda event: self.open_browser("Kofi")
         )
 
         self.on_canvas.image_Button(
             canvas=canvas,
-            row=182, cul=1007,
+            row=162, cul=1007,
             img_1=self.master_sword_element2, img_2=self.master_sword_element2_active,
             command=lambda event: self.open_browser("Github")
         )
 
         self.on_canvas.image_Button(
             canvas=canvas,
-            row=240, cul=978, anchor="c",
+            row=220, cul=978, anchor="c",
             img_1=self.hylian_element, img_2=self.hylian_element_active,
             command=lambda event: self.open_browser("Discord")
         )
 
         # Information text.
-        #text_widgetoutline2 = canvas.create_text(scale(1001) - scale(20), scale(126) -scale(80), text=f"{self.mode} TOTK Optimizer", tags="information", fill="black", font=biggyfont, anchor="center", justify="center", width=scale(325))
-        #text_widget2 = canvas.create_text(scale(1000)-scale(20), scale(126)-scale(80), text=f"{self.mode} TOTK Optimizer", tags="information", fill="#FBF8F3", font=biggyfont, anchor="center", justify="center", width=scale(325))
-
-        text_widgetoutline1 = canvas.create_text(scale(1001) -scale(20) -scale(10), scale(126) + scale(10), text=self.text_content, fill="black", font=biggyfont, anchor="center", justify="center", width=scale(325))
-        text_widget1 = canvas.create_text(scale(1000) - scale(20) -scale(10), scale(125) +scale(10), text=self.text_content, fill="#FBF8F3", font=biggyfont, anchor="center", justify="center", width=scale(325))
+        self.on_canvas.create_label(
+                                        master=self.window, canvas=canvas,
+                                        text=self.text_content,
+                                        description_name="Info_Label",
+                                        justify = "center",
+                                        row=113, cul=1001 - 153, font=biggyfont,
+                                        tags=["Info_Label"], tag=["Info_Label"], outline_tag="Info_Label"
+                                    )
 
     def Cheat_UI_elements(self, canvas):
         self.cheatbg = canvas.create_image(0, -scale(300), anchor="nw", image=self.blurbackground, tags="background")
@@ -1321,8 +1352,6 @@ class Manager:
 
                 config["Resolution"]["Width"] = str(New_Resolution[0])
                 config["Resolution"]["Height"] = str(New_Resolution[1])
-
-
 
                 ## WRITE IN CONFIG FILE FOR UC 2.0
                 with open(ini_file_path, 'w', encoding="utf-8") as configfile:

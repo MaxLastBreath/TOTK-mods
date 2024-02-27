@@ -95,7 +95,7 @@ title_id = "0100F2C0115B6000"
 textfont = (font, 13)
 btnfont = ("Bahnschrift", 10)
 bigfont = ("Triforce", 18)
-biggyfont = (font, 18, "bold")
+biggyfont = (font, 16, "bold")
 # set Colors
 textcolor = html_color[tcolor]
 outline_color = html_color[toutline]

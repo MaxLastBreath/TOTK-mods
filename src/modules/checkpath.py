@@ -13,6 +13,7 @@ def checkpath(self, mode):
         self.TOTKconfig = None
         self.nand_dir = None
         self.ryujinx_config = None
+        self.sdmc = None
         self.load_dir = os.getcwd()
         self.Yuzudir = os.getcwd()
         return
@@ -46,6 +47,7 @@ def checkpath(self, mode):
             config_parser = configparser.ConfigParser()
             config_parser.read(self.configdir, encoding="utf-8")
             self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{self.Globaldir}/nand'))
+            self.sdmc_dir = os.path.normpath(config_parser.get('Data%20Storage', 'sdmc_directory', fallback=f'{self.Globaldir}/sdmc'))
             if self.nand_dir.startswith('"'):
                 self.nand_dir = self.nand_dir.strip('"')[0]
             self.load_dir = os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{self.Globaldir}/load'))
@@ -64,6 +66,7 @@ def checkpath(self, mode):
                 log.info("Detected a Ryujinx flatpak!")
                 self.Globaldir = flatpak
                 self.nand_dir = os.path.join(f"{self.Globaldir}", "bis", "user", "save")
+                self.sdmc_dir = os.path.join(f"{self.Globaldir}", "sdcard")
                 self.load_dir = os.path.join(f"{self.Globaldir}", "mods", "contents", "0100f2c0115b6000")
                 self.Yuzudir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents",
                                             "0100f2c0115b6000")
@@ -73,6 +76,7 @@ def checkpath(self, mode):
             self.configdir = None
             self.TOTKconfig = None
             self.nand_dir = os.path.join(f"{self.Globaldir}", "bis", "user", "save")
+            self.sdmc_dir = os.path.join(f"{self.Globaldir}", "sdcard")
             self.load_dir = os.path.join(f"{self.Globaldir}", "mods", "contents", "0100f2C0115B6000")
             self.Yuzudir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents", "0100f2C0115B6000")
             self.ryujinx_config = os.path.join(self.Globaldir, "Config.json")
@@ -90,6 +94,7 @@ def checkpath(self, mode):
                 config_parser = configparser.ConfigParser()
                 config_parser.read(self.configdir, encoding="utf-8")
                 self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{os.path.join(yuzupath, "../user/nand")}'))
+                self.sdmc_dir = os.path.normpath(config_parser.get('Data%20Storage', 'sdmc_directory', fallback=f'{self.Globaldir}/sdmc'))
                 if self.nand_dir.startswith('"'):
                     self.nand_dir = self.nand_dir.strip('"')[0]
                 self.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{os.path.join(yuzupath, "../user/nand")}')), "0100F2C0115B6000")
@@ -129,6 +134,7 @@ def checkpath(self, mode):
                 config_parser = configparser.ConfigParser()
                 config_parser.read(self.configdir, encoding="utf-8")
                 self.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{self.Globaldir}/nand'))
+                self.sdmc_dir = os.path.normpath(config_parser.get('Data%20Storage', 'sdmc_directory', fallback=f'{self.Globaldir}/sdmc'))
                 if self.nand_dir.startswith('"'):
                     self.nand_dir = self.nand_dir.strip('"')[0]
                 self.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{self.Globaldir}/load')), "0100F2C0115B6000")
@@ -143,6 +149,7 @@ def checkpath(self, mode):
                 self.ryujinx_config = os.path.join(portablefolder, "Config.json")
                 self.nand_dir = os.path.join(f"{portablefolder}", "bis", "user", "save")
                 self.load_dir = os.path.join(f"{portablefolder}", "mods", "contents", "0100f2C0115b6000")
+                self.sdmc_dir = os.path.join(f"{portablefolder}", "sdcard")
                 self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", "0100f2C0115B6000")
                 return
             else:
@@ -152,6 +159,7 @@ def checkpath(self, mode):
                 self.ryujinx_config = os.path.join(self.Globaldir, "Config.json")
                 self.nand_dir = os.path.join(f"{self.Globaldir}", "bis", "user", "save")
                 self.load_dir = os.path.join(f"{self.Globaldir}", "mods", "contents", "0100f2C0115b6000")
+                self.sdmc_dir = os.path.join(f"{self.Globaldir}", "sdcard")
                 self.Yuzudir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", "0100f2C0115B6000")
                 return
     # Ensure the path exists.
