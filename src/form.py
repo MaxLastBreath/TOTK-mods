@@ -1357,7 +1357,7 @@ class Manager:
                 config["Resolution"]["Height"] = str(New_Resolution[1])
 
                 ## WRITE IN CONFIG FILE FOR UC 2.0
-                with open(ini_file_path, 'w', encoding="utf-8") as configfile:
+                with open(ini_file_path, 'w+', encoding="utf-8") as configfile:
                     config.write(configfile)
 
 
