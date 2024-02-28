@@ -6,43 +6,6 @@ from configuration.settings import localconfig
 from tkinter import messagebox
 from tkinter import filedialog
 
-def select_yuzu_exe(self, ev = None):
-    # Open a file dialog to browse and select yuzu.exe
-    if self.os_platform == "Windows":
-        yuzu_path = filedialog.askopenfilename(
-            title=f"Please select {self.mode}.exe",
-            filetypes=[("Executable files", "*.exe"), ("All Files", "*.*")]
-        )
-        executable_name = yuzu_path
-        if executable_name.endswith("Ryujinx.exe") or executable_name.endswith("Ryujinx.Ava.exe"):
-            if self.mode == "Yuzu":
-                self.switchmode("true")
-        if executable_name.endswith("yuzu.exe"):
-            if self.mode == "Ryujinx":
-                self.switchmode("true")
-        if yuzu_path:
-            # Save the selected yuzu.exe path to a configuration file
-            save_user_choices(self, self.config, yuzu_path)
-            home_directory = os.path.dirname(yuzu_path)
-            fullpath = os.path.dirname(yuzu_path)
-            if any(item in os.listdir(fullpath) for item in ["user", "portable"]):
-                log.info(
-                    f"Successfully selected {self.mode}.exe! And a portable folder was found at {home_directory}!")
-                checkpath(self, self.mode)
-                return yuzu_path
-            else:
-                log.info(f"Portable folder for {self.mode} not found defaulting to appdata directory!")
-                checkpath(self, self.mode)
-                return yuzu_path
-
-            # Update the yuzu.exe path in the current session
-            self.yuzu_path = yuzu_path
-        else:
-            checkpath(self, self.mode)
-            return None
-        # Save the selected yuzu.exe path to a configuration file
-        save_user_choices(self, self.config, yuzu_path)
-    return yuzu_path
 # Define Directories for different OS or Yuzu Folders, Check if User has correct paths for User Folder.
 def checkpath(self, mode):
     if self.is_extracting is True:
