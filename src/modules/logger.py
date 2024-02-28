@@ -3,7 +3,6 @@ import sys
 import platform
 import psutil
 import GPUtil
-import wmi
 from modules.scaling import *
 
 
@@ -34,14 +33,22 @@ except Exception as e:
     log.warning(f"The System Memory was not detected, nothing to be concerned about. {e}")
     total_memory = "Undetected"
 
-w = wmi.WMI()
+try:
+    import wmi
+    w = wmi.WMI()
+    CPU = w.Win32_Processor()[0].Name
+    FREQUENCY = w.Win32_PhysicalMemory()[0].ConfiguredClockSpeed
+except Exception as e:
+    CPU = "Linux Undetected"
+    FREQUENCY = ""
+    log.info("Failed to import wmi, most likely LINUX.")
 
 log.info(f"\n\n\n\nAttempting to start Application.\n"
          f"__SystemINFO__\n"
          f"System: {platform.system()}\n"
          f"GPU: {gpu_name}\n"
-         f"RAM: {total_memory} GB and used {memory_used}%\n"
-         f"CPU: {w.Win32_Processor()[0].Name}"
+         f"RAM: {total_memory} GB {FREQUENCY} MHz and used {memory_used}%\n"
+         f"CPU: {CPU}"
          f"\n"
          )
 

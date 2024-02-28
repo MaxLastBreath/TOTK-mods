@@ -31,8 +31,8 @@ def load_UI_elements(self, canvas):
     self.on_canvas.create_label(
         master=self.window, canvas=canvas,
         text=f"{gpu_name}\n"
-              f"{w.Win32_Processor()[0].Name}\n"
-              f"Memory: {total_memory}GB {w.Win32_PhysicalMemory()[0].ConfiguredClockSpeed} MHz",
+              f"{CPU}\n"
+              f"Memory: {total_memory}GB {FREQUENCY} MHz",
         description_name="Benchmarks",
         anchor="nw",
         row=310, cul=820, font=biggyfont, active_fill= "cyan",
