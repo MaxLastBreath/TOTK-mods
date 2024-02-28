@@ -36,12 +36,12 @@ jobs:
       if: ${{ matrix.name == 'Linux' }}
       run: |
         python -m pip install --upgrade pip
-        pip install requests patool screeninfo packaging wmi pywin32 GPUtil psutil pyinstaller https://github.com/MaxLastBreath/ttkbootstrapFIX/zipball/master
+        pip install requests patool screeninfo packaging wmi GPUtil psutil pyinstaller https://github.com/MaxLastBreath/ttkbootstrapFIX/zipball/master
     - name: Install dependencies Windows
       if: ${{ matrix.name == 'Windows' }}
       run: |
         python -m pip install --upgrade pip
-        pip install requests patool screeninfo packaging wmi pywin32 GPUtil psutil pyinstaller https://github.com/MaxLastBreath/ttkbootstrapFIX/zipball/master
+        pip install requests patool screeninfo packaging wmi GPUtil psutil pyinstaller https://github.com/MaxLastBreath/ttkbootstrapFIX/zipball/master
     - name: Build ${{ matrix.name }}
       run: |
         cd ./src/
