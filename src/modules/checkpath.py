@@ -4,8 +4,9 @@ import configparser
 from modules.logger import *
 from configuration.settings import localconfig
 from tkinter import messagebox
+from tkinter import filedialog
 
-def select_yuzu_exe(self):
+def select_yuzu_exe(self, ev = None):
     # Open a file dialog to browse and select yuzu.exe
     if self.os_platform == "Windows":
         yuzu_path = filedialog.askopenfilename(

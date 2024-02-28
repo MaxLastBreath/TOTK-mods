@@ -148,13 +148,18 @@ class Manager:
         # Create a label for yuzu.exe selection
         backupbutton = cul_sel
         if self.os_platform == "Windows":
+            command = lambda event: select_yuzu_exe(self)
+            def browse():
+                select_yuzu_exe(self)
+
+            text = "SELECT Yuzu.exe"
             self.on_canvas.create_button(
                                         master=self.window, canvas=canvas,
                                         btn_text="Browse",
                                         row=row, cul=cul_sel, width=6,
                                         tags=["Button"],
                                         description_name="Browse",
-                                        command=lambda e: select_yuzu_exe(self)
+                                        command=lambda: browse()
                                         )
 
             # Reset to Appdata
@@ -172,8 +177,6 @@ class Manager:
                                         command=yuzu_appdata
                                         )
             backupbutton = cul_sel + 165
-            text = "SELECT Yuzu.exe"
-            command = lambda event: select_yuzu_exe(self)
         else:
             text = "Backup Save Files"
             command = None

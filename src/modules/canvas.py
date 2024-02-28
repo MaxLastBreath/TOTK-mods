@@ -176,8 +176,6 @@ class Canvas_Create:
         )
         update_text_command = lambda event: update_text(event, canvas, text, new_variable, type=type)
 
-        master.wm_attributes('-transparentcolor', '#ab23ff')
-
         # create scale box
         scale_box = ttk.Scale(
             master=master,
