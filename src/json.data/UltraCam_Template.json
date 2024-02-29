@@ -135,8 +135,8 @@
                 1,
                 100
             ],
-            "Type": "s32",
-            "Default": 1,
+            "Type": "f32",
+            "Default": 1.0,
             "Increments": 5,
             "Description": "Increase or decrease time speed\nistimeSlower bool acts as a decrease.",
             "Config_Class": [

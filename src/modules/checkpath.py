@@ -85,8 +85,8 @@ def checkpath(self, mode):
     # Default Dir for Windows or user folder.
     elif self.os_platform == "Windows":
         yuzupath = load_yuzu_path(self, localconfig)
-        userfolder = os.path.join(yuzupath, "../user/")
-        portablefolder = os.path.join(yuzupath, "../portable/")
+        userfolder = os.path.normpath(os.path.join(yuzupath, "../user/"))
+        portablefolder = os.path.normpath(os.path.join(yuzupath, "../portable/"))
         # Check for user folder
         if mode == "Yuzu":
             if os.path.exists(userfolder):

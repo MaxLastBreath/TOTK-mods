@@ -1,4 +1,5 @@
 from configuration.settings import *
+import subprocess
 
 def load_UI_elements(self, canvas):
     # Images and Effects
@@ -28,13 +29,30 @@ def load_UI_elements(self, canvas):
         tag="no_benchmark",
     )
 
+    def copy(self):
+        if self.Curr_Benchmark is None:
+            return
+        log.info(self.Curr_Benchmark)
+        benchmark_result = (f"Benchmark For: **{self.mode}** Tears Of The Kingdom\n"
+                            f"**{gpu_name}**\n"
+                            f"**{CPU}**\n"
+                            f"**{total_memory}** GB RAM at **{FREQUENCY}** MHz\n"
+                            f"**{self.Curr_Benchmark}** Results:\n"
+                            f"Total Frames **{self.benchmarks[self.Curr_Benchmark]['Total Frames']}**\n"
+                            f"Average FPS **{self.benchmarks[self.Curr_Benchmark]['Average FPS']}**\n"
+                            f"1% Lows **{self.benchmarks[self.Curr_Benchmark]['1% Low FPS']}** FPS\n"
+                            f"0.1% Lows **{self.benchmarks[self.Curr_Benchmark]['0.1% Lowest FPS']}** FPS\n"
+                            )
+
+        subprocess.run(['clip'], input=benchmark_result.strip().encode('utf-16'), check=True)
+
     self.on_canvas.create_label(
         master=self.window, canvas=canvas,
         text=f"{gpu_name}\n"
               f"{CPU}\n"
               f"Memory: {total_memory}GB {FREQUENCY} MHz",
         description_name="Benchmarks",
-        anchor="nw",
+        anchor="nw", command=lambda e: copy(self),
         row=310, cul=820, font=biggyfont, active_fill= "cyan",
         tags=["PC_info"], tag=["PC_info"], outline_tag="PC_info"
     )
@@ -46,7 +64,7 @@ def load_UI_elements(self, canvas):
              f"Select your Benchmark in Advanced Settings.\n"
              f"Clicking this text copies your results.\n",
         description_name="Benchmarks",
-        anchor="nw",
+        anchor="nw", command=lambda e: copy(self),
         row=400, cul=820, font=biggyfont, active_fill= "cyan",
         tags=["benchmark_info"], tag=["benchmark_info"], outline_tag="benchmark_info"
     )

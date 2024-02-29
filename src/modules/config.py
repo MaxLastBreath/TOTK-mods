@@ -162,7 +162,12 @@ def load_user_choices(self, config_file, mode=None):
             # use name for tag accuracy
             self.maincanvas.itemconfig(patch_dict["Name"], text=self.BEYOND_Patches[patch].get())
         try:
-            self.BEYOND_Patches[patch].set(config["Beyond"][patch])
+            patch_type = patch_dict["Type"]
+
+            if patch_type == "f32":
+                self.BEYOND_Patches[patch].set(float(config["Beyond"][patch]))
+            else:
+                self.BEYOND_Patches[patch].set(config["Beyond"][patch])
         except KeyError:
             pass
 

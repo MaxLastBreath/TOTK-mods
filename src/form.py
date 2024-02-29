@@ -37,6 +37,7 @@ class Manager:
         self.all_pages = ["main", "extra", "randomizer"]
 
         # Set neccesary variables.
+        self.Curr_Benchmark = None
         self.Yuzudir = None
         self.is_Ani_running = False
         self.is_Ani_Paused = False
@@ -317,8 +318,13 @@ class Manager:
                     tags=["scale"], tag=section_auto,
                     text_description=patch_description
                 )
-                patch_var.set(patch_default_index)
-                canvas.itemconfig(patch_name, text=f"{patch_default_index}")
+                if patch_type == "f32":
+                    print(f"{patch_name} - {patch_default_index}")
+                    patch_var.set(float(patch_default_index))
+                else:
+                    patch_var.set(patch_default_index)
+
+                canvas.itemconfig(patch_name, text=f"{float(patch_default_index)}")
                 new_pos = increase_row(pos[0], pos[1], pos[2])
                 pos[0] = new_pos[0]
                 pos[1] = new_pos[1]
@@ -364,6 +370,7 @@ class Manager:
         cul_sel_2 = new_pos[1]
         cul_tex_2 = new_pos[2]
 
+        UI_list.remove("Black Screen Fix")
         self.ui_var = self.on_canvas.create_combobox(
                         master=self.window, canvas=canvas,
                         text="UI:",
@@ -860,6 +867,9 @@ class Manager:
 
             elif mode == None:
                 log.info("Starting Mod Creator.")
+                log.info(f"Generating mod at {self.load_dir}")
+                os.makedirs(self.load_dir, exist_ok=True)
+
                 # Update progress bar
                 self.progress_var.set("TOTK Optimizer Patch.")
 
@@ -1059,8 +1069,7 @@ class Manager:
                 log.info("Selected default Aspect Ratio.")
                 if self.ui_var.get().lower() in ["none", "switch"]:
                     self.add_list.extend(new_list)
-                    return
-                new_folder = self.BEYOND_Patches["aspect ratio"].get()
+                new_folder = self.ui_var.get()
                 link = UI_dict.get(new_folder)
             else:
                 # define

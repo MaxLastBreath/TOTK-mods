@@ -90,9 +90,9 @@
       "Section": "extra",
       "Auto": false,
       "Values": [ 1, 100 ],
-      "Type": "s32",
-      "Default": 1,
-      "Increments": 5,
+      "Type": "f32",
+      "Default": 1.0,
+      "Increments": 5.0,
       "Description": "Increase or decrease time speed\nistimeSlower bool acts as a decrease.",
       "Config_Class": [ "Features", "TimeSpeed" ]
     },
@@ -192,8 +192,8 @@
       "Class": "dropdown",
       "Section": "main",
       "Auto": false,
-      "Name_Values": [ "VERY LOW", "LOW", "MEDIUM", "DEFAULT", "INCREASED" ],
-      "Values": [ 1000, 5000, 12500, 25000, 50000 ],
+      "Name_Values": [ "VERY LOW", "LOW", "MEDIUM", "DEFAULT", "INCREASED (EXPERIMENTAL)"],
+      "Values": [ 1000, 5000, 12500, 25000, 35000 ],
       "Default": 3,
       "Description": "UltraCam Beyond Render Distance.\nDefault is 25000. Increased is 50000.\nMay see a small benefit on low, up to 20% fps.\nExpect the game to use fog like rendering Minecraft.",
       "Config_Class": [ "Resolution", "RenderDistance" ]
@@ -295,7 +295,7 @@
       "Class": "bool",
       "Section": "extra",
       "Auto": false,
-      "Default": true,
+      "Default": false,
       "Description": "UltraCam Beyond SlowTime.\n This is controlled by a time scale.",
       "Config_Class": [ "Features", "IsTimeSlower" ]
     }
