@@ -10,17 +10,45 @@ import random
 import ttkbootstrap as ttk
 
 
-def next_index(event, var, list=list, command=None):
+def next_index(event, var, list=list, increase = 1, command=None):
     value = str(var.get())
     string_list = [str(item) for item in list]
     index = string_list.index(value)
-    index += 1
+    index += increase
     if index == len(list):
         index = 0
+    if index < 0:
+        index = len(list) -1
     var.set(list[index])
     if command is not None:
         command(event)
 
+def change_scale(event, var, max, min, increments = float, command=None):
+    new_value = float(var.get()) + increments
+    if new_value > float(min):
+        new_value = float(min)
+
+    if new_value < float(max):
+        new_value = float(max)
+
+    old_value = new_value
+    round(new_value)
+    while new_value < old_value:
+        new_value += increments
+
+    log.info(f"{new_value}, {old_value}, {increments}")
+
+    var.set(str(new_value))
+    if command is not None:
+        command(event)
+
+def update_text(event, canvas, name, var, type = "s32"):
+    if type == "s32":
+        var.set(round(float(var.get())))
+        canvas.itemconfig(name, text=int(var.get()))
+    if type == "f32":
+        var.set(round(float(var.get())* 10) / 10)
+        canvas.itemconfig(name, text=float(var.get()))
 
 def toggle(event, var):
     if var.get() == "On":
@@ -37,7 +65,7 @@ class Canvas_Create:
         self.is_Ani_Paused = False
 
     def create_combobox(self, canvas,
-                        text, master, description_name=None, variable=any, values=[],
+                        text, master, description_name=None, text_description= None, variable=any, values=[],
                         row=40, cul=40, drop_cul=180, width=150, style="warning",
                         tags=[], tag=None, command=None, is_active=True):
         # create text
@@ -48,6 +76,7 @@ class Canvas_Create:
             active_color_new = None
         elif is_active is True:
             tags.append("active_text")
+
         # add outline and user-tag to the outlined text.
         outline_tag = ["outline", tag]
         # create an outline to the text.
@@ -60,6 +89,7 @@ class Canvas_Create:
                            font=textfont,
                            tags=outline_tag
                            )
+
         # create the text and the variable for the dropdown.
         new_variable = tk.StringVar(master=master, value=variable)
         text_line = canvas.create_text(
@@ -97,16 +127,154 @@ class Canvas_Create:
         self.read_description(
                               canvas=canvas,
                               option=description_name,
+                              text= text_description,
                               position_list=[dropdown, text_line],
                               master=master
                               )
-        canvas.tag_bind(text_line, "<Button-1>", lambda event: next_index(event, new_variable, values, command))
+        canvas.tag_bind(text_line, "<Button-1>", lambda event: next_index(event, new_variable, values, 1, command))
+        canvas.tag_bind(text_line, "<Button-3>", lambda event: next_index(event, new_variable, values, -1, command))
+
         row += 40
+        return new_variable
+
+    def create_scale(self, canvas,
+                        text, master, description_name=None, text_description= None, variable=any, scale_from= 1, scale_to= 100, increments = 5,
+                        row=40, cul=40, drop_cul=180, width=150, style="warning", type = "s32",
+                        tags=[], tag=None, command=None, is_active=True):
+        # create text
+        active_color_new = active_color
+        if tag is not None:
+            tags.append(tag)
+        if is_active is False:
+            active_color_new = None
+        elif is_active is True:
+            tags.append("active_text")
+
+        # add outline and user-tag to the outlined text.
+        outline_tag = ["outline", tag]
+        # create an outline to the text.
+        canvas.create_text(
+            scale(cul) + scale(1),
+            scale(row) + scale(1),
+            text=text,
+            anchor="w",
+            fill=outline_color,
+            font=textfont,
+            tags=outline_tag
+        )
+        # create the text and the variable for the dropdown.
+        new_variable = tk.StringVar(master=master, value=variable)
+        text_line = canvas.create_text(
+            scale(cul),
+            scale(row),
+            text=text,
+            anchor="w",
+            fill=textcolor,
+            font=textfont,
+            tags=tags,
+            activefil=active_color_new
+        )
+        update_text_command = lambda event: update_text(event, canvas, text, new_variable, type=type)
+
+        # create scale box
+        scale_box = ttk.Scale(
+            master=master,
+            from_=scale_from,
+            to=scale_to,
+            command=update_text_command,
+            length=width,
+            style=style,
+            variable=new_variable,
+        )
+
+        win = canvas.create_window(
+            scale(drop_cul),
+            scale(row),
+            anchor="w",
+            window=scale_box,
+            width=scale(width),
+            height=scale(12),
+            tags=tag,
+        )
+
+        # bind canvas
+        scale_box.bind("<<ComboboxSelected>>", command)
+        # attempt to make a Hovertip
+        self.read_description(
+            canvas=canvas,
+            option=description_name,
+            position_list=[scale_box, text_line],
+            master=master
+        )
+
+        tags.append(text)
+        outline_tag.append(text)
+
+        # Shows the value from the scale.
+        canvas.create_text(
+            scale(cul + width + 30) + scale(1),
+            scale(row) + scale(1),
+            text="NOT SET",
+            anchor="w",
+            fill=outline_color,
+            font=textfont,
+            tags=outline_tag
+        )
+
+        text_line_value = canvas.create_text(
+            scale(cul + width + 30),
+            scale(row),
+            text="NOT SET",
+            anchor="w",
+            fill=textcolor,
+            font=textfont,
+            tags=tags,
+            activefil=active_color_new
+        )
+
+        self.read_description(
+            canvas=canvas,
+            option=description_name,
+            text= text_description,
+            position_list=[scale_box, text_line],
+            master=master
+        )
+
+
+        canvas.tag_bind(text_line, "<Button-1>", lambda event: change_scale(event,
+                                                                            new_variable,
+                                                                            max=scale_from,
+                                                                            min=scale_to,
+                                                                            increments=increments,
+                                                                            command=update_text_command)
+                        )
+        canvas.tag_bind(text_line, "<Button-3>", lambda event: change_scale(event,
+                                                                            new_variable,
+                                                                            max=scale_from,
+                                                                            min=scale_to,
+                                                                            increments=-increments,
+                                                                            command=update_text_command)
+                        )
+        canvas.tag_bind(text_line_value, "<Button-1>", lambda event: change_scale(event,
+                                                                            new_variable,
+                                                                            max=scale_from,
+                                                                            min=scale_to,
+                                                                            increments=increments,
+                                                                            command=update_text_command)
+                        )
+        canvas.tag_bind(text_line_value, "<Button-3>", lambda event: change_scale(event,
+                                                                            new_variable,
+                                                                            max=scale_from,
+                                                                            min=scale_to,
+                                                                            increments=-increments,
+                                                                            command=update_text_command)
+                        )
+
         return new_variable
 
     def create_checkbutton(
             self, master, canvas,
-            text, description_name=None, variable=any,
+            text, description_name=None, text_description = None, variable=any,
             row=40, cul=40, drop_cul=180,
             tags=[], tag=None, command=None, is_active=True, style="success"):
         # create text
@@ -161,6 +329,8 @@ class Canvas_Create:
                                                scale(row),
                                                anchor="w",
                                                window=checkbutton,
+                                               width = scale(11),
+                                               height = scale(11),
                                                tags=tag
                                                )
         # attempt to make a Hover tip
@@ -169,6 +339,7 @@ class Canvas_Create:
                               canvas=canvas,
                               option=description_name,
                               position_list=[checkbutton, text_line],
+                              text=text_description,
                               master=master
                               )
         row += 40
@@ -176,7 +347,7 @@ class Canvas_Create:
 
     def create_button(
             self, master, canvas,
-            btn_text, description_name=None, textvariable=None,
+            btn_text, description_name=None, text_description = None, textvariable=None,
             row=40, cul=40, width=None, padding=None, pos="w",
             tags=[], tag=None,
             style="default", command=any,
@@ -209,12 +380,13 @@ class Canvas_Create:
             canvas=canvas,
             option=description_name,
             position_list=[button],
+            text=text_description,
             master=master
         )
         return
 
     def create_label(self, master, canvas,
-                        text, description_name=None, font=textfont, color=textcolor, active_fill=None,
+                        text, description_name=None, text_description = None, font=textfont, color=textcolor, active_fill=None,
                         row=40, cul=40, anchor="w", justify="left",
                         tags=[], tag=None, outline_tag=None, command=None
                      ):
@@ -254,6 +426,7 @@ class Canvas_Create:
                               canvas=canvas,
                               option=description_name,
                               position_list=[text_line],
+                              text=text_description,
                               master=master
                               )
 
@@ -304,6 +477,7 @@ class Canvas_Create:
                      row, cul, anchor="nw",
                      img=any,
                      tag=None,
+                     state="normal"
                      ):
 
         if tag is None:
@@ -311,7 +485,7 @@ class Canvas_Create:
                            string.digits, k=8)
             tag = ''.join(tag)
 
-        canvas.create_image(scale(cul), scale(row), anchor=anchor, image=img, state="normal", tags=tag)
+        canvas.create_image(scale(cul), scale(row), anchor=anchor, image=img, state=state, tags=[tag])
 
     def toggle_img(self, canvas, mode, tag_1, tag_2, event=None):
         if mode.lower() == "enter":
@@ -321,19 +495,27 @@ class Canvas_Create:
             canvas.itemconfig(tag_1, state="normal")
             canvas.itemconfig(tag_2, state="hidden")
 
-    def read_description(self, canvas, option, position_list=list, master=any):
-        if f"{option}" not in description:
+    def read_description(self, canvas, option, text = None, position_list=list, master=any):
+        if f"{option}" not in description and text is None:
             return
         for position in position_list:
             try:
                 canvas_item = canvas.find_withtag(position)
                 if canvas_item:
-                    hover = description[f"{option}"]
-                    self.create_tooltip(canvas, position, hover, master)
+                    if text is not None:
+                        hover = text
+                        self.create_tooltip(canvas, position, hover, master)
+                    else:
+                        hover = description[f"{option}"]
+                        self.create_tooltip(canvas, position, hover, master)
                     break
             except TclError as e:
-                hover = description[f"{option}"]
-                Hovertip(position, f"{hover}", hover_delay=Hoverdelay)
+                if text is not None:
+                    hover = text
+                    Hovertip(position, f"{hover}", hover_delay=Hoverdelay)
+                else:
+                    hover = text
+                    Hovertip(position, f"{hover}", hover_delay=Hoverdelay)
 
     def create_tooltip(self, canvas, position, hover, master):
 

@@ -1,25 +1,21 @@
 import threading
-import tkinter
-import ttkbootstrap as ttk
 import webbrowser
 import re
-from tkinter import filedialog, Toplevel
-from ttkbootstrap.constants import *
-from ttkbootstrap import Style
-from modules.canvas import *
-from modules.qt_config import modify_disabled_key, get_config_parser
-from modules.checkpath import checkpath, DetectOS
-from modules.backup import *
-from modules.logger import *
-from modules.launch import *
-from modules.config import *
 from configuration.settings import *
 from configuration.settings_config import Setting
+from modules.TOTK_Optimizer_Modules import * # imports all needed files.
 
 class Manager:
     def __init__(self, window):
+        # ULTRACAM 2.0 PATCHES ARE SAVED HERE.
+        self.BEYOND_Patches = {}
+
         # Define the Manager window.
         self.window = window
+
+        self.is_extracting = False
+
+        self.DFPS_var = "BEYOND"
 
         # Configure the Style of the entire window.
         self.constyle = Style(theme=theme.lower())
@@ -32,13 +28,16 @@ class Manager:
         # Append all canvas in Manager class.
         self.all_canvas = []
 
+
         # Load the Config.
         self.config = localconfig
 
         # Read the Current Emulator Mode.
         self.mode = config.get("Mode", "managermode", fallback="Yuzu")
+        self.all_pages = ["main", "extra", "randomizer"]
 
         # Set neccesary variables.
+        self.Curr_Benchmark = None
         self.Yuzudir = None
         self.is_Ani_running = False
         self.is_Ani_Paused = False
@@ -46,24 +45,29 @@ class Manager:
         self.warn_again = "yes"
         self.title_id = title_id
         self.old_cheats = {}
-        self.cheat_version = ttk.StringVar(value="Version - 1.2.00")
+        self.cheat_version = ttk.StringVar(value="Version - 1.2.1")
 
         # Initialize Json Files.
-        self.dfps_options = load_json("DFPS.json", dfpsurl)
         self.description = load_json("Description.json", descurl)
-        self.presets = load_json("preset.json", presetsurl)
+        self.presets = load_json("beyond_presets.json", presetsurl)
         self.version_options = load_json("Version.json", versionurl)
         self.cheat_options = load_json("Cheats.json", cheatsurl)
-        self.ultracam_options = load_json("UltraCam.json", ultracam)
+        self.ultracam_beyond = load_json("UltraCam_Template.json", ultracambeyond)
+        self.yuzu_settings = load_json("yuzu_presets.json", yuzu_presets_url)
+
+        self.benchmarks = {}
+
+        if os.path.exists(os.path.join("UltraCam/UltraCam_Template.json")):
+            with open("UltraCam/UltraCam_Template.json", "r", encoding="utf-8") as file:
+                self.ultracam_beyond = json.load(file)
 
         # Local text variable
         self.switch_text = ttk.StringVar(value="Switch to Ryujinx")
 
         # Load Canvas
-        self.Load_ImagePath()
+        Load_ImagePath(self)
         self.load_canvas()
         self.switchmode("false")
-        self.update_scaling_settings()
 
         #Window protocols
         self.window.protocol("WM_DELETE_WINDOW", lambda: self.on_canvas.on_closing(self.window))
@@ -81,13 +85,26 @@ class Manager:
         self.selected_options = {}
 
         # Load UI Elements
-        self.load_UI_elements(self.maincanvas)
-        self.create_tab_buttons(self.maincanvas)
+        load_UI_elements(self, self.maincanvas)
+        create_tab_buttons(self, self.maincanvas)
 
         # Create Text Position
         row = 40
-        cul_tex = 40
-        cul_sel = 200
+        cul_tex = 60
+        cul_sel = 220
+
+        # Used for 2nd column.
+        row_2 = 120
+        cul_tex_2 = 400
+        cul_sel_2 = 550
+
+        def increase_row(row, cul_sel, cul_tex):
+            row += 40
+            if row >= 480:
+                row = 120
+                cul_tex += 180
+                cul_sel += 180
+            return row, cul_sel, cul_tex
 
         # Run Scripts for checking OS and finding location
         checkpath(self, self.mode)
@@ -96,24 +113,28 @@ class Manager:
         # FOR DEBUGGING PURPOSES
         def onCanvasClick(event):
             print(f"CRODS = X={event.x} + Y={event.y} + {event.widget}")
+
         self.maincanvas.bind("<Button-3>", onCanvasClick)
         # Start of CANVAS options.
 
         # Create preset menu.
-        presets = {"Saved": {}} | load_json("preset.json", presetsurl)
+        presets = {"Saved": {}} | load_json("beyond_presets.json", presetsurl)
         values = list(presets.keys())
         self.selected_preset = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
                                                             text="OPTIMIZER PRESETS:",
                                                             variable=values[0], values=values,
-                                                            row=row, cul=cul_tex,
+                                                            row=row, cul=cul_tex - 20,
                                                             tags=["text"], tag="Yuzu",
                                                             description_name="Presets",
-                                                            command=self.apply_selected_preset
+                                                            command=lambda event: apply_selected_preset(self)
                                                         )
 
         # Setting Preset - returns variable.
-        value = ["No Change", "Steamdeck", "AMD", "Nvidia", "High End Nvidia"]
+
+        value = ["No Change"]
+        for item in self.yuzu_settings:
+            value.append(item)
         self.selected_settings = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
                                                             text="YUZU SETTINGS:",
@@ -127,15 +148,19 @@ class Manager:
         # Create a label for yuzu.exe selection
         backupbutton = cul_sel
         if self.os_platform == "Windows":
+            command = lambda event: self.select_yuzu_exe()
+            def browse():
+                self.select_yuzu_exe()
+
+            text = "SELECT Yuzu.exe"
             self.on_canvas.create_button(
                                         master=self.window, canvas=canvas,
                                         btn_text="Browse",
                                         row=row, cul=cul_sel, width=6,
                                         tags=["Button"],
                                         description_name="Browse",
-                                        command=self.select_yuzu_exe
+                                        command=lambda: browse()
                                         )
-
 
             # Reset to Appdata
             def yuzu_appdata():
@@ -152,8 +177,6 @@ class Manager:
                                         command=yuzu_appdata
                                         )
             backupbutton = cul_sel + 165
-            text = "SELECT Yuzu.exe"
-            command = lambda event: self.select_yuzu_exe()
         else:
             text = "Backup Save Files"
             command = None
@@ -162,7 +185,7 @@ class Manager:
                                     master=self.window, canvas=canvas,
                                     text=text,
                                     description_name="Browse",
-                                    row=row, cul=cul_tex,
+                                    row=row, cul=cul_tex - 20,
                                     tags=["text"], tag=["Select-EXE"], outline_tag="outline",
                                     command=command
                                     )
@@ -188,142 +211,178 @@ class Manager:
         row += 40
 
         # Create big TEXT label.
-        self.on_canvas.create_label(
-                                    master=self.window, canvas=canvas,
-                                    text="Display Settings", font=bigfont, color=BigTextcolor,
-                                    description_name="Display Settings",
-                                    row=row, cul=cul_tex+100,
-                                    tags=["Big-Text"]
-                                    )
+        #self.on_canvas.create_label(
+        #                            master=self.window, canvas=canvas,
+        #                            text="Graphics", font=bigfont, color=BigTextcolor,
+        #                            description_name="Display Settings",
+        #                            row=row, cul=cul_tex+100,
+        #                            tags=["Big-Text"]
+        #                            )
 
+        self.graphics_element = self.on_canvas.Photo_Image(
+            image_path="graphics.png",
+            width=int(70*1.6), height=int(48*1.6),
+        )
+
+        self.graphics_element_active = self.on_canvas.Photo_Image(
+            image_path="graphics_active.png",
+            width=int(70*1.6), height=int(48*1.6),
+        )
+
+        self.extra_element = self.on_canvas.Photo_Image(
+            image_path="extra.png",
+            width=int(70*1.6), height=int(48*1.6),
+        )
+
+        self.extra_element_active = self.on_canvas.Photo_Image(
+            image_path="extra_active.png",
+            width=int(70*1.6), height=int(48*1.6),
+        )
+
+        # Graphics & Extra & More - the -20 is extra
+        self.on_canvas.image_Button(
+            canvas=canvas,
+            row=row - 35, cul=cul_tex - 10 - 20,
+            img_1=self.graphics_element, img_2=self.graphics_element_active,
+            command=lambda event: self.toggle_page(event, "main")
+        )
+
+        self.on_canvas.image_Button(
+            canvas=canvas,
+            row=row - 35, cul=cul_tex + 190 - 10,
+            img_1=self.extra_element, img_2=self.extra_element_active,
+            command=lambda event: self.toggle_page(event, "extra")
+        )
+
+        # BIG TEXT.
         self.on_canvas.create_label(
                                     master=self.window, canvas=canvas,
-                                    text="Mod Improvements", font=bigfont, color=BigTextcolor,
+                                    text="Toggle Options", font=bigfont, color=BigTextcolor,
                                     description_name="Mod Improvements",
                                     row=row, cul=400+100,
                                     tags=["Big-Text"]
                                     )
-        row += 40
-
-        # Create a label for resolution selection
-        self.upscale_list = ["UltraCam", "DFPS Legacy"]
-        self.DFPS_var = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
-                                                            text="UPSCALING VERSION:",
-                                                            variable=self.upscale_list[0], values=self.upscale_list,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                                                            tags=["text"], tag=None,
-                                                            description_name="Ultracam",
-                                                            command=self.update_scaling_settings
-                                                            )
-        row += 40
-
-        values = self.dfps_options.get("ResolutionNames", [])
-        self.resolution_var = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
-                                                            text="RESOLUTION:",
-                                                            variable=value[0], values=values,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                                                            tags=["text"], tag=None,
-                                                            description_name="Resolution",
-                                                            )
-        row += 40
-
-        self.aspect_ratio_var = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
-                                                            text="ASPECT RATIO:",
-                                                            variable=AR_list[0], values=AR_list,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                                                            tags=["text"], tag=None,
-                                                            description_name="Aspect Ratio",
-                                                            )
-        row += 40
-
-        # Create a label for shadow resolution selection
-        self.dfps_shadow_list = self.dfps_options.get("ShadowResolutionNames", [""])
-        self.shadow_resolution_var = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
-                                                            text="SHADOWS:",
-                                                            variable=value[0], values=self.dfps_shadow_list,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                                                            tags=["text"], tag="Legacy",
-                                                            description_name="Shadows"
-                                                                    )
-
-        self.ultracam_shadow_list = self.ultracam_options.get("ShadowResolutionNames", [""])
-        self.shadow_resolution_var_new = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
-                                                            text="SHADOWS:",
-                                                            variable=value[0], values=self.ultracam_shadow_list,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                                                            tags=["text"], tag="UltraCam",
-                                                            description_name="Shadows"
-                                                                    )
 
         row += 40
 
-        # First Person and FOV
-        self.fp_var = self.on_canvas.create_combobox(
-                                                        master=self.window, canvas=canvas,
-                                                        text="FIRST PERSON:",
-                                                        values=FP_list, variable=FP_list[0],
-                                                        row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                                                        tags=["text"], tag=None,
-                                                        description_name="First Person"
-                                                    )
+        ##              AUTO PATCH INFO STARTS HERE ALL CONTROLLED IN JSON FILE.
+        ##              THIS IS FOR ULTRACAM BEYOND GRAPHICS AND PERFORMANCE (2.0)
+        ##              REMOVED DFPS, SINCE ULTRACAM BEYOND DOES IT ALL AND SO MUCH BETTER.
+        ##
 
-        row += 40
+        pos_dict = {
+            "main": [row,  cul_tex, cul_sel, row_2, cul_tex_2, cul_sel_2],
+            "extra": [row, cul_tex, cul_sel,  row_2, cul_tex_2, cul_sel_2]
+        }
 
-        # Legacy FPS.
-        FPS_values_Legacy = self.dfps_options.get("FPS", [])
-        self.fps_var = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
-                                                            text="FPS:",
-                                                            variable=value[0], values=FPS_values_Legacy,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                                                            tags=["text", "FPS_Legacy"], tag="Legacy",
-                                                            description_name="FPS"
-                                                      )
+        keys = self.ultracam_beyond.get("Keys", [""])
 
-        # New Upscaling FPS.
-        self.FPS_values_New = self.ultracam_options.get("FPS", [])
+        for name in keys:
+            dicts = keys[name]
 
-        self.fps_var_new = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
-                                                            text="FPS:",
-                                                            variable=value[0], values=self.FPS_values_New,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                                                            tags=["text", "UltraCam"], tag="UltraCam",
-                                                            description_name="FPS",
-                                                            command=self.update_scaling_variable
-                                                      )
+            patch_var = None
+            patch_list = dicts.get("Name_Values", [""])
+            patch_values = dicts.get("Values")
+            patch_name = dicts.get("Name")
+            patch_auto = dicts.get("Auto")
+            section_auto = dicts.get("Section")
+            patch_description = dicts.get("Description")
+            patch_default_index = dicts.get("Default")
+            pos = pos_dict[section_auto]
+            if patch_auto is True:
+                self.BEYOND_Patches[name] = tk.StringVar(master=self.window, value="auto")
+                continue
 
-        row += 40
+            if dicts["Class"].lower() == "dropdown":
+                patch_var = self.on_canvas.create_combobox(
+                            master=self.window, canvas=canvas,
+                            text=patch_name,
+                            values=patch_list, variable=patch_list[patch_default_index],
+                            row=pos[0], cul=pos[1], drop_cul=pos[2], width=100,
+                            tags=["dropdown"], tag=section_auto,
+                            text_description=patch_description
+                            )
+                new_pos = increase_row(pos[0], pos[1], pos[2])
+                pos[0] = new_pos[0]
+                pos[1] = new_pos[1]
+                pos[2] = new_pos[2]
 
-        # Create a label for UI selection
+            if dicts["Class"].lower() == "scale":
+                patch_type = dicts.get("Type")
+                patch_increments = dicts.get("Increments")
+                patch_var = self.on_canvas.create_scale(
+                    master=self.window, canvas=canvas,
+                    text=patch_name,
+                    scale_from=patch_values[0], scale_to=patch_values[1], type=patch_type,
+                    row=pos[0], cul=pos[1], drop_cul=pos[2], width=100, increments=float(patch_increments),
+                    tags=["scale"], tag=section_auto,
+                    text_description=patch_description
+                )
+                if patch_type == "f32":
+                    print(f"{patch_name} - {patch_default_index}")
+                    patch_var.set(float(patch_default_index))
+                else:
+                    patch_var.set(patch_default_index)
+
+                canvas.itemconfig(patch_name, text=f"{float(patch_default_index)}")
+                new_pos = increase_row(pos[0], pos[1], pos[2])
+                pos[0] = new_pos[0]
+                pos[1] = new_pos[1]
+                pos[2] = new_pos[2]
+
+            if dicts["Class"].lower() == "bool":
+                patch_var = self.on_canvas.create_checkbutton(
+                    master=self.window, canvas=canvas,
+                    text=patch_name,
+                    variable="Off",
+                    row=pos[3] + 40, cul=pos[4], drop_cul=pos[5],
+                    tags=["bool"], tag=section_auto,
+                    text_description=patch_description
+                )
+                if patch_default_index:
+                    patch_var.set("On")
+                new_pos = increase_row(pos[3], pos[4], pos[5])
+                pos[3] = new_pos[0]
+                pos[4] = new_pos[1]
+                pos[5] = new_pos[2]
+
+            if patch_var is None:
+                continue
+            self.BEYOND_Patches[name] = patch_var
+
+        row = pos_dict["main"][0]
+        row_2 = pos_dict["main"][3]
+
+        #for patch in self.BEYOND_Patches:
+        #    log.info(f"{patch}: {self.BEYOND_Patches[patch].get()}")
+
+        # Extra Patches. FP and Ui.
+        self.fp_var = self.on_canvas.create_checkbutton(
+                        master=self.window, canvas=canvas,
+                        text="First Person",
+                        variable="Off",
+                        row=row_2 + 40, cul=cul_tex_2, drop_cul=cul_sel_2,
+                        tags=["bool"], tag="main",
+                        description_name="First Person"
+                )
+        new_pos = increase_row(row_2, cul_sel_2, cul_tex_2)
+        row_2 = new_pos[0]
+        cul_sel_2 = new_pos[1]
+        cul_tex_2 = new_pos[2]
+
+        UI_list.remove("Black Screen Fix")
         self.ui_var = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
-                                                            text="UI:",
-                                                            variable=UI_list[0], values=UI_list,
-                                                            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                                                            tags=["text"], tag=None,
-                                                            description_name="UI"
+                        master=self.window, canvas=canvas,
+                        text="UI:",
+                        variable=UI_list[0], values=UI_list,
+                        row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
+                        tags=["text"], tag="main",
+                        description_name="UI"
                                                     )
         row += 40
 
-        fov_list = self.ultracam_options.get("Fov", [""])
-        self.fov_var = self.on_canvas.create_combobox(
-            master=self.window, canvas=canvas,
-            text="FOV:",
-            values=fov_list, variable=FP_list[0],
-            row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-            tags=["text"], tag="UltraCam",
-            description_name="Fov"
-        )
-        row += 40
-
-        # XYZ to generate patch.
-        self.create_patches()
+        # XYZ create patches, not used anymore though.
+        #create_patches(self)
 
         self.apply_element = self.on_canvas.Photo_Image(
                         image_path="apply.png",
@@ -344,21 +403,37 @@ class Manager:
                         width=int(70*1.5), height=int(48*1.5),
                         )
 
+        self.extract_element = self.on_canvas.Photo_Image(
+                        image_path="extract.png",
+                        width=int(70*1.5), height=int(48*1.5),
+                        )
+        self.extract_element_active = self.on_canvas.Photo_Image(
+                        image_path="extract_active.png",
+                        width=int(70*1.5), height=int(48*1.5),
+                        )
+
         self.on_canvas.image_Button(
             canvas=canvas,
             row=510, cul=25,
             img_1=self.apply_element, img_2=self.apply_element_active,
             command=lambda event: self.submit()
         )
-        if self.os_platform == "Windows":
-            # reverse scale.
-            self.on_canvas.image_Button(
-                canvas=canvas,
-                row=510, cul=25 + int(self.apply_element.width() / sf),
-                img_1=self.launch_element, img_2=self.launch_element_active,
-                command=lambda event: launch_GAME(self)
-            )
 
+        # reverse scale.
+        self.on_canvas.image_Button(
+            canvas=canvas,
+            row=510, cul=25 + int(self.apply_element.width() / sf),
+            img_1=self.launch_element, img_2=self.launch_element_active,
+            command=lambda event: launch_GAME(self)
+        )
+
+        # extract
+        self.on_canvas.image_Button(
+            canvas=canvas,
+            row=510, cul=25 + int(7 + int(self.apply_element.width() / sf) * 2),
+            img_1=self.extract_element, img_2=self.extract_element_active,
+            command=lambda event: self.extract_patches()
+        )
 
         # Create a submit button
         #self.on_canvas.create_button(
@@ -380,109 +455,12 @@ class Manager:
         #    )
 
         # Load Saved User Options.
+        self.toggle_page(0, "main")
         load_user_choices(self, self.config)
         return self.maincanvas
 
-    def update_scaling_settings(self, something=None):
-        if self.DFPS_var.get() == "UltraCam":
-            self.create_patches()
-            for canvas in self.all_canvas:
-                canvas.itemconfig("Legacy", state="hidden")
-                canvas.itemconfig("UltraCam", state="normal")
-                self.fps_var_new.set(self.fps_var.get())
-                if self.fps_var_new.get() not in self.FPS_values_New:
-                    self.fps_var_new.set(self.FPS_values_New[2])
-                self.shadow_resolution_var_new.set(self.shadow_resolution_var.get())
-                if self.shadow_resolution_var.get() not in self.ultracam_shadow_list:
-                    self.shadow_resolution_var_new.set("High x1024")
-                    self.shadow_resolution_var.set("High x1024")
-
-        if self.DFPS_var.get() == "DFPS Legacy":
-            self.create_patches()
-            for canvas in self.all_canvas:
-                canvas.itemconfig("UltraCam", state="hidden")
-                canvas.itemconfig("Legacy", state="normal")
-                self.fps_var.set(self.fps_var_new.get())
-                if self.shadow_resolution_var_new.get() not in self.dfps_shadow_list:
-                    self.shadow_resolution_var.set("High x1024")
-                    self.shadow_resolution_var_new.set("High x1024")
-
-    def create_patches(self):
-        versionvalues = []
-
-        try:
-            for key_var, value in self.selected_options.items():
-                value = value.get()
-                self.old_patches[key_var] = value
-        except AttributeError as e:
-            self.old_patches = {}
-
-        # Delete the patches before making new ones.
-        self.maincanvas.delete("patches")
-
-        row = 120
-        cul_tex = 400
-        cul_sel = 550
-
-        # Make UltraCam Patches First.
-
-        if self.DFPS_var.get() == "UltraCam":
-            UltraCam_Option = "Improve Fog"
-            self.fog_var = self.on_canvas.create_checkbutton(
-                    master=self.window, canvas=self.maincanvas,
-                    text=UltraCam_Option,
-                    variable="Off",
-                    row=row + 40, cul=cul_tex, drop_cul=cul_sel,
-                    tags=["text"], tag="patches",
-                    description_name="Improve Fog"
-            )
-
-            self.selected_options[UltraCam_Option] = self.fog_var
-            try:
-                if self.old_patches.get(UltraCam_Option) == "On" and not self.old_patches == {}:
-                    self.fog_var.set("On")
-            except AttributeError as e:
-                self.old_patches = {}
-            row += 40
-
-        # Create labels and enable/disable options for each entry
-        for version_option_name, version_option_value in self.version_options[0].items():
-
-            # Create label
-            if version_option_name not in ["Source", "nsobid", "offset", "version"]:
-
-                if self.DFPS_var.get() == "UltraCam" and version_option_name in self.ultracam_options.get(
-                        "Skip_Patches"):
-                    continue
-
-                # Create checkbox
-                version_option_var = self.on_canvas.create_checkbutton(
-                    master=self.window, canvas=self.maincanvas,
-                    text=version_option_name,
-                    variable="Off",
-                    row=row + 40, cul=cul_tex, drop_cul=cul_sel,
-                    tags=["text"], tag="patches",
-                    description_name=version_option_name
-                )
-                self.selected_options[version_option_name] = version_option_var
-
-
-                try:
-                    if self.old_patches.get(version_option_name) == "On" and not self.old_patches == {}:
-                        version_option_var.set("On")
-                except AttributeError as e:
-                    self.old_patches = {}
-
-                # Increase +40 space for each patch.
-                row += 40
-
-            if row >= 480:
-                row = 20
-                cul_tex += 180
-                cul_sel += 180
-
     def update_scaling_variable(self, something=None):
-        if self.DFPS_var.get() == "UltraCam":
+        if self.DFPS_var == "UltraCam":
             self.fps_var.set(self.fps_var_new.get())
 
     def create_cheat_canvas(self):
@@ -494,7 +472,7 @@ class Manager:
 
         # Create UI elements.
         self.Cheat_UI_elements(self.cheatcanvas)
-        self.create_tab_buttons(self.cheatcanvas)
+        create_tab_buttons(self, self.cheatcanvas)
 
         # Push every version in combobox
         versionvalues = []
@@ -622,10 +600,55 @@ class Manager:
         loadCheats()
         load_user_choices(self, self.config)
 
+    def select_yuzu_exe(self):
+        # Open a file dialog to browse and select yuzu.exe
+        if self.os_platform == "Windows":
+            yuzu_path = filedialog.askopenfilename(
+                title=f"Please select {self.mode}.exe",
+                filetypes=[("Executable files", "*.exe"), ("All Files", "*.*")]
+            )
+            executable_name = yuzu_path
+            if executable_name.endswith("Ryujinx.exe") or executable_name.endswith("Ryujinx.Ava.exe"):
+                if self.mode == "Yuzu":
+                    self.switchmode("true")
+            if executable_name.endswith("yuzu.exe"):
+                if self.mode == "Ryujinx":
+                    self.switchmode("true")
+            if yuzu_path:
+                # Save the selected yuzu.exe path to a configuration file
+                save_user_choices(self, self.config, yuzu_path)
+                home_directory = os.path.dirname(yuzu_path)
+                fullpath = os.path.dirname(yuzu_path)
+                if any(item in os.listdir(fullpath) for item in ["user", "portable"]):
+                    log.info(
+                        f"Successfully selected {self.mode}.exe! And a portable folder was found at {home_directory}!")
+                    checkpath(self, self.mode)
+                    return yuzu_path
+                else:
+                    log.info(f"Portable folder for {self.mode} not found defaulting to appdata directory!")
+                    checkpath(self, self.mode)
+                    return yuzu_path
+
+                # Update the yuzu.exe path in the current session
+                self.yuzu_path = yuzu_path
+            else:
+                checkpath(self, self.mode)
+                return None
+            # Save the selected yuzu.exe path to a configuration file
+            save_user_choices(self, self.config, yuzu_path)
+        return yuzu_path
+
     def show_main_canvas(self):
         self.on_canvas.is_Ani_Paused = True
         self.cheatcanvas.pack_forget()
         self.maincanvas.pack()
+
+    def toggle_page(self, event, show):
+        self.maincanvas.itemconfig(show, state="normal")
+        log.info(show)
+        for state in self.all_pages:
+            if state is not show:
+                self.maincanvas.itemconfig(state, state="hidden")
 
     def show_cheat_canvas(self):
         self.on_canvas.is_Ani_Paused = False
@@ -654,247 +677,12 @@ class Manager:
         self.create_canvas()
         self.create_cheat_canvas()
         self.cheatcanvas.pack_forget()
-
-    def Load_ImagePath(self):
-        # Create a Gradiant for Yuzu.
-        self.background_YuzuBG = self.on_canvas.Photo_Image(
-            image_path="Yuzu_BG.png",
-            width=1200, height=600,
-        )
-
-        # Create a Gradiant for Ryujinx.
-        self.background_RyuBG = self.on_canvas.Photo_Image(
-            image_path="Ryujinx_BG.png",
-            width=1200, height=600,
-        )
-
-        # UI Elements/Buttons
-        self.master_sword_element = self.on_canvas.Photo_Image(
-            image_path="Master_Sword.png",
-            width=155, height=88,
-        )
-        self.master_sword_element2 = self.on_canvas.Photo_Image(
-            image_path="Master_Sword2.png", mirror=True,
-            width=155, height=88,
-        )
-
-        self.master_sword_element_active = self.on_canvas.Photo_Image(
-            image_path="Master_Sword_active.png",
-            width=155, height=88,
-        )
-
-        self.master_sword_element2_active = self.on_canvas.Photo_Image(
-            image_path="Master_Sword_active2.png", mirror=True,
-            width=155, height=88,
-        )
-
-        self.hylian_element = self.on_canvas.Photo_Image(
-            image_path="Hylian_Shield.png",
-            width=72, height=114,
-        )
-
-        self.hylian_element_active = self.on_canvas.Photo_Image(
-            image_path="Hylian_Shield_Active.png",
-            width=72, height=114,
-        )
-
-        self.background_UI_element = self.on_canvas.Photo_Image(
-            image_path="BG_Left_2.png",
-            width=1200, height=600,
-        )
-
-        self.background_UI_Cheats = self.on_canvas.Photo_Image(
-            image_path="BG_Left_Cheats.png",
-            width=1200, height=600,
-        )
-
-        # Create a transparent black background
-        self.background_UI2 = self.on_canvas.Photo_Image(
-            image_path="BG_Right.png",
-            width=1200, height=600,
-        )
-
-        # Create a Gradiant background.
-        self.background_UI = self.on_canvas.Photo_Image(
-            image_path="BG_Left.png",
-            width=1200, height=600,
-        )
-
-        # Create a transparent black background
-        self.background_UI3 = self.on_canvas.Photo_Image(
-            image_path="BG_Right_UI.png",
-            width=1200, height=600,
-        )
-
-        # Attempt to load images from custom folder.
-        if os.path.exists("custom/bg.jpg"):
-            image_path = "custom/bg.jpg"
-        elif os.path.exists("custom/bg.png"):
-            image_path = "custom/bg.png"
-        else:
-            # Load and set the image as the background
-            image_path ="image.png"
-
-        self.background_image = self.on_canvas.Photo_Image(
-            image_path=image_path,
-            width=1200, height=600,
-            blur=2
-        )
-
-        if os.path.exists("custom/cbg.jpg"):
-            image_path = "custom/cbg.jpg"
-        elif os.path.exists("custom/cbg.png"):
-            image_path = "custom/cbg.png"
-        else:
-            image_path = "image_cheats.png"
-
-        self.blurbackground = self.on_canvas.Photo_Image(
-            image_path=image_path,
-            width=1200, height=600, img_scale=2.0,
-            blur=3
-        )
-
-        # Handle Text Window
-        def fetch_text_from_github(file_url):
-            try:
-                response = requests.get(file_url)
-                if response.status_code == 200:
-                    return response.text
-                else:
-                    log.error("Error: Unable to fetch text from Github")
-            except requests.exceptions.RequestException as e:
-                log.error(f"Error occurred while fetching text: {e}")
-
-            return ""
-        # Information text
-        file_url = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Announcements/Announcement%20Window.txt"
-        self.text_content = fetch_text_from_github(file_url)
-        # Info Element
-
-    def load_UI_elements(self, canvas):
-        # Images and Effects
-        canvas.create_image(0, 0, anchor="nw", image=self.background_image, tags="background")
-        canvas.create_image(0, 0, anchor="nw", image=self.background_YuzuBG, tags="overlay-1")
-        canvas.create_image(0, 0, anchor="nw", image=self.background_UI, tags="overlay")
-        canvas.create_image(0, 0, anchor="nw", image=self.background_UI_element, tags="overlay")
-
-        # Info text BG
-        canvas.create_image(0-scale(20), 0, anchor="nw", image=self.background_UI2, tags="overlay")
-        canvas.create_image(0-scale(20), 0, anchor="nw", image=self.background_UI3, tags="overlay")
-
-        # Create Active Buttons.
-        self.on_canvas.image_Button(
-            canvas=canvas,
-            row=182, cul=794,
-            img_1=self.master_sword_element, img_2=self.master_sword_element_active, effect_folder="effect1",
-            command=lambda event: self.open_browser("Kofi")
-        )
-
-        self.on_canvas.image_Button(
-            canvas=canvas,
-            row=182, cul=1007,
-            img_1=self.master_sword_element2, img_2=self.master_sword_element2_active,
-            command=lambda event: self.open_browser("Github")
-        )
-
-        self.on_canvas.image_Button(
-            canvas=canvas,
-            row=240, cul=978, anchor="c",
-            img_1=self.hylian_element, img_2=self.hylian_element_active,
-            command=lambda event: self.open_browser("Discord")
-        )
-
-        # Information text.
-        #text_widgetoutline2 = canvas.create_text(scale(1001) - scale(20), scale(126) -scale(80), text=f"{self.mode} TOTK Optimizer", tags="information", fill="black", font=biggyfont, anchor="center", justify="center", width=scale(325))
-        #text_widget2 = canvas.create_text(scale(1000)-scale(20), scale(126)-scale(80), text=f"{self.mode} TOTK Optimizer", tags="information", fill="#FBF8F3", font=biggyfont, anchor="center", justify="center", width=scale(325))
-
-        text_widgetoutline1 = canvas.create_text(scale(1001) -scale(20) -scale(10), scale(126) + scale(10), text=self.text_content, fill="black", font=biggyfont, anchor="center", justify="center", width=scale(325))
-        text_widget1 = canvas.create_text(scale(1000) - scale(20) -scale(10), scale(125) +scale(10), text=self.text_content, fill="#FBF8F3", font=biggyfont, anchor="center", justify="center", width=scale(325))
+        load_benchmark(self)
 
     def Cheat_UI_elements(self, canvas):
         self.cheatbg = canvas.create_image(0, -scale(300), anchor="nw", image=self.blurbackground, tags="background")
         canvas.create_image(0, 0, anchor="nw", image=self.background_YuzuBG, tags="overlay-1")
         canvas.create_image(0, 0, anchor="nw", image=self.background_UI_Cheats, tags="overlay")
-
-    def create_tab_buttons(self, canvas):
-
-        if not canvas == self.maincanvas:
-            # Kofi Button
-            self.on_canvas.create_button(
-                master=self.window, canvas=canvas,
-                btn_text="Donate", textvariable=self.switch_text,
-                style="success",
-                row=1130, cul=520, width=60, padding=10, pos="center",
-                tags=["Button"],
-                description_name="Kofi",
-                command=lambda: self.open_browser("Kofi")
-            )
-            # Github Button
-            self.on_canvas.create_button(
-                master=self.window, canvas=canvas,
-                btn_text="Github", textvariable=self.switch_text,
-                style="success",
-                row=1066, cul=520, width=60, padding=10, pos="center",
-                tags=["Button"],
-                description_name="Github",
-                command=lambda: self.open_browser("Github")
-            )
-
-        # Create tabs
-
-        # Switch mode between Ryujinx and Yuzu
-        self.on_canvas.create_button(
-            master=self.window, canvas=canvas,
-            btn_text="Switch", textvariable=self.switch_text,
-            style="Danger",
-            row=11, cul=138, width=12,
-            tags=["Button"],
-            description_name="Switch",
-            command=self.switchmode
-        )
-        # Make the button active for current canvas.
-        button1style = "default"
-        button2style = "default"
-        button3style = "default"
-        active_button_style = "secondary"
-        try:
-            if canvas == self.maincanvas:
-                button1style = active_button_style
-            if canvas == self.cheatcanvas:
-                button2style = active_button_style
-        except AttributeError as e:
-            e = "n"
-
-        # 1 - Main
-        self.on_canvas.create_button(
-            master=self.window, canvas=canvas,
-            btn_text="Main",
-            style=button1style,
-            row=11, cul=26, width=5,
-            tags=["Button"],
-            description_name="Main",
-            command=self.show_main_canvas
-        )
-        # 2 - Cheats
-        self.on_canvas.create_button(
-            master=self.window, canvas=canvas,
-            btn_text="Cheats",
-            style=button2style,
-            row=11, cul=77, width=6,
-            tags=["Button"],
-            description_name="Cheats",
-            command=self.show_cheat_canvas
-        )
-        # 3 - Settings
-        self.on_canvas.create_button(
-            master=self.window, canvas=canvas,
-            btn_text="Settings",
-            style=button3style,
-            row=11, cul=257, width=8,
-            tags=["Button"],
-            description_name="Settings",
-            command=lambda: self.setting.settingswindow(self.constyle, self.all_canvas)
-        )
 
     def switchmode(self, command="true"):
         if command == "true":
@@ -929,98 +717,18 @@ class Manager:
         elif command == "Mode":
             return self.mode
 
-    def apply_selected_preset(self, event=None):
-        try:
-            selected_preset = self.selected_preset.get()
-        except AttributeError as e:
-            selected_preset = "Saved"
-            log.error(f"Failed to apply selected preset: {e}")
-
-        if selected_preset == "Saved":
-            load_user_choices(self, self.config)
-
-        elif selected_preset in self.presets:
-            preset_to_apply = self.presets[selected_preset]
-            for key, value in preset_to_apply.items():
-                if value.lower() in ["enable", "enabled", "on"]:
-                    preset_to_apply[key] = "On"
-                elif value.lower() in ["disable", "disabled", "off"]:
-                    preset_to_apply[key] = "Off"
-            # Apply the selected preset from the online presets
-            self.apply_preset(self.presets[selected_preset])
     def fetch_var(self, var, dict, option):
         if not dict.get(option, "") == "":
             var.set(dict.get(option, ""))
         return
 
-    def apply_preset(self, preset_options):
-        self.fetch_var(self.resolution_var, preset_options, "Resolution")
-        self.fetch_var(self.fps_var, preset_options, "FPS")
-        self.fetch_var(self.ui_var, preset_options, "UI")
-        self.fetch_var(self.aspect_ratio_var, preset_options, "Aspect Ratio")
-        self.fetch_var(self.fp_var, preset_options, "First Person")
-        self.fetch_var(self.selected_settings, preset_options, "Settings")
-
-        skip_keys = ["Resolution", "FPS", "ShadowResolution", "CameraQuality", "UI"]
-
-        for option_key, option_value in preset_options.items():
-            # Check if the option exists in the self.selected_options dictionary and not in the skip_keys
-            if option_key in self.selected_options and option_key not in skip_keys:
-                self.selected_options[option_key].set(option_value)
-            else:
-                continue
-
-    # Select Yuzu Dir
-    def select_yuzu_exe(self):
-        # Open a file dialog to browse and select yuzu.exe
-        if self.os_platform == "Windows":
-            yuzu_path = filedialog.askopenfilename(
-                title=f"Please select {self.mode}.exe",
-                filetypes=[("Executable files", "*.exe"), ("All Files", "*.*")]
-            )
-            executable_name = yuzu_path
-            if executable_name.endswith("Ryujinx.exe") or executable_name.endswith("Ryujinx.Ava.exe"):
-                if self.mode == "Yuzu":
-                    self.switchmode("true")
-            if executable_name.endswith("yuzu.exe"):
-                if self.mode == "Ryujinx":
-                    self.switchmode("true")
-            if yuzu_path:
-                # Save the selected yuzu.exe path to a configuration file
-                save_user_choices(self, self.config, yuzu_path)
-                home_directory = os.path.dirname(yuzu_path)
-                fullpath = os.path.dirname(yuzu_path)
-                if any(item in os.listdir(fullpath) for item in ["user", "portable"]):
-                    log.info(f"Successfully selected {self.mode}.exe! And a portable folder was found at {home_directory}!")
-                    checkpath(self, self.mode)
-                    return yuzu_path
-                else:
-                    log.info(f"Portable folder for {self.mode} not found defaulting to appdata directory!")
-                    checkpath(self, self.mode)
-                    return yuzu_path
-
-                # Update the yuzu.exe path in the current session
-                self.yuzu_path = yuzu_path
-            else:
-                checkpath(self, self.mode)
-                return None
-            # Save the selected yuzu.exe path to a configuration file
-            save_user_choices(self, self.config, yuzu_path)
-        return yuzu_path
-    # Load Yuzu Dir
-    def load_yuzu_path(self, config_file):
-        if self.mode == "Yuzu":
-            config = configparser.ConfigParser()
-            config.read(config_file, encoding="utf-8")
-            yuzu_path = config.get('Paths', 'yuzupath', fallback="Appdata")
-            return yuzu_path
-        if self.mode == "Ryujinx":
-            config = configparser.ConfigParser()
-            config.read(config_file, encoding="utf-8")
-            ryujinx_path = config.get('Paths', 'ryujinxpath', fallback="Appdata")
-            return ryujinx_path
-
     # Submit the results, run download manager. Open a Loading screen.
+
+    def extract_patches(self):
+        self.is_extracting = True
+        checkpath(self, self.mode)
+        self.submit()
+
     def submit(self, mode=None):
         self.add_list = []
         self.remove_list = []
@@ -1029,15 +737,11 @@ class Manager:
         if self.mode == "Yuzu":
             qtconfig = get_config_parser()
             qtconfig.optionxform = lambda option: option
-            qtconfig.read(self.configdir)
+            try:
+                qtconfig.read(self.configdir)
+            except Exception as e: log.warning(f"Couldn't' find QT-config {e}")
         else:
             qtconfig = None
-
-        def update_values():
-            if self.DFPS_var.get() == "UltraCam":
-                log.info("Updating values for UltraCam")
-                self.fps_var.set(self.fps_var_new.get())
-                self.shadow_resolution_var.set(self.shadow_resolution_var_new.get())
 
         def mod_list(arg, mod):
             try:
@@ -1069,7 +773,10 @@ class Manager:
                 return
             if mode== None:
                 log.info("Starting TASKs for Normal Patch..")
-                tasklist = [Exe_Running(), update_values(), DownloadFP(), DownloadUI(), DownloadDFPS(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods()]
+                def stop_extracting():
+                    self.is_extracting = False
+
+                tasklist = [Exe_Running(), DownloadFP(), DownloadUI(), DownloadBEYOND(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods(), stop_extracting()]
                 if get_setting("auto-backup") in ["On"]:
                     tasklist.append(backup(self))
                 com = 100 // len(tasklist)
@@ -1160,126 +867,116 @@ class Manager:
 
             elif mode == None:
                 log.info("Starting Mod Creator.")
+                log.info(f"Generating mod at {self.load_dir}")
+                os.makedirs(self.load_dir, exist_ok=True)
+
                 # Update progress bar
-                self.progress_var.set("Creating Mod ManagerPatch.")
-                resolution = self.resolution_var.get()
-                fps = self.fps_var.get()
-                shadow_resolution = self.shadow_resolution_var.get()
+                self.progress_var.set("TOTK Optimizer Patch.")
 
                 # Ensures that the patches are active and ensure that old versions of the mod folder is disabled.
-                self.remove_list.extend(["Mod Manager Patch"])
+                self.remove_list.append("!!!TOTK Optimizer")
                 self.add_list.append("Visual Improvements")
-                if self.DFPS_var.get() == "DFPS Legacy":
-                    # Determine the path to the INI file in the user's home directory
-                    ini_file_directory = os.path.join(self.load_dir, "Mod Manager Patch", "romfs", "dfps")
-                    os.makedirs(ini_file_directory, exist_ok=True)
-                    ini_file_path = os.path.join(ini_file_directory, "default.ini")
+                self.add_list.append("Mod Manager Patch")
 
-                    # Remove the previous default.ini file if it exists - DFPS settings.
-                    if os.path.exists(ini_file_path):
-                        os.remove(ini_file_path)
+                ini_file_directory = os.path.join(self.load_dir, "!!!TOTK Optimizer", "romfs", "UltraCam")
+                os.makedirs(ini_file_directory, exist_ok=True)
+                ini_file_path = os.path.join(ini_file_directory, "maxlastbreath.ini")
 
-                    # Save the selected options to the INI file
-                    config = configparser.ConfigParser()
-                    config.optionxform = lambda option: option
+                config = configparser.ConfigParser()
+                config.optionxform = lambda option: option
+                if os.path.exists(ini_file_path):
+                    config.read(ini_file_path)
 
-                    # Add the selected resolution, FPS, shadow resolution, and camera quality
-                    Resindex = self.dfps_options.get("ResolutionNames").index(resolution)
-                    ShadowIndex = self.dfps_options.get("ShadowResolutionNames").index(shadow_resolution)
+                ## TOTK UC BEYOND AUTO PATCHER
+                patch_info = self.ultracam_beyond.get("Keys", [""])
+                for patch in self.BEYOND_Patches:
+                    if patch.lower() in ["resolution", "aspect ratio"]:
+                        continue
 
-                    config['Graphics'] = {
-                        'ResolutionWidth': self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[0],
-                        'ResolutionHeight': self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1],
-                        'ResolutionShadows': self.dfps_options.get("ShadowResolutionValues", [""])[ShadowIndex]
-                    }
-                    config['dFPS'] = {'MaxFramerate': fps}
+                    patch_dict = patch_info[patch]
+                    patch_class = patch_dict["Class"]
+                    patch_Config = patch_dict["Config_Class"]
+                    patch_Default = patch_dict["Default"]
 
-                    selected_options = {}
+                    # Ensure we have the section required.
+                    if not config.has_section(patch_Config[0]):
+                        config[patch_Config[0]] = {}
 
-                    for option_name, option_var in self.selected_options.items():
-                        selected_options[option_name] = option_var.get()
-
-                    # Legacy DFPS config file.
-                    with open(ini_file_path, 'w', encoding="utf-8") as configfile:
-                        config.write(configfile)
-
-                    if self.mode == "Yuzu":
-                        # 1 resolution scale
-                        write_yuzu_config(self.TOTKconfig, "Renderer", "resolution_setup", "2")
-                        height = self.dfps_options.get("ResolutionValues", [""])[Resindex].split("x")[1]
-                        layout = 1
-                        if int(height) <= 1080:
-                            layout = 0
-                        if int(height) <= 2160 and int(height) > 1080:
-                            layout = 1
-                        if int(height) > 2160:
-                            layout = 2
-
-                        # Extended memory layout for DFPS 1.5.5
-                        write_yuzu_config(self.TOTKconfig, "Core", "memory_layout_mode", f"{layout}")
-
-                    if self.mode == "Ryujinx":
-                        # needs to be fixed, problematic.
-                        write_ryujinx_config(self.ryujinx_config, "res_scale", 1)
-
-                else:
-                    # Resolution scaling for MAX DFPS++
-                    Resindex = self.ultracam_options.get("ResolutionNames").index(resolution)
-                    current_res = self.ultracam_options.get("ResolutionValues", [""])[Resindex]
-                    ultra_res = self.ultracam_options.get("UltraCamValues", [""])[Resindex]
-                    # Yuzu settings
-                    if self.mode == "Yuzu":
-                        log.info(f"Applying {resolution} in Yuzu.")
-                        # custom resolution scale
-                        write_yuzu_config(self.TOTKconfig, "Renderer", "resolution_setup", current_res)
-                        write_yuzu_config(self.TOTKconfig, "Core", "memory_layout_mode", "0")
-                        if resolution == "1440p QHD":
-                            write_yuzu_config(self.TOTKconfig, "System", "use_docked_mode", "0")
+                    # In case we have an auto patch.
+                    if self.BEYOND_Patches[patch] == "auto" or self.BEYOND_Patches[patch].get() == "auto":
+                        if patch_class.lower() == "dropdown":
+                            patch_Names = patch_dict["Name_Values"]
+                            config[patch_Config[0]][patch_Config[1]] = str(patch_Names[patch_Default])
                         else:
-                            write_yuzu_config(self.TOTKconfig, "System", "use_docked_mode", "1")
+                            config[patch_Config[0]][patch_Config[1]] = str(patch_Default)
+                        continue
 
+                    if patch_class.lower() == "bool" or patch_class.lower() == "scale":
+                        config[patch_Config[0]][patch_Config[1]] = self.BEYOND_Patches[patch].get()
 
-                    # Ryujinx setting.
-                    if self.mode == "Ryujinx":
-                        try:
-                            if resolution == "1440p QHD":
-                                write_ryujinx_config(self.ryujinx_config, "docked_mode", "false")
-                            else:
-                                write_ryujinx_config(self.ryujinx_config, "docked_mode", "true")
-                            write_ryujinx_config(self.ryujinx_config, "res_scale", int(current_res))
-                        except Exception as e:
-                            log.error("Ryujinx config_file not found, operation will continue without resolution cahnges.")
+                    if patch_class.lower() == "dropdown":
+                        # exclusive to dropdown.
+                        patch_Names = patch_dict["Name_Values"]
+                        patch_Values = patch_dict["Values"]
+                        index = patch_Names.index(self.BEYOND_Patches[patch].get())
+                        config[patch_Config[0]][patch_Config[1]] = str(patch_Values[index])
 
-                    # set FPS for Max DFPS++
-                    ini_file_directory = os.path.join(self.load_dir, "Mod Manager Patch", "romfs", "UltraCam")
-                    os.makedirs(ini_file_directory, exist_ok=True)
-                    ini_file_path = os.path.join(ini_file_directory, "maxlastbreath.ini")
+                resolution = self.BEYOND_Patches["resolution"].get()
+                shadows = int(self.BEYOND_Patches["shadow resolution"].get().split("x")[0])
 
-                    # Remove the previous default.ini file if it exists - DFPS settings.
-                    if os.path.exists(ini_file_path):
-                        os.remove(ini_file_path)
+                ARR = self.BEYOND_Patches["aspect ratio"].get().split("x")
+                New_Resolution = patch_info["resolution"]["Values"][patch_info["resolution"]["Name_Values"].index(resolution)].split("x")
+                New_Resolution = convert_resolution(int(New_Resolution[0]), int(New_Resolution[1]), int(ARR[0]), int(ARR[1]))
 
-                    # Save the selected options to the INI file
-                    config = configparser.ConfigParser()
-                    config.optionxform = lambda option: option
-                    shadow_resolution = self.shadow_resolution_var_new.get()
+                scale_1080 = 1920*1080
+                scale_shadows = round(shadows / 1024)
+                New_Resolution_scale = int(New_Resolution[0]) * int(New_Resolution[1])
+                new_scale = New_Resolution_scale / scale_1080
 
-                    ShadowIndex = self.ultracam_options.get("ShadowResolutionNames").index(shadow_resolution)
-                    shadow_value = self.ultracam_options.get("ShadowResolutionValues")[ShadowIndex]
+                if (scale_shadows > new_scale):
+                    new_scale = scale_shadows
+                    log.info(f"scale:{new_scale}")
 
-                    config['DFPS'] = {'MaxFramerate': fps}
-                    config["Features"] = {
-                                        "Fov": self.fov_var.get(),
-                                        "ResolutionScale": ultra_res,
-                                        "ShadowResolution": shadow_value,
-                                        "DisableFog": self.fog_var.get(),
-                                        }
-                    # Max DFPS++ config file.
-                    with open(ini_file_path, 'w', encoding="utf-8") as configfile:
-                        config.write(configfile)
+                layout = 0
+                if(new_scale < 0):
+                    layout = 0
+                if(new_scale > 2):
+                    layout = 1
+                if(new_scale > 6):
+                    layout = 2
+
+                if self.mode == "Yuzu":
+                    write_yuzu_config(self, self.TOTKconfig, self.title_id, "Renderer", "resolution_setup", "2")
+                    write_yuzu_config(self, self.TOTKconfig, self.title_id,"Core", "memory_layout_mode", f"{layout}")
+
+                    if layout > 0:
+                        write_yuzu_config(self, self.TOTKconfig, self.title_id,"System", "use_docked_mode", "true")
+                        write_yuzu_config(self, self.TOTKconfig, self.title_id,"Renderer", "vram_usage_mode", "1")
+                    else:
+                        write_yuzu_config(self, self.TOTKconfig, self.title_id,"Renderer", "vram_usage_mode", "0")
+
+                if self.mode == "Ryujinx":
+                    write_ryujinx_config(self, self.ryujinx_config, "res_scale", 1)
+                    if (layout > 0):
+                        write_ryujinx_config(self, self.ryujinx_config, "expand_ram", True)
+                    else:
+                        write_ryujinx_config(self, self.ryujinx_config, "expand_ram", False)
+
+                config["Resolution"]["Width"] = str(New_Resolution[0])
+                config["Resolution"]["Height"] = str(New_Resolution[1])
+
+                ## WRITE IN CONFIG FILE FOR UC 2.0
+                with open(ini_file_path, 'w+', encoding="utf-8") as configfile:
+                    config.write(configfile)
+
 
             # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.
             try:
+                # This logic is disabled with UltraCam Beyond.
+                if self.DFPS_var == "BEYOND":
+                    log.info("FINISHED APPLYING PATCHES")
+                    return
+
                 for version_option in self.version_options:
                     version = version_option.get("version", "")
                     mod_path = os.path.join(self.load_dir, "Mod Manager Patch", "exefs")
@@ -1294,8 +991,7 @@ class Manager:
                         file.write(version_option.get("nsobid", "") + "\n")
                         file.write(version_option.get("offset", "") + "\n")
                         for key, value in version_option.items():
-
-                            if self.DFPS_var.get() == "UltraCam" and key in self.ultracam_options.get(
+                            if self.DFPS_var == "UltraCam" and key in self.ultracam_options.get(
                                     "Skip_Patches"):
                                 continue
 
@@ -1319,89 +1015,60 @@ class Manager:
                 log.error(f"FAILED TO CREATE MOD PATCH: {e}")
 
         def UpdateSettings():
-            if self.mode == "Ryujinx":
-                print("Ryujinx Doesn't support custom settings as it, doesn't require them.")
+            log.info("Checking for Settings...")
+            self.progress_var.set("Creating Settings..")
+            if self.selected_settings.get() == "No Change":
+                self.progress_var.set("No Settings Required..")
                 return
-            Setting_folder = None
-            SettingGithubFolder = None
-            Setting_selection = self.selected_settings.get()
-            if Setting_selection == "No Change":
-                log.info("Settings selection is None. Returning!")
-                return
-            elif Setting_selection == "Steamdeck":
-                     Setting_folder = "Steamdeck"
-                     SettingGithubFolder = "scripts/settings/Applied%20Settings/Steamdeck/0100F2C0115B6000.ini"
-                     log.info("Installing steamdeck Yuzu preset")
-            elif Setting_selection == "AMD":
-                     Setting_folder = "AMD"
-                     SettingGithubFolder = 'scripts/settings/Applied%20Settings/AMD/0100F2C0115B6000.ini'
-                     log.info("Installing AMD Yuzu Preset")
-            elif Setting_selection == "Nvidia":
-                     Setting_folder = "Nvidia"
-                     SettingGithubFolder = 'scripts/settings/Applied%20Settings/Nvidia/0100F2C0115B6000.ini'
-                     log.info("Installing Nvidia Yuzu Preset")
-            elif Setting_selection == "High End Nvidia":
-                     Setting_folder = "High End Nvidia"
-                     SettingGithubFolder = 'scripts/settings/Applied%20Settings/High%20End%20Nvidia/0100F2C0115B6000.ini'
-                     log.info("Installing High End Nvidia Yuzu Preset")
+            if self.mode == "Yuzu":
+                setting_preset = self.yuzu_settings[self.selected_settings.get()]
+                for section in setting_preset:
+                    for option in setting_preset[section]:
+                        write_yuzu_config(self, self.TOTKconfig, self.title_id, section, option, str(setting_preset[section][option]))
+            self.progress_var.set("Finished Creating Settings..")
 
-            if Setting_selection is not None:
-                    self.progress_var.set(f"Downloading and applying settings for {Setting_selection}.")
-                    Setting_directory = self.TOTKconfig
-                    raw_url = f'{repo_url_raw}/raw/main/{SettingGithubFolder}'
-                    response = requests.get(raw_url)
-                    if response.status_code == 200:
-                        try:
-                            with open(Setting_directory, "wb") as file:
-                                file.write(response.content)
-                        except Exception as e:
-                            log.error(f"FAILED TO CREATE SETTINGS FILE: {e}")
-                        log.info("Successfully Installed TOTK Yuzu preset settings!")
-                    else:
-                        log.error(f"Failed to download file from {raw_url}. Status code: {response.status_code}")
-                        return
-            else:
-                log.warning("Selected option has no associated setting folder.")
-
-        def DownloadDFPS():
-            DFPS_ver = self.DFPS_var.get()
-            link = None
-            if DFPS_ver == "DFPS Legacy":
-                self.remove_list.append("DFPS")
-                self.add_list.append("Max DFPS++")
+        def DownloadBEYOND():
+            try:
                 self.add_list.append("UltraCam")
-
-                link = DFPS_dict.get("Latest")
-            if DFPS_ver == "UltraCam":
-                self.remove_list.append("UltraCam")
                 self.add_list.append("Max DFPS++")
                 self.add_list.append("DFPS")
-                link = New_DFPS_Download
+                link = New_UCBeyond_Download
 
-            Mod_directory = os.path.join(self.load_dir)
-            if link is None:
-                log.critical("Couldn't find a link to DFPS/UltraCam")
-                return
-            set_setting(args="dfps", value=DFPS_ver)
+                Mod_directory = os.path.join(self.load_dir, "!!!TOTK Optimizer")
+                if link is None:
+                    log.critical("Couldn't find a link to DFPS/UltraCam")
+                    return
+                set_setting(args="dfps", value="UltraCam")
 
-            self.progress_var.set(f"Downloading DFPS: {DFPS_ver}")
-            log.info(f"Downloading DFPS: {DFPS_ver}")
-            os.makedirs(Mod_directory, exist_ok=True)
-            download_unzip(link, Mod_directory)
-            log.info(f"Downloaded DFPS: {DFPS_ver}")
+                # Apply UltraCam from local folder.
+                if os.path.exists("UltraCam/exefs"):
+                    log.info("Found a local UltraCam Folder. COPYING to !!!TOTK Optimizer.")
+                    if os.path.exists(os.path.join(Mod_directory, "exefs")):
+                        shutil.rmtree(os.path.join(Mod_directory, "exefs"))
+                    shutil.copytree(os.path.join("UltraCam/exefs"), os.path.join(Mod_directory, "exefs"))
+                    log.info("Applied New UltraCam.")
+                    return
+
+                self.progress_var.set(f"Downloading UltraCam BEYOND")
+                log.info(f"Downloading: UltraCam")
+                os.makedirs(Mod_directory, exist_ok=True)
+                download_unzip(link, Mod_directory)
+                log.info(f"Downloaded: UltraCam")
+            except Exception as e:
+                log.warning(f"FAILED TO DOWNLOAD ULTRACAM BEYOND! {e}")
 
         def DownloadUI():
+            selected_ui = "NONE"
             log.info(f"starting the search for UI folder link.")
             new_list = []
             new_list.extend(UI_list)
             for item in AR_dict:
                 new_list.append(item)
 
-            if any(item in self.aspect_ratio_var.get().split(" ") for item in ["16-9", "16x9"]):
+            if self.BEYOND_Patches["aspect ratio"].get() in ["16-9", "16x9"]:
                 log.info("Selected default Aspect Ratio.")
                 if self.ui_var.get().lower() in ["none", "switch"]:
                     self.add_list.extend(new_list)
-                    return
                 new_folder = self.ui_var.get()
                 link = UI_dict.get(new_folder)
             else:
@@ -1411,18 +1078,14 @@ class Manager:
                     "STEAMDECK": ["steamdeck", "deck"],
                     "XBOX": ["xbox", "xboxone"],
                 }
-
-                string_list = self.ui_var.get().lower().split(" ")
-
+                string = self.ui_var.get().lower().split(" ")[0]
+                log.info(string)
                 for ui, tags in UIs.items():
-                    if any(tag in string_list for tag in tags):
+                    if string in tags:
                         selected_ui = f" {ui} UI"
-                        break
-                    else:
-                        selected_ui = ""
 
                 # search
-                new_folder = f"{self.aspect_ratio_var.get()}{selected_ui}"
+                new_folder = f"Aspect Ratio {self.BEYOND_Patches['aspect ratio'].get().replace('x', '-')}{selected_ui}"
                 new_list.extend(UI_list)
                 # fetch
                 link = AR_dict.get(new_folder)
@@ -1449,21 +1112,19 @@ class Manager:
 
         def DownloadFP():
             selected_fp_mod = self.fp_var.get()
-            self.add_list.extend(FP_list)
-            mod_list("a", selected_fp_mod)
-            mod_list("r", selected_fp_mod)
-            link = FP_dict.get(selected_fp_mod)
-            Mod_directory = os.path.join(self.load_dir)
-            full_dir = os.path.join(Mod_directory, selected_fp_mod)
-            if link is None:
-                return
-            if os.path.exists(full_dir):
-                return
-            self.progress_var.set(f"Downloading: {selected_fp_mod}\n(May take some time)")
-            log.info(f"Downloading: {selected_fp_mod}")
-            os.makedirs(Mod_directory, exist_ok=True)
-            download_unzip(link, Mod_directory)
-            log.info(f"Downloaded: {selected_fp_mod}")
+
+            Mod_directory = os.path.join(self.load_dir, "!!!TOTK Optimizer")
+            if selected_fp_mod.lower() == "on":
+                link = FP_Mod
+                self.progress_var.set(f"Downloading: {selected_fp_mod}\n(May take some time)")
+                log.info(f"Downloading: {selected_fp_mod}")
+                os.makedirs(Mod_directory, exist_ok=True)
+                download_unzip(link, Mod_directory)
+                log.info(f"Downloaded: {selected_fp_mod}")
+
+            fp_dir = os.path.join(Mod_directory, "romfs", "Pack", "Actor", "PlayerCamera.pack.zs")
+            if selected_fp_mod.lower() == "off" and os.path.exists(fp_dir):
+                os.remove(fp_dir)
 
         def Exe_Running():
             is_Program_Opened = is_process_running(self.mode + ".exe")
@@ -1488,14 +1149,13 @@ class Manager:
                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, item, action="add")
                 for item in self.remove_list:
                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, item, action="remove")
-            if self.mode == "Ryujinx" or platform.system() == "Linux":
+            if self.mode == "Ryujinx" or platform.system() == "Linux" and not self.is_extracting:
                 for item in self.add_list:
                     item_dir = os.path.join(self.load_dir, item)
                     if os.path.exists(item_dir):
                         shutil.rmtree(item_dir)
             self.add_list.clear()
             self.remove_list.clear()
-
 
         # Execute tasks and make a Progress Window.
         progress_window = Toplevel(self.window)

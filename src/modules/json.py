@@ -9,7 +9,8 @@ import logging
 from packaging.version import parse
 from modules.download import get_zip_list_and_dict
 from modules.logger import *
-localconfig = "Manager_Config.ini"
+
+localconfig = "TOTKOptimizer.ini"
 ask_again = "Yes"
 def load_json(name, url):
     global ask_again
@@ -45,12 +46,12 @@ def load_json(name, url):
     except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
         log.error(f"Error occurred while fetching or parsing {name}: {e}")
         if os.path.exists(json_options_file_path):
-            with open(json_options_file_path, "r") as file:
+            with open(json_options_file_path, "r", encoding="utf-8") as file:
                 json_options = json.load(file)
             # Fetch stored json data.
         else:
             json_options_file_path = fetch_local_json(name)
-            with open(json_options_file_path, "r") as file:
+            with open(json_options_file_path, "r", encoding="utf-8") as file:
                 json_options = json.load(file)
 
     return json_options

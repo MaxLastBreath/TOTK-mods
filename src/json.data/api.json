@@ -36,12 +36,14 @@
         "Off",
         "First Person FOV 110",
         "First Person FOV 70",
-        "First Person FOV 90"
+        "First Person FOV 90",
+        "First Person"
     ],
     "FP_dict": {
         "First Person FOV 110": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/FP%20Mods/First%20Person%20FOV%20110.zip",
         "First Person FOV 70": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/FP%20Mods/First%20Person%20FOV%2070.zip",
-        "First Person FOV 90": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/FP%20Mods/First%20Person%20FOV%2090.zip"
+        "First Person FOV 90": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/FP%20Mods/First%20Person%20FOV%2090.zip",
+        "First Person": "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/Mods/FP%20Mods/First%20Person.zip"
     },
     "DFPS_list": [
         "Latest",

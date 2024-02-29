@@ -2,6 +2,58 @@ from modules.checkpath import checkpath
 from configuration.settings import *
 import os, json, uuid
 
+def apply_preset(self, preset_options):
+    self.fetch_var(self.ui_var, preset_options, "UI")
+    self.fetch_var(self.fp_var, preset_options, "First Person")
+    self.fetch_var(self.selected_settings, preset_options, "Settings")
+    patch_info = self.ultracam_beyond.get("Keys", [""])
+
+    for option_key, option_value in preset_options.items():
+        if option_key in self.selected_options:
+            self.selected_options[option_key].set(option_value)
+        else:
+            continue
+
+    selected_preset = self.selected_preset.get()
+
+    if selected_preset.lower() == "default":
+        for option_key in self.BEYOND_Patches:
+            patch_dict = patch_info[option_key.lower()]
+            patch_class = patch_dict["Class"]
+            patch_default = patch_dict["Default"]
+
+            if patch_class == "dropdown":
+                patch_names = patch_dict["Name_Values"]
+                self.BEYOND_Patches[option_key.lower()].set(patch_names[patch_default])
+            elif patch_class == "scale":
+                self.maincanvas.itemconfig(patch_dict["Name"], text=patch_default)
+                self.BEYOND_Patches[option_key.lower()].set(patch_default)
+            else:
+                if patch_class == "bool":
+                    if patch_default is True: patch_default = "On"
+                    if patch_default is False: patch_default = "Off"
+                self.BEYOND_Patches[option_key.lower()].set(patch_default)
+
+    for option_key, option_value in preset_options.items():
+        if option_key.lower() in self.BEYOND_Patches:
+            patch_dict = patch_info[option_key.lower()]
+            patch_class = patch_dict["Class"]
+            patch_default = patch_dict["Default"]
+
+            if patch_class == "dropdown":
+                patch_Names = patch_dict["Name_Values"]
+                self.BEYOND_Patches[option_key.lower()].set(patch_Names[int(option_value)])
+            elif patch_class == "scale":
+                self.maincanvas.itemconfig(patch_dict["Name"], text=option_value)
+                self.BEYOND_Patches[option_key.lower()].set(option_value)
+            else:
+                if patch_class == "bool":
+                    if option_value is True: option_value = "On"
+                    if option_value is False: option_value = "Off"
+                self.BEYOND_Patches[option_key.lower()].set(option_value)
+        else:
+            continue
+
 def save_user_choices(self, config_file, yuzu_path=None, mode=None):
     log.info(f"Saving user choices in {localconfig}")
     config = configparser.ConfigParser()
@@ -12,23 +64,17 @@ def save_user_choices(self, config_file, yuzu_path=None, mode=None):
         config["Cheats"] = {}
         for option_name, option_var in self.selected_cheats.items():
             config['Cheats'][option_name] = option_var.get()
-        with open(config_file, 'w') as file:
+        with open(config_file, 'w', encoding="utf-8") as file:
             config["Manager"] = {}
             config["Manager"]["Cheat_Version"] = self.cheat_version.get()
             config.write(file)
         return
 
-    # Save the selected options
+    # This is only required for the UI and FP mods.
     if not config.has_section("Options"):
         config["Options"] = {}
-    config['Options']['DFPS Version'] = self.DFPS_var.get()
-    config['Options']['Resolution'] = self.resolution_var.get()
-    config['Options']['Aspect Ratio'] = self.aspect_ratio_var.get()
-    config['Options']['FPS'] = self.fps_var.get()
-    config['Options']['ShadowResolution'] = self.shadow_resolution_var.get()
     config['Options']['UI'] = self.ui_var.get()
     config['Options']['First Person'] = self.fp_var.get()
-    config['Options']['Fov'] = self.fov_var.get()
 
     # Save the enable/disable choices
     for option_name, option_var in self.selected_options.items():
@@ -46,6 +92,30 @@ def save_user_choices(self, config_file, yuzu_path=None, mode=None):
 
     # Save the manager selected mode I.E Ryujinx/Yuzu
     config["Mode"] = {"ManagerMode": self.mode}
+
+    if not config.has_section("Beyond"):
+        config["Beyond"] = {}
+
+    # UltraCam Beyond new patches.
+    patch_info = self.ultracam_beyond.get("Keys", [""])
+    for patch in self.BEYOND_Patches:
+        patch_dict = patch_info[patch]
+        patch_class = patch_dict["Class"]
+
+        if self.BEYOND_Patches[patch] == "auto":
+            config["Beyond"][patch] = str(patch_dict["Default"])
+            continue
+        elif self.BEYOND_Patches[patch].get() == "auto":
+            config["Beyond"][patch] = str(patch_dict["Default"])
+            continue
+
+        if patch_class.lower() == "dropdown":
+            patch_Names = patch_dict["Name_Values"]
+            index = patch_Names.index(self.BEYOND_Patches[patch].get())
+            config["Beyond"][patch] = str(index)
+            continue
+        config["Beyond"][patch] = self.BEYOND_Patches[patch].get()
+
     log.info("User choices saved in Memory,"
              "Attempting to write into file.")
     # Write the updated configuration back to the file
@@ -53,13 +123,11 @@ def save_user_choices(self, config_file, yuzu_path=None, mode=None):
         config.write(file)
     log.info("Successfully written into log file")
 
-
 def load_user_choices(self, config_file, mode=None):
     config = configparser.ConfigParser()
     config.read(config_file, encoding="utf-8")
-
     if mode == "Cheats":
-        self.cheat_version.set(config.get("Manager", "Cheat_Version", fallback="Version - 1.2.0"))
+        self.cheat_version.set(config.get("Manager", "Cheat_Version", fallback="Version - 1.2.1"))
         try:
             for option_name, option_var in self.selected_cheats.items():
                 option_value = config.get('Cheats', option_name, fallback="Off")
@@ -69,24 +137,40 @@ def load_user_choices(self, config_file, mode=None):
             handle = e
         return
 
-    # Load the selected options
-    if config.get('Options', 'DFPS Version', fallback="UltraCam") not in ["UltraCam", "DFPS Legacy"]:
-        self.DFPS_var.set("UltraCam")
-    else:
-        self.DFPS_var.set(config.get('Options', 'DFPS Version', fallback="UltraCam"))
-
-    self.cheat_version.set(config.get("Manager", "Cheat_Version", fallback="Version - 1.2.1"))
-    self.resolution_var.set(config.get('Options', 'Resolution', fallback=self.dfps_options.get("ResolutionNames", [""])[2]))
-    self.aspect_ratio_var.set(config.get('Options', 'Aspect Ratio', fallback=AR_list[0]))
-    self.fps_var.set(config.get('Options', 'FPS', fallback=str(self.dfps_options.get("FPS", [])[2])))
-    self.fps_var_new.set(config.get('Options', 'FPS', fallback=str(self.dfps_options.get("FPS", [])[2])))
-    self.shadow_resolution_var.set(config.get('Options', 'ShadowResolution', fallback=self.dfps_options.get("ShadowResolutionNames", [""])[0])) # Shadow Auto
-    self.shadow_resolution_var_new.set(config.get('Options', 'ShadowResolution',
-                                              fallback=self.ultracam_options.get("ShadowResolutionNames", [""])[
-                                                  0]))  # Shadow Auto
-    self.fov_var.set(config.get('Options', 'Fov', fallback=50))  # FOV 50
+    # Load Ui and FP
     self.ui_var.set(config.get('Options', 'UI', fallback="None"))
     self.fp_var.set(config.get('Options', 'First Person', fallback="Off"))
+
+    # Load UltraCam Beyond new patches.
+    patch_info = self.ultracam_beyond.get("Keys", [""])
+    for patch in self.BEYOND_Patches:
+        patch_dict = patch_info[patch]
+        patch_class = patch_dict["Class"]
+        patch_default = patch_dict["Default"]
+        if patch_class.lower() == "dropdown":
+            patch_Names = patch_dict["Name_Values"]
+            try:
+                self.BEYOND_Patches[patch].set(patch_Names[int(config["Beyond"][patch])])
+            except KeyError:
+                pass
+            except ValueError:
+                if config["Beyond"][patch] == "auto":
+                    self.BEYOND_Patches[patch].set(patch_Names[int(patch_default)])
+                    continue
+            continue
+        if patch_class.lower() == "scale":
+            # use name for tag accuracy
+            self.maincanvas.itemconfig(patch_dict["Name"], text=self.BEYOND_Patches[patch].get())
+        try:
+            patch_type = patch_dict["Type"]
+
+            if patch_type == "f32":
+                self.BEYOND_Patches[patch].set(float(config["Beyond"][patch]))
+            else:
+                self.BEYOND_Patches[patch].set(config["Beyond"][patch])
+        except KeyError:
+            pass
+
     # Load the enable/disable choices
     for option_name, option_var in self.selected_options.items():
         option_value = config.get('Options', option_name, fallback="Off")
@@ -101,18 +185,48 @@ def load_user_choices(self, config_file, mode=None):
         # continue, not important.
         handle = e
 
-def write_yuzu_config(configfile, section, setting, selection):
+def apply_selected_preset(self, event=None):
+    try:
+        selected_preset = self.selected_preset.get()
+    except AttributeError as e:
+        selected_preset = "Saved"
+        log.error(f"Failed to apply selected preset: {e}")
+
+    if selected_preset.lower() == "saved":
+        load_user_choices(self, self.config)
+    elif selected_preset in self.presets:
+        preset_to_apply = self.presets[selected_preset]
+        for key, value in preset_to_apply.items():
+            if value is True:
+                preset_to_apply[key] = "On"
+            elif value is False:
+                preset_to_apply[key] = "Off"
+            elif not isinstance(value, int) and not isinstance(value, float) and value.lower() in ["enable", "enabled", "on"]:
+                preset_to_apply[key] = "On"
+            elif not isinstance(value, int) and not isinstance(value, float) and value.lower() in ["disable", "disabled", "off"]:
+                preset_to_apply[key] = "Off"
+        # Apply the selected preset from the online presets
+        apply_preset(self, self.presets[selected_preset])
+
+def write_yuzu_config(self, configfile, title_id, section, setting, selection):
+    if self.is_extracting is True:
+        return
+    os.makedirs(configfile, exist_ok=True)
+    Custom_Config = os.path.join(configfile, f"{title_id}.ini")
     yuzuconfig = configparser.ConfigParser()
-    yuzuconfig.read(configfile, encoding="utf-8")
+    yuzuconfig.read(Custom_Config, encoding="utf-8")
     if not yuzuconfig.has_section(section):
         yuzuconfig[f"{section}"] = {}
     yuzuconfig[f"{section}"][f"{setting}\\use_global"] = "false"
     yuzuconfig[f"{section}"][f"{setting}\\default"] = "false"
     yuzuconfig[f"{section}"][f"{setting}"] = selection
-    with open(configfile, "w", encoding="utf-8") as configfile:
+    with open(Custom_Config, "w", encoding="utf-8") as configfile:
         yuzuconfig.write(configfile, space_around_delimiters=False)
 
-def write_ryujinx_config(configfile, setting, selection):
+def write_ryujinx_config(self, configfile, setting, selection):
+    if self.is_extracting is True:
+        return
+
     with open(configfile, "r", encoding="utf-8") as file:
         data = json.load(file)
         data[setting] = selection

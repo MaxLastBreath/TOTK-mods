@@ -10,7 +10,7 @@ import configparser
 Version = "manager-2.0"
 repo_url_raw = 'https://github.com/MaxLastBreath/TOTK-mods'
 repo_url = 'https://api.github.com/repos/MaxLastBreath/TOTK-mods'
-localconfig = "Manager_Config.ini"
+localconfig = "TOTKOptimizer.ini"
 
 # Read Config File.
 font = ""
@@ -89,30 +89,33 @@ html_color = Color()
 
 # Settings for the manager.
 Hoverdelay = 500
-title_id = "72324500776771584"
+title_id = "0100F2C0115B6000"
 
 # Set fonts
 textfont = (font, 13)
 btnfont = ("Bahnschrift", 10)
 bigfont = ("Triforce", 18)
-biggyfont = (font, 18, "bold")
+biggyfont = (font, 16, "bold")
 # set Colors
 textcolor = html_color[tcolor]
 outline_color = html_color[toutline]
 active_color = html_color[tactive]
-BigTextcolor = html_color["light-green"]
+BigTextcolor = html_color["yellow"]
 
 style = "danger"
 
 # URLS
-dfpsurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/DFPS.json"
 cheatsurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/Cheats.json"
-presetsurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/presets.json"
+presetsurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/beyond_presets.json"
 versionurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/VersionNew.json"
 descurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/Description.json"
-ultracam = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/UltraCam.json"
+yuzu_presets_url = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/yuzu_presets.json"
+ultracambeyond = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/UltraCam_Template.json"
 
 # Download UltraCam
-New_DFPS_Download = "https://github.com/MaxLastBreath/TOTK-mods/raw/main/scripts/Mods/UltraCam/UltraCam.zip"
+New_UCBeyond_Download = f"{repo_url_raw}/raw/main/scripts/Mods/UltraCam/UltraCamBeyond.zip"
+
+# FP download:
+FP_Mod = f"{repo_url_raw}/raw/main/scripts/Mods/FP%20Mods/First%20Person.zip"
 
 description = load_json("Description.json", descurl)

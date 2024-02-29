@@ -1,6 +1,7 @@
 import os.path
 import subprocess
 from tkinter import filedialog, Toplevel
+from modules.checkpath import *
 from configuration.settings import *
 
 def is_process_running(process_name):
@@ -29,7 +30,7 @@ def select_game_file(command=None):
         config.set("Paths", "game_path", game_path)
     else:
         return
-    with open(localconfig, "w") as configfile:
+    with open(localconfig, "w", encoding="utf-8") as configfile:
         config.write(configfile, space_around_delimiters=False)
     return game_path
 
@@ -50,7 +51,7 @@ def launch_GAME(self):
             log.info("Yuzu is already running in the background.")
             return
 
-        yuzupath = self.load_yuzu_path(localconfig)
+        yuzupath = load_yuzu_path(self, localconfig)
         if os.path.exists(yuzupath):
             Yuzu_PATH = yuzupath.split("/yuzu.exe")[0]
         else:
@@ -66,7 +67,7 @@ def launch_GAME(self):
             log.info("Ryujinx is already running in the background.")
             return
 
-        ryujinx_path = self.load_yuzu_path(localconfig)
+        ryujinx_path = load_yuzu_path(self, localconfig)
         if os.path.exists(ryujinx_path):
             Ryujinx_PATH = ryujinx_path.split("/Ryujinx.exe")[0]
             Ryujinx_PATH = Ryujinx_PATH.split("/RyujinxAva.exe")[0]

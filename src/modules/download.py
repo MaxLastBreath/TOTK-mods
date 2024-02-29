@@ -31,6 +31,7 @@ def download_unzip(url, target_directory):
         with zipfile.ZipFile(zip_content, 'r') as zip_ref:
             # Extract all contents to a target directory
             zip_ref.extractall(target_directory)
+
     except urllib.error.URLError as e:
         log.error(
                 f"Invalid download URL {url}, possibly due to no internet connection."
@@ -39,7 +40,6 @@ def download_unzip(url, target_directory):
         log.error(f"Invalid ZIP file from URL {url}: {e}")
     except Exception as e:
         log.error(f"FAILED TO DOWNLOAD FILE: {url} GOT ERROR: {e}")
-
 
 def download_folders(api_url, dir):
 
@@ -67,7 +67,6 @@ def download_folders(api_url, dir):
             sub_folder_contents = item['url']
             log.info(sub_folder_contents)
             download_folders(sub_folder_contents, folder_name)
-
 
 def get_zip_list_and_dict(url, skip=[]):
     # accepting only single word list.

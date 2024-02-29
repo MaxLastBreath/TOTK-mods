@@ -3,10 +3,10 @@ import configparser
 from ctypes import *
 from screeninfo import *
 
-localconfig = "Manager_Config.ini"
+CONFIG_FILE_LOCAL_OPTIMIZER = "TOTKOptimizer.ini"
 
 config = configparser.ConfigParser()
-config.read(localconfig)
+config.read(CONFIG_FILE_LOCAL_OPTIMIZER)
 w_scale = config.get("Settings", "scale", fallback="On")
 
 def Auto_SF():
