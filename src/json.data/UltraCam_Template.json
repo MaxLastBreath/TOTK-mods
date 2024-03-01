@@ -137,7 +137,7 @@
             ],
             "Type": "f32",
             "Default": 1.0,
-            "Increments": 5,
+            "Increments": 5.0,
             "Description": "Increase or decrease time speed\nistimeSlower bool acts as a decrease.",
             "Config_Class": [
                 "Features",
@@ -358,14 +358,14 @@
                 "LOW",
                 "MEDIUM",
                 "DEFAULT",
-                "INCREASED"
+                "INCREASED (EXPERIMENTAL)"
             ],
             "Values": [
                 1000,
                 5000,
                 12500,
                 25000,
-                50000
+                35000
             ],
             "Default": 3,
             "Description": "UltraCam Beyond Render Distance.\nDefault is 25000. Increased is 50000.\nMay see a small benefit on low, up to 20% fps.\nExpect the game to use fog like rendering Minecraft.",
@@ -513,7 +513,7 @@
             "Class": "bool",
             "Section": "extra",
             "Auto": false,
-            "Default": true,
+            "Default": false,
             "Description": "UltraCam Beyond SlowTime.\n This is controlled by a time scale.",
             "Config_Class": [
                 "Features",

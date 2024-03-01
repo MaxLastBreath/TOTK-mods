@@ -26,3 +26,4 @@ scripts/Mods/UI Mods/Xbox UI
 src/\!\!\!TOTK Optimizer/exefs/main.npdm
 src/\!\!\!TOTK Optimizer/exefs/subsdk3
 *.ini
+src/modules/logger.txt

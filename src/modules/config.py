@@ -132,10 +132,8 @@ def load_user_choices(self, config_file, mode=None):
             for option_name, option_var in self.selected_cheats.items():
                 option_value = config.get('Cheats', option_name, fallback="Off")
                 option_var.set(option_value)
-        except AttributeError as e:
-            # continue, not important.
-            handle = e
-        return
+        except AttributeError:
+            pass
 
     # Load Ui and FP
     self.ui_var.set(config.get('Options', 'UI', fallback="None"))
@@ -167,6 +165,11 @@ def load_user_choices(self, config_file, mode=None):
             if patch_type == "f32":
                 self.BEYOND_Patches[patch].set(float(config["Beyond"][patch]))
             else:
+                self.BEYOND_Patches[patch].set(config["Beyond"][patch])
+        except KeyError:
+            pass
+        try:
+            if patch_class.lower() == "bool":
                 self.BEYOND_Patches[patch].set(config["Beyond"][patch])
         except KeyError:
             pass
