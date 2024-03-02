@@ -42,7 +42,7 @@
 
 ### **UltraCam Beyond**
 - Beyond UltraCam (Freecam)
-  - Completely reworked MATH.
+  - Completely reworked Matrix, simply feels a lot better to use.
 - Sequencer Beyond.
   - Allows for the placement of keyframes and creation of custom animations with FOV controls and speed controls.
   - Now also has a fadeout setting.
