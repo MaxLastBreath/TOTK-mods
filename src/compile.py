@@ -12,7 +12,8 @@ if __name__ == "__main__":
             "--onefile",
             f"--name=TOTK Optimizer {latest_version}",
             "--add-data", "GUI;GUI",
-            "--add-data", "json.data;json.data"
+            "--add-data", "json.data;json.data",
+            "--icon", "GUI/LOGO.ico"
         ]
         subprocess.run(command, shell=True)
         
