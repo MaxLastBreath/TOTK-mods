@@ -1,6 +1,6 @@
 <img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=6c7086&height=120&section=header"/>
 
-# <p align=center> [![SWORD TEXT](https://github.com/MaxLastBreath/TOTK-mods/assets/136052075/2067bf40-402c-4c32-a33b-e81394f3436b)](https://github.com/MaxLastBreath/TOTK-mods/releases) </p>
+# <p align=center> [![SWORD TEXT](https://github.com/MaxLastBreath/TOTK-mods/assets/136052075/f9c32f90-c16e-4034-90fb-ffe3b6c439f5)](https://github.com/MaxLastBreath/TOTK-mods/releases) </p>
 
 
 
@@ -42,7 +42,7 @@
 
 ### **UltraCam Beyond**
 - Beyond UltraCam (Freecam)
-  - Completely reworked MATH.
+  - Completely reworked Matrix, simply feels a lot better to use.
 - Sequencer Beyond.
   - Allows for the placement of keyframes and creation of custom animations with FOV controls and speed controls.
   - Now also has a fadeout setting.
