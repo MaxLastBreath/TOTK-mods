@@ -94,14 +94,14 @@ class Manager:
         cul_sel = 220
 
         # Used for 2nd column.
-        row_2 = 120
+        row_2 = 160
         cul_tex_2 = 400
         cul_sel_2 = 550
 
         def increase_row(row, cul_sel, cul_tex):
             row += 40
             if row >= 480:
-                row = 120
+                row = 160
                 cul_tex += 180
                 cul_sel += 180
             return row, cul_sel, cul_tex
@@ -335,7 +335,7 @@ class Manager:
                     master=self.window, canvas=canvas,
                     text=patch_name,
                     variable="Off",
-                    row=pos[3] + 40, cul=pos[4], drop_cul=pos[5],
+                    row=pos[3], cul=pos[4], drop_cul=pos[5],
                     tags=["bool"], tag=section_auto,
                     text_description=patch_description
                 )
@@ -361,7 +361,7 @@ class Manager:
                         master=self.window, canvas=canvas,
                         text="First Person",
                         variable="Off",
-                        row=row_2 + 40, cul=cul_tex_2, drop_cul=cul_sel_2,
+                        row=pos_dict["main"][3], cul=pos_dict["main"][4], drop_cul=pos_dict["main"][5],
                         tags=["bool"], tag="main",
                         description_name="First Person"
                 )
@@ -412,6 +412,16 @@ class Manager:
                         width=int(70*1.5), height=int(48*1.5),
                         )
 
+        self.LOGO_element = self.on_canvas.Photo_Image(
+                        image_path="optimizer_logo.png",
+                        width=int(3316/10), height=int(823/10),
+                        )
+
+        self.LOGO_element_active = self.on_canvas.Photo_Image(
+                        image_path="optimizer_logo_active.png",
+                        width=int(3316/10), height=int(823/10),
+                        )
+
         self.on_canvas.image_Button(
             canvas=canvas,
             row=510, cul=25,
@@ -433,6 +443,13 @@ class Manager:
             row=510, cul=25 + int(7 + int(self.apply_element.width() / sf) * 2),
             img_1=self.extract_element, img_2=self.extract_element_active,
             command=lambda event: self.extract_patches()
+        )
+
+        self.on_canvas.image_Button(
+            canvas=canvas,
+            row=515, cul=815,
+            img_1=self.LOGO_element, img_2=self.LOGO_element_active,
+            command=lambda event: self.open_browser("Kofi")
         )
 
         # Create a submit button

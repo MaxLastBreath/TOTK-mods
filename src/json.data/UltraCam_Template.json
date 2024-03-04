@@ -40,7 +40,7 @@
             "Name": "Movie FPS",
             "Class": "scale",
             "Section": "extra",
-            "Auto": false,
+            "Auto": true,
             "Values": [
                 30,
                 120

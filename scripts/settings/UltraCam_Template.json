@@ -17,7 +17,7 @@
       "Class": "scale",
       "Section": "main",
       "Auto": false,
-      "Values": [ 20, 240 ],
+      "Values": [ 20, 120 ],
       "Type": "s32",
       "Default": 60,
       "Increments": 5,
