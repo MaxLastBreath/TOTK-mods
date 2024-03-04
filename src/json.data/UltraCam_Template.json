@@ -36,6 +36,24 @@
                 "MenuFPSLock"
             ]
         },
+        "movie fps": {
+            "Name": "Movie FPS",
+            "Class": "scale",
+            "Section": "extra",
+            "Auto": false,
+            "Values": [
+                30,
+                120
+            ],
+            "Type": "s32",
+            "Default": 30,
+            "Increments": 30,
+            "Description": "Should be set to 30 FPS, only touch if you desire to use 60 or 120FPS movie cap for a particular mod.\n(WARNING) it will also auto lock to 30, 60 or 120 FPS.",
+            "Config_Class": [
+                "Features",
+                "MovieFPS"
+            ]
+        },
         "fov": {
             "Name": "FOV",
             "Class": "scale",
@@ -494,6 +512,18 @@
             "Config_Class": [
                 "Features",
                 "DisableFog"
+            ]
+        },
+        "fxaa": {
+            "Name": "Disable Fxaa",
+            "Class": "bool",
+            "Section": "main",
+            "Auto": false,
+            "Default": true,
+            "Description": "Removes FXAA from the game itself.",
+            "Config_Class": [
+                "Resolution",
+                "DisableFXAA"
             ]
         },
         "animationfadeout": {
