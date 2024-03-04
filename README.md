@@ -1,6 +1,6 @@
 <img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=6c7086&height=120&section=header"/>
 
-# <p align=center> [![SWORD TEXT](https://github.com/MaxLastBreath/TOTK-mods/assets/136052075/f9c32f90-c16e-4034-90fb-ffe3b6c439f5)](https://github.com/MaxLastBreath/TOTK-mods/releases) </p>
+# <p align=center> ![TOTKOptimizer_Logo](https://github.com/MaxLastBreath/TOTK-mods/assets/136052075/56c0f23e-b1fc-4ccb-9de6-600fd4916583) </p>
 
 
 
