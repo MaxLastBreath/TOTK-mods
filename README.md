@@ -21,8 +21,8 @@
       - **Ultra (6K)**- 3080ti/3090+. Rx 6800/7800/7800xt. (AT LEAST 12gb+ VRAM)
       - **EXTREME (8k)**- 3090/4090. Rx 7900xt/7900xtx. (AT LEAST 16gb+ VRAM)
    - If you desire further changes, feel free to tweak the settings.
-- (WARNING) Select Yuzu.exe or Ryujinx.exe if you are using them in portable MODE.
-- Click **apply and open TOTK from yuzu.exe/ryujinx.exe**!
+- (WARNING) Select Ryujinx.exe if you are using them in portable MODE.
+- Click **apply and open TOTK from ryujinx.exe**!
 
 **If you can't get the AppImage to Open for Linux**
 - Right click, properties, permissions, run as executable
@@ -89,7 +89,7 @@
 - Benchmarks
   - UltraCam Beyond has it's own custom benchmark built in. Press G with virtual Keyboard on.
     - Currently supports 5 different benchmarks.
-    - Benchmarks are saved on switch's SD card (sdmc yuzu)
+    - Benchmarks are saved on switch's SD card
 
 ### **Aspect Ratios & Ui**
 - Aspect ratios are section of combined mod files with certain UI and an Aspect Ratio mod.
