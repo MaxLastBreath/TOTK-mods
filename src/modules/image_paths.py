@@ -38,9 +38,9 @@ def Load_ImagePath(self):
         "Goron City": self.image_Goron,
     }
 
-    # Create a Gradiant for Yuzu.
-    self.background_YuzuBG = self.on_canvas.Photo_Image(
-        image_path="Yuzu_BG.png",
+    # Create a Gradiant for Legacy.
+    self.background_LegacyBG = self.on_canvas.Photo_Image(
+        image_path="Legacy_BG.png",
         width=1200, height=600,
     )
 

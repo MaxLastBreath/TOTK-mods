@@ -3,8 +3,8 @@ from configuration.settings import *
 import os, json, uuid
 
 def apply_preset(self, preset_options):
-    self.fetch_var(self.ui_var, preset_options, "UI")
-    self.fetch_var(self.fp_var, preset_options, "First Person")
+    #self.fetch_var(self.ui_var, preset_options, "UI")
+    #self.fetch_var(self.fp_var, preset_options, "First Person")
     self.fetch_var(self.selected_settings, preset_options, "Settings")
     patch_info = self.ultracam_beyond.get("Keys", [""])
 
@@ -54,7 +54,7 @@ def apply_preset(self, preset_options):
         else:
             continue
 
-def save_user_choices(self, config_file, yuzu_path=None, mode=None):
+def save_user_choices(self, config_file, Legacy_path=None, mode=None):
     log.info(f"Saving user choices in {localconfig}")
     config = configparser.ConfigParser()
     if os.path.exists(config_file):
@@ -73,24 +73,24 @@ def save_user_choices(self, config_file, yuzu_path=None, mode=None):
     # This is only required for the UI and FP mods.
     if not config.has_section("Options"):
         config["Options"] = {}
-    config['Options']['UI'] = self.ui_var.get()
-    config['Options']['First Person'] = self.fp_var.get()
+    #config['Options']['UI'] = self.ui_var.get()
+    #config['Options']['First Person'] = self.fp_var.get()
 
     # Save the enable/disable choices
     for option_name, option_var in self.selected_options.items():
         config['Options'][option_name] = option_var.get()
 
-    # Save the yuzu.exe path if provided
+    # Save the Legacy.exe path if provided
     if not config.has_section("Paths"):
         config["Paths"] = {}
-    if self.mode == "Yuzu":
-        if yuzu_path:
-            config['Paths']['YuzuPath'] = yuzu_path
+    if self.mode == "Legacy":
+        if Legacy_path:
+            config['Paths']['LegacyPath'] = Legacy_path
     if self.mode == "Ryujinx":
-        if yuzu_path:
-            config['Paths']['RyujinxPath'] = yuzu_path
+        if Legacy_path:
+            config['Paths']['RyujinxPath'] = Legacy_path
 
-    # Save the manager selected mode I.E Ryujinx/Yuzu
+    # Save the manager selected mode I.E Ryujinx/Legacy
     config["Mode"] = {"ManagerMode": self.mode}
 
     if not config.has_section("Beyond"):
@@ -136,8 +136,8 @@ def load_user_choices(self, config_file, mode=None):
             pass
 
     # Load Ui and FP
-    self.ui_var.set(config.get('Options', 'UI', fallback="None"))
-    self.fp_var.set(config.get('Options', 'First Person', fallback="Off"))
+    #self.ui_var.set(config.get('Options', 'UI', fallback="None"))
+    #self.fp_var.set(config.get('Options', 'First Person', fallback="Off"))
 
     # Load UltraCam Beyond new patches.
     patch_info = self.ultracam_beyond.get("Keys", [""])
@@ -211,20 +211,20 @@ def apply_selected_preset(self, event=None):
         # Apply the selected preset from the online presets
         apply_preset(self, self.presets[selected_preset])
 
-def write_yuzu_config(self, configfile, title_id, section, setting, selection):
+def write_Legacy_config(self, configfile, title_id, section, setting, selection):
     if self.is_extracting is True:
         return
     os.makedirs(configfile, exist_ok=True)
     Custom_Config = os.path.join(configfile, f"{title_id}.ini")
-    yuzuconfig = configparser.ConfigParser()
-    yuzuconfig.read(Custom_Config, encoding="utf-8")
-    if not yuzuconfig.has_section(section):
-        yuzuconfig[f"{section}"] = {}
-    yuzuconfig[f"{section}"][f"{setting}\\use_global"] = "false"
-    yuzuconfig[f"{section}"][f"{setting}\\default"] = "false"
-    yuzuconfig[f"{section}"][f"{setting}"] = selection
+    Legacyconfig = configparser.ConfigParser()
+    Legacyconfig.read(Custom_Config, encoding="utf-8")
+    if not Legacyconfig.has_section(section):
+        Legacyconfig[f"{section}"] = {}
+    Legacyconfig[f"{section}"][f"{setting}\\use_global"] = "false"
+    Legacyconfig[f"{section}"][f"{setting}\\default"] = "false"
+    Legacyconfig[f"{section}"][f"{setting}"] = selection
     with open(Custom_Config, "w", encoding="utf-8") as configfile:
-        yuzuconfig.write(configfile, space_around_delimiters=False)
+        Legacyconfig.write(configfile, space_around_delimiters=False)
 
 def write_ryujinx_config(self, configfile, setting, selection):
     if self.is_extracting is True:

@@ -6,7 +6,7 @@ from tkinter import messagebox
 
 
 def backup(self):
-    if self.mode == "Yuzu":
+    if self.mode == "Legacy":
         # Fetch the nand_directory value from the qt-config.ini file
         testforuserdir = os.path.join(self.nand_dir, "user", "save", "0000000000000000")
         testforuser = os.listdir(testforuserdir)
@@ -47,11 +47,11 @@ def backup(self):
 
 
 def clean_shaders(self):
-    answer = messagebox.askyesno(title="Yuzu Shader Warning.",
+    answer = messagebox.askyesno(title="Legacy Shader Warning.",
                                  message="Are you sure you want to delete your shaders?\n"
                                          "This could Improve performance.")
     emu_dir = self.Globaldir
-    if self.mode == "Yuzu":
+    if self.mode == "Legacy":
         shaders = os.path.join(emu_dir, "shader/0100f2c0115b6000")
     if self.mode == "Ryujinx":
         shaders = os.path.join(emu_dir, "games/0100f2c0115b6000/cache/shader")

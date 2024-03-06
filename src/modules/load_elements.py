@@ -4,7 +4,7 @@ import subprocess
 def load_UI_elements(self, canvas):
     # Images and Effects
     canvas.create_image(0, 0, anchor="nw", image=self.background_image, tags="background")
-    canvas.create_image(0, 0, anchor="nw", image=self.background_YuzuBG, tags="overlay-1")
+    canvas.create_image(0, 0, anchor="nw", image=self.background_LegacyBG, tags="overlay-1")
     canvas.create_image(0, 0, anchor="nw", image=self.background_UI, tags="overlay")
     canvas.create_image(0, 0, anchor="nw", image=self.background_UI_element, tags="overlay")
 
@@ -126,7 +126,7 @@ def create_tab_buttons(self, canvas):
 
     # Create tabs
 
-    # Switch mode between Ryujinx and Yuzu
+    # Switch mode between Ryujinx and Legacy
     self.on_canvas.create_button(
         master=self.window, canvas=canvas,
         btn_text="Switch", textvariable=self.switch_text,

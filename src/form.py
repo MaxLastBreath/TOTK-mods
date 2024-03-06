@@ -33,12 +33,12 @@ class Manager:
         self.config = localconfig
 
         # Read the Current Emulator Mode.
-        self.mode = config.get("Mode", "managermode", fallback="Yuzu")
+        self.mode = config.get("Mode", "managermode", fallback="Legacy")
         self.all_pages = ["main", "extra", "randomizer"]
 
         # Set neccesary variables.
         self.Curr_Benchmark = None
-        self.Yuzudir = None
+        self.Legacydir = None
         self.is_Ani_running = False
         self.is_Ani_Paused = False
         self.tooltip_active = False
@@ -53,7 +53,7 @@ class Manager:
         self.version_options = load_json("Version.json", versionurl)
         self.cheat_options = load_json("Cheats.json", cheatsurl)
         self.ultracam_beyond = load_json("UltraCam_Template.json", ultracambeyond)
-        self.yuzu_settings = load_json("yuzu_presets.json", yuzu_presets_url)
+        self.Legacy_settings = load_json("Legacy_presets.json", Legacy_presets_url)
 
         self.benchmarks = {}
 
@@ -125,7 +125,7 @@ class Manager:
                                                             text="OPTIMIZER PRESETS:",
                                                             variable=values[0], values=values,
                                                             row=row, cul=cul_tex - 20,
-                                                            tags=["text"], tag="Yuzu",
+                                                            tags=["text"], tag="Optimizer",
                                                             description_name="Presets",
                                                             command=lambda event: apply_selected_preset(self)
                                                         )
@@ -133,26 +133,26 @@ class Manager:
         # Setting Preset - returns variable.
 
         value = ["No Change"]
-        for item in self.yuzu_settings:
+        for item in self.Legacy_settings:
             value.append(item)
         self.selected_settings = self.on_canvas.create_combobox(
                                                             master=self.window, canvas=canvas,
-                                                            text="YUZU SETTINGS:",
+                                                            text="Legacy SETTINGS:",
                                                             variable=value[0], values=value,
                                                             row=row, cul=340, drop_cul=480,
-                                                            tags=["text"], tag="yuzu",
+                                                            tags=["text"], tag="Legacy",
                                                             description_name="Settings"
                                                         )
 
         row += 40
-        # Create a label for yuzu.exe selection
+        # Create a label for Legacy.exe selection
         backupbutton = cul_sel
         if self.os_platform == "Windows":
-            command = lambda event: self.select_yuzu_exe()
+            command = lambda event: self.select_Legacy_exe()
             def browse():
-                self.select_yuzu_exe()
+                self.select_Legacy_exe()
 
-            text = "SELECT Yuzu.exe"
+            text = "SELECT EXECUTABLE"
             self.on_canvas.create_button(
                                         master=self.window, canvas=canvas,
                                         btn_text="Browse",
@@ -163,7 +163,7 @@ class Manager:
                                         )
 
             # Reset to Appdata
-            def yuzu_appdata():
+            def Legacy_appdata():
                 checkpath(self, self.mode)
                 log.info("Successfully Defaulted to Appdata!")
                 save_user_choices(self, self.config, "appdata", None)
@@ -174,7 +174,7 @@ class Manager:
                                         row=row, cul=cul_sel + 68, width=9,
                                         tags=["Button"],
                                         description_name="Reset",
-                                        command=yuzu_appdata
+                                        command=Legacy_appdata
                                         )
             backupbutton = cul_sel + 165
         else:
@@ -204,7 +204,7 @@ class Manager:
                                     master=self.window, canvas=canvas,
                                     btn_text="Clear Shaders",
                                     row=row, cul=backupbutton+78, width=9,
-                                    tags=["Button", "yuzu"],
+                                    tags=["Button", "Legacy"],
                                     description_name="Shaders",
                                     command=lambda: clean_shaders(self)
         )
@@ -357,29 +357,29 @@ class Manager:
         #    log.info(f"{patch}: {self.BEYOND_Patches[patch].get()}")
 
         # Extra Patches. FP and Ui.
-        self.fp_var = self.on_canvas.create_checkbutton(
-                        master=self.window, canvas=canvas,
-                        text="First Person",
-                        variable="Off",
-                        row=pos_dict["main"][3], cul=pos_dict["main"][4], drop_cul=pos_dict["main"][5],
-                        tags=["bool"], tag="main",
-                        description_name="First Person"
-                )
-        new_pos = increase_row(row_2, cul_sel_2, cul_tex_2)
-        row_2 = new_pos[0]
-        cul_sel_2 = new_pos[1]
-        cul_tex_2 = new_pos[2]
+        #self.fp_var = self.on_canvas.create_checkbutton(
+        #                master=self.window, canvas=canvas,
+        #                text="First Person",
+        #                variable="Off",
+        #                row=pos_dict["main"][3], cul=pos_dict["main"][4], drop_cul=pos_dict["main"][5],
+        #                tags=["bool"], tag="main",
+        #                description_name="First Person"
+        #        )
+        #new_pos = increase_row(row_2, cul_sel_2, cul_tex_2)
+        #row_2 = new_pos[0]
+        #cul_sel_2 = new_pos[1]
+        #cul_tex_2 = new_pos[2]
 
-        UI_list.remove("Black Screen Fix")
-        self.ui_var = self.on_canvas.create_combobox(
-                        master=self.window, canvas=canvas,
-                        text="UI:",
-                        variable=UI_list[0], values=UI_list,
-                        row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                        tags=["text"], tag="main",
-                        description_name="UI"
-                                                    )
-        row += 40
+        #UI_list.remove("Black Screen Fix")
+        #self.ui_var = self.on_canvas.create_combobox(
+        #                master=self.window, canvas=canvas,
+        #                text="UI:",
+        #                variable=UI_list[0], values=UI_list,
+        #                row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
+        #                tags=["text"], tag="main",
+        #                description_name="UI"
+        #                                            )
+        #row += 40
 
         # XYZ create patches, not used anymore though.
         #create_patches(self)
@@ -465,7 +465,7 @@ class Manager:
         #    # Create a submit button
         #    self.on_canvas.create_button(
         #        master=self.window, canvas=canvas,
-        #        btn_text="Launch Game", tags=["Button", "Yuzu"],
+        #        btn_text="Launch Game", tags=["Button", "Legacy"],
         #        row=530, cul=125, padding=10, width=9,
         #        description_name="Launch Game", style="warning.outline.TButton",
         #        command=lambda: launch_GAME(self)
@@ -617,43 +617,43 @@ class Manager:
         loadCheats()
         load_user_choices(self, self.config)
 
-    def select_yuzu_exe(self):
-        # Open a file dialog to browse and select yuzu.exe
+    def select_Legacy_exe(self):
         if self.os_platform == "Windows":
-            yuzu_path = filedialog.askopenfilename(
+            Legacy_path = filedialog.askopenfilename(
                 title=f"Please select {self.mode}.exe",
                 filetypes=[("Executable files", "*.exe"), ("All Files", "*.*")]
             )
-            executable_name = yuzu_path
+            executable_name = Legacy_path
             if executable_name.endswith("Ryujinx.exe") or executable_name.endswith("Ryujinx.Ava.exe"):
-                if self.mode == "Yuzu":
+                if self.mode == "Legacy":
                     self.switchmode("true")
-            if executable_name.endswith("yuzu.exe"):
+            else:
                 if self.mode == "Ryujinx":
                     self.switchmode("true")
-            if yuzu_path:
-                # Save the selected yuzu.exe path to a configuration file
-                save_user_choices(self, self.config, yuzu_path)
-                home_directory = os.path.dirname(yuzu_path)
-                fullpath = os.path.dirname(yuzu_path)
+
+            if Legacy_path:
+                # Save the selected Legacy.exe path to a configuration file
+                save_user_choices(self, self.config, Legacy_path)
+                home_directory = os.path.dirname(Legacy_path)
+                fullpath = os.path.dirname(Legacy_path)
                 if any(item in os.listdir(fullpath) for item in ["user", "portable"]):
                     log.info(
                         f"Successfully selected {self.mode}.exe! And a portable folder was found at {home_directory}!")
                     checkpath(self, self.mode)
-                    return yuzu_path
+                    return Legacy_path
                 else:
                     log.info(f"Portable folder for {self.mode} not found defaulting to appdata directory!")
                     checkpath(self, self.mode)
-                    return yuzu_path
+                    return Legacy_path
 
-                # Update the yuzu.exe path in the current session
-                self.yuzu_path = yuzu_path
+                # Update the Legacy.exe path in the current session
+                self.Legacy_path = Legacy_path
             else:
                 checkpath(self, self.mode)
                 return None
-            # Save the selected yuzu.exe path to a configuration file
-            save_user_choices(self, self.config, yuzu_path)
-        return yuzu_path
+            # Save the selected Legacy.exe path to a configuration file
+            save_user_choices(self, self.config, Legacy_path)
+        return Legacy_path
 
     def show_main_canvas(self):
         self.on_canvas.is_Ani_Paused = True
@@ -698,27 +698,25 @@ class Manager:
 
     def Cheat_UI_elements(self, canvas):
         self.cheatbg = canvas.create_image(0, -scale(300), anchor="nw", image=self.blurbackground, tags="background")
-        canvas.create_image(0, 0, anchor="nw", image=self.background_YuzuBG, tags="overlay-1")
+        canvas.create_image(0, 0, anchor="nw", image=self.background_LegacyBG, tags="overlay-1")
         canvas.create_image(0, 0, anchor="nw", image=self.background_UI_Cheats, tags="overlay")
 
     def switchmode(self, command="true"):
         if command == "true":
-            if self.mode == "Yuzu":
+            if self.mode == "Legacy":
                 self.mode = "Ryujinx"
                 for canvas in self.all_canvas:
                     canvas.itemconfig("overlay-1", image=self.background_RyuBG)
                     canvas.itemconfig("information", text=f"{self.mode} TOTK Optimizer")
-                    canvas.itemconfig("Select-EXE", text=f"SELECT Ryujinx.exe")
-                    canvas.itemconfig("yuzu", state="hidden")
-                self.switch_text.set("Switch to Yuzu")
+                    canvas.itemconfig("Legacy", state="hidden")
+                self.switch_text.set("Switch to Legacy")
                 return
             elif self.mode == "Ryujinx":
-                self.mode = "Yuzu"
+                self.mode = "Legacy"
                 for canvas in self.all_canvas:
-                    canvas.itemconfig("overlay-1", image=self.background_YuzuBG)
+                    canvas.itemconfig("overlay-1", image=self.background_LegacyBG)
                     canvas.itemconfig("information", text=f"{self.mode} TOTK Optimizer")
-                    canvas.itemconfig("Select-EXE", text=f"SELECT Yuzu.exe")
-                    canvas.itemconfig("yuzu", state="normal")
+                    canvas.itemconfig("Legacy", state="normal")
                 # change text
                 self.switch_text.set("Switch to Ryujinx")
                 return
@@ -727,9 +725,8 @@ class Manager:
                 for canvas in self.all_canvas:
                     canvas.itemconfig("overlay-1", image=self.background_RyuBG)
                     canvas.itemconfig("information", text=f"{self.mode} TOTK Optimizer")
-                    canvas.itemconfig("Select-EXE", text=f"Select Ryujinx.exe")
-                    canvas.itemconfig("yuzu", state="hidden")
-                self.switch_text.set("Switch to Yuzu")
+                    canvas.itemconfig("Legacy", state="hidden")
+                self.switch_text.set("Switch to Legacy")
                 return
         elif command == "Mode":
             return self.mode
@@ -751,7 +748,7 @@ class Manager:
         self.remove_list = []
         checkpath(self, self.mode)
         # Needs to be run after checkpath.
-        if self.mode == "Yuzu":
+        if self.mode == "Legacy":
             qtconfig = get_config_parser()
             qtconfig.optionxform = lambda option: option
             try:
@@ -793,7 +790,7 @@ class Manager:
                 def stop_extracting():
                     self.is_extracting = False
 
-                tasklist = [Exe_Running(), DownloadFP(), DownloadUI(), DownloadBEYOND(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods(), stop_extracting()]
+                tasklist = [Exe_Running(), DownloadBEYOND(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods(), stop_extracting()]
                 if get_setting("auto-backup") in ["On"]:
                     tasklist.append(backup(self))
                 com = 100 // len(tasklist)
@@ -857,7 +854,7 @@ class Manager:
                 selected_cheats = {}
                 for option_name, option_var in self.selected_cheats.items():
                     selected_cheats[option_name] = option_var.get()
-                # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.
+                # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Legacy together.
                 for version_option in self.cheat_options:
                     version = version_option.get("Version", "")
                     mod_path = os.path.join(self.load_dir, "Cheat Manager Patch", "cheats")
@@ -962,15 +959,15 @@ class Manager:
                 if(new_scale > 6):
                     layout = 2
 
-                if self.mode == "Yuzu":
-                    write_yuzu_config(self, self.TOTKconfig, self.title_id, "Renderer", "resolution_setup", "2")
-                    write_yuzu_config(self, self.TOTKconfig, self.title_id,"Core", "memory_layout_mode", f"{layout}")
+                if self.mode == "Legacy":
+                    write_Legacy_config(self, self.TOTKconfig, self.title_id, "Renderer", "resolution_setup", "2")
+                    write_Legacy_config(self, self.TOTKconfig, self.title_id,"Core", "memory_layout_mode", f"{layout}")
 
                     if layout > 0:
-                        write_yuzu_config(self, self.TOTKconfig, self.title_id,"System", "use_docked_mode", "true")
-                        write_yuzu_config(self, self.TOTKconfig, self.title_id,"Renderer", "vram_usage_mode", "1")
+                        write_Legacy_config(self, self.TOTKconfig, self.title_id,"System", "use_docked_mode", "true")
+                        write_Legacy_config(self, self.TOTKconfig, self.title_id,"Renderer", "vram_usage_mode", "1")
                     else:
-                        write_yuzu_config(self, self.TOTKconfig, self.title_id,"Renderer", "vram_usage_mode", "0")
+                        write_Legacy_config(self, self.TOTKconfig, self.title_id,"Renderer", "vram_usage_mode", "0")
 
                 if self.mode == "Ryujinx":
                     write_ryujinx_config(self, self.ryujinx_config, "res_scale", 1)
@@ -987,7 +984,7 @@ class Manager:
                     config.write(configfile)
 
 
-            # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Yuzu together.
+            # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Legacy together.
             try:
                 # This logic is disabled with UltraCam Beyond.
                 if self.DFPS_var == "BEYOND":
@@ -1037,11 +1034,11 @@ class Manager:
             if self.selected_settings.get() == "No Change":
                 self.progress_var.set("No Settings Required..")
                 return
-            if self.mode == "Yuzu":
-                setting_preset = self.yuzu_settings[self.selected_settings.get()]
+            if self.mode == "Legacy":
+                setting_preset = self.Legacy_settings[self.selected_settings.get()]
                 for section in setting_preset:
                     for option in setting_preset[section]:
-                        write_yuzu_config(self, self.TOTKconfig, self.title_id, section, option, str(setting_preset[section][option]))
+                        write_Legacy_config(self, self.TOTKconfig, self.title_id, section, option, str(setting_preset[section][option]))
             self.progress_var.set("Finished Creating Settings..")
 
         def DownloadBEYOND():
@@ -1161,7 +1158,7 @@ class Manager:
             self.add_list = set(self.add_list)
             self.remove_list = set(self.remove_list)
             # Run the Main code to Enable and Disable necessary Mods, the remove ensures the mods are enabled.
-            if self.mode == "Yuzu":
+            if self.mode == "Legacy":
                 for item in self.add_list:
                     modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, item, action="add")
                 for item in self.remove_list:

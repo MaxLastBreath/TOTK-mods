@@ -16,7 +16,7 @@ def is_process_running(process_name):
         log.info(f"Couldn`t detect if {process_name} is running.")
 
 def select_game_file(command=None):
-    # Open a file dialog to browse and select yuzu.exe
+    # Open a file dialog to browse and select Legacy.exe
     game_path = filedialog.askopenfilename(
         title=f"Please select Tears of The Kingdom Game File.",
         filetypes=[("Nintendo Gamefile", ["*.nsp", "*.xci", "*.NSP", "*.XCI"]), ("All Files", "*.*")]
@@ -45,19 +45,19 @@ def launch_GAME(self):
 
     log.info(f"Launching game {Game_PATH}")
 
-    if self.mode == "Yuzu":
-        mode = "yuzu.exe"
-        if is_process_running("yuzu.exe"):
-            log.info("Yuzu is already running in the background.")
+    if self.mode == "Legacy":
+        mode = "Legacy.exe"
+        if is_process_running("Legacy.exe"):
+            log.info("Legacy is already running in the background.")
             return
 
-        yuzupath = load_yuzu_path(self, localconfig)
-        if os.path.exists(yuzupath):
-            Yuzu_PATH = yuzupath.split("/yuzu.exe")[0]
+        Legacypath = load_Legacy_path(self, localconfig)
+        if os.path.exists(Legacypath):
+            Legacy_PATH = Legacypath.split("/Legacy.exe")[0]
         else:
-            Yuzu_PATH = os.path.join(os.path.expanduser("~"), "Appdata", "Local", "yuzu", "yuzu-windows-msvc")
+            Legacy_PATH = os.path.join(os.path.expanduser("~"), "Appdata", "Local", "Legacy", "Legacy-windows-msvc")
 
-        os.chdir(Yuzu_PATH)
+        os.chdir(Legacy_PATH)
         cmd = [f'{mode}', '-u', '1', '-f', '-g', f'{Game_PATH}']
 
     if self.mode == "Ryujinx":
@@ -67,12 +67,12 @@ def launch_GAME(self):
             log.info("Ryujinx is already running in the background.")
             return
 
-        ryujinx_path = load_yuzu_path(self, localconfig)
+        ryujinx_path = load_Legacy_path(self, localconfig)
         if os.path.exists(ryujinx_path):
             Ryujinx_PATH = ryujinx_path.split("/Ryujinx.exe")[0]
             Ryujinx_PATH = Ryujinx_PATH.split("/RyujinxAva.exe")[0]
         else:
-            Ryujinx_PATH = self.select_yuzu_exe()
+            Ryujinx_PATH = self.select_Legacy_exe()
             if Ryujinx_PATH is None: return
             else: Ryujinx_PATH = Ryujinx_PATH.split("/Ryujinx.exe")[0]
 
