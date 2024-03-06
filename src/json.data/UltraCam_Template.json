@@ -25,7 +25,7 @@
             "Auto": false,
             "Values": [
                 20,
-                240
+                120
             ],
             "Type": "s32",
             "Default": 60,
