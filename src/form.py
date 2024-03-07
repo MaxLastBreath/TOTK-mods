@@ -258,8 +258,8 @@ class Manager:
         self.on_canvas.create_label(
                                     master=self.window, canvas=canvas,
                                     text="Tears Of The Kingdom", font=bigfont, color=BigTextcolor,
-                                    description_name="Mod Improvements",
-                                    row=row, cul=400+100,
+                                    description_name="Mod Improvements", anchor="c",
+                                    row=row, cul=575,
                                     tags=["Big-Text"]
                                     )
 
@@ -800,42 +800,39 @@ class Manager:
                     task
                     time.sleep(0.05)
                 progress_window.destroy()
-                message = (f"MODS HAVE BEEN APPLIED!\n"
-                           f"If you like TOTK Optimizer\n"
-                           f"And the UltraCam Mod.\n"
-                           f"Feel free to check out my Kofi.\n"
-                           )
+
+                m = 1.3
                 # Kofi button.
                 element_1 = self.on_canvas.Photo_Image(
                     image_path="support.png",
-                    width=70, height=48,
+                    width=int(70* m), height=int(48* m),
                 )
 
                 element_2 = self.on_canvas.Photo_Image(
                     image_path="support_active.png",
-                    width=70, height=48,
+                    width=int(70* m), height=int(48* m),
                 )
 
                 element_3 = self.on_canvas.Photo_Image(
                     image_path="no_thanks.png",
-                    width=70, height=48,
+                    width=int(70* m), height=int(48* m),
                 )
 
                 element_4 = self.on_canvas.Photo_Image(
                     image_path="no_thanks_active.png",
-                    width=70, height=48,
+                    width=int(70* m), height=int(48* m),
                 )
 
                 if not self.os_platform == "Linux":
                     dialog = CustomDialog(self, "TOTK Optimizer Tasks Completed",
-                                          message,
+                                          "",
                                           yes_img_1=element_1,
                                           yes_img_2=element_2,
                                           no_img_1=element_3,
                                           no_img_2=element_4,
                                           custom_no="No Thanks",
-                                          width=300,
-                                          height=200
+                                          width=384,
+                                          height=216
                                           )
                     dialog.wait_window()
                     if dialog.result:

@@ -100,7 +100,7 @@ biggyfont = (font, 16, "bold")
 textcolor = html_color[tcolor]
 outline_color = html_color[toutline]
 active_color = html_color[tactive]
-BigTextcolor = html_color["yellow"]
+BigTextcolor = html_color["white"]
 
 style = "danger"
 

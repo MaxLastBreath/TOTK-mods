@@ -65,12 +65,6 @@ def Load_ImagePath(self):
 
 
 
-
-
-
-
-
-
     # Create a Gradiant for Legacy.
     self.background_LegacyBG = self.on_canvas.Photo_Image(
         image_path="Legacy_BG.png",
