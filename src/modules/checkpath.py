@@ -89,6 +89,16 @@ def checkpath(self, mode):
         portablefolder = os.path.normpath(os.path.join(Legacypath, "../portable/"))
         # Check for user folder
         if mode == "Legacy":
+            # Find any "Legacy Emulators"...
+            appdata = os.path.join(home_directory, "AppData", "Roaming")
+            for folder in os.listdir(appdata):
+                self.Globaldir = os.path.join(appdata, folder)
+                if os.path.exists(os.path.join(self.Globaldir, "load", "0100F2C0115B6000")):
+                    print(f"Found Legacy Emu folder at: {self.Globaldir}")
+                    break
+                else:
+                    self.Globaldir = os.path.join(home_directory, "AppData", "Roaming", "yuzu")
+
             if os.path.exists(userfolder):
                 self.configdir = os.path.join(Legacypath, "../user/config/qt-config.ini")
                 self.TOTKconfig = os.path.join(self.configdir, "../custom")
@@ -101,7 +111,7 @@ def checkpath(self, mode):
                 self.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{os.path.join(Legacypath, "../user/nand")}')), "0100F2C0115B6000")
                 if self.load_dir.startswith('"'):
                     self.load_dir = self.load_dir.strip('"')[0]
-                self.Legacydir = os.path.join(home_directory, "AppData", "Roaming", "yuzu", "load", "0100F2C0115B6000")
+                self.Legacydir = os.path.join(self.Globaldir, "load", "0100F2C0115B6000")
                 NEWLegacy_path = os.path.normpath(os.path.join(userfolder, "../"))
                 self.Globaldir = os.path.join(NEWLegacy_path, "user")
                 qt_config_save_dir = os.path.normpath(os.path.join(self.nand_dir, "../../"))
@@ -129,7 +139,6 @@ def checkpath(self, mode):
                 return
             # Default to Appdata
             else:
-                self.Globaldir = os.path.join(home_directory, "AppData", "Roaming", "yuzu")
                 self.configdir = os.path.join(self.Globaldir, "config", "qt-config.ini")
                 self.TOTKconfig = os.path.join(self.configdir, "../custom")
                 config_parser = configparser.ConfigParser()
@@ -141,7 +150,9 @@ def checkpath(self, mode):
                 self.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{self.Globaldir}/load')), "0100F2C0115B6000")
                 if self.load_dir.startswith('"'):
                     self.load_dir = self.load_dir.strip('"')[0]
-                self.Legacydir = os.path.join(home_directory, "AppData", "Roaming", "yuzu", "load", "0100F2C0115B6000")
+                self.Legacydir = os.path.join(self.Globaldir, "load", "0100F2C0115B6000")
+
+
                 return
         if mode == "Ryujinx":
             if os.path.exists(portablefolder):
