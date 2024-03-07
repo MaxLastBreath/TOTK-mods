@@ -38,6 +38,39 @@ def Load_ImagePath(self):
         "Goron City": self.image_Goron,
     }
 
+    # Loading Icons
+    m = 3.3
+    m_2 = 2.5
+
+    # Benchmark Borders
+    self.benchmark_border = self.on_canvas.Photo_Image(
+        image_path="benchmark_border.png",
+        width=int(1272 / m), height=int(130/ m),
+    )
+
+    self.bench_load_element = self.on_canvas.Photo_Image(
+        image_path="benchmark_loading.png",
+        width=int(154/ m_2), height=int(150/ m_2),
+    )
+
+    # Benchmark Borders
+    self.bench_load_element_active = self.on_canvas.Photo_Image(
+        image_path="benchmark_loading_active.png",
+        width=int(154/ m_2), height=int(150/ m_2),
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+
     # Create a Gradiant for Legacy.
     self.background_LegacyBG = self.on_canvas.Photo_Image(
         image_path="Legacy_BG.png",
@@ -101,6 +134,7 @@ def Load_ImagePath(self):
         image_path="BG_Right_UI.png",
         width=1200, height=600,
     )
+
 
     # Attempt to load images from custom folder.
     if os.path.exists("custom/bg.jpg"):

@@ -1,4 +1,5 @@
 from configuration.settings import *
+from modules.benchmarks import *
 import subprocess
 
 def load_UI_elements(self, canvas):
@@ -27,6 +28,21 @@ def load_UI_elements(self, canvas):
         anchor="c",
         img=self.default_benchmark,
         tag="no_benchmark",
+    )
+
+    self.on_canvas.set_image(
+        canvas=canvas,
+        row=500, cul=980,
+        anchor="c",
+        img=self.benchmark_border,
+        tag="benchmark_border",
+    )
+
+    self.on_canvas.image_Button(
+        canvas=canvas,
+        row=505, cul=980, anchor="c",
+        img_1=self.bench_load_element, img_2=self.bench_load_element_active,
+        command=lambda event: load_benchmark(self)
     )
 
     def copy(self):

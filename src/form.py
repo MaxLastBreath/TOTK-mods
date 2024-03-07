@@ -257,7 +257,7 @@ class Manager:
         # BIG TEXT.
         self.on_canvas.create_label(
                                     master=self.window, canvas=canvas,
-                                    text="Toggle Options", font=bigfont, color=BigTextcolor,
+                                    text="Tears Of The Kingdom", font=bigfont, color=BigTextcolor,
                                     description_name="Mod Improvements",
                                     row=row, cul=400+100,
                                     tags=["Big-Text"]
@@ -357,29 +357,29 @@ class Manager:
         #    log.info(f"{patch}: {self.BEYOND_Patches[patch].get()}")
 
         # Extra Patches. FP and Ui.
-        #self.fp_var = self.on_canvas.create_checkbutton(
-        #                master=self.window, canvas=canvas,
-        #                text="First Person",
-        #                variable="Off",
-        #                row=pos_dict["main"][3], cul=pos_dict["main"][4], drop_cul=pos_dict["main"][5],
-        #                tags=["bool"], tag="main",
-        #                description_name="First Person"
-        #        )
-        #new_pos = increase_row(row_2, cul_sel_2, cul_tex_2)
-        #row_2 = new_pos[0]
-        #cul_sel_2 = new_pos[1]
-        #cul_tex_2 = new_pos[2]
+        self.fp_var = self.on_canvas.create_checkbutton(
+                        master=self.window, canvas=canvas,
+                        text="First Person",
+                        variable="Off",
+                        row=pos_dict["main"][3], cul=pos_dict["main"][4], drop_cul=pos_dict["main"][5],
+                        tags=["bool"], tag="main",
+                        description_name="First Person"
+                )
+        new_pos = increase_row(row_2, cul_sel_2, cul_tex_2)
+        row_2 = new_pos[0]
+        cul_sel_2 = new_pos[1]
+        cul_tex_2 = new_pos[2]
 
-        #UI_list.remove("Black Screen Fix")
-        #self.ui_var = self.on_canvas.create_combobox(
-        #                master=self.window, canvas=canvas,
-        #                text="UI:",
-        #                variable=UI_list[0], values=UI_list,
-        #                row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-        #                tags=["text"], tag="main",
-        #                description_name="UI"
-        #                                            )
-        #row += 40
+        UI_list.remove("Black Screen Fix")
+        self.ui_var = self.on_canvas.create_combobox(
+                        master=self.window, canvas=canvas,
+                        text="UI:",
+                        variable=UI_list[0], values=UI_list,
+                        row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
+                        tags=["text"], tag="main",
+                        description_name="UI"
+                                                    )
+        row += 40
 
         # XYZ create patches, not used anymore though.
         #create_patches(self)
@@ -447,7 +447,7 @@ class Manager:
 
         self.on_canvas.image_Button(
             canvas=canvas,
-            row=515, cul=815,
+            row=520, cul=850,
             img_1=self.LOGO_element, img_2=self.LOGO_element_active,
             command=lambda event: self.open_browser("Kofi")
         )
@@ -790,7 +790,7 @@ class Manager:
                 def stop_extracting():
                     self.is_extracting = False
 
-                tasklist = [Exe_Running(), DownloadBEYOND(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods(), stop_extracting()]
+                tasklist = [Exe_Running(), DownloadBEYOND(), DownloadUI(), DownloadFP(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods(), stop_extracting()]
                 if get_setting("auto-backup") in ["On"]:
                     tasklist.append(backup(self))
                 com = 100 // len(tasklist)

@@ -38,7 +38,6 @@ def load_benchmark(self):
                     pattern = r"(\d+(\.\d+)?)"
                     frames = re.findall(pattern, next_line)
                     numbers = [float(num[0]) if '.' in num[0] else int(num[0]) for num in frames]
-                    log.info(numbers)
                     if numbers[2] == 1:
                         numbers.pop(2)
                     if numbers[3] == 0.1:

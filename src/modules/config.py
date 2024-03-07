@@ -3,8 +3,8 @@ from configuration.settings import *
 import os, json, uuid
 
 def apply_preset(self, preset_options):
-    #self.fetch_var(self.ui_var, preset_options, "UI")
-    #self.fetch_var(self.fp_var, preset_options, "First Person")
+    self.fetch_var(self.ui_var, preset_options, "UI")
+    self.fetch_var(self.fp_var, preset_options, "First Person")
     self.fetch_var(self.selected_settings, preset_options, "Settings")
     patch_info = self.ultracam_beyond.get("Keys", [""])
 
@@ -73,8 +73,8 @@ def save_user_choices(self, config_file, Legacy_path=None, mode=None):
     # This is only required for the UI and FP mods.
     if not config.has_section("Options"):
         config["Options"] = {}
-    #config['Options']['UI'] = self.ui_var.get()
-    #config['Options']['First Person'] = self.fp_var.get()
+    config['Options']['UI'] = self.ui_var.get()
+    config['Options']['First Person'] = self.fp_var.get()
 
     # Save the enable/disable choices
     for option_name, option_var in self.selected_options.items():
@@ -136,8 +136,8 @@ def load_user_choices(self, config_file, mode=None):
             pass
 
     # Load Ui and FP
-    #self.ui_var.set(config.get('Options', 'UI', fallback="None"))
-    #self.fp_var.set(config.get('Options', 'First Person', fallback="Off"))
+    self.ui_var.set(config.get('Options', 'UI', fallback="None"))
+    self.fp_var.set(config.get('Options', 'First Person', fallback="Off"))
 
     # Load UltraCam Beyond new patches.
     patch_info = self.ultracam_beyond.get("Keys", [""])
