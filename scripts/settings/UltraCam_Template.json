@@ -58,7 +58,7 @@
       "Default": 1.0,
       "Increments": 0.25,
       "Description": "Increase Vertical Camera Speed.",
-      "Config_Class": [ "Gameplay", "Stick_Horizontal_Speed" ]
+      "Config_Class": [ "Gameplay", "Stick_Vertical_Speed" ]
     },
     "horizontal r stick": {
       "Name": "H Camera Sensitivity",
