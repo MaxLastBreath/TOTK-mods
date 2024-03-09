@@ -55,7 +55,7 @@ def launch_GAME(self):
         if os.path.exists(Legacypath):
             Legacy_PATH = Legacypath.split("/yuzu.exe")[0]
         else:
-            Legacy_PATH = os.path.join(os.path.expanduser("~"), "Appdata", "Local", "yuzu", "Legacy-windows-msvc")
+            Legacy_PATH = os.path.join(os.path.expanduser("~"), "Appdata", "Local", "yuzu", "yuzu-windows-msvc")
 
         os.chdir(Legacy_PATH)
         cmd = [f'{mode}', '-u', '1', '-f', '-g', f'{Game_PATH}']

@@ -126,6 +126,24 @@
                 "CameraSpeed"
             ]
         },
+        "emu scale": {
+            "Name": "Emulator Scale",
+            "Class": "scale",
+            "Section": "extra",
+            "Auto": true,
+            "Values": [
+                1.0,
+                8.0
+            ],
+            "Type": "f32",
+            "Default": 1.0,
+            "Increments": 1.0,
+            "Description": "Match with Emulator scale.",
+            "Config_Class": [
+                "Resolution",
+                "EmuScale"
+            ]
+        },
         "freecam speed": {
             "Name": "Freecam Speed",
             "Class": "scale",
