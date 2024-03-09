@@ -953,7 +953,7 @@ class Manager:
                 layout = 0
                 if(new_scale < 0):
                     layout = 0
-                if(new_scale > 2):
+                if(new_scale > 1):
                     layout = 1
                 if(new_scale > 6):
                     layout = 2
