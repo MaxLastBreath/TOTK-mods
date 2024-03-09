@@ -111,7 +111,7 @@ class Setting:
         row += 40
 
         # on/off scale with windows.
-        values = ["On", "Off", "1.0x", "1.5x", "2.0x"]
+        values = ["On", "Off", "1.0x", "1.5x", "2.0x", "2.5x", "3.0x"]
         self.w_scale_var = self.canvas_create.create_combobox(
             master=window, canvas=canvas_obj,
             text="Scale with Windows:",

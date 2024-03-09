@@ -1,6 +1,5 @@
 import platform
 import configparser
-from ctypes import *
 from screeninfo import *
 
 CONFIG_FILE_LOCAL_OPTIMIZER = "TOTKOptimizer.ini"
@@ -19,23 +18,26 @@ def Auto_SF():
         sf = 1.5
     if w_scale == "2.0x":
         sf = 2.0
-        return sf
+    if w_scale == "2.5x":
+        sf = 2.5
+    if w_scale == "3.0x":
+        sf = 3.0
     if w_scale == "On":
         h = 1080
-        if platform.system() == "Windows":
-            windll.shcore.SetProcessDpiAwareness(1)
         try:
             monitors = get_monitors()
             for monitor in monitors:
                 if monitor.is_primary:
                     h = monitor.height
         except Exception as e:
+            print(e)
             return 1.0
         if h <= 1080 and h < 1440:
             sf = 1.0
         if h >= 1440:
             sf = 1.5
         if h >= 2160:
+            print("WEEWEW")
             sf = 2.0
     return sf
 

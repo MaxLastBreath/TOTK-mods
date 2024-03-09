@@ -162,7 +162,7 @@
       "Auto": true,
       "Name_Values": [ "720p", "900p", "1080p", "1440p", "4k", "6k", "8k" ],
       "Values": [ "1280", "1600", "1920", "2560", "3840", "6144", "7680" ],
-      "Default": 1,
+      "Default": 0,
       "Description": "UltraCam Beyond handheld resolution, set to AUTO.",
       "Config_Class": [ "Handheld", "Width" ]
     },
@@ -182,8 +182,8 @@
       "Class": "dropdown",
       "Section": "main",
       "Auto": false,
-      "Name_Values": [ "103x", "206x", "512x", "1024x", "1536x", "2048x", "4096x", "8192x" ],
-      "Values": [ 103, 206, 512, 1024, 1536, 2048, 4096, 8192 ],
+      "Name_Values": [ "103x", "206x", "512x", "1024x", "1536x", "2048x", "3072x", "4096x", "8192x" ],
+      "Values": [ 103, 206, 512, 1024, 1536, 2048, 3072, 4096, 8192 ],
       "Default": 3,
       "Description": "UltraCam Beyond NEW SHADOW resolution setting let's you set shadows up to 8K\nWARNING: REQUIRES EXTENDED MEMORY LAYOUT FOR SHADOWS OVER 1536.",
       "Config_Class": [ "Resolution", "ShadowResolution" ]
