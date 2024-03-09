@@ -72,7 +72,7 @@
         "fps": 60,
         "fov": 50,
         "shadow resolution": 6,
-        "resolution": 5,
+        "resolution": 6,
         "render distance": 3,
         "quality improvements": true,
         "triple buffer": true,
@@ -84,7 +84,7 @@
     "EXTREME (UNSTABLE)": {
         "fps": 60,
         "fov": 50,
-        "shadow resolution": 7,
+        "shadow resolution": 8,
         "resolution": 6,
         "render distance": 4,
         "quality improvements": true,

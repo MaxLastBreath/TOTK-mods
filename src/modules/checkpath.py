@@ -24,10 +24,10 @@ def checkpath(self, mode):
     self.os_platform = platform.system()
     if self.os_platform == "Linux":
         if mode == "Legacy":
-            flatpak = os.path.join(home_directory, ".var", "app", "org.Legacy_emu.Legacy", "config", "Legacy")
-            steamdeckdir = os.path.join(home_directory, ".config", "Legacy", "qt-config.ini")
+            flatpak = os.path.join(home_directory, ".var", "app", "org.yuzu_emu.yuzu", "config", "yuzu")
+            steamdeckdir = os.path.join(home_directory, ".config", "yuzu", "qt-config.ini")
 
-            self.Globaldir = os.path.join(home_directory, ".local", "share", "Legacy")
+            self.Globaldir = os.path.join(home_directory, ".local", "share", "yuzu")
             self.configdir = os.path.join(self.Globaldir, "config", "qt-config.ini")
             self.TOTKconfig = os.path.join(self.Globaldir, "config", "custom")
 
@@ -35,7 +35,7 @@ def checkpath(self, mode):
             if os.path.exists(steamdeckdir):
                 log.info("Detected a steamdeck!")
                 self.configdir = steamdeckdir
-                self.TOTKconfig = os.path.join(home_directory, ".config", "Legacy", "custom")
+                self.TOTKconfig = os.path.join(home_directory, ".config", "yuzu", "custom")
 
             # Check for a flatpak.
             if os.path.exists(flatpak):
@@ -43,7 +43,7 @@ def checkpath(self, mode):
                 self.configdir = os.path.join(flatpak, "qt-config.ini")
                 self.TOTKconfig = os.path.join(flatpak, "custom")
                 new_path = os.path.dirname(os.path.dirname(flatpak))
-                self.Globaldir = os.path.join(new_path, "data", "Legacy")
+                self.Globaldir = os.path.join(new_path, "data", "yuzu")
 
             config_parser = configparser.ConfigParser()
             config_parser.read(self.configdir, encoding="utf-8")
@@ -56,7 +56,7 @@ def checkpath(self, mode):
                 self.nand_dir = self.nand_dir.strip('"')[0]
             self.load_dir = os.path.join(self.load_dir, "0100F2C0115B6000")
 
-            self.Legacydir = os.path.normpath(os.path.join(home_directory, ".local", "share", "Legacy", "load", "0100F2C0115B6000"))
+            self.Legacydir = os.path.normpath(os.path.join(home_directory, ".local", "share", "yuzu", "load", "0100F2C0115B6000"))
             return
 
         if mode == "Ryujinx":

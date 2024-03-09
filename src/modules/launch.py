@@ -46,14 +46,14 @@ def launch_GAME(self):
     log.info(f"Launching game {Game_PATH}")
 
     if self.mode == "Legacy":
-        mode = "Legacy.exe"
-        if is_process_running("Legacy.exe"):
+        mode = "yuzu.exe"
+        if is_process_running("yuzu.exe"):
             log.info("Legacy is already running in the background.")
             return
 
         Legacypath = load_Legacy_path(self, localconfig)
         if os.path.exists(Legacypath):
-            Legacy_PATH = Legacypath.split("/Legacy.exe")[0]
+            Legacy_PATH = Legacypath.split("/yuzu.exe")[0]
         else:
             Legacy_PATH = os.path.join(os.path.expanduser("~"), "Appdata", "Local", "Legacy", "Legacy-windows-msvc")
 
