@@ -58,7 +58,7 @@ def download_update(assets):
                 log.error(f"Error downloading asset: {e}")
                 return
 
-            with open(asset_name, "wb", encoding="utf-8") as f:
+            with open(asset_name, "wb") as f:
                 f.write(response.content)
 
             log.info("Asset downloaded successfully.")
@@ -72,7 +72,7 @@ def download_update(assets):
                 log.error(f"Error downloading asset: {e}")
                 return
 
-            with open(asset_name, "wb", encoding="utf-8") as f:
+            with open(asset_name, "wb") as f:
                 f.write(response.content)
 
             log.info("Asset downloaded successfully.")
