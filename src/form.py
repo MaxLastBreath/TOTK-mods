@@ -918,7 +918,7 @@ class Manager:
                     # In case we have an auto patch.
                     if self.BEYOND_Patches[patch] == "auto" or self.BEYOND_Patches[patch].get() == "auto":
                         if patch_class.lower() == "dropdown":
-                            patch_Names = patch_dict["Name_Values"]
+                            patch_Names = patch_dict["Values"]
                             config[patch_Config[0]][patch_Config[1]] = str(patch_Names[patch_Default])
                         else:
                             config[patch_Config[0]][patch_Config[1]] = str(patch_Default)
