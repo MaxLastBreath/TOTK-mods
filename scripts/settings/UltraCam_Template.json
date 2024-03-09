@@ -94,7 +94,7 @@
       "Default": 1.0,
       "Increments": 1.0,
       "Description": "Match with Emulator scale.",
-      "Config_Class": [ "UltraCam", "CameraSpeed" ]
+      "Config_Class": [ "Resolution", "EmuScale" ]
     },
     "freecam speed": {
       "Name": "Freecam Speed",
