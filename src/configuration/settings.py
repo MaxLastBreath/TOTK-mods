@@ -90,6 +90,7 @@ html_color = Color()
 # Settings for the manager.
 Hoverdelay = 500
 title_id = "0100F2C0115B6000"
+config_title_id = "72324500776771584"
 
 # Set fonts
 textfont = (font, 13)

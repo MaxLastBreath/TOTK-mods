@@ -15,7 +15,6 @@ class CustomInterpolation(Interpolation):
             return value.replace("%", "%%", 1)
         return value
 
-
 def get_config_parser():
     config = configparser.ConfigParser(interpolation=CustomInterpolation())
     return config
@@ -38,36 +37,19 @@ def find_folder_index_by_name(directory_path, folder_name):
     except ValueError:
         return None
 
-
-def find_title_id_index(config, title_id):
+def find_title_id_index(config, config_title_id):
     section = f"DisabledAddOns"
     if not config.has_section(section):
         config.add_section(section)
-        log.info(f"Config has not been able, identify title_ID: {title_id},"
+        log.info(f"Config has not been able, identify config_title_id: {config_title_id},"
                  f"the manager will continue but the mods may not be turned off as expected.")
         return None
     else:
         for key, value in config.items(section):
-            if value == title_id:
+            if value == config_title_id:
                 TitleIndexnum = key.split("\\")[0]
                 return TitleIndexnum
     return None
-
-
-def find_highest_title_id_index(config):
-    section = "DisabledAddOns"
-    if not config.has_section(section):
-        config.add_section(section)
-    else:
-        highest_index = -1
-        for key, value in config.items(section):
-            match = re.match(r'^(\d+)\\title_id$', key)
-            if match:
-                index = int(match.group(1))
-                highest_index = max(highest_index, index)
-        return highest_index
-    return None
-
 
 def remove_duplicates(arr):
     return list(set(arr))
@@ -81,10 +63,10 @@ def get_d_values(config, properindex):
     return d_values
 
 
-def clean_disabled_addons(config, title_id):
+def clean_disabled_addons(config, config_title_id):
     section = "DisabledAddOns"
     keys_to_remove = []
-    properindex = find_title_id_index(config, title_id)
+    properindex = find_title_id_index(config, config_title_id)
     if properindex == None:
         return
     for key in config[section]:
@@ -96,8 +78,8 @@ def clean_disabled_addons(config, title_id):
         config.remove_option(section, key)
 
 
-def find_and_remove_entry(configdir, directory, config, title_id, entry_to_remove):
-    properindex = find_title_id_index(config, title_id)
+def find_and_remove_entry(configdir, directory, config, config_title_id, entry_to_remove):
+    properindex = find_title_id_index(config, config_title_id)
     if properindex == None:
         return
         
@@ -106,7 +88,7 @@ def find_and_remove_entry(configdir, directory, config, title_id, entry_to_remov
     if not config.has_section(section):
         config.add_section(section)
 
-    TitleIndexnum = find_title_id_index(config, title_id)
+    TitleIndexnum = find_title_id_index(config, config_title_id)
     testforfolder = find_folder_index_by_name(directory, entry_to_remove)
     if testforfolder is None:
         return
@@ -120,7 +102,7 @@ def find_and_remove_entry(configdir, directory, config, title_id, entry_to_remov
     clean_d_values = remove_duplicates(d_values)
     clean_d_values.sort()
     disabledindex = len(clean_d_values)
-    clean_disabled_addons(config, title_id)
+    clean_disabled_addons(config, config_title_id)
     for i, d_value in enumerate(clean_d_values):
         key = f"{properindex}\\disabled\\{i + 1}\\d"
         default_key = f"{properindex}\\disabled\\{i + 1}\\d\\default"
@@ -131,15 +113,15 @@ def find_and_remove_entry(configdir, directory, config, title_id, entry_to_remov
     write_config_file(configdir, config)
 
 
-def add_entry(configdir, directory, config, title_id, entry_to_add):
+def add_entry(configdir, directory, config, config_title_id, entry_to_add):
 
-    properindex = find_title_id_index(config, title_id)
+    properindex = find_title_id_index(config, config_title_id)
     if properindex == None:
         return
     section = f"DisabledAddOns"
     if not config.has_section(section):
         config.add_section(section)
-    TitleIndexnum = find_title_id_index(config, title_id)
+    TitleIndexnum = find_title_id_index(config, config_title_id)
     try:
         testforfolder = find_folder_index_by_name(directory, entry_to_add)
     except ValueError:
@@ -157,7 +139,7 @@ def add_entry(configdir, directory, config, title_id, entry_to_add):
     clean_d_values = remove_duplicates(d_values)
     clean_d_values.sort()
     disabledindex = len(clean_d_values)
-    clean_disabled_addons(config, title_id)
+    clean_disabled_addons(config, config_title_id)
     for i, d_value in enumerate(clean_d_values):
         key = f"{properindex}\\disabled\\{i + 1}\\d"
         default_key = f"{properindex}\\disabled\\{i + 1}\\d\\default"
@@ -168,8 +150,7 @@ def add_entry(configdir, directory, config, title_id, entry_to_add):
     write_config_file(configdir, config)
 
 
-def modify_disabled_key(configdir, directory, config, title_id, entry, action='add'):
-
+def modify_disabled_key(configdir, directory, config, config_title_id, entry, action='add'):
     if platform.system() == "Linux":
         return
 
@@ -178,11 +159,11 @@ def modify_disabled_key(configdir, directory, config, title_id, entry, action='a
 
     if platform.system() == "Windows":
         if action == "add":
-            # print("Adding key:", entry)
-            add_entry(configdir, directory, config, title_id, entry)
+            print("Disabling mod:", entry, config_title_id)
+            add_entry(configdir, directory, config, config_title_id, entry)
         if action == "remove":
-            # print("Adding key:", entry)
-            find_and_remove_entry(configdir, directory, config, title_id, entry)
+            print("Enabling mod:", entry, config_title_id)
+            find_and_remove_entry(configdir, directory, config, config_title_id, entry)
 
 
 def write_config_file(configdir, config):

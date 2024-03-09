@@ -44,6 +44,7 @@ class Manager:
         self.tooltip_active = False
         self.warn_again = "yes"
         self.title_id = title_id
+        self.config_title_id = config_title_id
         self.old_cheats = {}
         self.cheat_version = ttk.StringVar(value="Version - 1.2.1")
 
@@ -888,6 +889,7 @@ class Manager:
                 self.remove_list.append("!!!TOTK Optimizer")
                 self.add_list.append("Visual Improvements")
                 self.add_list.append("Mod Manager Patch")
+                self.add_list.append("UltraCam")
 
                 ini_file_directory = os.path.join(self.load_dir, "!!!TOTK Optimizer", "romfs", "UltraCam")
                 os.makedirs(ini_file_directory, exist_ok=True)
@@ -958,13 +960,13 @@ class Manager:
 
                 if self.mode == "Legacy":
                     write_Legacy_config(self, self.TOTKconfig, self.title_id, "Renderer", "resolution_setup", "2")
-                    write_Legacy_config(self, self.TOTKconfig, self.title_id,"Core", "memory_layout_mode", f"{layout}")
+                    write_Legacy_config(self, self.TOTKconfig, self.title_id, "Core", "memory_layout_mode", f"{layout}")
+                    write_Legacy_config(self, self.TOTKconfig, self.title_id, "System", "use_docked_mode", "true")
 
                     if layout > 0:
-                        write_Legacy_config(self, self.TOTKconfig, self.title_id,"System", "use_docked_mode", "true")
-                        write_Legacy_config(self, self.TOTKconfig, self.title_id,"Renderer", "vram_usage_mode", "1")
+                        write_Legacy_config(self, self.TOTKconfig, self.title_id, "Renderer", "vram_usage_mode", "1")
                     else:
-                        write_Legacy_config(self, self.TOTKconfig, self.title_id,"Renderer", "vram_usage_mode", "0")
+                        write_Legacy_config(self, self.TOTKconfig, self.title_id, "Renderer", "vram_usage_mode", "0")
 
                 if self.mode == "Ryujinx":
                     write_ryujinx_config(self, self.ryujinx_config, "res_scale", 1)
@@ -1052,12 +1054,12 @@ class Manager:
                 set_setting(args="dfps", value="UltraCam")
 
                 # Apply UltraCam from local folder.
-                if os.path.exists("UltraCam/exefs"):
+                if os.path.exists("TOTKOptimizer/exefs"):
                     log.info("Found a local UltraCam Folder. COPYING to !!!TOTK Optimizer.")
                     if os.path.exists(os.path.join(Mod_directory, "exefs")):
                         shutil.rmtree(os.path.join(Mod_directory, "exefs"))
-                    shutil.copytree(os.path.join("UltraCam/exefs"), os.path.join(Mod_directory, "exefs"))
-                    log.info("Applied New UltraCam.")
+                    shutil.copytree(os.path.join("TOTKOptimizer/exefs"), os.path.join(Mod_directory, "exefs"))
+                    log.info("\n\nEARLY ACCESS ULTRACAM APPLIED\n\n.")
                     return
 
                 self.progress_var.set(f"Downloading UltraCam BEYOND")
@@ -1157,9 +1159,9 @@ class Manager:
             # Run the Main code to Enable and Disable necessary Mods, the remove ensures the mods are enabled.
             if self.mode == "Legacy":
                 for item in self.add_list:
-                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, item, action="add")
+                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.config_title_id, item, action="add")
                 for item in self.remove_list:
-                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.title_id, item, action="remove")
+                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.config_title_id, item, action="remove")
             if self.mode == "Ryujinx" or platform.system() == "Linux" and not self.is_extracting:
                 for item in self.add_list:
                     item_dir = os.path.join(self.load_dir, item)

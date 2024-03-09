@@ -270,7 +270,7 @@
                 "6144",
                 "7680"
             ],
-            "Default": 1,
+            "Default": 0,
             "Description": "UltraCam Beyond handheld resolution, set to AUTO.",
             "Config_Class": [
                 "Handheld",
@@ -319,6 +319,7 @@
                 "1024x",
                 "1536x",
                 "2048x",
+                "3072x",
                 "4096x",
                 "8192x"
             ],
@@ -329,6 +330,7 @@
                 1024,
                 1536,
                 2048,
+                3072,
                 4096,
                 8192
             ],

@@ -112,8 +112,8 @@ def load_UI_elements(self, canvas):
         master=self.window, canvas=canvas,
         text=self.text_content,
         description_name="Info_Label",
-        justify="c",
-        row=93, cul=1000 - 170, font=biggyfont,
+        justify="center", anchor="n",
+        row=35, cul=975, font=biggyfont,
         tags=["Info_Label"], tag=["Info_Label"], outline_tag="Info_Label"
     )
 

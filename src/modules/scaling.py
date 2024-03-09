@@ -37,8 +37,9 @@ def Auto_SF():
         if h >= 1440:
             sf = 1.5
         if h >= 2160:
-            print("WEEWEW")
             sf = 2.0
+        if h >= 3456:
+            sf = 3.0
     return sf
 
 # Use First Monitor to determine SF, this bypasses scaling from windows.
