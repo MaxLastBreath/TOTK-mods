@@ -87,7 +87,7 @@
             "Description": "Increase Vertical Camera Speed.",
             "Config_Class": [
                 "Gameplay",
-                "Stick_Horizontal_Speed"
+                "Stick_Vertical_Speed"
             ]
         },
         "horizontal r stick": {
