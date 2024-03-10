@@ -1,5 +1,6 @@
 from configuration.settings import *
 from modules.benchmarks import *
+from modules.util import *
 import subprocess
 
 def load_UI_elements(self, canvas):
@@ -48,16 +49,27 @@ def load_UI_elements(self, canvas):
     def copy(self):
         if self.Curr_Benchmark is None:
             return
+        patch_info = self.ultracam_beyond.get("Keys", [""])
+        resolution = self.BEYOND_Patches["resolution"].get()
+        shadows = int(self.BEYOND_Patches["shadow resolution"].get().split("x")[0])
+
+        ARR = self.BEYOND_Patches["aspect ratio"].get().split("x")
+        New_Resolution = patch_info["resolution"]["Values"][
+            patch_info["resolution"]["Name_Values"].index(resolution)].split("x")
+        New_Resolution = convert_resolution(int(New_Resolution[0]), int(New_Resolution[1]), int(ARR[0]), int(ARR[1]))
+
         log.info(self.Curr_Benchmark)
-        benchmark_result = (f"Benchmark For: **{self.mode}** Tears Of The Kingdom\n"
-                            f"**{gpu_name}**\n"
-                            f"**{CPU}**\n"
-                            f"**{total_memory}** GB RAM at **{FREQUENCY}** MHz\n"
-                            f"**{self.Curr_Benchmark}** Results:\n"
-                            f"Total Frames **{self.benchmarks[self.Curr_Benchmark]['Total Frames']}**\n"
-                            f"Average FPS **{self.benchmarks[self.Curr_Benchmark]['Average FPS']}**\n"
-                            f"1% Lows **{self.benchmarks[self.Curr_Benchmark]['1% Low FPS']}** FPS\n"
-                            f"0.1% Lows **{self.benchmarks[self.Curr_Benchmark]['0.1% Lowest FPS']}** FPS\n"
+        benchmark_result = (
+                                f"## **{self.Curr_Benchmark}** Tears Of The Kingdom on {platform.system()}\n"
+                                f"- **{gpu_name}**\n"
+                                f"- **{CPU}**\n"
+                                f"- **{total_memory}** GB RAM at **{FREQUENCY}** MHz\n"
+                                f"- **{New_Resolution[0]}x{New_Resolution[1]}** and Shadows: **{shadows}**\n"
+                                f"## Results:\n"
+                                f"- Total Frames **{self.benchmarks[self.Curr_Benchmark]['Total Frames']}**\n"
+                                f"- Average FPS **{self.benchmarks[self.Curr_Benchmark]['Average FPS']}**\n"
+                                f"- 1% Lows **{self.benchmarks[self.Curr_Benchmark]['1% Low FPS']}** FPS\n"
+                                f"- 0.1% Lows **{self.benchmarks[self.Curr_Benchmark]['0.1% Lowest FPS']}** FPS\n"
                             )
 
         subprocess.run(['clip'], input=benchmark_result.strip().encode('utf-16'), check=True)

@@ -11,4 +11,3 @@ def convert_resolution(width, height, ARR_width, ARR_height):
         new_width = width
 
     return new_width, new_height
-
