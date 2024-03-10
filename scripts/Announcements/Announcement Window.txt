@@ -1,6 +1,7 @@
 
-TOTK OPTIMIZER 2.0 SOON
-Final phase of TWEAKING!
-UltraCam 2.0 IS MASSIVE.
-Lots of Improvements.
-Including FPS and more.
+TOTK OPTIMIZER 2.0 IS OUT!
+Fully working on all platforms.
+UltraCam Beyond IS OUT.
+Lots and lots of Improvements.
+Improves FPS, Graphics and Performance.
+Includes Benchmarking too!
