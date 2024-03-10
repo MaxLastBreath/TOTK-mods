@@ -64,7 +64,7 @@ def load_UI_elements(self, canvas):
                                 f"- **{gpu_name}**\n"
                                 f"- **{CPU}**\n"
                                 f"- **{total_memory}** GB RAM at **{FREQUENCY}** MHz\n"
-                                f"- **{New_Resolution[0]}x{New_Resolution[1]}** and Shadows: **{shadows}**\n"
+                                f"- **{New_Resolution[0]}x{New_Resolution[1]}** and Shadows: **{shadows}**, FPS CAP: **{self.BEYOND_Patches['fps'].get()}**\n"
                                 f"## Results:\n"
                                 f"- Total Frames **{self.benchmarks[self.Curr_Benchmark]['Total Frames']}**\n"
                                 f"- Average FPS **{self.benchmarks[self.Curr_Benchmark]['Average FPS']}**\n"
