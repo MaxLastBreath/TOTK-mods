@@ -28,7 +28,7 @@
       "use_docked_mode": 1
     },
     "Cpu": {
-      "cpu_accuracy": 1
+      "cpu_accuracy": 0
     }
   },
   "Balanced Nvidia": {
@@ -60,7 +60,7 @@
       "use_docked_mode": 1
     },
     "Cpu": {
-      "cpu_accuracy": 1
+      "cpu_accuracy": 0
     }
   },
   "Balanced AMD": {
@@ -92,7 +92,7 @@
       "use_docked_mode": 1
     },
     "Cpu": {
-      "cpu_accuracy": 1
+      "cpu_accuracy": 0
     }
   },
   "Optimized Low End": {
@@ -124,7 +124,7 @@
       "use_docked_mode": 1
     },
     "Cpu": {
-      "cpu_accuracy": 1
+      "cpu_accuracy": 0
     }
   }
   }
