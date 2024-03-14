@@ -53,12 +53,11 @@ def launch_GAME(self):
 
         Legacypath = load_Legacy_path(self, localconfig)
         if os.path.exists(Legacypath):
-            Legacy_PATH = Legacypath.split("/yuzu.exe")[0]
+            Legacy_PATH = Legacypath
         else:
-            Legacy_PATH = os.path.join(os.path.expanduser("~"), "Appdata", "Local", "yuzu", "yuzu-windows-msvc")
+            Legacy_PATH = self.select_Legacy_exe()
 
-        os.chdir(Legacy_PATH)
-        cmd = [f'{mode}', '-u', '1', '-f', '-g', f'{Game_PATH}']
+        cmd = [f'{Legacy_PATH}', '-u', '1', '-f', '-g', f'{Game_PATH}']
 
     if self.mode == "Ryujinx":
         mode = "Ryujinx.exe"
@@ -69,14 +68,12 @@ def launch_GAME(self):
 
         ryujinx_path = load_Legacy_path(self, localconfig)
         if os.path.exists(ryujinx_path):
-            Ryujinx_PATH = ryujinx_path.split("/Ryujinx.exe")[0]
-            Ryujinx_PATH = Ryujinx_PATH.split("/RyujinxAva.exe")[0]
+            Ryujinx_PATH = ryujinx_path
         else:
             Ryujinx_PATH = self.select_Legacy_exe()
-            if Ryujinx_PATH is None: return
-            else: Ryujinx_PATH = Ryujinx_PATH.split("/Ryujinx.exe")[0]
+            if Ryujinx_PATH is None: log.warning("Ryujinx wasn't found.")
 
-        os.chdir(Ryujinx_PATH)
-        cmd = [f'{mode}', '-f', f'{Game_PATH}']
+
+        cmd = [f'{Ryujinx_PATH}', '-f', f'{Game_PATH}']
 
     process = subprocess.Popen(cmd, shell=False)

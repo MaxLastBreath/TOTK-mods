@@ -148,39 +148,36 @@ class Manager:
         row += 40
         # Create a label for Legacy.exe selection
         backupbutton = cul_sel
-        if self.os_platform == "Windows":
-            command = lambda event: self.select_Legacy_exe()
-            def browse():
-                self.select_Legacy_exe()
+        command = lambda event: self.select_Legacy_exe()
+        def browse():
+            self.select_Legacy_exe()
 
-            text = "SELECT EXECUTABLE"
-            self.on_canvas.create_button(
-                                        master=self.window, canvas=canvas,
-                                        btn_text="Browse",
-                                        row=row, cul=cul_sel, width=6,
-                                        tags=["Button"],
-                                        description_name="Browse",
-                                        command=lambda: browse()
-                                        )
+        text = "SELECT EXECUTABLE"
+        self.on_canvas.create_button(
+                                    master=self.window, canvas=canvas,
+                                    btn_text="Browse",
+                                    row=row, cul=cul_sel, width=6,
+                                    tags=["Button"],
+                                    description_name="Browse",
+                                    command=lambda: browse()
+                                    )
 
-            # Reset to Appdata
-            def Legacy_appdata():
-                checkpath(self, self.mode)
-                log.info("Successfully Defaulted to Appdata!")
-                save_user_choices(self, self.config, "appdata", None)
+        # Reset to Appdata
+        def Legacy_appdata():
+            checkpath(self, self.mode)
+            log.info("Successfully Defaulted to Appdata!")
+            save_user_choices(self, self.config, "appdata", None)
 
-            self.on_canvas.create_button(
-                                        master=self.window, canvas=canvas,
-                                        btn_text="Use Appdata",
-                                        row=row, cul=cul_sel + 68, width=9,
-                                        tags=["Button"],
-                                        description_name="Reset",
-                                        command=Legacy_appdata
-                                        )
-            backupbutton = cul_sel + 165
-        else:
-            text = "Backup Save Files"
-            command = None
+        self.on_canvas.create_button(
+                                    master=self.window, canvas=canvas,
+                                    btn_text="Use Appdata",
+                                    row=row, cul=cul_sel + 68, width=9,
+                                    tags=["Button"],
+                                    description_name="Reset",
+                                    command=Legacy_appdata
+                                    )
+        backupbutton = cul_sel + 165
+
 
         self.on_canvas.create_label(
                                     master=self.window, canvas=canvas,
@@ -653,6 +650,22 @@ class Manager:
                 checkpath(self, self.mode)
                 return None
             # Save the selected Legacy.exe path to a configuration file
+            save_user_choices(self, self.config, Legacy_path)
+        if self.os_platform == "Linux":
+            Legacy_path = filedialog.askopenfilename(
+                title=f"Please select {self.mode}.AppImage",
+                filetypes=[("Select AppImages or Executable: ", "*.*"), ("All Files", "*.*")]
+            )
+
+            executable_name = Legacy_path
+
+            if executable_name.startswith("Ryujinx"):
+                if self.mode == "Legacy":
+                    self.switchmode("true")
+            else:
+                if self.mode == "Ryujinx":
+                    self.switchmode("true")
+
             save_user_choices(self, self.config, Legacy_path)
         return Legacy_path
 

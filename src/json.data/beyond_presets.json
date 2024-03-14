@@ -16,7 +16,7 @@
         "fog": true,
         "handheldresolution": true
     },
-    "Low (SWITCH DEFAULT)": {
+    "Low (SWITCH)": {
         "fps": 30,
         "fov": 50,
         "shadow resolution": 2,
@@ -29,7 +29,7 @@
         "fog": false,
         "handheldresolution": false
     },
-    "Medium (RYUJINX RECOMMENDED)": {
+    "Medium (RECOMMENDED)": {
         "fps": 60,
         "fov": 50,
         "shadow resolution": 3,
@@ -42,10 +42,10 @@
         "fog": true,
         "handheldresolution": true
     },
-    "High (RYUJINX UNSTABLE)": {
+    "High": {
         "fps": 60,
         "fov": 50,
-        "shadow resolution": 6,
+        "shadow resolution": 7,
         "resolution": 4,
         "render distance": 3,
         "quality improvements": true,
@@ -55,7 +55,7 @@
         "fog": true,
         "handheldresolution": true
     },
-    "High Balanced (RYUJINX MAX)": {
+    "High Balanced": {
         "fps": 60,
         "fov": 50,
         "shadow resolution": 3,
@@ -68,11 +68,11 @@
         "fog": true,
         "handheldresolution": true
     },
-    "Ultra (RYUJINX UNSTABLE)": {
+    "Ultra (UNSTABLE)": {
         "fps": 60,
         "fov": 50,
-        "shadow resolution": 6,
-        "resolution": 6,
+        "shadow resolution": 7,
+        "resolution": 5,
         "render distance": 3,
         "quality improvements": true,
         "triple buffer": true,
