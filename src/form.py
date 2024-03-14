@@ -659,7 +659,7 @@ class Manager:
 
             executable_name = Legacy_path
 
-            if executable_name.startswith("Ryujinx"):
+            if executable_name.startswith("Ryujinx") or executable_name.startswith("Ryujinx.ava"):
                 if self.mode == "Legacy":
                     self.switchmode("true")
             else:

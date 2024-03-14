@@ -698,7 +698,6 @@ class CustomDialog(ttk.Toplevel):
                 tags=["Ask_Yes"],
                 command=self.on_yes
             )
-
         if (no_img_1 is not None and no_img_2 is not None):
             self.on_canvas.image_Button(
                 canvas=canvas,
