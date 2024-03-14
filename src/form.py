@@ -58,8 +58,8 @@ class Manager:
 
         self.benchmarks = {}
 
-        if os.path.exists(os.path.join("UltraCam/UltraCam_Template.json")):
-            with open("UltraCam/UltraCam_Template.json", "r", encoding="utf-8") as file:
+        if os.path.exists(os.path.join("TOTKOptimizer/UltraCam_Template.json")):
+            with open("TOTKOptimizer/UltraCam_Template.json", "r", encoding="utf-8") as file:
                 self.ultracam_beyond = json.load(file)
 
         # Local text variable

@@ -42,10 +42,10 @@
     "fog": true,
     "handheldresolution": true
   },
-  "High (RYU UNSTABLE)": {
+  "High": {
     "fps": 60,
     "fov": 50,
-    "shadow resolution": 6,
+    "shadow resolution": 7,
     "resolution": 4,
     "render distance": 3,
     "quality improvements": true,
@@ -71,8 +71,8 @@
   "Ultra (UNSTABLE)": {
     "fps": 60,
     "fov": 50,
-    "shadow resolution": 6,
-    "resolution": 6,
+    "shadow resolution": 7,
+    "resolution": 5,
     "render distance": 3,
     "quality improvements": true,
     "triple buffer": true,
