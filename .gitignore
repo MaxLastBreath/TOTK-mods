@@ -29,3 +29,5 @@ src/\!\!\!TOTK Optimizer/exefs/subsdk3
 src/modules/logger.txt
 *.spec
 *.txt
+/src/dist
+/src/build
