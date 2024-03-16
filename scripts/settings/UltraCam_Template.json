@@ -205,8 +205,8 @@
       "Class": "dropdown",
       "Section": "main",
       "Auto": false,
-      "Name_Values": [ "4x4", "4x5", "16x9", "16x10", "21x9", "32x9" ],
-      "Values": [ "4x4", "4x5", "16x9", "16x10", "21x9", "32x9" ],
+      "Name_Values": [ "4x4", "4x5", "4x3", "3x2", "16x9", "16x10", "256-135", "18x9", "19.5-9", "20x9", "21x9", "21.5-9", "32x9", "48-9" ],
+      "Values": [ "4x4", "4x5", "4x3", "3x2", "16x9", "16x10", "256-135", "18x9", "19.5-9", "20x9", "21x9", "21.5-9", "32x9", "48-9" ],
       "Default": 2,
       "Description": "UltraCam Beyond ASPECT ratios. It now sets the aspect RATIOS internally\nThis is superior to any other AR patches As it will use internal resolution.",
       "Config_Class": [ "ASPECT RATIO" ]
