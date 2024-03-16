@@ -458,6 +458,7 @@ class Canvas_Create:
                                                                         tag_1=tag_1, tag_2=tag_2,
                                                                         event=event))
         canvas.tag_bind(tag_2, "<Button-1>", command)
+        canvas.tag_bind(tag_1, "<Button-1>", command)
         
         return tag_1, tag_2
         new_folder_path = self.get_UI_path(effect_folder)
