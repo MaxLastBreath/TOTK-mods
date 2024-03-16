@@ -156,6 +156,7 @@
 # Special Thanks to
 - [Jake for testing the Mod Manager on Linux and reformatting and cleaning readme.](https://github.com/JakeDystopia/)
 - [u/Pixelkiri for Workflow and testing!](https://github.com/alexkiri/)
+- [Fruithapje21 For helping with UI Aspect Ratios](https://github.com/Fruithapje21)
 - [Hoverbike for testing Mods!](https://github.com/hoverbike1/)
 - [MaxAnimatior for some insight and testing](https://github.com/D-Maxwell)
 - LotP, great friend and teacher :) also lots of help with UltraCam.
