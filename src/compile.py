@@ -31,6 +31,4 @@ if __name__ == "__main__":
             "--hidden-import=PIL._tkinter",
             "--hidden-import=ttkbootstrap"
         ]
-        appimage_path = os.path.join("dist/TOTK Optimizer {latest_version}.AppImage")
-        os.chmod(appimage_path, 0o644)
         subprocess.run(command, check=True)
