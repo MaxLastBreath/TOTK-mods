@@ -396,7 +396,7 @@
                 "32x9",
                 "48x9"
             ],
-            "Default": 2,
+            "Default": 4,
             "Description": "UltraCam Beyond ASPECT ratios. It now sets the aspect RATIOS internally\nThis is superior to any other AR patches As it will use internal resolution.",
             "Config_Class": [
                 "ASPECT RATIO"
