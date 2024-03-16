@@ -23,7 +23,6 @@ is_auto_backup = ""
 is_cheat_backup = ""
 is_animation = ""
 
-
 def get_setting(args=None):
     global font, tcolor, theme, toutline, tactive, is_animation, is_cheat_backup, is_auto_backup, w_scale
 

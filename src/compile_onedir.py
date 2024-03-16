@@ -41,7 +41,7 @@ if __name__ == "__main__":
             "--hidden-import=PIL._tkinter",
             "--hidden-import=ttkbootstrap"
         ]
-        appimage_path = "dist/TOTK Optimizer {latest_version}/TOTK Optimizer {latest_version}.AppImage"
+        appimage_path = os.path.join("dist/TOTK Optimizer {latest_version}/TOTK Optimizer {latest_version}")
         os.chmod(appimage_path, 0o644)
         subprocess.run(command, check=True)
         create_zip(f'dist/TOTK Optimizer {latest_version}', f'dist/TOTK_Optimizer_{latest_version}_Linux.zip')
