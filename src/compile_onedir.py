@@ -9,7 +9,7 @@ if __name__ == "__main__":
         command = [
             "pyinstaller",
             "run.py",
-            "--onefile",
+            "--onedir",
             f"--name=TOTK Optimizer {latest_version}",
             "--add-data", "GUI;GUI",
             "--add-data", "json.data;json.data",
@@ -20,7 +20,7 @@ if __name__ == "__main__":
     if platform.system() == "Linux":
         command = [
             "pyinstaller",
-            "--onefile",
+            "--onedir",
             f"--name=TOTK Optimizer {latest_version}.AppImage",
             "run.py",
             "--add-data", "GUI:GUI",

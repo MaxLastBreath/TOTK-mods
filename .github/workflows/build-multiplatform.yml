@@ -25,6 +25,12 @@ jobs:
         - name: Linux
           os: ubuntu-20.04
           artifactsPath: ./src/dist/*.AppImage
+        - name: Windows_dir
+          os: windows-latest
+          artifactsPath: ./src/dist/*.exe
+        - name: Linux_dir
+          os: ubuntu-20.04
+          artifactsPath: ./src/dist/*.AppImage
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
@@ -45,7 +51,13 @@ jobs:
     - name: Build ${{ matrix.name }}
       run: |
         cd ./src/
+        python ./compile_onedir.py --version ${{ inputs.tag }}
+      if: endsWith(matrix.name, 'dir')
+    - name: Build ${{ matrix.name }}
+      run: |
+        cd ./src/
         python ./compile.py --version ${{ inputs.tag }}
+      if: endsWith(matrix.name, 'dir') == false
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
