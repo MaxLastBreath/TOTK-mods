@@ -1109,6 +1109,9 @@ class Manager:
                 for ui, tags in UIs.items():
                     if string in tags:
                         selected_ui = f" {ui} UI"
+                        break
+                    else:
+                        selected_ui = ""
 
                 # search
                 new_folder = f"Aspect Ratio {self.BEYOND_Patches['aspect ratio'].get().replace('x', '-')}{selected_ui}"
