@@ -27,10 +27,10 @@ jobs:
           artifactsPath: ./src/dist/*.AppImage
         - name: Windows_dir
           os: windows-latest
-          artifactsPath: ./src/dist/*
+          artifactsPath: ./src/dist_full/*.zip
         - name: Linux_dir
           os: ubuntu-20.04
-          artifactsPath: ./src/dist/*
+          artifactsPath: ./src/dist_full/*.zip
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3

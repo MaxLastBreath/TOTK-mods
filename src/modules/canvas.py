@@ -9,7 +9,6 @@ import string
 import random
 import ttkbootstrap as ttk
 
-
 def next_index(event, var, list=list, increase = 1, command=None):
     value = str(var.get())
     string_list = [str(item) for item in list]

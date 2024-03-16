@@ -16,7 +16,6 @@ if __name__ == "__main__":
             "--icon", "GUI/LOGO.ico"
         ]
         subprocess.run(command, shell=True)
-        
     if platform.system() == "Linux":
         command = [
             "pyinstaller",
