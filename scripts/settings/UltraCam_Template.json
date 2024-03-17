@@ -216,7 +216,7 @@
       "Class": "dropdown",
       "Section": "main",
       "Auto": false,
-      "Name_Values": [ "VERY LOW", "LOW", "MEDIUM", "DEFAULT", "INCREASED (EXPERIMENTAL)"],
+      "Name_Values": [ "VERY LOW", "LOW", "MEDIUM", "DEFAULT", "(EXPERIMENTAL) HAS ISSUES"],
       "Values": [ 1000, 5000, 12500, 25000, 35000 ],
       "Default": 3,
       "Description": "UltraCam Beyond Render Distance.\nDefault is 25000. Increased is 50000.\nMay see a small benefit on low, up to 20% fps.\nExpect the game to use fog like rendering Minecraft.",
