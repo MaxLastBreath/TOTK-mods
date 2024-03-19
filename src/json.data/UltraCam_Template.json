@@ -412,7 +412,7 @@
                 "LOW",
                 "MEDIUM",
                 "DEFAULT",
-                "INCREASED (EXPERIMENTAL)"
+                "(EXPERIMENTAL) HAS ISSUES"
             ],
             "Values": [
                 1000,
