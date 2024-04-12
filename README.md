@@ -28,9 +28,9 @@
 **If you can't get the AppImage to Open for Linux**
 - Right click, properties, permissions, run as executable
 
-***If you are stuck in loading/blackscreen...*
+***If you are stuck in loading/blackscreen...***
 - Remove and reinstall Tears Of The Kingdoms Update file.
-- Do not use version 1.0.0.
+- Do not use Game Version 1.0.0.
 
 # <p align=center> 🐬 More Information 🐬 </p>
 ## <p align=center> 🐋 Mod Settings and More 🐋 </p>
