@@ -38,11 +38,11 @@ if __name__ == "__main__":
             for item in assets:
                 name = item.get("name")
                 date = item.get("created_at")
-                if name.endswith(".AppImage") or name.startswith("Linux"):
+                if name.endswith(".AppImage") or name.startswith("Linux") or name.endswith("Linux.zip"):
                     amount = int(item.get("download_count"))
                     current_linux_amount = amount
                     count_linux += amount
-                if name.endswith(".exe") or name.startswith("Windows"):
+                if name.endswith(".exe") or name.startswith("Windows") or name.endswith("Windows.zip"):
                     amount = int(item.get("download_count"))
                     current_windows_amount = amount
                     count_windows += amount
