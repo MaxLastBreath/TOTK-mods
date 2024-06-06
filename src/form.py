@@ -355,29 +355,25 @@ class Manager:
         #    log.info(f"{patch}: {self.BEYOND_Patches[patch].get()}")
 
         # Extra Patches. FP and Ui.
-        self.fp_var = self.on_canvas.create_checkbutton(
-                        master=self.window, canvas=canvas,
-                        text="First Person",
-                        variable="Off",
-                        row=pos_dict["main"][3], cul=pos_dict["main"][4], drop_cul=pos_dict["main"][5],
-                        tags=["bool"], tag="main",
-                        description_name="First Person"
-                )
-        new_pos = increase_row(row_2, cul_sel_2, cul_tex_2)
-        row_2 = new_pos[0]
-        cul_sel_2 = new_pos[1]
-        cul_tex_2 = new_pos[2]
+        # self.fp_var = self.on_canvas.create_checkbutton(
+        #                 master=self.window, canvas=canvas,
+        #                 text="First Person",
+        #                 variable="Off",
+        #                 row=pos_dict["main"][3], cul=pos_dict["main"][4], drop_cul=pos_dict["main"][5],
+        #                 tags=["bool"], tag="main",
+        #                 description_name="First Person"
+        #         )
 
-        UI_list.remove("Black Screen Fix")
-        self.ui_var = self.on_canvas.create_combobox(
-                        master=self.window, canvas=canvas,
-                        text="UI:",
-                        variable=UI_list[0], values=UI_list,
-                        row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-                        tags=["text"], tag="main",
-                        description_name="UI"
-                                                    )
-        row += 40
+        # UI_list.remove("Black Screen Fix")
+        # self.ui_var = self.on_canvas.create_combobox(
+        #                 master=self.window, canvas=canvas,
+        #                 text="UI:",
+        #                 variable=UI_list[0], values=UI_list,
+        #                 row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
+        #                 tags=["text"], tag="main",
+        #                 description_name="UI"
+        #                                             )
+        # row += 40
 
         # XYZ create patches, not used anymore though.
         #create_patches(self)
@@ -804,7 +800,7 @@ class Manager:
                 def stop_extracting():
                     self.is_extracting = False
 
-                tasklist = [Exe_Running(), DownloadBEYOND(), DownloadUI(), DownloadFP(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods(), stop_extracting()]
+                tasklist = [Exe_Running(), DownloadBEYOND(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods(), stop_extracting()]
                 if get_setting("auto-backup") in ["On"]:
                     tasklist.append(backup(self))
                 com = 100 // len(tasklist)
@@ -1139,21 +1135,21 @@ class Manager:
             download_unzip(link, Mod_directory)
             log.info(f"Downloaded: {new_folder}")
 
-        def DownloadFP():
-            selected_fp_mod = self.fp_var.get()
+        # def DownloadFP():
+        #     selected_fp_mod = self.fp_var.get()
 
-            Mod_directory = os.path.join(self.load_dir, "!!!TOTK Optimizer")
-            if selected_fp_mod.lower() == "on":
-                link = FP_Mod
-                self.progress_var.set(f"Downloading: {selected_fp_mod}\n(May take some time)")
-                log.info(f"Downloading: {selected_fp_mod}")
-                os.makedirs(Mod_directory, exist_ok=True)
-                download_unzip(link, Mod_directory)
-                log.info(f"Downloaded: {selected_fp_mod}")
+        #     Mod_directory = os.path.join(self.load_dir, "!!!TOTK Optimizer")
+        #     if selected_fp_mod.lower() == "on":
+        #         link = FP_Mod
+        #         self.progress_var.set(f"Downloading: {selected_fp_mod}\n(May take some time)")
+        #         log.info(f"Downloading: {selected_fp_mod}")
+        #         os.makedirs(Mod_directory, exist_ok=True)
+        #         download_unzip(link, Mod_directory)
+        #         log.info(f"Downloaded: {selected_fp_mod}")
 
-            fp_dir = os.path.join(Mod_directory, "romfs", "Pack", "Actor", "PlayerCamera.pack.zs")
-            if selected_fp_mod.lower() == "off" and os.path.exists(fp_dir):
-                os.remove(fp_dir)
+        #     fp_dir = os.path.join(Mod_directory, "romfs", "Pack", "Actor", "PlayerCamera.pack.zs")
+        #     if selected_fp_mod.lower() == "off" and os.path.exists(fp_dir):
+        #         os.remove(fp_dir)
 
         def Exe_Running():
             is_Program_Opened = is_process_running(self.mode + ".exe")
