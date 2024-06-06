@@ -946,7 +946,8 @@ class Manager:
                 resolution = self.BEYOND_Patches["resolution"].get()
                 shadows = int(self.BEYOND_Patches["shadow resolution"].get().split("x")[0])
 
-                ARR = self.BEYOND_Patches["aspect ratio"].get().split("x")
+                # ARR = self.BEYOND_Patches["aspect ratio"].get().split("x")
+                ARR = [16, 9]
                 New_Resolution = patch_info["resolution"]["Values"][patch_info["resolution"]["Name_Values"].index(resolution)].split("x")
                 New_Resolution = convert_resolution(int(New_Resolution[0]), int(New_Resolution[1]), int(ARR[0]), int(ARR[1]))
 
