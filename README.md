@@ -96,10 +96,6 @@
     - Currently supports 5 different benchmarks.
     - Benchmarks are saved on switch's SD card
 
-### **Aspect Ratios & Ui**
-- Aspect ratios are section of combined mod files with certain UI and an Aspect Ratio mod.
-- UI mods are mods that change the look of your buttons (PS4, Xbox, Steamdeck)
-
 ### **Camera Mods** (TO BE REPLACED)
 - First Person, completely transforms the game into First Person! Horses, Steering stick and more!
 
