@@ -3,8 +3,8 @@ from configuration.settings import *
 import os, json, uuid
 
 def apply_preset(self, preset_options):
-    self.fetch_var(self.ui_var, preset_options, "UI")
-    self.fetch_var(self.fp_var, preset_options, "First Person")
+    # self.fetch_var(self.ui_var, preset_options, "UI")
+    # self.fetch_var(self.fp_var, preset_options, "First Person")
     self.fetch_var(self.selected_settings, preset_options, "Settings")
     patch_info = self.ultracam_beyond.get("Keys", [""])
 
