@@ -86,6 +86,12 @@ def load_values_from_json():
         with open(json_file_path, "r", encoding="utf-8") as json_file:
             api_json = json.load(json_file)
 
+    AR_list = api_json["AR_list"]
+    AR_dict = api_json["AR_dict"]
+    UI_list = api_json["UI_list"]
+    UI_dict = api_json["UI_dict"]
+    FP_list = api_json["FP_list"]
+    FP_dict = api_json["FP_dict"]
     DFPS_list = api_json["DFPS_list"]
     DFPS_dict = api_json["DFPS_dict"]
 
@@ -94,6 +100,25 @@ def load_values_from_json():
 try:
     if time.time() - old_time >= 3600 or not os.path.exists("json.data/api.json"):
         logging.info(f"Attempting to create API instructions. {time.ctime()}")
+
+        skip = ["XBOX", "UI", "PS4", "STEAMDECK"]
+        AR = get_zip_list_and_dict(
+            "https://api.github.com/repos/MaxLastBreath/TOTK-mods/contents/scripts/Mods/Aspect%20Ratios", skip=skip)
+        AR_list = AR[0]
+        AR_list.insert(0, "Aspect Ratio 16-9")
+        AR_dict = AR[1]
+
+        UI = get_zip_list_and_dict(
+            "https://api.github.com/repos/MaxLastBreath/TOTK-mods/contents/scripts/Mods/UI%20Mods")
+        UI_list = UI[0]
+        UI_list.insert(0, "None")
+        UI_dict = UI[1]
+
+        FP = get_zip_list_and_dict(
+            "https://api.github.com/repos/MaxLastBreath/TOTK-mods/contents/scripts/Mods/FP%20Mods")
+        FP_list = FP[0]
+        FP_list.insert(0, "Off")
+        FP_dict = FP[1]
 
         DFPS = get_zip_list_and_dict("https://api.github.com/repos/MaxLastBreath/TOTK-mods/contents/scripts/Mods/DFPS")
         DFPS_list = DFPS[0]
@@ -123,6 +148,12 @@ try:
         DFPS_dict["Latest"] = DFPS_dict.get(full_latest)
 
         api_json = {
+            "AR_list": AR_list,
+            "AR_dict": AR_dict,
+            "UI_list": UI_list,
+            "UI_dict": UI_dict,
+            "FP_list": FP_list,
+            "FP_dict": FP_dict,
             "DFPS_list": DFPS_list,
             "DFPS_dict": DFPS_dict
         }
