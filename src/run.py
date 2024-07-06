@@ -27,8 +27,10 @@ if __name__ == "__main__":
         ttk.Style().configure('TButton', foreground='white', font=('Comic Sans MS', 10, 'bold'))
 
         # Delete any old executables
-        # delete_old_exe()
-        # check_for_updates()
+        # Disabled for MacOS (For now)
+        if platform.os() != "Darwin":
+            delete_old_exe()
+            check_for_updates()
         window.mainloop()
     except Exception as e:
         log.critical("ERROR AT MAIN: " + e)
