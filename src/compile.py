@@ -2,14 +2,8 @@ import platform
 import subprocess
 import os
 from configuration.settings import *
-import argparse
-from compile_onedir import create_zip
 
 latest_version = Version.strip("manager-")
-
-parser = argparse.ArgumentParser()
-parser.add_argument('-o', '--os')
-args = parser.parse_args()
 
 if __name__ == "__main__":
     if platform.system() == "Windows":

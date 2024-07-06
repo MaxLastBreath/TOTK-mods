@@ -3,8 +3,13 @@ import subprocess
 import zipfile
 import os
 from configuration.settings import *
+import argparse
 
 latest_version = Version.strip("manager-")
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-o', '--os')
+args = parser.parse_args()
 
 def create_zip(source_dir, dest_file):
     with zipfile.ZipFile(dest_file, 'w', zipfile.ZIP_DEFLATED) as zipf:
@@ -43,7 +48,6 @@ if __name__ == "__main__":
         ]
         subprocess.run(command, check=True)
         create_zip(f'dist/TOTK Optimizer {latest_version}', f'dist/TOTK_Optimizer_{latest_version}_Linux.zip')
-        
     elif args.os == "MacOS-Intel":
         command = [
             "pyinstaller",
@@ -62,8 +66,11 @@ if __name__ == "__main__":
             "--hidden-import=ttkbootstrap",
         ]
         subprocess.run(command, check=True)
-        create_zip(f'dist/TOTK Optimizer.app', f'dist/TOTK_Optimizer_{latest_version}_MacOS_Intel.zip')
-    
+
+        os.mkdir('dist/archive')
+        os.rename('dist/TOTK Optimizer.app', 'dist/archive/TOTK Optimizer.app',)
+        create_zip('dist/archive', f'dist/TOTK_Optimizer_{latest_version}_MacOS_Intel.zip')
+
     elif args.os == "MacOS-Silicon":
         command = [
             "pyinstaller",
@@ -82,8 +89,11 @@ if __name__ == "__main__":
             "--hidden-import=ttkbootstrap",
         ]
         subprocess.run(command, check=True)
-        create_zip(f'dist/TOTK Optimizer.app', f'dist/TOTK_Optimizer_{latest_version}_MacOS_Silicon.zip')
+
+        os.mkdir('dist/archive')
+        os.rename('dist/TOTK Optimizer.app', 'dist/archive/TOTK Optimizer.app',)
+        create_zip('dist/archive', f'dist/TOTK_Optimizer_{latest_version}_MacOS_Silicon.zip')
 
     # Remove unnecessary files
-    if os.path.exists("./dist/TOTK Optimizer"): shutil.rmtree("./dist/TOTK Optimizer")
-    if os.path.exists("./dist/TOTK Optimizer.app"): shutil.rmtree("./dist/TOTK Optimizer.app")
+    if os.path.exists("dist/TOTK Optimizer"): shutil.rmtree("dist/TOTK Optimizer")
+    if os.path.exists("dist/archive"): shutil.rmtree("dist/archive")
