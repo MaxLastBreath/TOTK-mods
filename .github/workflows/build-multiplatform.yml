@@ -29,7 +29,7 @@ jobs:
           os: macos-latest-large
           artifactsPath: ./src/dist/*.zip
         - name: MacOS arm64
-          os: macos-latest-xlarget
+          os: macos-latest
           artifactsPath: ./src/dist/*.zip
         # - name: Windows_dir
         #   os: windows-latest
