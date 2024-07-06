@@ -37,7 +37,7 @@ if __name__ == "__main__":
     elif platform.system() == "Darwin":
         command = [
             "pyinstaller",
-            "--target-arch=universal2",
+            "--target-arch=arm64",
             "--windowed",
             "--noconfirm",
             f"--name=TOTK Optimizer",
