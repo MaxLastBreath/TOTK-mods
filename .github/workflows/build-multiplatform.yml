@@ -62,12 +62,12 @@ jobs:
     - name: Build ${{ matrix.name }}
       run: |
         cd ./src/
-        python ./compile_onedir.py --os ${{ matrix.name }}
+        python ./compile_onedir.py
       if: endsWith(matrix.name, 'dir')
     - name: Build ${{ matrix.name }}
       run: |
         cd ./src/
-        python ./compile.py  --os ${{ matrix.name }}
+        python ./compile.py  --os '${{ matrix.name }}'
       if: endsWith(matrix.name, 'dir') == false
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
