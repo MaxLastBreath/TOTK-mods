@@ -36,7 +36,9 @@ if __name__ == "__main__":
     elif platform.system() == "Darwin":
         command = [
             "pyinstaller",
-            "-w", "--windowed", "--noconsole",
+            "--onefile",
+            # Not working for some reason, will fix later.
+            # "--windowed",
             "--noconfirm",
             f"--name=TOTK Optimizer {latest_version}",
             "run.py",
