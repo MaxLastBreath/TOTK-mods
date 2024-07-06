@@ -7,7 +7,7 @@ import argparse
 latest_version = Version.strip("manager-")
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-v', '--version')
+parser.add_argument('-o', '--os')
 args = parser.parse_args()
 
 if __name__ == "__main__":
@@ -38,7 +38,7 @@ if __name__ == "__main__":
         ]
         subprocess.run(command, check=True)
     
-    elif args.version == "MacOS x86_64":
+    elif platform.system() == "Darwin" or args.os == "MacOS x86_64":
         command = [
             "pyinstaller",
             "--target-arch=x86_64",
@@ -58,7 +58,7 @@ if __name__ == "__main__":
         subprocess.run(command, check=True)
         shutil.rmtree("./dist/TOTK Optimizer")
     
-    elif args.version == "MacOS arm64":
+    elif platform.system() == "Darwin" or args.os == "MacOS arm64":
         command = [
             "pyinstaller",
             "--target-arch=arm64",
