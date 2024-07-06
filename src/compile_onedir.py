@@ -66,6 +66,7 @@ if __name__ == "__main__":
             "--target-arch=x86_64",
             "--onedir",
             "--windowed",
+            "--debug=all",
             "--noconfirm",
             f"--name=TOTK Optimizer",
             "run.py",
