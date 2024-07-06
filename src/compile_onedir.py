@@ -86,4 +86,4 @@ if __name__ == "__main__":
 
     # Remove unnecessary files
     if os.path.exists("./dist/TOTK Optimizer"): shutil.rmtree("./dist/TOTK Optimizer")
-    if os.path.exsits("./dist/TOTK Optimizer.app"): shutil.rmtree("./dist/TOTK Optimizer.app")
+    if os.path.exists("./dist/TOTK Optimizer.app"): shutil.rmtree("./dist/TOTK Optimizer.app")
