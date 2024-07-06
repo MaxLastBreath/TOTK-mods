@@ -4,7 +4,6 @@ charset-normalizer==3.3.2
 Cython==3.0.10
 GPUtil==1.4.0
 idna==3.6
-importlib==1.0.4
 macholib==1.16.3
 packaging==23.2
 patool==2.0.0
