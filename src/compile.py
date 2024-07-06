@@ -3,6 +3,7 @@ import subprocess
 import os
 from configuration.settings import *
 import argparse
+from compile_onedir import create_zip
 
 latest_version = Version.strip("manager-")
 
@@ -38,10 +39,9 @@ if __name__ == "__main__":
         ]
         subprocess.run(command, check=True)
     
-    elif args.os == "MacOS x86_64":
+    elif platform.system() == "Darwin":
         command = [
             "pyinstaller",
-            "--target-arch=x86_64",
             "--onedir",
             "--windowed",
             "--noconfirm",
@@ -56,24 +56,3 @@ if __name__ == "__main__":
             "--hidden-import=ttkbootstrap",
         ]
         subprocess.run(command, check=True)
-        shutil.rmtree("./dist/TOTK Optimizer")
-    
-    elif args.os == "MacOS arm64":
-        command = [
-            "pyinstaller",
-            "--target-arch=arm64",
-            "--onedir",
-            "--windowed",
-            "--noconfirm",
-            f"--name=TOTK Optimizer",
-            "run.py",
-            "--add-data", "GUI:GUI",
-            "--add-data", "json.data:json.data",
-            "--icon", "GUI/LOGO.icns",
-            "--hidden-import=PIL",
-            "--hidden-import=PIL._tkinter_finder",
-            "--hidden-import=PIL._tkinter",
-            "--hidden-import=ttkbootstrap",
-        ]
-        subprocess.run(command, check=True)
-        shutil.rmtree("./dist/TOTK Optimizer")

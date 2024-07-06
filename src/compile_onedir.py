@@ -43,3 +43,47 @@ if __name__ == "__main__":
         ]
         subprocess.run(command, check=True)
         create_zip(f'dist/TOTK Optimizer {latest_version}', f'dist/TOTK_Optimizer_{latest_version}_Linux.zip')
+        
+    elif args.os == "MacOS-Intel":
+        command = [
+            "pyinstaller",
+            "--target-arch=x86_64",
+            "--onedir",
+            "--windowed",
+            "--noconfirm",
+            f"--name=TOTK Optimizer",
+            "run.py",
+            "--add-data", "GUI:GUI",
+            "--add-data", "json.data:json.data",
+            "--icon", "GUI/LOGO.icns",
+            "--hidden-import=PIL",
+            "--hidden-import=PIL._tkinter_finder",
+            "--hidden-import=PIL._tkinter",
+            "--hidden-import=ttkbootstrap",
+        ]
+        subprocess.run(command, check=True)
+        create_zip(f'dist/TOTK Optimizer.app', f'dist/TOTK_Optimizer_{latest_version}_MacOS_Intel.zip')
+    
+    elif args.os == "MacOS-Silicon":
+        command = [
+            "pyinstaller",
+            "--target-arch=arm64",
+            "--onedir",
+            "--windowed",
+            "--noconfirm",
+            f"--name=TOTK Optimizer S",
+            "run.py",
+            "--add-data", "GUI:GUI",
+            "--add-data", "json.data:json.data",
+            "--icon", "GUI/LOGO.icns",
+            "--hidden-import=PIL",
+            "--hidden-import=PIL._tkinter_finder",
+            "--hidden-import=PIL._tkinter",
+            "--hidden-import=ttkbootstrap",
+        ]
+        subprocess.run(command, check=True)
+        create_zip(f'dist/TOTK Optimizer.app', f'dist/TOTK_Optimizer_{latest_version}_MacOS_Silicon.zip')
+
+    # Remove unnecessary files
+    shutil.rmtree("./dist/TOTK Optimizer")
+    shutil.rmtree("./dist/TOTK Optimizer.app")

@@ -19,24 +19,24 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        # - name: Windows
-        #   os: windows-latest
-        #   artifactsPath: ./src/dist/*.exe
-        # - name: Linux
-        #   os: ubuntu-20.04
-        #   artifactsPath: ./src/dist/*.AppImage
-        - name: MacOS x86_64
+        - name: Windows
+          os: windows-latest
+          artifactsPath: ./src/dist/*.exe
+        - name: Linux
+          os: ubuntu-20.04
+          artifactsPath: ./src/dist/*.AppImage
+        - name: MacOS-Intel
           os: macos-latest-large
           artifactsPath: ./src/dist/*.zip
-        - name: MacOS arm64
+        - name: MacOS-Silicon
           os: macos-latest
           artifactsPath: ./src/dist/*.zip
-        # - name: Windows_dir
-        #   os: windows-latest
-        #   artifactsPath: ./src/dist/*.zip
-        # - name: Linux_dir
-        #   os: ubuntu-20.04
-        #   artifactsPath: ./src/dist/*.zip
+        - name: Windows_dir
+          os: windows-latest
+          artifactsPath: ./src/dist/*.zip
+        - name: Linux_dir
+          os: ubuntu-20.04
+          artifactsPath: ./src/dist/*.zip
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
@@ -62,13 +62,13 @@ jobs:
     - name: Build ${{ matrix.name }}
       run: |
         cd ./src/
-        python ./compile_onedir.py
-      if: endsWith(matrix.name, 'dir')
+        python ./compile_onedir.py --os '${{ matrix.name }}'
+      if: ${{ endsWith(matrix.name, 'dir') && !startsWith(matrix.name, 'MacOS') }}
     - name: Build ${{ matrix.name }}
       run: |
         cd ./src/
-        python ./compile.py  --os '${{ matrix.name }}'
-      if: endsWith(matrix.name, 'dir') == false
+        python ./compile.py
+      if: ${{ !endsWith(matrix.name, 'dir') || !startsWith(matrix.name, 'MacOS') }}
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
