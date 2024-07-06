@@ -19,24 +19,24 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        # - name: Windows
-        #   os: windows-latest
-        #   artifactsPath: ./src/dist/*.exe
-        # - name: Linux
-        #   os: ubuntu-20.04
-        #   artifactsPath: ./src/dist/*.AppImage
-        - name: MacOS-Intel
+        - name: Windows
+          os: windows-latest
+          artifactsPath: ./src/dist/*.exe
+        - name: Linux
+          os: ubuntu-20.04
+          artifactsPath: ./src/dist/*.AppImage
+        - name: MacOS Intel
           os: macos-latest-large
           artifactsPath: ./src/dist/*.zip
-        # - name: MacOS-Silicon
-        #   os: macos-latest
-        #   artifactsPath: ./src/dist/*.zip
-        # - name: Windows_dir
-        #   os: windows-latest
-        #   artifactsPath: ./src/dist/*.zip
-        # - name: Linux_dir
-        #   os: ubuntu-20.04
-        #   artifactsPath: ./src/dist/*.zip
+        - name: MacOS Silicon
+          os: macos-latest
+          artifactsPath: ./src/dist/*.zip
+        - name: Windows_dir
+          os: windows-latest
+          artifactsPath: ./src/dist/*.zip
+        - name: Linux_dir
+          os: ubuntu-20.04
+          artifactsPath: ./src/dist/*.zip
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
@@ -58,16 +58,16 @@ jobs:
       if: startsWith(matrix.name, 'MacOS' )
       run: |
         python -m pip install --upgrade pip
-        pip install requests patool screeninfo packaging wmi GPUtil importlib psutil pyinstaller https://github.com/MaxLastBreath/ttkbootstrapFIX/zipball/master
+        pip install requests patool screeninfo packaging wmi GPUtil psutil pyinstaller https://github.com/MaxLastBreath/ttkbootstrapFIX/zipball/master
     - name: Build ${{ matrix.name }}
       run: |
         cd ./src/
-        python ./compile_onedir.py --os '${{ matrix.name }}'
+        python ./compile_onedir.py --version ${{ inputs.tag }}
       if: ${{ endsWith(matrix.name, 'dir') || startsWith(matrix.name, 'MacOS') }}
     - name: Build ${{ matrix.name }}
       run: |
         cd ./src/
-        python ./compile.py
+        python ./compile.py --version ${{ inputs.tag }}
       if: ${{ !endsWith(matrix.name, 'dir') && !startsWith(matrix.name, 'MacOS') }}
     - name: Upload artifacts
       uses: actions/upload-artifact@v3

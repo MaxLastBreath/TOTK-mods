@@ -44,7 +44,6 @@ if __name__ == "__main__":
             "--icon", "GUI/LOGO.ico"
         ]
         subprocess.run(command, shell=True)
-        create_zip(f'dist/TOTK Optimizer {latest_version}', f'dist/TOTK_Optimizer_{latest_version}_Windows.zip')
     elif platform.system() == "Linux":
         command = [
             "pyinstaller",
@@ -60,36 +59,11 @@ if __name__ == "__main__":
         ]
         subprocess.run(command, check=True)
         create_zip(f'dist/TOTK Optimizer {latest_version}', f'dist/TOTK_Optimizer_{latest_version}_Linux.zip')
-    elif args.os == "MacOS-Intel":
+
+    elif platform.system() == "Darwin":
         command = [
             "pyinstaller",
-            "--target-arch=x86_64",
-            "--onedir",
-            "--windowed",
-            "--debug=all",
-            "--noconfirm",
-            f"--name=TOTK Optimizer",
-            "run.py",
-            "--add-data", "GUI:GUI",
-            "--add-data", "json.data:json.data",
-            "--icon", "GUI/LOGO.icns",
-            "--hidden-import=PIL",
-            "--hidden-import=PIL._tkinter_finder",
-            "--hidden-import=PIL._tkinter",
-            "--hidden-import=ttkbootstrap",
-        ]
-        subprocess.run(command, check=True)
-        if os.path.exists("dist/TOTK Optimizer"): delete_directory("dist/TOTK Optimizer")
-
-        os.mkdir('dist/archive')
-        os.rename('dist/TOTK Optimizer.app', 'dist/archive/TOTK Optimizer.app')
-        create_zip('dist/archive', f'dist/TOTK_Optimizer_{latest_version}_MacOS_Intel.zip')
-
-    elif args.os == "MacOS-Silicon":
-        command = [
-            "pyinstaller",
-            "--target-arch=arm64",
-            "--onedir",
+            "--onefile",
             "--windowed",
             "--noconfirm",
             f"--name=TOTK Optimizer",
@@ -99,16 +73,18 @@ if __name__ == "__main__":
             "--icon", "GUI/LOGO.icns",
             "--hidden-import=PIL",
             "--hidden-import=PIL._tkinter_finder",
-            "--hidden-import=PIL._tkinter",
             "--hidden-import=ttkbootstrap",
         ]
         subprocess.run(command, check=True)
-        if os.path.exists("dist/TOTK Optimizer"): delete_directory("dist/TOTK Optimizer")
+
+        processor = "Silicon"
+        if platform.processor() == "i386":
+            processor = "Intel"
 
         os.mkdir('dist/archive')
         os.rename('dist/TOTK Optimizer.app', 'dist/archive/TOTK Optimizer.app')
-        create_zip('dist/archive', f'dist/TOTK_Optimizer_{latest_version}_MacOS_Silicon.zip')
+        create_zip('dist/archive', f'dist/TOTK_Optimizer_{latest_version}_MacOS_{processor}.zip')
 
-    # Remove unnecessary files
-    if os.path.exists("dist/TOTK Optimizer"): delete_directory("dist/TOTK Optimizer")
-    if os.path.exists("dist/archive"): delete_directory("dist/archive")
+        # Remove unnecessary files
+        if os.path.exists("dist/TOTK Optimizer"): os.remove("dist/TOTK Optimizer")
+        if os.path.exists("dist/archive"): delete_directory("dist/archive")

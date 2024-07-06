@@ -36,7 +36,7 @@ if __name__ == "__main__":
     elif platform.system() == "Darwin":
         command = [
             "pyinstaller",
-            "--onedir",
+            "--onefile",
             "--windowed",
             "--noconfirm",
             f"--name=TOTK Optimizer",
@@ -46,7 +46,7 @@ if __name__ == "__main__":
             "--icon", "GUI/LOGO.icns",
             "--hidden-import=PIL",
             "--hidden-import=PIL._tkinter_finder",
-            "--hidden-import=PIL._tkinter",
             "--hidden-import=ttkbootstrap",
         ]
         subprocess.run(command, check=True)
+        if os.path.exists("dist/TOTK Optimizer"): os.remove("dist/TOTK Optimizer")
