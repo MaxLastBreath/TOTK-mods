@@ -85,5 +85,5 @@ if __name__ == "__main__":
         create_zip(f'dist/TOTK Optimizer.app', f'dist/TOTK_Optimizer_{latest_version}_MacOS_Silicon.zip')
 
     # Remove unnecessary files
-    shutil.rmtree("./dist/TOTK Optimizer")
-    shutil.rmtree("./dist/TOTK Optimizer.app")
+    if os.path.exists("./dist/TOTK Optimizer"): shutil.rmtree("./dist/TOTK Optimizer")
+    if os.path.exsits("./dist/TOTK Optimizer.app"): shutil.rmtree("./dist/TOTK Optimizer.app")
