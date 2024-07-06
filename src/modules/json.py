@@ -149,7 +149,7 @@ try:
             os.makedirs(json_path)
         try:
             logging.info(f"Creating api.json file..")
-            with open(os.path.join(macos_path, "api.json"), "w", encoding="utf-8") as json_file:
+            with open(os.path.join(json_path, "api.json"), "w", encoding="utf-8") as json_file:
                 json.dump(api_json, json_file, indent=4)
         except PermissionError as e:
             logging.error(f"Permission error has been detected while "
