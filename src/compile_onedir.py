@@ -20,6 +20,18 @@ def create_zip(source_dir, dest_file):
                 zip_path = os.path.join('TOTK Optimizer', relative_path)
                 zipf.write(file_path, zip_path)
 
+def delete_directory(folder):
+    for filename in os.listdir(folder):
+        file_path = os.path.join(folder, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print('Failed to delete %s. Reason: %s' % (file_path, e))
+    os.rmdir(folder)
+
 if __name__ == "__main__":
     if platform.system() == "Windows":
         command = [
@@ -66,6 +78,7 @@ if __name__ == "__main__":
             "--hidden-import=ttkbootstrap",
         ]
         subprocess.run(command, check=True)
+        if os.path.exists("dist/TOTK Optimizer"): delete_directory("dist/TOTK Optimizer")
 
         os.mkdir('dist/archive')
         os.rename('dist/TOTK Optimizer.app', 'dist/archive/TOTK Optimizer.app',)
@@ -89,11 +102,12 @@ if __name__ == "__main__":
             "--hidden-import=ttkbootstrap",
         ]
         subprocess.run(command, check=True)
+        if os.path.exists("dist/TOTK Optimizer"): delete_directory("dist/TOTK Optimizer")
 
         os.mkdir('dist/archive')
         os.rename('dist/TOTK Optimizer.app', 'dist/archive/TOTK Optimizer.app',)
         create_zip('dist/archive', f'dist/TOTK_Optimizer_{latest_version}_MacOS_Silicon.zip')
 
     # Remove unnecessary files
-    if os.path.exists("dist/TOTK Optimizer"): shutil.rmtree("dist/TOTK Optimizer")
-    if os.path.exists("dist/archive"): shutil.rmtree("dist/archive")
+    if os.path.exists("dist/TOTK Optimizer"): delete_directory("dist/TOTK Optimizer")
+    if os.path.exists("dist/archive"): delete_directory("dist/archive")
