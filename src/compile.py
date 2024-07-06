@@ -2,6 +2,7 @@ import platform
 import subprocess
 import os
 from configuration.settings import *
+from compile_onedir import create_zip
 latest_version = Version.strip("manager-")
 
 
