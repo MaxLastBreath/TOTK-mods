@@ -68,7 +68,7 @@ jobs:
       run: |
         cd ./src/
         python ./compile.py
-      if: ${{ !endsWith(matrix.name, 'dir') || !startsWith(matrix.name, 'MacOS') }}
+      if: ${{ !endsWith(matrix.name, 'dir') && !startsWith(matrix.name, 'MacOS') }}
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
