@@ -91,7 +91,7 @@ if __name__ == "__main__":
             "--onedir",
             "--windowed",
             "--noconfirm",
-            f"--name=TOTK Optimizer S",
+            f"--name=TOTK Optimizer",
             "run.py",
             "--add-data", "GUI:GUI",
             "--add-data", "json.data:json.data",
@@ -103,7 +103,6 @@ if __name__ == "__main__":
         ]
         subprocess.run(command, check=True)
         if os.path.exists("dist/TOTK Optimizer"): delete_directory("dist/TOTK Optimizer")
-        subprocess.run('ls dist', check=True)
 
         os.mkdir('dist/archive')
         os.rename('dist/TOTK Optimizer.app', 'dist/archive/TOTK Optimizer.app')
