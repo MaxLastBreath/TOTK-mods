@@ -43,3 +43,24 @@ if __name__ == "__main__":
         ]
         subprocess.run(command, check=True)
         create_zip(f'dist/TOTK Optimizer {latest_version}', f'dist/TOTK_Optimizer_{latest_version}_Linux.zip')
+
+    elif platform.system() == "Darwin":
+        command = [
+            "pyinstaller",
+            # Pillow doesn't support Universal build
+            # Only support MacOS x86_64
+            # "--target-arch=universal2",
+            "--windowed",
+            "--noconfirm",
+            f"--name=TOTK Optimizer",
+            "run.py",
+            "--add-data", "GUI:GUI",
+            "--add-data", "json.data:json.data",
+            "--icon", "GUI/LOGO.icns",
+            "--hidden-import=PIL",
+            "--hidden-import=PIL._tkinter_finder",
+            "--hidden-import=PIL._tkinter",
+            "--hidden-import=ttkbootstrap",
+        ]
+        subprocess.run(command, check=True)
+        create_zip(f'dist/TOTK Optimizer {latest_version}.app', f'dist/TOTK_Optimizer_{latest_version}_MacOS.zip')
