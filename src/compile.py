@@ -37,7 +37,7 @@ if __name__ == "__main__":
         command = [
             "pyinstaller",
             "--onefile",
-            # Not working for some reason, will fix
+            # Not working for some reason, will fix later.
             # "--windowed",
             "--noconfirm",
             f"--name=TOTK Optimizer {latest_version}",
