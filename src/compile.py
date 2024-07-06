@@ -38,7 +38,7 @@ if __name__ == "__main__":
         ]
         subprocess.run(command, check=True)
     
-    elif platform.system() == "Darwin" or args.os == "MacOS x86_64":
+    elif args.os == "MacOS x86_64":
         command = [
             "pyinstaller",
             "--target-arch=x86_64",
@@ -58,7 +58,7 @@ if __name__ == "__main__":
         subprocess.run(command, check=True)
         shutil.rmtree("./dist/TOTK Optimizer")
     
-    elif platform.system() == "Darwin" or args.os == "MacOS arm64":
+    elif args.os == "MacOS arm64":
         command = [
             "pyinstaller",
             "--target-arch=arm64",
