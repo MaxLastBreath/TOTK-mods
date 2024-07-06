@@ -5,7 +5,6 @@ from configuration.settings import *
 from compile_onedir import create_zip
 latest_version = Version.strip("manager-")
 
-
 if __name__ == "__main__":
     if platform.system() == "Windows":
         command = [
@@ -34,7 +33,6 @@ if __name__ == "__main__":
         ]
         subprocess.run(command, check=True)
     
-
     elif platform.system() == "Darwin":
         command = [
             "pyinstaller",

@@ -31,7 +31,7 @@ jobs:
         # - name: Linux_dir
         #   os: ubuntu-20.04
         #   artifactsPath: ./src/dist/*.zip
-        - name: MacOS
+        - name: Darwin
           os: macos-latest
           artifactsPath: ./src/dist/*.zip
     runs-on: ${{ matrix.os }}
