@@ -81,7 +81,7 @@ if __name__ == "__main__":
         if os.path.exists("dist/TOTK Optimizer"): delete_directory("dist/TOTK Optimizer")
 
         os.mkdir('dist/archive')
-        os.rename('dist/TOTK Optimizer.app', 'dist/archive/TOTK Optimizer.app',)
+        os.rename('dist/TOTK Optimizer.app', 'dist/archive/TOTK Optimizer.app')
         create_zip('dist/archive', f'dist/TOTK_Optimizer_{latest_version}_MacOS_Intel.zip')
 
     elif args.os == "MacOS-Silicon":
@@ -103,9 +103,10 @@ if __name__ == "__main__":
         ]
         subprocess.run(command, check=True)
         if os.path.exists("dist/TOTK Optimizer"): delete_directory("dist/TOTK Optimizer")
+        subprocess.run('ls', check=True)
 
         os.mkdir('dist/archive')
-        os.rename('dist/TOTK Optimizer.app', 'dist/archive/TOTK Optimizer.app',)
+        os.rename('dist/TOTK Optimizer.app', 'dist/archive/TOTK Optimizer.app')
         create_zip('dist/archive', f'dist/TOTK_Optimizer_{latest_version}_MacOS_Silicon.zip')
 
     # Remove unnecessary files
