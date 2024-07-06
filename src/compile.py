@@ -36,11 +36,9 @@ if __name__ == "__main__":
     elif platform.system() == "Darwin":
         command = [
             "pyinstaller",
-            "--onefile",
-            # Not working for some reason, will fix later.
-            # "--windowed",
+            "--windowed",
             "--noconfirm",
-            f"--name=TOTK Optimizer {latest_version}",
+            f"--name=TOTK Optimizer",
             "run.py",
             "--add-data", "GUI:GUI",
             "--add-data", "json.data:json.data",
@@ -48,6 +46,6 @@ if __name__ == "__main__":
             "--hidden-import=PIL",
             "--hidden-import=PIL._tkinter_finder",
             "--hidden-import=PIL._tkinter",
-            "--hidden-import=ttkbootstrap"
+            "--hidden-import=ttkbootstrap",
         ]
         subprocess.run(command, check=True)

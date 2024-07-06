@@ -3,11 +3,20 @@ import sys
 import platform
 import psutil
 import GPUtil
+import os
 from modules.scaling import *
-
+from modules.macos import macos_path
 
 def start_logger():
-    logging.basicConfig(filename="logger.txt",
+    filename = "logger.txt"
+
+    # Set custom path for MacOS to avoid crash
+    if platform.system() == "Darwin":
+        if not os.path.exists(macos_path):
+            os.makedirs(macos_path)
+        filename = os.path.join(macos_path, filename)
+
+    logging.basicConfig(filename=filename,
                         filemode='a',
                         format='TIME: %(asctime)s,%(msecs)d - %(name)s - %(levelname)s: %(message)s',
                         datefmt='%H:%M:%S',
@@ -15,6 +24,7 @@ def start_logger():
     new_logger = logging.getLogger('LOGGER')
     logging.getLogger('LOGGER').addHandler(logging.StreamHandler(sys.stdout))
     return new_logger
+
 log = start_logger()
 
 try:
