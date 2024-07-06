@@ -19,18 +19,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - name: Windows
-          os: windows-latest
-          artifactsPath: ./src/dist/*.exe
-        - name: Linux
-          os: ubuntu-20.04
-          artifactsPath: ./src/dist/*.AppImage
-        - name: Windows_dir
-          os: windows-latest
-          artifactsPath: ./src/dist/*.zip
-        - name: Linux_dir
-          os: ubuntu-20.04
-          artifactsPath: ./src/dist/*.zip
+        # - name: Windows
+        #   os: windows-latest
+        #   artifactsPath: ./src/dist/*.exe
+        # - name: Linux
+        #   os: ubuntu-20.04
+        #   artifactsPath: ./src/dist/*.AppImage
+        # - name: Windows_dir
+        #   os: windows-latest
+        #   artifactsPath: ./src/dist/*.zip
+        # - name: Linux_dir
+        #   os: ubuntu-20.04
+        #   artifactsPath: ./src/dist/*.zip
         - name: MacOS
           os: macos-latest
           artifactsPath: ./src/dist/*.zip

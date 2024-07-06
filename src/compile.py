@@ -32,3 +32,23 @@ if __name__ == "__main__":
             "--hidden-import=ttkbootstrap"
         ]
         subprocess.run(command, check=True)
+    
+
+    elif platform.system() == "Darwin":
+        command = [
+            "pyinstaller",
+            "--target-arch=universal2",
+            "--windowed",
+            "--noconfirm",
+            f"--name=TOTK Optimizer",
+            "run.py",
+            "--add-data", "GUI:GUI",
+            "--add-data", "json.data:json.data",
+            "--icon", "GUI/LOGO.icns",
+            "--hidden-import=PIL",
+            "--hidden-import=PIL._tkinter_finder",
+            "--hidden-import=PIL._tkinter",
+            "--hidden-import=ttkbootstrap",
+        ]
+        subprocess.run(command, check=True)
+        create_zip(f'dist/TOTK Optimizer.app', f'dist/TOTK_Optimizer_{latest_version}_MacOS.zip')
