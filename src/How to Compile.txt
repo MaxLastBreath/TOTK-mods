@@ -12,6 +12,10 @@ For Linux
 
 pyinstaller run.py --onefile --name TOTK_Mod_Manager --add-data "GUI:GUI" --hidden-import PIL --hidden-import PIL._tkinter_finder --hidden-import PIL._tkinter
 
+For MacOS
+
+pyinstaller run.py --onefile --name TOTK_Mod_Manager --add-data "GUI:GUI" --add-data "json.data:json.data" --windowed
+
 For Linux users aiming to generate Windows executable files or Windows users aiming to create Linux AppImage files, you can utilize the Docker image available for building purposes.
 
 Please refer to the following repository for guidance: https://github.com/batonogov/docker-pyinstaller
