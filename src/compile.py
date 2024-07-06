@@ -43,5 +43,9 @@ if __name__ == "__main__":
             "--add-data", "GUI:GUI",
             "--add-data", "json.data:json.data",
             "--icon", "GUI/LOGO.icns",
+            "--hidden-import=PIL",
+            "--hidden-import=PIL._tkinter_finder",
+            "--hidden-import=PIL._tkinter",
+            "--hidden-import=ttkbootstrap"
         ]
         subprocess.run(command, check=True)
