@@ -47,7 +47,7 @@ def checkpath(self, mode):
                 self.Globaldir = os.path.join(new_path, "data", "yuzu")
 
             # Check for flatpack version of Torzu
-            if os.path.exist(flatpak_torzu):
+            if os.path.exists(flatpak_torzu):
                 log.info("Detected a Legacy flatpack of Torzu!") 
                 self.configdir = os.path.join(flatpak_torzu, "qt-config.ini")
                 self.TOTKconfig = os.path.join(flatpak_torzu, "custom")
