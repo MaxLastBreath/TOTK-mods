@@ -88,6 +88,6 @@ if __name__ == "__main__":
         create_zip('dist/archive', f'dist/TOTK_Optimizer_{latest_version}_MacOS_{processor}.zip')
 
     # Remove unnecessary files
-    if os.path.exists("dist/TOTK Optimizer"): os.remove("dist/TOTK Optimizer")
-    if os.path.exists(f'dist/TOTK Optimizer {latest_version}'): os.remove(f'dist/TOTK Optimizer {latest_version}')
+    if os.path.exists("dist/TOTK Optimizer"): delete_directory("dist/TOTK Optimizer")
+    if os.path.exists(f'dist/TOTK Optimizer {latest_version}'): delete_directory(f'dist/TOTK Optimizer {latest_version}')
     if os.path.exists("dist/archive"): delete_directory("dist/archive")
