@@ -90,6 +90,6 @@ if __name__ == "__main__":
     # Remove unnecessary files
     if os.path.exists("dist/TOTK Optimizer"): 
         if os.path.isdir("dist/TOTK Optimizer"): delete_directory("dist/TOTK Optimizer")
-        else os.remove("dist/TOTK Optimizer")
+        else: os.remove("dist/TOTK Optimizer")
     if os.path.exists(f'dist/TOTK Optimizer {latest_version}'): delete_directory(f'dist/TOTK Optimizer {latest_version}')
     if os.path.exists("dist/archive"): delete_directory("dist/archive")
