@@ -1,8 +1,13 @@
 import platform
 import configparser
+import os
 from screeninfo import *
+from modules.macos import macos_path
 
 CONFIG_FILE_LOCAL_OPTIMIZER = "TOTKOptimizer.ini"
+
+if platform.system() == "Darwin":
+    localconfig = os.path.join(macos_path, CONFIG_FILE_LOCAL_OPTIMIZER)
 
 config = configparser.ConfigParser()
 config.read(CONFIG_FILE_LOCAL_OPTIMIZER)

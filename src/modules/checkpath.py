@@ -25,6 +25,7 @@ def checkpath(self, mode):
     if self.os_platform == "Linux":
         if mode == "Legacy":
             flatpak = os.path.join(home_directory, ".var", "app", "org.yuzu_emu.yuzu", "config", "yuzu")
+            flatpak_torzu = os.path.join(home_directory, ".var", "app", "onion.torzu_emu.torzu", "config", "yuzu")
             steamdeckdir = os.path.join(home_directory, ".config", "yuzu", "qt-config.ini")
 
             self.Globaldir = os.path.join(home_directory, ".local", "share", "yuzu")
@@ -43,6 +44,14 @@ def checkpath(self, mode):
                 self.configdir = os.path.join(flatpak, "qt-config.ini")
                 self.TOTKconfig = os.path.join(flatpak, "custom")
                 new_path = os.path.dirname(os.path.dirname(flatpak))
+                self.Globaldir = os.path.join(new_path, "data", "yuzu")
+
+            # Check for flatpack version of Torzu
+            if os.path.exists(flatpak_torzu):
+                log.info("Detected a Legacy flatpack of Torzu!") 
+                self.configdir = os.path.join(flatpak_torzu, "qt-config.ini")
+                self.TOTKconfig = os.path.join(flatpak_torzu, "custom")
+                new_path = os.path.dirname(os.path.dirname(flatpak_torzu))
                 self.Globaldir = os.path.join(new_path, "data", "yuzu")
 
             config_parser = configparser.ConfigParser()
@@ -172,8 +181,21 @@ def checkpath(self, mode):
                 self.nand_dir = os.path.join(f"{self.Globaldir}", "bis", "user", "save")
                 self.load_dir = os.path.join(f"{self.Globaldir}", "mods", "contents", "0100f2C0115b6000")
                 self.sdmc_dir = os.path.join(f"{self.Globaldir}", "sdcard")
-                self.Legacydir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", "0100f2C0115B6000")
+                self.Legacydir = self.load_dir
                 return
+    elif self.os_platform == "Darwin":
+        if mode == "Ryujinx":
+            self.Globaldir = os.path.join(home_directory, "Library", "Application Support", "Ryujinx")
+            self.configdir = None
+            self.TOTKconfig = None
+            self.ryujinx_config = os.path.join(self.Globaldir, "Config.json")
+            self.nand_dir = os.path.join(f"{self.Globaldir}", "bis", "user", "save")
+            self.sdmc_dir = os.path.join(f"{self.Globaldir}", "sdcard")
+            self.load_dir = os.path.join(f"{self.Globaldir}", "mods", "contents", "0100f2C0115B6000")
+            self.Legacydir = self.load_dir
+            return
+
+
     # Ensure the path exists.
     try:
         # attempt to create qt-config.ini directories in case they don't exist. Give error to warn user
@@ -196,6 +218,8 @@ def DetectOS(self, mode):
             else:
                 log.warning("qt-config.ini not found, the script will assume default appdata directories, "
                             "please reopen Legacy for consistency and make sure TOTK is present..!")
+    elif self.os_platform == "Darwin":
+        log.info("Detected a MacOS based SYSTEM!")
 
 def load_Legacy_path(self, config_file):
     if self.mode == "Legacy":

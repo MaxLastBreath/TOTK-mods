@@ -12,6 +12,9 @@ repo_url_raw = 'https://github.com/MaxLastBreath/TOTK-mods'
 repo_url = 'https://api.github.com/repos/MaxLastBreath/TOTK-mods'
 localconfig = "TOTKOptimizer.ini"
 
+if platform.system() == "Darwin":
+    localconfig = os.path.join(macos_path, localconfig)
+
 # Read Config File.
 font = ""
 theme = ""

@@ -36,6 +36,10 @@ class Manager:
         self.mode = config.get("Mode", "managermode", fallback="Legacy")
         self.all_pages = ["main", "extra", "randomizer"]
 
+        # Force to Ryujinx default
+        if platform.system() == "Darwin":
+            self.mode = "Ryujinx"
+
         # Set neccesary variables.
         self.Curr_Benchmark = None
         self.Legacydir = None
@@ -712,6 +716,7 @@ class Manager:
         canvas.create_image(0, 0, anchor="nw", image=self.background_UI_Cheats, tags="overlay")
 
     def switchmode(self, command="true"):
+        
         if command == "true":
             if self.mode == "Legacy":
                 self.mode = "Ryujinx"
@@ -719,9 +724,12 @@ class Manager:
                     canvas.itemconfig("overlay-1", image=self.background_RyuBG)
                     canvas.itemconfig("information", text=f"{self.mode} TOTK Optimizer")
                     canvas.itemconfig("Legacy", state="hidden")
-                self.switch_text.set("Switch to Legacy")
+                if self.os_platform == "Darwin":
+                    self.switch_text.set("Only Ryujinx supported")
+                else:
+                    self.switch_text.set("Switch to Legacy")
                 return
-            elif self.mode == "Ryujinx":
+            elif self.mode == "Ryujinx" and self.os_platform != "Darwin":
                 self.mode = "Legacy"
                 for canvas in self.all_canvas:
                     canvas.itemconfig("overlay-1", image=self.background_LegacyBG)
@@ -736,7 +744,10 @@ class Manager:
                     canvas.itemconfig("overlay-1", image=self.background_RyuBG)
                     canvas.itemconfig("information", text=f"{self.mode} TOTK Optimizer")
                     canvas.itemconfig("Legacy", state="hidden")
-                self.switch_text.set("Switch to Legacy")
+                if self.os_platform == "Darwin":
+                    self.switch_text.set("Only Ryujinx supported")
+                else:
+                    self.switch_text.set("Switch to Legacy")
                 return
         elif command == "Mode":
             return self.mode

@@ -9,13 +9,23 @@ import logging
 from packaging.version import parse
 from modules.download import get_zip_list_and_dict
 from modules.logger import *
+from modules.macos import macos_path
 
 localconfig = "TOTKOptimizer.ini"
 ask_again = "Yes"
+
+if platform.system() == "Darwin":
+    localconfig = os.path.join(macos_path, localconfig)
+
 def load_json(name, url):
     global ask_again
     # Check if the .presets folder exists, if not, create it
     presets_folder = "json.data"
+
+    # Once again, set custom path for MacOS to avoid crash
+    if platform.system() == "Darwin":
+        presets_folder = os.path.join(macos_path, presets_folder)
+
     if not os.path.exists(presets_folder):
         os.makedirs(presets_folder)
 
@@ -69,6 +79,9 @@ def fetch_local_json(name):
     else:
         base_path = os.path.dirname(os.path.abspath(__file__))
         base_path = os.path.dirname(base_path)
+    
+    if platform.system() == "Darwin":
+        base_path = macos_path
 
     return os.path.join(base_path, f'json.data/{name}')
 
@@ -127,16 +140,21 @@ try:
             "DFPS_dict": DFPS_dict
         }
         logging.info(f"Attempting to create api.json.")
-        if not os.path.exists("json.data"):
-            os.makedirs("json.data")
+        json_path = "json.data"
+
+        if platform.system() == "Darwin":
+            json_path = os.path.join(macos_path, json_path)
+
+        if not os.path.exists(json_path):
+            os.makedirs(json_path)
         try:
             logging.info(f"Creating api.json file..")
-            with open("json.data/api.json", "w", encoding="utf-8") as json_file:
+            with open(os.path.join(json_path, "api.json"), "w", encoding="utf-8") as json_file:
                 json.dump(api_json, json_file, indent=4)
         except PermissionError as e:
             logging.error(f"Permission error has been detected while "
                           f"creating api.json, attempting to delete api.json.")
-            shutil.rmtree("json.data/api.json")
+            shutil.rmtree(os.path.join(json_path, "api.json"))
         # Save Time.
         if not time_config.has_section("Time"):
             time_config["Time"] = {}
