@@ -25,10 +25,7 @@ jobs:
         - name: Linux
           os: ubuntu-20.04
           artifactsPath: ./src/dist/*.AppImage
-        - name: MacOS Intel
-          os: macos-latest-large
-          artifactsPath: ./src/dist/*.zip
-        - name: MacOS Silicon
+        - name: MacOS
           os: macos-latest
           artifactsPath: ./src/dist/*.zip
         - name: Windows_dir
