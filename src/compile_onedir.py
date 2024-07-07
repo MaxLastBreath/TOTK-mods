@@ -44,7 +44,7 @@ if __name__ == "__main__":
             "--icon", "GUI/LOGO.ico"
         ]
         subprocess.run(command, shell=True)
-        create_zip(f'dist/TOTK Optimizer {latest_version}', f'dist/TOTK_Optimizer_{latest_version}_Linux.zip')
+        create_zip(f'dist/TOTK Optimizer {latest_version}', f'dist/TOTK_Optimizer_{latest_version}_Windows.zip')
 
     elif platform.system() == "Linux":
         command = [
