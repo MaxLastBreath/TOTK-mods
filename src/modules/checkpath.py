@@ -25,6 +25,7 @@ def checkpath(self, mode):
     if self.os_platform == "Linux":
         if mode == "Legacy":
             flatpak = os.path.join(home_directory, ".var", "app", "org.yuzu_emu.yuzu", "config", "yuzu")
+            flatpak_torzu = os.path.join(home_directory, ".var", "app", "onion.torzu_emu.torzu", "config", "yuzu")
             steamdeckdir = os.path.join(home_directory, ".config", "yuzu", "qt-config.ini")
 
             self.Globaldir = os.path.join(home_directory, ".local", "share", "yuzu")
@@ -43,6 +44,14 @@ def checkpath(self, mode):
                 self.configdir = os.path.join(flatpak, "qt-config.ini")
                 self.TOTKconfig = os.path.join(flatpak, "custom")
                 new_path = os.path.dirname(os.path.dirname(flatpak))
+                self.Globaldir = os.path.join(new_path, "data", "yuzu")
+
+            # Check for flatpack version of Torzu
+            if os.path.exist(flatpak_torzu):
+                log.info("Detected a Legacy flatpack of Torzu!") 
+                self.configdir = os.path.join(flatpak_torzu, "qt-config.ini")
+                self.TOTKconfig = os.path.join(flatpak_torzu, "custom")
+                new_path = os.path.dirname(os.path.dirname(flatpak_torzu))
                 self.Globaldir = os.path.join(new_path, "data", "yuzu")
 
             config_parser = configparser.ConfigParser()
