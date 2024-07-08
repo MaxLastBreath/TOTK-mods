@@ -6,6 +6,8 @@ import GPUtil
 import os
 from modules.scaling import *
 from modules.macos import macos_path
+import subprocess
+import modules.hwinfo as hwinfo
 
 def start_logger():
     filename = "logger.txt"
@@ -27,12 +29,8 @@ def start_logger():
 
 log = start_logger()
 
-try:
-    gpus = GPUtil.getGPUs()
-    gpu_name = gpus[0].name
-except Exception as e:
-    log.warning(f"The GPU was not detected, nothing to be concerned about. {e}")
-    gpu_name = "Undetected"
+CPU, FREQUENCY = hwinfo.get_cpu_info()
+gpu_name = hwinfo.get_gpu_name()
 
 # Print Memory
 try:
@@ -42,16 +40,6 @@ try:
 except Exception as e:
     log.warning(f"The System Memory was not detected, nothing to be concerned about. {e}")
     total_memory = "Undetected"
-
-try:
-    import wmi
-    w = wmi.WMI()
-    CPU = w.Win32_Processor()[0].Name
-    FREQUENCY = w.Win32_PhysicalMemory()[0].ConfiguredClockSpeed
-except Exception as e:
-    CPU = "Linux Undetected"
-    FREQUENCY = ""
-    log.info("Failed to import wmi, most likely LINUX.")
 
 log.info(f"\n\n\n\nAttempting to start Application.\n"
          f"__SystemINFO__\n"
