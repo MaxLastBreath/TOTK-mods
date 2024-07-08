@@ -44,6 +44,8 @@ if __name__ == "__main__":
             "--icon", "GUI/LOGO.ico"
         ]
         subprocess.run(command, shell=True)
+        create_zip(f'dist/TOTK Optimizer {latest_version}', f'dist/TOTK_Optimizer_{latest_version}_Windows.zip')
+
     elif platform.system() == "Linux":
         command = [
             "pyinstaller",
@@ -85,6 +87,9 @@ if __name__ == "__main__":
         os.rename('dist/TOTK Optimizer.app', 'dist/archive/TOTK Optimizer.app')
         create_zip('dist/archive', f'dist/TOTK_Optimizer_{latest_version}_MacOS_{processor}.zip')
 
-        # Remove unnecessary files
-        if os.path.exists("dist/TOTK Optimizer"): os.remove("dist/TOTK Optimizer")
-        if os.path.exists("dist/archive"): delete_directory("dist/archive")
+    # Remove unnecessary files
+    if os.path.exists("dist/TOTK Optimizer"): 
+        if os.path.isdir("dist/TOTK Optimizer"): delete_directory("dist/TOTK Optimizer")
+        else: os.remove("dist/TOTK Optimizer")
+    if os.path.exists(f'dist/TOTK Optimizer {latest_version}'): delete_directory(f'dist/TOTK Optimizer {latest_version}')
+    if os.path.exists("dist/archive"): delete_directory("dist/archive")

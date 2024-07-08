@@ -27,6 +27,7 @@ def checkpath(self, mode):
             flatpak = os.path.join(home_directory, ".var", "app", "org.yuzu_emu.yuzu", "config", "yuzu")
             flatpak_torzu = os.path.join(home_directory, ".var", "app", "onion.torzu_emu.torzu", "config", "yuzu")
             steamdeckdir = os.path.join(home_directory, ".config", "yuzu", "qt-config.ini")
+            sudachi = os.path.join(home_directory, ".local", "share", "sudachi")
 
             self.Globaldir = os.path.join(home_directory, ".local", "share", "yuzu")
             self.configdir = os.path.join(self.Globaldir, "config", "qt-config.ini")
@@ -46,6 +47,14 @@ def checkpath(self, mode):
                 new_path = os.path.dirname(os.path.dirname(flatpak))
                 self.Globaldir = os.path.join(new_path, "data", "yuzu")
 
+            # Check for sudachi version
+            if os.path.exists(sudachi):
+                log.info("Detected a Sudachi version!")
+                self.configdir = os.path.join(sudachi, "qt-config.ini")
+                self.TOTKconfig = os.path.join(sudachi, "custom")
+                new_path = os.path.dirname(os.path.dirname(sudachi))
+                self.Globaldir = os.path.join(new_path, "data", "yuzu")
+            
             # Check for flatpack version of Torzu
             if os.path.exists(flatpak_torzu):
                 log.info("Detected a Legacy flatpack of Torzu!") 
