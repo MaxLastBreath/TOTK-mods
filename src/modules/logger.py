@@ -29,8 +29,8 @@ def start_logger():
 
 log = start_logger()
 
-CPU, FREQUENCY = hwinfo.get_cpu_info()
-gpu_name = hwinfo.get_gpu_name()
+CPU, FREQUENCY = hwinfo.get_cpu_info(log)
+gpu_name = hwinfo.get_gpu_name(log)
 
 # Print Memory
 try:

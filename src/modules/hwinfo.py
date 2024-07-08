@@ -1,7 +1,7 @@
 import platform
 import subprocess
 
-def get_cpu_info() -> [str, str]:
+def get_cpu_info(log) -> [str, str]:
     try:
         if platform.system() == "Windows":
             import wmi
@@ -20,7 +20,7 @@ def get_cpu_info() -> [str, str]:
         log.warning(f"The GPU was not detected, nothing to be concerned about. {e}")
     return CPU, FREQUENCY
 
-def get_gpu_name() -> str:
+def get_gpu_name(log) -> str:
     # Ignore GPU on MacOS
     if platform.system() == "Darwin": return ""
     
@@ -30,9 +30,9 @@ def get_gpu_name() -> str:
         gpu_name = gpus[0].name
         return gpu_name
     except Exception as e:
-        return _get_gpu_name()
+        return _get_gpu_name(log)
         
-def _get_gpu_name() -> str:
+def _get_gpu_name(log) -> str:
     try: 
         if platform.system() == "Windows":
             return subprocess.run("wmic path win32_VideoController get name").split("\n")[-1]
