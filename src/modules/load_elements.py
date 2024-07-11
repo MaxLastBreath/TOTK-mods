@@ -65,7 +65,8 @@ def load_UI_elements(self, canvas):
         else:
             New_Resolution = resolution
 
-        benchmark_result = f"## **{self.Curr_Benchmark}** Tears Of The Kingdom on {platform.system()}\n"
+        system_os = "MacOS" if platform.system() == "Darwin" else platform.system()
+        benchmark_result = f"## **{self.Curr_Benchmark}** Tears Of The Kingdom on {system_os}\n"
 
         if platform.system() != "Darwin": benchmark_result += f"- **{gpu_name}**\n"
         benchmark_result += (
