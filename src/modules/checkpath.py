@@ -25,9 +25,7 @@ def checkpath(self, mode):
     if self.os_platform == "Linux":
         if mode == "Legacy":
             flatpak = os.path.join(home_directory, ".var", "app", "org.yuzu_emu.yuzu", "config", "yuzu")
-            flatpak_torzu = os.path.join(home_directory, ".var", "app", "onion.torzu_emu.torzu", "config", "yuzu")
             steamdeckdir = os.path.join(home_directory, ".config", "yuzu", "qt-config.ini")
-            sudachi = os.path.join(home_directory, ".local", "share", "sudachi")
 
             self.Globaldir = os.path.join(home_directory, ".local", "share", "yuzu")
             self.configdir = os.path.join(self.Globaldir, "config", "qt-config.ini")
@@ -39,29 +37,33 @@ def checkpath(self, mode):
                 self.configdir = steamdeckdir
                 self.TOTKconfig = os.path.join(home_directory, ".config", "yuzu", "custom")
 
-            # Check for a flatpak.
-            if os.path.exists(flatpak):
-                log.info("Detected a Legacy flatpak!")
-                self.configdir = os.path.join(flatpak, "qt-config.ini")
-                self.TOTKconfig = os.path.join(flatpak, "custom")
-                new_path = os.path.dirname(os.path.dirname(flatpak))
-                self.Globaldir = os.path.join(new_path, "data", "yuzu")
+            # Find any "Legacy Emulators"...
+            local_dir = os.path.join(home_directory, ".local", "share")
+            for folder in os.listdir(local_dir):
+                self.Globaldir = os.path.join(local_dir, folder)
+                if os.path.exists(os.path.join(self.Globaldir, "load", "0100F2C0115B6000")):
+                    print(f"Found Legacy Emu folder at: {self.Globaldir}")
+                    self.configdir = os.path.join(self.Globaldir, "qt-config.ini")
+                    self.TOTKconfig = os.path.join(self.Globaldir, "custom")
+                    new_path = os.path.dirname(os.path.dirname(self.Globaldir))
+                    self.Globaldir = os.path.join(new_path, "data", "yuzu")
+                    break
+                else:
+                    self.Globaldir = os.path.join(home_directory, ".local", "share", "yuzu")
 
-            # Check for sudachi version
-            if os.path.exists(sudachi):
-                log.info("Detected a Sudachi version!")
-                self.configdir = os.path.join(sudachi, "qt-config.ini")
-                self.TOTKconfig = os.path.join(sudachi, "custom")
-                new_path = os.path.dirname(os.path.dirname(sudachi))
-                self.Globaldir = os.path.join(new_path, "data", "yuzu")
-            
-            # Check for flatpack version of Torzu
-            if os.path.exists(flatpak_torzu):
-                log.info("Detected a Legacy flatpack of Torzu!") 
-                self.configdir = os.path.join(flatpak_torzu, "qt-config.ini")
-                self.TOTKconfig = os.path.join(flatpak_torzu, "custom")
-                new_path = os.path.dirname(os.path.dirname(flatpak_torzu))
-                self.Globaldir = os.path.join(new_path, "data", "yuzu")
+            # Find any "Legacy Emulators" on flatpak...
+            flatpak_dir = os.path.join(home_directory, ".var", "app")
+            for folder in os.listdir(local_dir):
+                self.Globaldir = os.path.join(local_dir, folder, "config", "yuzu")
+                if os.path.exists(os.path.join(self.Globaldir, "load", "0100F2C0115B6000")):
+                    print(f"Found Legacy Emu folder at: {self.Globaldir}")
+                    self.configdir = os.path.join(self.Globaldir, "qt-config.ini")
+                    self.TOTKconfig = os.path.join(self.Globaldir, "custom")
+                    new_path = os.path.dirname(os.path.dirname(self.Globaldir))
+                    self.Globaldir = os.path.join(new_path, "data", "yuzu")
+                    break
+                else:
+                    self.Globaldir = os.path.join(home_directory, ".local", "share", "yuzu")
 
             config_parser = configparser.ConfigParser()
             config_parser.read(self.configdir, encoding="utf-8")
