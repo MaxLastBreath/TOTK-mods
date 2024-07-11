@@ -1,3 +1,5 @@
+import pyperclip
+
 from configuration.settings import *
 from modules.benchmarks import *
 from modules.util import *
@@ -77,16 +79,7 @@ def load_UI_elements(self, canvas):
             f"- 0.1% Lows **{self.benchmarks[self.Curr_Benchmark]['0.1% Lowest FPS']}** FPS\n"
         )
 
-        if platform.system() == "Windows":
-            subprocess.run(['clip'], input=benchmark_result.strip().encode('utf-16'), check=True)
-        elif platform.system() == "Darwin":
-            subprocess.run(['pbcopy'], input=benchmark_result.encode('utf-8'), check=True)
-        elif platform.system() == "Linux":
-            try:
-                subprocess.run(['xclip', '-in'], input=benchmark_result.encode('utf-8'), check=True)
-            except FileNotFoundError:
-                subprocess.run(['xsel', '-i'], input=benchmark_result.encode('utf-8'), check=True)
-
+        pyperclip.copy(benchmark_result)
     self.on_canvas.create_label(
         master=self.window, canvas=canvas,
         text=f"{gpu_name}\n"
