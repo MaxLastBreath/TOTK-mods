@@ -53,26 +53,38 @@ def load_UI_elements(self, canvas):
         resolution = self.BEYOND_Patches["resolution"].get()
         shadows = int(self.BEYOND_Patches["shadow resolution"].get().split("x")[0])
 
-        ARR = self.BEYOND_Patches["aspect ratio"].get().split("x")
-        New_Resolution = patch_info["resolution"]["Values"][
-            patch_info["resolution"]["Name_Values"].index(resolution)].split("x")
-        New_Resolution = convert_resolution(int(New_Resolution[0]), int(New_Resolution[1]), int(ARR[0]), int(ARR[1]))
+        New_Resolution = ""
+        if "aspect ratio" in self.BEYOND_Patches:
+            ARR = self.BEYOND_Patches["aspect ratio"].get().split("x")
+            Resolution = patch_info["resolution"]["Values"][
+                patch_info["resolution"]["Name_Values"].index(resolution)].split("x")
+            Resolution = convert_resolution(int(Resolution[0]), int(Resolution[1]), int(ARR[0]),
+                                                int(ARR[1]))
+            New_Resolution = f"{Resolution[0]}x{Resolution[1]}"
+        else:
+            New_Resolution = resolution
 
-        log.info(self.Curr_Benchmark)
         benchmark_result = (
                                 f"## **{self.Curr_Benchmark}** Tears Of The Kingdom on {platform.system()}\n"
                                 f"- **{gpu_name}**\n"
                                 f"- **{CPU}**\n"
                                 f"- **{total_memory}** GB RAM at **{FREQUENCY}** MHz\n"
-                                f"- **{New_Resolution[0]}x{New_Resolution[1]}** and Shadows: **{shadows}**, FPS CAP: **{self.BEYOND_Patches['fps'].get()}**\n"
+                                f"- **{New_Resolution}** and Shadows: **{shadows}**, FPS CAP: **{self.BEYOND_Patches['fps'].get()}**\n"
                                 f"## Results:\n"
                                 f"- Total Frames **{self.benchmarks[self.Curr_Benchmark]['Total Frames']}**\n"
                                 f"- Average FPS **{self.benchmarks[self.Curr_Benchmark]['Average FPS']}**\n"
                                 f"- 1% Lows **{self.benchmarks[self.Curr_Benchmark]['1% Low FPS']}** FPS\n"
                                 f"- 0.1% Lows **{self.benchmarks[self.Curr_Benchmark]['0.1% Lowest FPS']}** FPS\n"
                             )
-
-        subprocess.run(['clip'], input=benchmark_result.strip().encode('utf-16'), check=True)
+        if platform.system() == "Windows":
+            subprocess.run(['clip'], input=benchmark_result.strip().encode('utf-16'), check=True)
+        elif platform.system() == "Darwin":
+            subprocess.run(['pbcopy'], input=benchmark_result.encode('utf-8'), check=True)
+        elif platform.system() == "Linux":
+            try:
+                subprocess.run(['xclip', '-in'], input=benchmark_result.encode('utf-8'), check=True)
+            except FileNotFoundError:
+                subprocess.run(['xsel', '-i'], input=benchmark_result.encode('utf-8'), check=True)
 
     self.on_canvas.create_label(
         master=self.window, canvas=canvas,

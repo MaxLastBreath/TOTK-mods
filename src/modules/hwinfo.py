@@ -1,5 +1,6 @@
 import platform
 import subprocess
+import GPUtil
 
 def get_cpu_info(log) -> [str, str]:
     try:
@@ -35,7 +36,7 @@ def get_gpu_name(log) -> str:
 def _get_gpu_name(log) -> str:
     try: 
         if platform.system() == "Windows":
-            return subprocess.run("wmic path win32_VideoController get name").split("\n")[-1]
+            return subprocess.run("wmic path win32_VideoController get name").split("\n\n")[-2].lstrip()
         elif platform.system() == "Linux":
             return subprocess.getoutput("glxinfo | grep \"Device\"").split("(")[0].lstrip().replace("Device: ", "")
     except Exception as e:
