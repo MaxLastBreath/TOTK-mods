@@ -53,7 +53,6 @@ def load_UI_elements(self, canvas):
         resolution = self.BEYOND_Patches["resolution"].get()
         shadows = int(self.BEYOND_Patches["shadow resolution"].get().split("x")[0])
 
-        New_Resolution = ""
         if "aspect ratio" in self.BEYOND_Patches:
             ARR = self.BEYOND_Patches["aspect ratio"].get().split("x")
             Resolution = patch_info["resolution"]["Values"][
@@ -64,18 +63,20 @@ def load_UI_elements(self, canvas):
         else:
             New_Resolution = resolution
 
-        benchmark_result = (
-                                f"## **{self.Curr_Benchmark}** Tears Of The Kingdom on {platform.system()}\n"
-                                f"- **{gpu_name}**\n"
-                                f"- **{CPU}**\n"
-                                f"- **{total_memory}** GB RAM at **{FREQUENCY}** MHz\n"
-                                f"- **{New_Resolution}** and Shadows: **{shadows}**, FPS CAP: **{self.BEYOND_Patches['fps'].get()}**\n"
-                                f"## Results:\n"
-                                f"- Total Frames **{self.benchmarks[self.Curr_Benchmark]['Total Frames']}**\n"
-                                f"- Average FPS **{self.benchmarks[self.Curr_Benchmark]['Average FPS']}**\n"
-                                f"- 1% Lows **{self.benchmarks[self.Curr_Benchmark]['1% Low FPS']}** FPS\n"
-                                f"- 0.1% Lows **{self.benchmarks[self.Curr_Benchmark]['0.1% Lowest FPS']}** FPS\n"
-                            )
+        benchmark_result = f"## **{self.Curr_Benchmark}** Tears Of The Kingdom on {platform.system()}\n"
+
+        if platform.system() != "Darwin": benchmark_result += f"- **{gpu_name}**\n"
+        benchmark_result += (
+            f"- **{CPU}**\n"
+            f"- **{total_memory}** GB RAM at **{FREQUENCY}** MHz\n"
+            f"- **{New_Resolution}** and Shadows: **{shadows}**, FPS CAP: **{self.BEYOND_Patches['fps'].get()}**\n"
+            f"## Results:\n"
+            f"- Total Frames **{self.benchmarks[self.Curr_Benchmark]['Total Frames']}**\n"
+            f"- Average FPS **{self.benchmarks[self.Curr_Benchmark]['Average FPS']}**\n"
+            f"- 1% Lows **{self.benchmarks[self.Curr_Benchmark]['1% Low FPS']}** FPS\n"
+            f"- 0.1% Lows **{self.benchmarks[self.Curr_Benchmark]['0.1% Lowest FPS']}** FPS\n"
+        )
+
         if platform.system() == "Windows":
             subprocess.run(['clip'], input=benchmark_result.strip().encode('utf-16'), check=True)
         elif platform.system() == "Darwin":
