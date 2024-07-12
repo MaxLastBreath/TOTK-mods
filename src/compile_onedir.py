@@ -58,6 +58,7 @@ if __name__ == "__main__":
             "--hidden-import=PIL._tkinter_finder",
             "--hidden-import=PIL._tkinter",
             "--hidden-import=ttkbootstrap"
+            "--hidden-import=pyperclip"
         ]
         subprocess.run(command, check=True)
         create_zip(f'dist/TOTK Optimizer {latest_version}', f'dist/TOTK_Optimizer_{latest_version}_Linux.zip')
@@ -76,6 +77,7 @@ if __name__ == "__main__":
             "--hidden-import=PIL",
             "--hidden-import=PIL._tkinter_finder",
             "--hidden-import=ttkbootstrap",
+            "--hidden-import=pyperclip"
         ]
         subprocess.run(command, check=True)
 

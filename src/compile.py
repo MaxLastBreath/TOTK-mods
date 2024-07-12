@@ -30,6 +30,7 @@ if __name__ == "__main__":
             "--hidden-import=PIL._tkinter_finder",
             "--hidden-import=PIL._tkinter",
             "--hidden-import=ttkbootstrap"
+            "--hidden-import=pyperclip"
         ]
         subprocess.run(command, check=True)
     
@@ -47,6 +48,7 @@ if __name__ == "__main__":
             "--hidden-import=PIL",
             "--hidden-import=PIL._tkinter_finder",
             "--hidden-import=ttkbootstrap",
+            "--hidden-import=pyperclip"
         ]
         subprocess.run(command, check=True)
         if os.path.exists("dist/TOTK Optimizer"): os.remove("dist/TOTK Optimizer")
