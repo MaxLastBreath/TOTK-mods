@@ -27,6 +27,7 @@ def load_last_benchmark(self, name):
 
 def load_benchmark(self):
     benchmark_file = os.path.join(self.sdmc_dir, "TOTKBenchmark.txt")
+    print(benchmark_file)
     Last_Found = None
     try:
         with open(benchmark_file, "r") as benchmarks:

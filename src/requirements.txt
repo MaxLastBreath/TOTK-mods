@@ -14,6 +14,7 @@ pyinstaller==6.9.0
 pyinstaller-hooks-contrib==2024.7
 pyobjc-core==10.3.1
 pyobjc-framework-Cocoa==10.3.1
+pyperclip==1.9.0
 requests==2.31.0
 screeninfo==0.8.1
 setuptools==70.2.0
