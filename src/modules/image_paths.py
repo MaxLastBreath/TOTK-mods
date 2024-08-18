@@ -8,20 +8,34 @@ def Load_ImagePath(self):
         image_path="benchmark_korok.png",
         width=int(100 * m), height=int(40 * m),
     )
+
     self.image_Lookout = self.on_canvas.Photo_Image(
         image_path="benchmark_lookout.png",
         width=int(100 * m), height=int(40 * m),
     )
+
     self.image_Kakariko = self.on_canvas.Photo_Image(
         image_path="benchmark_kakariko.png",
         width=int(100 * m), height=int(40 * m),
     )
+
     self.image_GSI = self.on_canvas.Photo_Image(
         image_path="benchmark_great_sky_island.png",
         width=int(100 * m), height=int(40 * m),
     )
+
     self.image_Goron = self.on_canvas.Photo_Image(
         image_path="benchmark_goron.png",
+        width=int(100 * m), height=int(40 * m),
+    )
+
+    self.image_Zora = self.on_canvas.Photo_Image(
+        image_path="benchmark_zora.png",
+        width=int(100 * m), height=int(40 * m),
+    )
+
+    self.image_Depths = self.on_canvas.Photo_Image(
+        image_path="benchmark_depths.png",
         width=int(100 * m), height=int(40 * m),
     )
 
@@ -36,6 +50,8 @@ def Load_ImagePath(self):
         "Kakariko": self.image_Kakariko,
         "Great Sky Island": self.image_GSI,
         "Goron City": self.image_Goron,
+        "Depths" : self.image_Depths,
+        "Zora Domain": self.image_Zora,
     }
 
     # Loading Icons
