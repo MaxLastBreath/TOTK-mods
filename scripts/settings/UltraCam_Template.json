@@ -1,5 +1,16 @@
 {
   "Keys": {
+    "totk console": {
+      "Name": "Console IP",
+      "Class": "dropdown",
+      "Section": "main",
+      "Auto": true,
+      "Name_Values": [ "127.0.0.1", "192.168.1.1" ],
+      "Values": [ "127.0.0.1", "192.168.1.1" ],
+      "Default": 0,
+      "Description": "Console IP for connecting to TOTK Ultracam.",
+      "Config_Class": [ "Console", "IP" ]
+    },
     "fps": {
       "Name": "FPS",
       "Class": "scale",
