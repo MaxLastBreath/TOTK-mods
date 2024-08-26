@@ -269,15 +269,6 @@
       "Description": "UltraCam Beyond Quality Improvements. This disables FXAA, FSR and Dynamic Resolution\nWARNING: SHOULD ALWAYS BE TURNED ON WITH HIGH RESOLUTION",
       "Config_Class": [ "Resolution", "QualityImprovements" ]
     },
-    "triple buffer": {
-      "Name": "Triple Buffer",
-      "Class": "bool",
-      "Section": "main",
-      "Auto": false,
-      "Default": false,
-      "Description": "UltraCam Triple Buffer.\nWARNING: KEEP IT TURNED OFF ON SWITCH.",
-      "Config_Class": [ "Resolution", "TripleBuffer" ]
-    },
     "depthoffield": {
       "Name": "Remove Depth Of Field",
       "Class": "bool",
