@@ -1,3 +1,5 @@
+import pyperclip
+
 from configuration.settings import *
 from modules.benchmarks import *
 from modules.util import *
@@ -53,27 +55,32 @@ def load_UI_elements(self, canvas):
         resolution = self.BEYOND_Patches["resolution"].get()
         shadows = int(self.BEYOND_Patches["shadow resolution"].get().split("x")[0])
 
-        ARR = self.BEYOND_Patches["aspect ratio"].get().split("x")
-        New_Resolution = patch_info["resolution"]["Values"][
-            patch_info["resolution"]["Name_Values"].index(resolution)].split("x")
-        New_Resolution = convert_resolution(int(New_Resolution[0]), int(New_Resolution[1]), int(ARR[0]), int(ARR[1]))
+        if "aspect ratio" in self.BEYOND_Patches:
+            ARR = self.BEYOND_Patches["aspect ratio"].get().split("x")
+            Resolution = patch_info["resolution"]["Values"][
+                patch_info["resolution"]["Name_Values"].index(resolution)].split("x")
+            Resolution = convert_resolution(int(Resolution[0]), int(Resolution[1]), int(ARR[0]),
+                                                int(ARR[1]))
+            New_Resolution = f"{Resolution[0]}x{Resolution[1]}"
+        else:
+            New_Resolution = resolution
 
-        log.info(self.Curr_Benchmark)
-        benchmark_result = (
-                                f"## **{self.Curr_Benchmark}** Tears Of The Kingdom on {platform.system()}\n"
-                                f"- **{gpu_name}**\n"
-                                f"- **{CPU}**\n"
-                                f"- **{total_memory}** GB RAM at **{FREQUENCY}** MHz\n"
-                                f"- **{New_Resolution[0]}x{New_Resolution[1]}** and Shadows: **{shadows}**, FPS CAP: **{self.BEYOND_Patches['fps'].get()}**\n"
-                                f"## Results:\n"
-                                f"- Total Frames **{self.benchmarks[self.Curr_Benchmark]['Total Frames']}**\n"
-                                f"- Average FPS **{self.benchmarks[self.Curr_Benchmark]['Average FPS']}**\n"
-                                f"- 1% Lows **{self.benchmarks[self.Curr_Benchmark]['1% Low FPS']}** FPS\n"
-                                f"- 0.1% Lows **{self.benchmarks[self.Curr_Benchmark]['0.1% Lowest FPS']}** FPS\n"
-                            )
+        system_os = "MacOS" if platform.system() == "Darwin" else platform.system()
+        benchmark_result = f"## **{self.Curr_Benchmark}** Tears Of The Kingdom on {system_os}\n"
 
-        subprocess.run(['clip'], input=benchmark_result.strip().encode('utf-16'), check=True)
+        if platform.system() != "Darwin": benchmark_result += f"- **{gpu_name}**\n"
+        benchmark_result += (
+            f"- **{CPU}**\n"
+            f"- **{total_memory}** GB RAM at **{FREQUENCY}** MHz\n"
+            f"- **{New_Resolution}** and Shadows: **{shadows}**, FPS CAP: **{self.BEYOND_Patches['fps'].get()}**\n"
+            f"## Results:\n"
+            f"- Total Frames **{self.benchmarks[self.Curr_Benchmark]['Total Frames']}**\n"
+            f"- Average FPS **{self.benchmarks[self.Curr_Benchmark]['Average FPS']}**\n"
+            f"- 1% Lows **{self.benchmarks[self.Curr_Benchmark]['1% Low FPS']}** FPS\n"
+            f"- 0.1% Lows **{self.benchmarks[self.Curr_Benchmark]['0.1% Lowest FPS']}** FPS\n"
+        )
 
+        pyperclip.copy(benchmark_result)
     self.on_canvas.create_label(
         master=self.window, canvas=canvas,
         text=f"{gpu_name}\n"

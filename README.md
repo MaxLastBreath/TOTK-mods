@@ -32,6 +32,10 @@
 - Remove and reinstall Tears Of The Kingdoms Update file.
 - Do not use Game Version 1.0.0.
 
+***If you cant copy benchmark on Linux...***
+- Install xclip using the command below in Terminal
+- ```sudo apt install xclip```
+
 # <p align=center> 🐬 More Information 🐬 </p>
 ## <p align=center> 🐋 Mod Settings and More 🐋 </p>
 ### **Presets and Preset Settings**
