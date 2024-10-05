@@ -4,6 +4,20 @@ import re, os
 
 class ModCreator:
 
+    def convert_resolution(width, height, ARR_width, ARR_height):
+        original_aspect_ratio = width / height
+
+        if ARR_width / ARR_height > original_aspect_ratio:
+            # Horizontal aspect ratio
+            new_width = int(height * (ARR_width / ARR_height))
+            new_height = height
+        else:
+            # Vertical aspect ratio
+            new_height = int(width * (ARR_height / ARR_width))
+            new_width = width
+
+        return new_width, new_height
+
     @classmethod
     def CreateCheats(cls, filemgr):
         log.info("Starting Cheat patcher.")
@@ -105,7 +119,7 @@ class ModCreator:
                 config[patch_Config[0]][patch_Config[1]] = str(patch_Values[index])
 
     @classmethod
-    def UCResolutionPatcher(cls, manager, config):
+    def UCResolutionPatcher(cls, filemgr, manager, config):
         patch_info = manager.ultracam_beyond.get("Keys", [""])
 
         try: 
@@ -118,13 +132,13 @@ class ModCreator:
         except Exception as e :
             shadows = 1024
 
-        if patch_info != ["resolution"]:
+        if "resolution" not in patch_info:
             return
 
         # ARR = manager.BEYOND_Patches["aspect ratio"].get().split("x")
         ARR = [16, 9]
         New_Resolution = patch_info["resolution"]["Values"][patch_info["resolution"]["Name_Values"].index(resolution)].split("x")
-        New_Resolution = convert_resolution(int(New_Resolution[0]), int(New_Resolution[1]), int(ARR[0]), int(ARR[1]))
+        New_Resolution = cls.convert_resolution(int(New_Resolution[0]), int(New_Resolution[1]), int(ARR[0]), int(ARR[1]))
 
         scale_1080 = 1920*1080
         scale_shadows = round(shadows / 1024)
@@ -143,23 +157,22 @@ class ModCreator:
         if(new_scale > 6):
             layout = 2
 
-        if cls.mode == "Legacy":
-            write_Legacy_config(manager, cls.TOTKconfig, manager.title_id, "Renderer", "resolution_setup", "2")
-            write_Legacy_config(manager, cls.TOTKconfig, manager.title_id, "Core", "memory_layout_mode", f"{layout}")
-            write_Legacy_config(manager, cls.TOTKconfig, manager.title_id, "System", "use_docked_mode", "true")
+        if manager.mode == "Legacy":
+            write_Legacy_config(manager, filemgr.TOTKconfig, manager.title_id, "Renderer", "resolution_setup", "2")
+            write_Legacy_config(manager, filemgr.TOTKconfig, manager.title_id, "Core", "memory_layout_mode", f"{layout}")
+            write_Legacy_config(manager, filemgr.TOTKconfig, manager.title_id, "System", "use_docked_mode", "true")
 
             if layout > 0:
-                write_Legacy_config(manager, cls.TOTKconfig, manager.title_id, "Renderer", "vram_usage_mode", "1")
+                write_Legacy_config(manager, filemgr.TOTKconfig, manager.title_id, "Renderer", "vram_usage_mode", "1")
             else:
-                write_Legacy_config(manager, cls.TOTKconfig, manager.title_id, "Renderer", "vram_usage_mode", "0")
+                write_Legacy_config(manager, filemgr.TOTKconfig, manager.title_id, "Renderer", "vram_usage_mode", "0")
 
-        if cls.mode == "Ryujinx":
-            write_ryujinx_config(manager, cls.ryujinx_config, "res_scale", 1)
+        if manager.mode == "Ryujinx":
+            write_ryujinx_config(manager, filemgr.ryujinx_config, "res_scale", 1)
             if (layout > 0):
-                write_ryujinx_config(manager, cls.ryujinx_config, "expand_ram", True)
+                write_ryujinx_config(manager, filemgr.ryujinx_config, "expand_ram", True)
             else:
-                write_ryujinx_config(manager, cls.ryujinx_config, "expand_ram", False)
+                write_ryujinx_config(manager, filemgr.ryujinx_config, "expand_ram", False)
 
         config["Resolution"]["Width"] = str(New_Resolution[0])
         config["Resolution"]["Height"] = str(New_Resolution[1])
-    

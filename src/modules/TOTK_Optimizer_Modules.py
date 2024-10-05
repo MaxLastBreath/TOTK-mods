@@ -4,7 +4,6 @@ from modules.backup import *
 from modules.logger import *
 from modules.launch import *
 from modules.config import *
-from modules.util import *
 from modules.patches import *
 from modules.image_paths import *
 from modules.load_elements import *

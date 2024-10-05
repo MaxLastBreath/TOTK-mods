@@ -363,6 +363,9 @@ class FileManager:
         def Create_Mod_Patch(mode=None):
             save_user_choices(cls._frontend, cls._frontend.config)
 
+            patchInfo = cls._frontend._patchInfo
+            modDir = os.path.join(cls.Globaldir, f"load/{patchInfo.ID}")
+
             if mode == "Cheats":
                 ProgressBar.string.set("Creating Cheat ManagerPatch.")
                 ModCreator.CreateCheats(cls)
@@ -370,24 +373,21 @@ class FileManager:
 
             elif mode == None:
                 log.info("Starting Mod Creator.")
-                log.info(f"Generating mod at {cls.load_dir}")
-                os.makedirs(cls.load_dir, exist_ok=True)
+                log.info(f"Generating mod at {modDir}")
+                os.makedirs(modDir, exist_ok=True)
 
                 # Update progress bar
                 ProgressBar.string.set("TOTK Optimizer Patch.")
 
                 # Ensures that the patches are active and ensure that old versions of the mod folder is disabled.
-                cls.remove_list.append("!!!TOTK Optimizer")
+                cls.remove_list.append(patchInfo.ModName)
                 cls.add_list.append("Visual Improvements")
                 cls.add_list.append("Mod Manager Patch")
                 cls.add_list.append("UltraCam")
 
-
-                # THIS NEEDS TO BE CHANGED SOON.
-
-                ini_file_directory = os.path.join(cls.load_dir, "!!!TOTK Optimizer", "romfs", "UltraCam")
+                ini_file_path = os.path.join(modDir, patchInfo.ModName, patchInfo.Config)
+                ini_file_directory = os.path.dirname(ini_file_path)
                 os.makedirs(ini_file_directory, exist_ok=True)
-                ini_file_path = os.path.join(ini_file_directory, "maxlastbreath.ini")
 
                 config = configparser.ConfigParser()
                 config.optionxform = lambda option: option
@@ -396,7 +396,7 @@ class FileManager:
 
                 ## TOTK UC BEYOND AUTO PATCHER
                 ModCreator.UCAutoPatcher(cls._frontend, config)
-                ModCreator.UCResolutionPatcher(cls._frontend, config)
+                ModCreator.UCResolutionPatcher(cls, cls._frontend, config)
 
                 ## WRITE IN CONFIG FILE FOR UC 2.0
                 with open(ini_file_path, 'w+', encoding="utf-8") as configfile:

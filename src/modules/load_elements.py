@@ -2,7 +2,6 @@ import pyperclip
 
 from configuration.settings import *
 from modules.benchmarks import *
-from modules.util import *
 import subprocess
 
 def load_UI_elements(self, canvas):
