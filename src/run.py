@@ -11,7 +11,6 @@ if __name__ == "__main__":
             windll.shcore.SetProcessDpiAwareness(2)
             windll.user32.SetProcessDPIAware()
 
-
         window = ttk.Window(scaling=sf)
         window.title(f"TOTK Optimizer {textver}")
         main = Manager(window)

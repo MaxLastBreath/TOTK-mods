@@ -1,6 +1,5 @@
-from modules.checkpath import checkpath
 from configuration.settings import *
-import os, json, uuid
+import os, json
 
 def apply_preset(self, preset_options):
     # self.fetch_var(self.ui_var, preset_options, "UI")
@@ -208,8 +207,6 @@ def apply_selected_preset(self, event=None):
         apply_preset(self, self.presets[selected_preset])
 
 def write_Legacy_config(self, configfile, title_id, section, setting, selection):
-    if self.is_extracting is True:
-        return
     os.makedirs(configfile, exist_ok=True)
     Custom_Config = os.path.join(configfile, f"{title_id}.ini")
     Legacyconfig = configparser.ConfigParser()
@@ -223,9 +220,6 @@ def write_Legacy_config(self, configfile, title_id, section, setting, selection)
         Legacyconfig.write(configfile, space_around_delimiters=False)
 
 def write_ryujinx_config(self, configfile, setting, selection):
-    if self.is_extracting is True:
-        return
-
     with open(configfile, "r", encoding="utf-8") as file:
         data = json.load(file)
         data[setting] = selection

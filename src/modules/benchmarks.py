@@ -1,6 +1,7 @@
+from modules.GameManager.FileManager import *
+from modules.logger import *
 import os
 import re
-from modules.logger import *
 
 def load_last_benchmark(self, name):
     self.maincanvas.itemconfig(name, state="normal")
@@ -26,7 +27,7 @@ def load_last_benchmark(self, name):
             self.maincanvas.itemconfig(item, state="hidden")
 
 def load_benchmark(self):
-    benchmark_file = os.path.join(self.sdmc_dir, "TOTKBenchmark.txt")
+    benchmark_file = os.path.join(FileManager.sdmc_dir, "TOTKBenchmark.txt")
     print(benchmark_file)
     Last_Found = None
     try:

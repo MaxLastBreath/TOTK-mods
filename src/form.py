@@ -1,25 +1,29 @@
 import threading
 import webbrowser
-import re
 from configuration.settings import *
 from configuration.settings_config import Setting
 from modules.TOTK_Optimizer_Modules import * # imports all needed files.
+from modules.GameManager.GameManager import *
+from modules.GameManager.FileManager import *
 
 class Manager:
+
+    patchInfo = []
+    window = ttk.Window
+    constyle = Style
+
     def __init__(self, window):
-        # ULTRACAM 2.0 PATCHES ARE SAVED HERE.
-        self.BEYOND_Patches = {}
+        
+        Game_Manager.LoadPatches()
+        FileManager.Initialize(window, self)
+        self.patchInfo = Game_Manager.GetPatches()
 
-        # Define the Manager window.
         self.window = window
-
-        self.is_extracting = False
-
-        self.DFPS_var = "BEYOND"
-
-        # Configure the Style of the entire window.
         self.constyle = Style(theme=theme.lower())
         self.constyle.configure("TButton", font=btnfont)
+
+        # ULTRACAM 2.0 PATCHES ARE SAVED HERE.
+        self.BEYOND_Patches = {}
 
         # Set initialize different Classes.
         self.on_canvas = Canvas_Create()
@@ -112,8 +116,8 @@ class Manager:
             return row, cul_sel, cul_tex
 
         # Run Scripts for checking OS and finding location
-        checkpath(self, self.mode)
-        DetectOS(self, self.mode)
+        FileManager.checkpath(self.mode)
+        FileManager.DetectOS(self.mode)
 
         # FOR DEBUGGING PURPOSES
         def onCanvasClick(event):
@@ -168,7 +172,7 @@ class Manager:
 
         # Reset to Appdata
         def Legacy_appdata():
-            checkpath(self, self.mode)
+            FileManager.checkpath(self.mode)
             log.info("Successfully Defaulted to Appdata!")
             save_user_choices(self, self.config, "appdata", None)
 
@@ -211,15 +215,6 @@ class Manager:
                                     command=lambda: clean_shaders(self)
         )
         row += 40
-
-        # Create big TEXT label.
-        #self.on_canvas.create_label(
-        #                            master=self.window, canvas=canvas,
-        #                            text="Graphics", font=bigfont, color=BigTextcolor,
-        #                            description_name="Display Settings",
-        #                            row=row, cul=cul_tex+100,
-        #                            tags=["Big-Text"]
-        #                            )
 
         self.graphics_element = self.on_canvas.Photo_Image(
             image_path="graphics.png",
@@ -292,7 +287,7 @@ class Manager:
             patch_default_index = dicts.get("Default")
             pos = pos_dict[section_auto]
             if patch_auto is True:
-                self.BEYOND_Patches[name] = tk.StringVar(master=self.window, value="auto")
+                self.BEYOND_Patches[name] = ttk.StringVar(master=self.window, value="auto")
                 continue
 
             if dicts["Class"].lower() == "dropdown":
@@ -355,33 +350,6 @@ class Manager:
         row = pos_dict["main"][0]
         row_2 = pos_dict["main"][3]
 
-        #for patch in self.BEYOND_Patches:
-        #    log.info(f"{patch}: {self.BEYOND_Patches[patch].get()}")
-
-        # Extra Patches. FP and Ui.
-        # self.fp_var = self.on_canvas.create_checkbutton(
-        #                 master=self.window, canvas=canvas,
-        #                 text="First Person",
-        #                 variable="Off",
-        #                 row=pos_dict["main"][3], cul=pos_dict["main"][4], drop_cul=pos_dict["main"][5],
-        #                 tags=["bool"], tag="main",
-        #                 description_name="First Person"
-        #         )
-
-        # UI_list.remove("Black Screen Fix")
-        # self.ui_var = self.on_canvas.create_combobox(
-        #                 master=self.window, canvas=canvas,
-        #                 text="UI:",
-        #                 variable=UI_list[0], values=UI_list,
-        #                 row=row, cul=cul_tex, drop_cul=cul_sel,width=100,
-        #                 tags=["text"], tag="main",
-        #                 description_name="UI"
-        #                                             )
-        # row += 40
-
-        # XYZ create patches, not used anymore though.
-        #create_patches(self)
-
         self.apply_element = self.on_canvas.Photo_Image(
                         image_path="apply.png",
                         width=int(70*1.5), height=int(48*1.5),
@@ -424,7 +392,7 @@ class Manager:
             canvas=canvas,
             row=510, cul=25,
             img_1=self.apply_element, img_2=self.apply_element_active,
-            command=lambda event: self.submit()
+            command=lambda event: FileManager.submit()
         )
 
         # reverse scale.
@@ -432,7 +400,7 @@ class Manager:
             canvas=canvas,
             row=510, cul=25 + int(self.apply_element.width() / sf),
             img_1=self.launch_element, img_2=self.launch_element_active,
-            command=lambda event: launch_GAME(self)
+            command=lambda event: FileManager.launch_GAME()
         )
 
         # extract
@@ -450,33 +418,13 @@ class Manager:
             command=lambda event: self.open_browser("Kofi")
         )
 
-        # Create a submit button
-        #self.on_canvas.create_button(
-        #    master=self.window, canvas=canvas,
-        #    btn_text="APPLY", tags=["Button"],
-        #    row=530, cul=25, padding=10, width=9,
-        #    description_name="Apply", style="warning",
-        #    command=self.submit
-        #)
-
-        #if self.os_platform == "Windows":
-        #    # Create a submit button
-        #    self.on_canvas.create_button(
-        #        master=self.window, canvas=canvas,
-        #        btn_text="Launch Game", tags=["Button", "Legacy"],
-        #        row=530, cul=125, padding=10, width=9,
-        #        description_name="Launch Game", style="warning.outline.TButton",
-        #        command=lambda: launch_GAME(self)
-        #    )
-
         # Load Saved User Options.
         self.toggle_page(0, "main")
         load_user_choices(self, self.config)
         return self.maincanvas
 
     def update_scaling_variable(self, something=None):
-        if self.DFPS_var == "UltraCam":
-            self.fps_var.set(self.fps_var_new.get())
+        self.fps_var.set(self.fps_var_new.get())
 
     def create_cheat_canvas(self):
         # Create Cheat Canvas
@@ -578,7 +526,7 @@ class Manager:
                                     tags=["Button"],
                                     style="success",
                                     description_name="Apply Cheats",
-                                    command=lambda: self.submit("Cheats")
+                                    command=lambda: FileManager.submit(FileManager)
         )
 
         # Create a submit button
@@ -637,17 +585,17 @@ class Manager:
                 if any(item in os.listdir(fullpath) for item in ["user", "portable"]):
                     log.info(
                         f"Successfully selected {self.mode}.exe! And a portable folder was found at {home_directory}!")
-                    checkpath(self, self.mode)
+                    FileManager.checkpath(self.mode)
                     return Legacy_path
                 else:
                     log.info(f"Portable folder for {self.mode} not found defaulting to appdata directory!")
-                    checkpath(self, self.mode)
+                    FileManager.checkpath(self.mode)
                     return Legacy_path
 
                 # Update the Legacy.exe path in the current session
                 self.Legacy_path = Legacy_path
             else:
-                checkpath(self, self.mode)
+                FileManager.checkpath(self.mode)
                 return None
             # Save the selected Legacy.exe path to a configuration file
             save_user_choices(self, self.config, Legacy_path)
@@ -716,7 +664,6 @@ class Manager:
         canvas.create_image(0, 0, anchor="nw", image=self.background_UI_Cheats, tags="overlay")
 
     def switchmode(self, command="true"):
-        
         if command == "true":
             if self.mode == "Legacy":
                 self.mode = "Ryujinx"
@@ -757,460 +704,7 @@ class Manager:
             var.set(dict.get(option, ""))
         return
 
-    # Submit the results, run download manager. Open a Loading screen.
-
     def extract_patches(self):
-        self.is_extracting = True
-        checkpath(self, self.mode)
-        self.submit()
-
-    def submit(self, mode=None):
-        self.add_list = []
-        self.remove_list = []
-        checkpath(self, self.mode)
-        # Needs to be run after checkpath.
-        if self.mode == "Legacy":
-            qtconfig = get_config_parser()
-            qtconfig.optionxform = lambda option: option
-            try:
-                qtconfig.read(self.configdir)
-            except Exception as e: log.warning(f"Couldn't' find QT-config {e}")
-        else:
-            qtconfig = None
-
-        def mod_list(arg, mod):
-            try:
-                if arg in ["r", "remove"]:
-                    self.add_list.remove(mod)
-                if arg in ["a", "add"]:
-                    self.remove_list.append(mod)
-            except Exception as e:
-                log.warning(print(f"The Mod: {mod}, doesn't exist anymore,"
-                                  f"\nconsider changing it to a different one."))
-        def timer(value):
-            progress_bar["value"] = value
-            self.window.update_idletasks()
-
-        def run_tasks():
-            if mode == "Cheats":
-                log.info("Starting TASKs for Cheat Patch..")
-                tasklist = [Create_Mod_Patch("Cheats")]
-                if get_setting("cheat-backup") in ["On"]:
-                    tasklist.append(backup(self))
-                com = 100 // len(tasklist)
-                for task in tasklist:
-                    timer(com)
-                    com += com
-                    task
-                    time.sleep(0.05)
-                progress_window.destroy()
-                log.info("Tasks have been COMPLETED. Feel free to Launch the game.")
-                return
-            if mode== None:
-                log.info("Starting TASKs for Normal Patch..")
-                def stop_extracting():
-                    self.is_extracting = False
-
-                tasklist = [Exe_Running(), DownloadBEYOND(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods(), stop_extracting()]
-                if get_setting("auto-backup") in ["On"]:
-                    tasklist.append(backup(self))
-                com = 100 // len(tasklist)
-                for task in tasklist:
-                    timer(com)
-                    com += com
-                    task
-                    time.sleep(0.05)
-                progress_window.destroy()
-
-                m = 1.3
-                # Kofi button.
-                element_1 = self.on_canvas.Photo_Image(
-                    image_path="support.png",
-                    width=int(70* m), height=int(48* m),
-                )
-
-                element_2 = self.on_canvas.Photo_Image(
-                    image_path="support_active.png",
-                    width=int(70* m), height=int(48* m),
-                )
-
-                element_3 = self.on_canvas.Photo_Image(
-                    image_path="no_thanks.png",
-                    width=int(70* m), height=int(48* m),
-                )
-
-                element_4 = self.on_canvas.Photo_Image(
-                    image_path="no_thanks_active.png",
-                    width=int(70* m), height=int(48* m),
-                )
-
-                if not self.os_platform == "Linux":
-                    dialog = CustomDialog(self, "TOTK Optimizer Tasks Completed",
-                                          "",
-                                          yes_img_1=element_1,
-                                          yes_img_2=element_2,
-                                          no_img_1=element_3,
-                                          no_img_2=element_4,
-                                          custom_no="No Thanks",
-                                          width=384,
-                                          height=216
-                                          )
-                    dialog.wait_window()
-                    if dialog.result:
-                        self.open_browser("kofi")
-
-                log.info("Tasks have been COMPLETED. Feel free to Launch the game.")
-                return
-
-        def Create_Mod_Patch(mode=None):
-            save_user_choices(self, self.config)
-
-            if mode == "Cheats":
-                log.info("Starting Cheat patcher.")
-                self.progress_var.set("Creating Cheat ManagerPatch.")
-                save_user_choices(self, self.config, None, "Cheats")
-                selected_cheats = {}
-                for option_name, option_var in self.selected_cheats.items():
-                    selected_cheats[option_name] = option_var.get()
-                # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Legacy together.
-                for version_option in self.cheat_options:
-                    version = version_option.get("Version", "")
-                    mod_path = os.path.join(self.load_dir, "Cheat Manager Patch", "cheats")
-
-                    # Create the directory if it doesn't exist
-                    os.makedirs(mod_path, exist_ok=True)
-
-                    filename = os.path.join(mod_path, f"{version}.txt")
-                    all_values = []
-                    try:
-                        with open(filename, "w", encoding="utf-8") as file:
-                            file.flush()
-                            # file.write(version_option.get("Source", "") + "\n") - makes cheats not work
-                            for key, value in version_option.items():
-                                if key not in ["Source", "Aversion", "Version"] and selected_cheats[key] == "Off":
-                                    continue
-                                if key in selected_cheats:
-                                        file.write(value + "\n")
-                    except Exception as e:
-                        log.error(f"ERROR! FAILED TO CREATE CHEAT PATCH. {e}")
-                self.remove_list.append("Cheat Manager Patch")
-                log.info("Applied cheats successfully.")
-                return
-
-            elif mode == None:
-                log.info("Starting Mod Creator.")
-                log.info(f"Generating mod at {self.load_dir}")
-                os.makedirs(self.load_dir, exist_ok=True)
-
-                # Update progress bar
-                self.progress_var.set("TOTK Optimizer Patch.")
-
-                # Ensures that the patches are active and ensure that old versions of the mod folder is disabled.
-                self.remove_list.append("!!!TOTK Optimizer")
-                self.add_list.append("Visual Improvements")
-                self.add_list.append("Mod Manager Patch")
-                self.add_list.append("UltraCam")
-
-                ini_file_directory = os.path.join(self.load_dir, "!!!TOTK Optimizer", "romfs", "UltraCam")
-                os.makedirs(ini_file_directory, exist_ok=True)
-                ini_file_path = os.path.join(ini_file_directory, "maxlastbreath.ini")
-
-                config = configparser.ConfigParser()
-                config.optionxform = lambda option: option
-                if os.path.exists(ini_file_path):
-                    config.read(ini_file_path)
-
-                ## TOTK UC BEYOND AUTO PATCHER
-                patch_info = self.ultracam_beyond.get("Keys", [""])
-                for patch in self.BEYOND_Patches:
-                    if patch.lower() in ["resolution", "aspect ratio"]:
-                        continue
-
-                    patch_dict = patch_info[patch]
-                    patch_class = patch_dict["Class"]
-                    patch_Config = patch_dict["Config_Class"]
-                    patch_Default = patch_dict["Default"]
-
-                    # Ensure we have the section required.
-                    if not config.has_section(patch_Config[0]):
-                        config[patch_Config[0]] = {}
-
-                    # In case we have an auto patch.
-                    if self.BEYOND_Patches[patch] == "auto" or self.BEYOND_Patches[patch].get() == "auto":
-                        if patch_class.lower() == "dropdown":
-                            patch_Names = patch_dict["Values"]
-                            config[patch_Config[0]][patch_Config[1]] = str(patch_Names[patch_Default])
-                        else:
-                            config[patch_Config[0]][patch_Config[1]] = str(patch_Default)
-                        continue
-
-                    if patch_class.lower() == "bool" or patch_class.lower() == "scale":
-                        config[patch_Config[0]][patch_Config[1]] = self.BEYOND_Patches[patch].get()
-
-                    if patch_class.lower() == "dropdown":
-                        # exclusive to dropdown.
-                        patch_Names = patch_dict["Name_Values"]
-                        patch_Values = patch_dict["Values"]
-                        index = patch_Names.index(self.BEYOND_Patches[patch].get())
-                        config[patch_Config[0]][patch_Config[1]] = str(patch_Values[index])
-
-                resolution = self.BEYOND_Patches["resolution"].get()
-                shadows = int(self.BEYOND_Patches["shadow resolution"].get().split("x")[0])
-
-                # ARR = self.BEYOND_Patches["aspect ratio"].get().split("x")
-                ARR = [16, 9]
-                New_Resolution = patch_info["resolution"]["Values"][patch_info["resolution"]["Name_Values"].index(resolution)].split("x")
-                New_Resolution = convert_resolution(int(New_Resolution[0]), int(New_Resolution[1]), int(ARR[0]), int(ARR[1]))
-
-                scale_1080 = 1920*1080
-                scale_shadows = round(shadows / 1024)
-                New_Resolution_scale = int(New_Resolution[0]) * int(New_Resolution[1])
-                new_scale = New_Resolution_scale / scale_1080
-
-                if (scale_shadows > new_scale):
-                    new_scale = scale_shadows
-                    log.info(f"scale:{new_scale}")
-
-                layout = 0
-                if(new_scale < 0):
-                    layout = 0
-                if(new_scale > 1):
-                    layout = 1
-                if(new_scale > 6):
-                    layout = 2
-
-                if self.mode == "Legacy":
-                    write_Legacy_config(self, self.TOTKconfig, self.title_id, "Renderer", "resolution_setup", "2")
-                    write_Legacy_config(self, self.TOTKconfig, self.title_id, "Core", "memory_layout_mode", f"{layout}")
-                    write_Legacy_config(self, self.TOTKconfig, self.title_id, "System", "use_docked_mode", "true")
-
-                    if layout > 0:
-                        write_Legacy_config(self, self.TOTKconfig, self.title_id, "Renderer", "vram_usage_mode", "1")
-                    else:
-                        write_Legacy_config(self, self.TOTKconfig, self.title_id, "Renderer", "vram_usage_mode", "0")
-
-                if self.mode == "Ryujinx":
-                    write_ryujinx_config(self, self.ryujinx_config, "res_scale", 1)
-                    if (layout > 0):
-                        write_ryujinx_config(self, self.ryujinx_config, "expand_ram", True)
-                    else:
-                        write_ryujinx_config(self, self.ryujinx_config, "expand_ram", False)
-
-                config["Resolution"]["Width"] = str(New_Resolution[0])
-                config["Resolution"]["Height"] = str(New_Resolution[1])
-
-                ## WRITE IN CONFIG FILE FOR UC 2.0
-                with open(ini_file_path, 'w+', encoding="utf-8") as configfile:
-                    config.write(configfile)
-
-
-            # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Legacy together.
-            try:
-                # This logic is disabled with UltraCam Beyond.
-                if self.DFPS_var == "BEYOND":
-                    log.info("FINISHED APPLYING PATCHES")
-                    return
-
-                for version_option in self.version_options:
-                    version = version_option.get("version", "")
-                    mod_path = os.path.join(self.load_dir, "Mod Manager Patch", "exefs")
-
-                    # Create the directory if it doesn't exist
-                    os.makedirs(mod_path, exist_ok=True)
-
-                    filename = os.path.join(mod_path, f"{version}.pchtxt")
-                    all_values = []
-                    with open(filename, "w", encoding="utf-8") as file:
-                        file.write(version_option.get("Source", "") + "\n")
-                        file.write(version_option.get("nsobid", "") + "\n")
-                        file.write(version_option.get("offset", "") + "\n")
-                        for key, value in version_option.items():
-                            if self.DFPS_var == "UltraCam" and key in self.ultracam_options.get(
-                                    "Skip_Patches"):
-                                continue
-
-                            if key not in ["Source", "nsobid", "offset", "version", "Version"] and not self.selected_options[key].get() == "Off":
-                                pattern = r"@enabled\n([\da-fA-F\s]+)\n@stop"
-                                matches = re.findall(pattern, value)
-                                for match in matches:
-                                    hex_values = match.strip().split()
-                                    all_values.extend(hex_values)
-                                    # Print @enabled and then @stop at the end.
-                        file.write("@enabled\n")
-                        for i, value in enumerate(all_values):
-                            file.write(value)
-                            if i % 2 == 1 and i != len(all_values) - 1:
-                                file.write("\n")
-                            else:
-                                file.write(" ")
-                        file.write("\n@stop\n")
-                # Update Visual Improvements MOD.
-            except PermissionError as e:
-                log.error(f"FAILED TO CREATE MOD PATCH: {e}")
-
-        def UpdateSettings():
-            log.info("Checking for Settings...")
-            self.progress_var.set("Creating Settings..")
-            if self.selected_settings.get() == "No Change":
-                self.progress_var.set("No Settings Required..")
-                return
-            if self.mode == "Legacy":
-                setting_preset = self.Legacy_settings[self.selected_settings.get()]
-                for section in setting_preset:
-                    for option in setting_preset[section]:
-                        write_Legacy_config(self, self.TOTKconfig, self.title_id, section, option, str(setting_preset[section][option]))
-            self.progress_var.set("Finished Creating Settings..")
-
-        def DownloadBEYOND():
-            try:
-                self.add_list.append("UltraCam")
-                self.add_list.append("Max DFPS++")
-                self.add_list.append("DFPS")
-                link = New_UCBeyond_Download
-
-                Mod_directory = os.path.join(self.load_dir, "!!!TOTK Optimizer")
-                if link is None:
-                    log.critical("Couldn't find a link to DFPS/UltraCam")
-                    return
-                set_setting(args="dfps", value="UltraCam")
-
-                # Apply UltraCam from local folder.
-                if os.path.exists("TOTKOptimizer/exefs"):
-                    log.info("Found a local UltraCam Folder. COPYING to !!!TOTK Optimizer.")
-                    if os.path.exists(os.path.join(Mod_directory, "exefs")):
-                        shutil.rmtree(os.path.join(Mod_directory, "exefs"))
-                    shutil.copytree(os.path.join("TOTKOptimizer/exefs"), os.path.join(Mod_directory, "exefs"))
-                    log.info("\n\nEARLY ACCESS ULTRACAM APPLIED\n\n.")
-                    return
-
-                self.progress_var.set(f"Downloading UltraCam BEYOND")
-                log.info(f"Downloading: UltraCam")
-                os.makedirs(Mod_directory, exist_ok=True)
-                download_unzip(link, Mod_directory)
-                log.info(f"Downloaded: UltraCam")
-            except Exception as e:
-                log.warning(f"FAILED TO DOWNLOAD ULTRACAM BEYOND! {e}")
-
-        def DownloadUI():
-            selected_ui = "NONE"
-            log.info(f"starting the search for UI folder link.")
-            new_list = []
-            new_list.extend(UI_list)
-            for item in AR_dict:
-                new_list.append(item)
-
-            if self.BEYOND_Patches["aspect ratio"].get() in ["16-9", "16x9"]:
-                log.info("Selected default Aspect Ratio.")
-                if self.ui_var.get().lower() in ["none", "switch"]:
-                    self.add_list.extend(new_list)
-                new_folder = self.ui_var.get()
-                link = UI_dict.get(new_folder)
-            else:
-                # define
-                UIs = {
-                    "PS4": ["ps", "ps4", "playstation", "ps5", "dualshock"],
-                    "STEAMDECK": ["steamdeck", "deck"],
-                    "XBOX": ["xbox", "xboxone"],
-                }
-                string = self.ui_var.get().lower().split(" ")[0]
-                log.info(string)
-                for ui, tags in UIs.items():
-                    if string in tags:
-                        selected_ui = f" {ui} UI"
-                        break
-                    else:
-                        selected_ui = ""
-
-                # search
-                new_folder = f"Aspect Ratio {self.BEYOND_Patches['aspect ratio'].get().replace('x', '-')}{selected_ui}"
-                new_list.extend(UI_list)
-                # fetch
-                link = AR_dict.get(new_folder)
-
-            # delete/disable
-            try:
-                new_list.remove(new_folder)
-            except Exception as e:
-                log.warning(print(f"The Mod: {new_folder}, doesn't exist anymore,"
-                                  f"\nconsider changing it to a different one."))
-            self.add_list.extend(new_list)
-            self.remove_list.append(new_folder)
-            log.info(f"Attempting to download {new_folder}")
-            self.progress_var.set(f"Downloading: {new_folder}\n(May take some time)")
-            Mod_directory = os.path.join(self.load_dir)
-            # skip
-            if os.path.exists(os.path.join(Mod_directory, new_folder)):
-                log.info(f"{new_folder} FOLDER already exists, continue...")
-                return
-            # download
-            os.makedirs(Mod_directory, exist_ok=True)
-            download_unzip(link, Mod_directory)
-            log.info(f"Downloaded: {new_folder}")
-
-        # def DownloadFP():
-        #     selected_fp_mod = self.fp_var.get()
-
-        #     Mod_directory = os.path.join(self.load_dir, "!!!TOTK Optimizer")
-        #     if selected_fp_mod.lower() == "on":
-        #         link = FP_Mod
-        #         self.progress_var.set(f"Downloading: {selected_fp_mod}\n(May take some time)")
-        #         log.info(f"Downloading: {selected_fp_mod}")
-        #         os.makedirs(Mod_directory, exist_ok=True)
-        #         download_unzip(link, Mod_directory)
-        #         log.info(f"Downloaded: {selected_fp_mod}")
-
-        #     fp_dir = os.path.join(Mod_directory, "romfs", "Pack", "Actor", "PlayerCamera.pack.zs")
-        #     if selected_fp_mod.lower() == "off" and os.path.exists(fp_dir):
-        #         os.remove(fp_dir)
-
-        def Exe_Running():
-            is_Program_Opened = is_process_running(self.mode + ".exe")
-            message = (f"{self.mode}.exe is Running, \n"
-                       f"The Optimizer Requires {self.mode}.exe to be closed."
-                       f"\nDo you wish to close {self.mode}.exe?")
-            if is_Program_Opened is True:
-                response = messagebox.askyesno("Warning", message, icon=messagebox.WARNING)
-                if response is True:
-                    subprocess.run(["taskkill", "/F", "/IM", f"{self.mode}.exe"], check=True)
-            if is_Program_Opened is False:
-                log.info(f"{self.mode}.exe is closed, working as expected.")
-
-        def Disable_Mods():
-            self.progress_var.set(f"Disabling old mods.")
-            # Convert the lists to sets, removing any duplicates.
-            self.add_list = set(self.add_list)
-            self.remove_list = set(self.remove_list)
-            # Run the Main code to Enable and Disable necessary Mods, the remove ensures the mods are enabled.
-            if self.mode == "Legacy":
-                for item in self.add_list:
-                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.config_title_id, item, action="add")
-                for item in self.remove_list:
-                    modify_disabled_key(self.configdir, self.load_dir, qtconfig, self.config_title_id, item, action="remove")
-            if self.mode == "Ryujinx" or platform.system() == "Linux" and not self.is_extracting:
-                for item in self.add_list:
-                    item_dir = os.path.join(self.load_dir, item)
-                    if os.path.exists(item_dir):
-                        shutil.rmtree(item_dir)
-            self.add_list.clear()
-            self.remove_list.clear()
-
-        # Execute tasks and make a Progress Window.
-        progress_window = Toplevel(self.window)
-        progress_window.title("Downloading")
-        window_width = 300
-        window_height = 100
-        screen_width = progress_window.winfo_screenwidth()
-        screen_height = progress_window.winfo_screenheight()
-        x_coordinate = (screen_width - window_width) // 2
-        y_coordinate = (screen_height - window_height) // 2
-        progress_window.geometry(f"{window_width}x{window_height}+{x_coordinate}+{y_coordinate}")
-        progress_window.resizable(False, False)
-        total_iterations = 100
-        self.progress_var = ttk.StringVar()
-        self.progress_var.set("Applying the changes.")
-        label = ttk.Label(progress_window, textvariable=self.progress_var)
-        label.pack(pady=10)
-        progress_bar = ttk.Progressbar(progress_window, mode="determinate", maximum=total_iterations)
-        progress_bar.pack(pady=20)
-        task_thread = threading.Thread(target=run_tasks)
-        task_thread.start()
+        FileManager.is_extracting = True
+        FileManager.checkpath(self.mode)
+        FileManager.submit(FileManager)

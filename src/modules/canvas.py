@@ -1,13 +1,13 @@
-import sys
-from idlelib.tooltip import Hovertip
-from ttkbootstrap import *
-from tkinter import *
 from PIL import Image, ImageTk, ImageFilter, ImageOps
+from idlelib.tooltip import Hovertip
+from tkinter import *
 from configuration.settings import *
+from ttkbootstrap import *
+import ttkbootstrap as ttk
+import sys
 import time
 import string
 import random
-import ttkbootstrap as ttk
 
 def next_index(event, var, list=list, increase = 1, command=None):
     value = str(var.get())

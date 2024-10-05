@@ -20,6 +20,7 @@ def backup(self):
     # Create the 'backup' folder inside the mod manager directory if it doesn't exist
     elif self.mode == "Ryujinx":
         folder_to_backup = self.nand_dir
+        
     script_dir = os.path.dirname(os.path.abspath(sys.executable))
     backup_folder_path = os.path.join(script_dir, "backup")
     os.makedirs(backup_folder_path, exist_ok=True)
