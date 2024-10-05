@@ -1,10 +1,11 @@
-import threading
-import webbrowser
 from configuration.settings import *
 from configuration.settings_config import Setting
 from modules.TOTK_Optimizer_Modules import * # imports all needed files.
 from modules.GameManager.GameManager import *
 from modules.GameManager.FileManager import *
+import threading
+import webbrowser
+import ttkbootstrap as ttk
 
 class Manager:
 

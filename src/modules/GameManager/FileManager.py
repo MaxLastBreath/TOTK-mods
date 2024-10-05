@@ -1,14 +1,15 @@
-from tkinter import ttk
-from configuration.settings import *
+from modules.FrontEnd.ProgressBar import ProgressBar
 from configuration.settings_config import Setting
 from modules.TOTK_Optimizer_Modules import *
+from configuration.settings import *
 from modules.config import *
+from tkinter import ttk
 import threading
 import re
 
 class FileManager:
 
-    _window = ttk.Window
+    _window = None
     _frontend = None
 
     is_extracting = False
@@ -288,7 +289,7 @@ class FileManager:
             qtconfig = None
 
         def timer(value):
-            progress_bar["value"] = value
+            ProgressBar.progress_bar["value"] = value
             cls._window.update_idletasks()
 
         def run_tasks():
@@ -303,7 +304,7 @@ class FileManager:
                     com += com
                     task
                     time.sleep(0.05)
-                progress_window.destroy()
+                ProgressBar.Destroy()
                 log.info("Tasks have been COMPLETED. Feel free to Launch the game.")
                 return
             if mode== None:
@@ -320,7 +321,7 @@ class FileManager:
                     com += com
                     task
                     time.sleep(0.05)
-                progress_window.destroy()
+                ProgressBar.Destroy()
 
                 m = 1.3
                 # Kofi button.
@@ -367,7 +368,7 @@ class FileManager:
 
             if mode == "Cheats":
                 log.info("Starting Cheat patcher.")
-                cls.progress_var.set("Creating Cheat ManagerPatch.")
+                ProgressBar.string.set("Creating Cheat ManagerPatch.")
                 save_user_choices(cls, cls.config, None, "Cheats")
                 selected_cheats = {}
                 for option_name, option_var in cls.selected_cheats.items():
@@ -403,7 +404,7 @@ class FileManager:
                 os.makedirs(cls.load_dir, exist_ok=True)
 
                 # Update progress bar
-                cls.progress_var.set("TOTK Optimizer Patch.")
+                ProgressBar.string.set("TOTK Optimizer Patch.")
 
                 # Ensures that the patches are active and ensure that old versions of the mod folder is disabled.
                 cls.remove_list.append("!!!TOTK Optimizer")
@@ -548,16 +549,16 @@ class FileManager:
 
         def UpdateSettings():
             log.info("Checking for Settings...")
-            cls.progress_var.set("Creating Settings..")
+            ProgressBar.string.set("Creating Settings..")
             if cls._frontend.selected_settings.get() == "No Change":
-                cls.progress_var.set("No Settings Required..")
+                ProgressBar.string.set("No Settings Required..")
                 return
             if cls.mode == "Legacy":
                 setting_preset = cls.Legacy_settings[cls.selected_settings.get()]
                 for section in setting_preset:
                     for option in setting_preset[section]:
                         write_Legacy_config(cls, cls.TOTKconfig, cls._frontend.title_id, section, option, str(setting_preset[section][option]))
-            cls.progress_var.set("Finished Creating Settings..")
+            ProgressBar.string.set("Finished Creating Settings..")
 
         def DownloadBEYOND():
             try:
@@ -581,7 +582,7 @@ class FileManager:
                     log.info("\n\nEARLY ACCESS ULTRACAM APPLIED\n\n.")
                     return
 
-                cls.progress_var.set(f"Downloading UltraCam BEYOND")
+                ProgressBar.string.set(f"Downloading UltraCam BEYOND")
                 log.info(f"Downloading: UltraCam")
                 os.makedirs(Mod_directory, exist_ok=True)
                 download_unzip(link, Mod_directory)
@@ -602,7 +603,7 @@ class FileManager:
                 log.info(f"{cls.mode}.exe is closed, working as expected.")
 
         def Disable_Mods():
-            cls.progress_var.set(f"Disabling old mods.")
+            ProgressBar.string.set(f"Disabling old mods.")
             # Convert the lists to sets, removing any duplicates.
             cls.add_list = set(cls.add_list)
             cls.remove_list = set(cls.remove_list)
@@ -619,27 +620,8 @@ class FileManager:
                         shutil.rmtree(item_dir)
             cls.add_list.clear()
             cls.remove_list.clear()
-
-        # Execute tasks and make a Progress Window.
-        progress_window = Toplevel(cls._window)
-        progress_window.title("Downloading")
-        window_width = 300
-        window_height = 100
-        screen_width = progress_window.winfo_screenwidth()
-        screen_height = progress_window.winfo_screenheight()
-        x_coordinate = (screen_width - window_width) // 2
-        y_coordinate = (screen_height - window_height) // 2
-        progress_window.geometry(f"{window_width}x{window_height}+{x_coordinate}+{y_coordinate}")
-        progress_window.resizable(False, False)
-        total_iterations = 100
-        cls.progress_var = ttk.StringVar()
-        cls.progress_var.set("Applying the changes.")
-        label = ttk.Label(progress_window, textvariable=cls.progress_var)
-        label.pack(pady=10)
-        progress_bar = ttk.Progressbar(progress_window, mode="determinate", maximum=total_iterations)
-        progress_bar.pack(pady=20)
-        task_thread = threading.Thread(target=run_tasks)
-        task_thread.start() 
+    
+        ProgressBar.Run(cls._window, run_tasks)
 
     @classmethod
     def select_game_file(command=None):
