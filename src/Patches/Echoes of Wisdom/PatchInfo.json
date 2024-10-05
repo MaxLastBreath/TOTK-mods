@@ -4,5 +4,6 @@
     "ModName" : "!!!TOTK Optimizer",
     "ModConfig" : "UltraCam/maxlastbreath.ini",
     "Config" : "Options.json",
+    "ModFolder" : "UltraCam",
     "Versions" : ["1.1.0", "1.1.1", "1.1.2", "1.2.0", "1.2.1"]
 }

@@ -5,6 +5,7 @@ from modules.TOTK_Optimizer_Modules import *
 from configuration.settings import *
 from modules.config import *
 from tkinter import ttk
+import shutil
 
 class FileManager:
 
@@ -244,7 +245,6 @@ class FileManager:
                 cls.Legacydir = cls.load_dir
                 return
 
-
         # Ensure the path exists.
         try:
             # attempt to create qt-config.ini directories in case they don't exist. Give error to warn user
@@ -269,6 +269,16 @@ class FileManager:
                                 "please reopen Legacy for consistency and make sure TOTK is present..!")
         elif cls.os_platform == "Darwin":
             log.info("Detected a MacOS based SYSTEM!")
+
+    @classmethod
+    def TransferMods(cls):
+        patchinfo = cls._frontend._patchInfo
+        source = os.path.join(patchinfo.Folder, patchinfo.ModFolder)
+        destination = os.path.join(cls.Globaldir, "load", patchinfo.ID, patchinfo.ModName)
+
+        os.makedirs(destination, exist_ok=True)
+
+        shutil.copytree(source, destination, dirs_exist_ok=True)
 
     @classmethod
     def submit(cls, mode=None):
@@ -309,7 +319,7 @@ class FileManager:
                 def stop_extracting():
                     cls.is_extracting = False
 
-                tasklist = [Exe_Running(), DownloadBEYOND(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods(), stop_extracting()]
+                tasklist = [Exe_Running(), cls.TransferMods(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods(), stop_extracting()]
                 if get_setting("auto-backup") in ["On"]:
                     tasklist.append(backup(cls))
                 com = 100 // len(tasklist)
@@ -318,45 +328,8 @@ class FileManager:
                     com += com
                     task
                     time.sleep(0.05)
-                ProgressBar.Destroy()
-
-                m = 1.3
-                # Kofi button.
-                element_1 = cls._frontend.on_canvas.Photo_Image(
-                    image_path="support.png",
-                    width=int(70* m), height=int(48* m),
-                )
-
-                element_2 = cls._frontend.on_canvas.Photo_Image(
-                    image_path="support_active.png",
-                    width=int(70* m), height=int(48* m),
-                )
-
-                element_3 = cls._frontend.on_canvas.Photo_Image(
-                    image_path="no_thanks.png",
-                    width=int(70* m), height=int(48* m),
-                )
-
-                element_4 = cls._frontend.on_canvas.Photo_Image(
-                    image_path="no_thanks_active.png",
-                    width=int(70* m), height=int(48* m),
-                )
-
-                if not cls.os_platform == "Linux":
-                    dialog = CustomDialog(cls, "TOTK Optimizer Tasks Completed",
-                                          "",
-                                          yes_img_1=element_1,
-                                          yes_img_2=element_2,
-                                          no_img_1=element_3,
-                                          no_img_2=element_4,
-                                          custom_no="No Thanks",
-                                          width=384,
-                                          height=216
-                                          )
-                    dialog.wait_window()
-                    if dialog.result:
-                        cls._frontend.open_browser("kofi")
-
+                
+                ProgressBar.End(cls._frontend)
                 log.info("Tasks have been COMPLETED. Feel free to Launch the game.")
                 return
 
@@ -367,7 +340,7 @@ class FileManager:
             modDir = os.path.join(cls.Globaldir, f"load/{patchInfo.ID}")
 
             if mode == "Cheats":
-                ProgressBar.string.set("Creating Cheat ManagerPatch.")
+                ProgressBar.string.set("Creating Cheat Patches.")
                 ModCreator.CreateCheats(cls)
                 return
 
@@ -416,6 +389,7 @@ class FileManager:
                         write_Legacy_config(cls, cls.TOTKconfig, cls._frontend.title_id, section, option, str(setting_preset[section][option]))
             ProgressBar.string.set("Finished Creating Settings..")
 
+        # Unused Function, used for downloading UltraCam beyond, but no longer needed as we store it locally.
         def DownloadBEYOND():
             try:
                 cls.add_list.append("UltraCam")

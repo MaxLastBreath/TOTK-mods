@@ -31,12 +31,13 @@ class Game_Manager:
 
                     cls.GamePatches.append(
                             PatchInfo(
-                                patchfolder,
-                                jsonfile["ID"], 
-                                jsonfile["Name"], 
-                                jsonfile["Versions"],
-                                jsonfile["ModName"],
-                                jsonfile["ModConfig"]
+                                    patchfolder,
+                                    jsonfile["ID"], 
+                                    jsonfile["Name"], 
+                                    jsonfile["Versions"],
+                                    jsonfile["ModName"],
+                                    jsonfile["ModConfig"],
+                                    jsonfile["ModFolder"],
                                       )
                         )
                         

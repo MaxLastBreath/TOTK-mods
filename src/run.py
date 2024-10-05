@@ -1,6 +1,6 @@
 import ttkbootstrap as ttk
 from modules.logger import *
-from form import Manager
+from modules.FrontEnd.FrontEnd import Manager
 from modules.update import textver, check_for_updates, delete_old_exe
 from modules.scaling import sf, scale
 from ctypes import *

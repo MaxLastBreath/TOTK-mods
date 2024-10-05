@@ -3,6 +3,7 @@
     "ID" : "0100F2C0115B6001",
     "ModName" : "!!!TOTK Optimizer",
     "ModConfig" : "UltraCam/maxlastbreath.ini",
+    "ModFolder" : "UltraCam",
     "Config" : "Options.json",
     "Versions" : ["1.1.0", "1.1.1", "1.1.2", "1.2.0", "1.2.1"]
 }

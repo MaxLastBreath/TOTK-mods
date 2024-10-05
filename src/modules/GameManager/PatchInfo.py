@@ -6,9 +6,10 @@ class PatchInfo:
     ID = "0100F2C0115B6000"
     ModName = "!!!TOTK Optimizer"
     Config = "UltraCam/maxlastbreath.ini"
+    ModFolder = ""
     Versions = []
     
-    def __init__(self, folder = str, _id = str, name = str, versions=None, modName = str, configloc = str):
+    def __init__(self, folder = str, _id = str, name = str, versions=None, modName = str, configloc = str, modfolder = str):
         if versions is None:
             versions = []
         self.Folder = folder
@@ -17,6 +18,7 @@ class PatchInfo:
         self.Versions = versions
         self.ModName = modName
         self.Config = configloc
+        self.ModFolder = modfolder
 
     def LoadJson(self):
         Location = os.path.join(self.Folder, "Options.json")
