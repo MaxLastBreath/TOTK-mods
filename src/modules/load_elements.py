@@ -82,7 +82,7 @@ def load_UI_elements(self, canvas):
 
         pyperclip.copy(benchmark_result)
     self.on_canvas.create_label(
-        master=self.window, canvas=canvas,
+        master=self._window, canvas=canvas,
         text=f"{gpu_name}\n"
               f"{CPU}\n"
               f"Memory: {total_memory}GB {FREQUENCY} MHz",
@@ -93,7 +93,7 @@ def load_UI_elements(self, canvas):
     )
 
     self.on_canvas.create_label(
-        master=self.window, canvas=canvas,
+        master=self._window, canvas=canvas,
         text=f"Turn on Direct Keyboard.\n"
              f"Press G after loading in game.\n"
              f"Select your Benchmark in Advanced Settings.\n"
@@ -128,7 +128,7 @@ def load_UI_elements(self, canvas):
 
     # Information text.
     self.on_canvas.create_label(
-        master=self.window, canvas=canvas,
+        master=self._window, canvas=canvas,
         text=self.text_content,
         description_name="Info_Label",
         justify="center", anchor="n",
@@ -140,7 +140,7 @@ def create_tab_buttons(self, canvas):
     if not canvas == self.maincanvas:
         # Kofi Button
         self.on_canvas.create_button(
-            master=self.window, canvas=canvas,
+            master=self._window, canvas=canvas,
             btn_text="Donate", textvariable=self.switch_text,
             style="success",
             row=1130, cul=520, width=60, padding=10, pos="center",
@@ -150,7 +150,7 @@ def create_tab_buttons(self, canvas):
         )
         # Github Button
         self.on_canvas.create_button(
-            master=self.window, canvas=canvas,
+            master=self._window, canvas=canvas,
             btn_text="Github", textvariable=self.switch_text,
             style="success",
             row=1066, cul=520, width=60, padding=10, pos="center",
@@ -163,7 +163,7 @@ def create_tab_buttons(self, canvas):
 
     # Switch mode between Ryujinx and Legacy
     self.on_canvas.create_button(
-        master=self.window, canvas=canvas,
+        master=self._window, canvas=canvas,
         btn_text="Switch", textvariable=self.switch_text,
         style="Danger",
         row=11, cul=138, width=12,
@@ -186,7 +186,7 @@ def create_tab_buttons(self, canvas):
 
     # 1 - Main
     self.on_canvas.create_button(
-        master=self.window, canvas=canvas,
+        master=self._window, canvas=canvas,
         btn_text="Main",
         style=button1style,
         row=11, cul=26, width=5,
@@ -196,7 +196,7 @@ def create_tab_buttons(self, canvas):
     )
     # 2 - Cheats
     self.on_canvas.create_button(
-        master=self.window, canvas=canvas,
+        master=self._window, canvas=canvas,
         btn_text="Cheats",
         style=button2style,
         row=11, cul=77, width=6,
@@ -206,7 +206,7 @@ def create_tab_buttons(self, canvas):
     )
     # 3 - Settings
     self.on_canvas.create_button(
-        master=self.window, canvas=canvas,
+        master=self._window, canvas=canvas,
         btn_text="Settings",
         style=button3style,
         row=11, cul=257, width=8,

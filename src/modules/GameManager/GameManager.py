@@ -30,7 +30,14 @@ class Game_Manager:
                     print(f"{jsonfile['ID']}, {jsonfile['Name']}, {jsonfile['Versions']}")
 
                     cls.GamePatches.append(
-                            PatchInfo(jsonfile["ID"], jsonfile["Name"], jsonfile["Versions"])
+                            PatchInfo(
+                                patchfolder,
+                                jsonfile["ID"], 
+                                jsonfile["Name"], 
+                                jsonfile["Versions"],
+                                jsonfile["ModName"],
+                                jsonfile["ModConfig"]
+                                      )
                         )
                         
     @classmethod

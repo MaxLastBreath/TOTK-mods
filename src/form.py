@@ -9,17 +9,22 @@ import ttkbootstrap as ttk
 
 class Manager:
 
-    patchInfo = []
-    window = ttk.Window
+    patches = []
+    patchInfo = None
+    _window = ttk.Window
     constyle = Style
 
     def __init__(self, window):
         
         Game_Manager.LoadPatches()
         FileManager.Initialize(window, self)
-        self.patchInfo = Game_Manager.GetPatches()
+        self.patches = Game_Manager.GetPatches()
 
-        self.window = window
+        # This should be set Dynamically
+        self.patchInfo = self.patches[1]
+        log.info(f"{self.patchInfo.Folder}")
+
+        self._window = window
         self.constyle = Style(theme=theme.lower())
         self.constyle.configure("TButton", font=btnfont)
 
@@ -32,7 +37,6 @@ class Manager:
 
         # Append all canvas in Manager class.
         self.all_canvas = []
-
 
         # Load the Config.
         self.config = localconfig
@@ -47,7 +51,6 @@ class Manager:
 
         # Set neccesary variables.
         self.Curr_Benchmark = None
-        self.Legacydir = None
         self.is_Ani_running = False
         self.is_Ani_Paused = False
         self.tooltip_active = False
@@ -80,14 +83,14 @@ class Manager:
         self.switchmode("false")
 
         #Window protocols
-        self.window.protocol("WM_DELETE_WINDOW", lambda: self.on_canvas.on_closing(self.window))
+        self._window.protocol("WM_DELETE_WINDOW", lambda: self.on_canvas.on_closing(self._window))
 
     def warning(self, e):
         messagebox.showwarning(f"{e}")
 
     def create_canvas(self):
         # Create Canvas
-        self.maincanvas = ttk.Canvas(self.window, width=scale(1200), height=scale(600))
+        self.maincanvas = ttk.Canvas(self._window, width=scale(1200), height=scale(600))
         canvas = self.maincanvas
         self.maincanvas.pack()
         self.all_canvas.append(self.maincanvas)
@@ -131,7 +134,7 @@ class Manager:
         presets = {"Saved": {}} | load_json("beyond_presets.json", presetsurl)
         values = list(presets.keys())
         self.selected_preset = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
+                                                            master=self._window, canvas=canvas,
                                                             text="OPTIMIZER PRESETS:",
                                                             variable=values[0], values=values,
                                                             row=row, cul=cul_tex - 20,
@@ -146,7 +149,7 @@ class Manager:
         for item in self.Legacy_settings:
             value.append(item)
         self.selected_settings = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
+                                                            master=self._window, canvas=canvas,
                                                             text="Legacy SETTINGS:",
                                                             variable=value[0], values=value,
                                                             row=row, cul=340, drop_cul=480,
@@ -163,7 +166,7 @@ class Manager:
 
         text = "SELECT EXECUTABLE"
         self.on_canvas.create_button(
-                                    master=self.window, canvas=canvas,
+                                    master=self._window, canvas=canvas,
                                     btn_text="Browse",
                                     row=row, cul=cul_sel, width=6,
                                     tags=["Button"],
@@ -178,7 +181,7 @@ class Manager:
             save_user_choices(self, self.config, "appdata", None)
 
         self.on_canvas.create_button(
-                                    master=self.window, canvas=canvas,
+                                    master=self._window, canvas=canvas,
                                     btn_text="Use Appdata",
                                     row=row, cul=cul_sel + 68, width=9,
                                     tags=["Button"],
@@ -189,7 +192,7 @@ class Manager:
 
 
         self.on_canvas.create_label(
-                                    master=self.window, canvas=canvas,
+                                    master=self._window, canvas=canvas,
                                     text=text,
                                     description_name="Browse",
                                     row=row, cul=cul_tex - 20,
@@ -199,7 +202,7 @@ class Manager:
 
         # Create a Backup button
         self.on_canvas.create_button(
-                                    master=self.window, canvas=canvas,
+                                    master=self._window, canvas=canvas,
                                     btn_text="Backup",
                                     row=row, cul=backupbutton, width=7,
                                     tags=["Button"],
@@ -208,7 +211,7 @@ class Manager:
         )
 
         self.on_canvas.create_button(
-                                    master=self.window, canvas=canvas,
+                                    master=self._window, canvas=canvas,
                                     btn_text="Clear Shaders",
                                     row=row, cul=backupbutton+78, width=9,
                                     tags=["Button", "Legacy"],
@@ -254,7 +257,7 @@ class Manager:
 
         # BIG TEXT.
         self.on_canvas.create_label(
-                                    master=self.window, canvas=canvas,
+                                    master=self._window, canvas=canvas,
                                     text="Tears Of The Kingdom", font=bigfont, color=BigTextcolor,
                                     description_name="Mod Improvements", anchor="c",
                                     row=row, cul=575,
@@ -288,12 +291,12 @@ class Manager:
             patch_default_index = dicts.get("Default")
             pos = pos_dict[section_auto]
             if patch_auto is True:
-                self.BEYOND_Patches[name] = ttk.StringVar(master=self.window, value="auto")
+                self.BEYOND_Patches[name] = ttk.StringVar(master=self._window, value="auto")
                 continue
 
             if dicts["Class"].lower() == "dropdown":
                 patch_var = self.on_canvas.create_combobox(
-                            master=self.window, canvas=canvas,
+                            master=self._window, canvas=canvas,
                             text=patch_name,
                             values=patch_list, variable=patch_list[patch_default_index],
                             row=pos[0], cul=pos[1], drop_cul=pos[2], width=100,
@@ -309,7 +312,7 @@ class Manager:
                 patch_type = dicts.get("Type")
                 patch_increments = dicts.get("Increments")
                 patch_var = self.on_canvas.create_scale(
-                    master=self.window, canvas=canvas,
+                    master=self._window, canvas=canvas,
                     text=patch_name,
                     scale_from=patch_values[0], scale_to=patch_values[1], type=patch_type,
                     row=pos[0], cul=pos[1], drop_cul=pos[2], width=100, increments=float(patch_increments),
@@ -330,7 +333,7 @@ class Manager:
 
             if dicts["Class"].lower() == "bool":
                 patch_var = self.on_canvas.create_checkbutton(
-                    master=self.window, canvas=canvas,
+                    master=self._window, canvas=canvas,
                     text=patch_name,
                     variable="Off",
                     row=pos[3], cul=pos[4], drop_cul=pos[5],
@@ -429,7 +432,7 @@ class Manager:
 
     def create_cheat_canvas(self):
         # Create Cheat Canvas
-        self.cheatcanvas = ttk.Canvas(self.window, width=scale(1200), height=scale(600))
+        self.cheatcanvas = ttk.Canvas(self._window, width=scale(1200), height=scale(600))
         self.cheatcanvas.pack(expand=1, fill=BOTH)
         canvas = self.cheatcanvas
         self.all_canvas.append(self.cheatcanvas)
@@ -446,7 +449,7 @@ class Manager:
                     versionvalues.append("Version - " + value)
 
         self.cheat_version = self.on_canvas.create_combobox(
-                                                            master=self.window, canvas=canvas,
+                                                            master=self._window, canvas=canvas,
                                                             text="",
                                                             values=versionvalues, variable=versionvalues[1],
                                                             row=520, cul=130+2, drop_cul=130+2,
@@ -485,7 +488,7 @@ class Manager:
                 if version_option_name not in ["Source", "Version", "Aversion", "Cheat Example"]:
 
                     version_option_var = self.on_canvas.create_checkbutton(
-                        master=self.window, canvas=canvas,
+                        master=self._window, canvas=canvas,
                         text=version_option_name,
                         variable="Off",
                         row=row, cul=cul_tex, drop_cul=cul_sel,
@@ -521,18 +524,18 @@ class Manager:
 
         # Create a submit button
         self.on_canvas.create_button(
-                                    master=self.window, canvas=canvas,
+                                    master=self._window, canvas=canvas,
                                     btn_text="Apply Cheats",
                                     row=520, cul=39, width=9, padding=5,
                                     tags=["Button"],
                                     style="success",
                                     description_name="Apply Cheats",
-                                    command=lambda: FileManager.submit(FileManager)
+                                    command=lambda: FileManager.submit()
         )
 
         # Create a submit button
         self.on_canvas.create_button(
-                                    master=self.window, canvas=canvas,
+                                    master=self._window, canvas=canvas,
                                     btn_text="Reset Cheats",
                                     row=520, cul=277+6+2, width=8, padding=5,
                                     tags=["Button"],
@@ -542,7 +545,7 @@ class Manager:
         )
         # Read Cheats
         self.on_canvas.create_button(
-                                    master=self.window, canvas=canvas,
+                                    master=self._window, canvas=canvas,
                                     btn_text="Read Saved Cheats",
                                     row=520, cul=366+2, width=11, padding=5,
                                     tags=["Button"],
@@ -553,7 +556,7 @@ class Manager:
 
         #Backup
         self.on_canvas.create_button(
-                                    master=self.window, canvas=canvas,
+                                    master=self._window, canvas=canvas,
                                     btn_text="Backup",
                                     row=520, cul=479+2, width=7, padding=5,
                                     tags=["Button"],
@@ -636,7 +639,7 @@ class Manager:
         self.maincanvas.pack_forget()
 
         self.ani = threading.Thread(name="cheatbackground",
-                                    target=lambda: self.on_canvas.canvas_animation(self.window, self.cheatcanvas))
+                                    target=lambda: self.on_canvas.canvas_animation(self._window, self.cheatcanvas))
         if not self.is_Ani_running == True:
             self.is_Ani_running = True
             self.ani.start()
@@ -708,4 +711,4 @@ class Manager:
     def extract_patches(self):
         FileManager.is_extracting = True
         FileManager.checkpath(self.mode)
-        FileManager.submit(FileManager)
+        FileManager.submit()

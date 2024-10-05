@@ -1,4 +1,5 @@
 from modules.FrontEnd.ProgressBar import ProgressBar
+from modules.GameManager.ModCreator import ModCreator
 from configuration.settings_config import Setting
 from modules.TOTK_Optimizer_Modules import *
 from configuration.settings import *
@@ -367,35 +368,8 @@ class FileManager:
             save_user_choices(cls._frontend, cls._frontend.config)
 
             if mode == "Cheats":
-                log.info("Starting Cheat patcher.")
                 ProgressBar.string.set("Creating Cheat ManagerPatch.")
-                save_user_choices(cls, cls.config, None, "Cheats")
-                selected_cheats = {}
-                for option_name, option_var in cls.selected_cheats.items():
-                    selected_cheats[option_name] = option_var.get()
-                # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Legacy together.
-                for version_option in cls.cheat_options:
-                    version = version_option.get("Version", "")
-                    mod_path = os.path.join(cls.load_dir, "Cheat Manager Patch", "cheats")
-
-                    # Create the directory if it doesn't exist
-                    os.makedirs(mod_path, exist_ok=True)
-
-                    filename = os.path.join(mod_path, f"{version}.txt")
-                    all_values = []
-                    try:
-                        with open(filename, "w", encoding="utf-8") as file:
-                            file.flush()
-                            # file.write(version_option.get("Source", "") + "\n") - makes cheats not work
-                            for key, value in version_option.items():
-                                if key not in ["Source", "Aversion", "Version"] and selected_cheats[key] == "Off":
-                                    continue
-                                if key in selected_cheats:
-                                        file.write(value + "\n")
-                    except Exception as e:
-                        log.error(f"ERROR! FAILED TO CREATE CHEAT PATCH. {e}")
-                cls.remove_list.append("Cheat Manager Patch")
-                log.info("Applied cheats successfully.")
+                ModCreator.CreateCheats(cls)
                 return
 
             elif mode == None:
@@ -504,49 +478,6 @@ class FileManager:
                 with open(ini_file_path, 'w+', encoding="utf-8") as configfile:
                     config.write(configfile)
 
-
-            # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Legacy together.
-            try:
-                # This logic is disabled with UltraCam Beyond.
-                return
-
-                for version_option in cls.version_options:
-                    version = version_option.get("version", "")
-                    mod_path = os.path.join(cls.load_dir, "Mod Manager Patch", "exefs")
-
-                    # Create the directory if it doesn't exist
-                    os.makedirs(mod_path, exist_ok=True)
-
-                    filename = os.path.join(mod_path, f"{version}.pchtxt")
-                    all_values = []
-                    with open(filename, "w", encoding="utf-8") as file:
-                        file.write(version_option.get("Source", "") + "\n")
-                        file.write(version_option.get("nsobid", "") + "\n")
-                        file.write(version_option.get("offset", "") + "\n")
-                        for key, value in version_option.items():
-                            if key in cls.ultracam_options.get(
-                                    "Skip_Patches"):
-                                continue
-
-                            if key not in ["Source", "nsobid", "offset", "version", "Version"] and not cls.selected_options[key].get() == "Off":
-                                pattern = r"@enabled\n([\da-fA-F\s]+)\n@stop"
-                                matches = re.findall(pattern, value)
-                                for match in matches:
-                                    hex_values = match.strip().split()
-                                    all_values.extend(hex_values)
-                                    # Print @enabled and then @stop at the end.
-                        file.write("@enabled\n")
-                        for i, value in enumerate(all_values):
-                            file.write(value)
-                            if i % 2 == 1 and i != len(all_values) - 1:
-                                file.write("\n")
-                            else:
-                                file.write(" ")
-                        file.write("\n@stop\n")
-                # Update Visual Improvements MOD.
-            except PermissionError as e:
-                log.error(f"FAILED TO CREATE MOD PATCH: {e}")
-
         def UpdateSettings():
             log.info("Checking for Settings...")
             ProgressBar.string.set("Creating Settings..")
@@ -586,7 +517,6 @@ class FileManager:
                 log.info(f"Downloading: UltraCam")
                 os.makedirs(Mod_directory, exist_ok=True)
                 download_unzip(link, Mod_directory)
-                log.info(f"Downloaded: UltraCam")
             except Exception as e:
                 log.warning(f"FAILED TO DOWNLOAD ULTRACAM BEYOND! {e}")
 
