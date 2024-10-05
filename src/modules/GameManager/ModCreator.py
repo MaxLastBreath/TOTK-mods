@@ -67,3 +67,99 @@ class ModCreator:
                     else:
                         file.write(" ")
                 file.write("\n@stop\n")
+
+    @classmethod
+    def UCAutoPatcher(cls, manager, config):
+        patch_info = manager.ultracam_beyond.get("Keys", [""])
+
+        for patch in manager.BEYOND_Patches:
+            if patch.lower() in ["resolution", "aspect ratio"]:
+                continue
+
+            patch_dict = patch_info[patch]
+            patch_class = patch_dict["Class"]
+            patch_Config = patch_dict["Config_Class"]
+            patch_Default = patch_dict["Default"]
+
+            # Ensure we have the section required.
+            if not config.has_section(patch_Config[0]):
+                config[patch_Config[0]] = {}
+
+            # In case we have an auto patch.
+            if manager.BEYOND_Patches[patch] == "auto" or manager.BEYOND_Patches[patch].get() == "auto":
+                if patch_class.lower() == "dropdown":
+                    patch_Names = patch_dict["Values"]
+                    config[patch_Config[0]][patch_Config[1]] = str(patch_Names[patch_Default])
+                else:
+                    config[patch_Config[0]][patch_Config[1]] = str(patch_Default)
+                continue
+
+            if patch_class.lower() == "bool" or patch_class.lower() == "scale":
+                config[patch_Config[0]][patch_Config[1]] = manager.BEYOND_Patches[patch].get()
+
+            if patch_class.lower() == "dropdown":
+                # exclusive to dropdown.
+                patch_Names = patch_dict["Name_Values"]
+                patch_Values = patch_dict["Values"]
+                index = patch_Names.index(manager.BEYOND_Patches[patch].get())
+                config[patch_Config[0]][patch_Config[1]] = str(patch_Values[index])
+
+    @classmethod
+    def UCResolutionPatcher(cls, manager, config):
+        patch_info = manager.ultracam_beyond.get("Keys", [""])
+
+        try: 
+            resolution = manager.BEYOND_Patches["resolution"].get()
+        except Exception as e :
+            resolution = 1
+
+        try:
+            shadows = int(manager.BEYOND_Patches["shadow resolution"].get().split("x")[0])
+        except Exception as e :
+            shadows = 1024
+
+        if patch_info != ["resolution"]:
+            return
+
+        # ARR = manager.BEYOND_Patches["aspect ratio"].get().split("x")
+        ARR = [16, 9]
+        New_Resolution = patch_info["resolution"]["Values"][patch_info["resolution"]["Name_Values"].index(resolution)].split("x")
+        New_Resolution = convert_resolution(int(New_Resolution[0]), int(New_Resolution[1]), int(ARR[0]), int(ARR[1]))
+
+        scale_1080 = 1920*1080
+        scale_shadows = round(shadows / 1024)
+        New_Resolution_scale = int(New_Resolution[0]) * int(New_Resolution[1])
+        new_scale = New_Resolution_scale / scale_1080
+
+        if (scale_shadows > new_scale):
+            new_scale = scale_shadows
+            log.info(f"scale:{new_scale}")
+
+        layout = 0
+        if(new_scale < 0):
+            layout = 0
+        if(new_scale > 1):
+            layout = 1
+        if(new_scale > 6):
+            layout = 2
+
+        if cls.mode == "Legacy":
+            write_Legacy_config(manager, cls.TOTKconfig, manager.title_id, "Renderer", "resolution_setup", "2")
+            write_Legacy_config(manager, cls.TOTKconfig, manager.title_id, "Core", "memory_layout_mode", f"{layout}")
+            write_Legacy_config(manager, cls.TOTKconfig, manager.title_id, "System", "use_docked_mode", "true")
+
+            if layout > 0:
+                write_Legacy_config(manager, cls.TOTKconfig, manager.title_id, "Renderer", "vram_usage_mode", "1")
+            else:
+                write_Legacy_config(manager, cls.TOTKconfig, manager.title_id, "Renderer", "vram_usage_mode", "0")
+
+        if cls.mode == "Ryujinx":
+            write_ryujinx_config(manager, cls.ryujinx_config, "res_scale", 1)
+            if (layout > 0):
+                write_ryujinx_config(manager, cls.ryujinx_config, "expand_ram", True)
+            else:
+                write_ryujinx_config(manager, cls.ryujinx_config, "expand_ram", False)
+
+        config["Resolution"]["Width"] = str(New_Resolution[0])
+        config["Resolution"]["Height"] = str(New_Resolution[1])
+    

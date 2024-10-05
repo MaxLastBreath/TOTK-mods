@@ -94,7 +94,6 @@ class Manager:
     def warning(self, e):
         messagebox.showwarning(f"{e}")
 
-
     def LoadNewGameInfo(self):
         for item in self.patches:
             if (self.PatchName.get() == item.Name):
@@ -182,6 +181,7 @@ class Manager:
             self.BEYOND_Patches[name] = patch_var
 
     def DeletePatches(self):
+        self.BEYOND_Patches.clear()
         self.all_canvas[0].delete("patchinfo")
     
     def create_canvas(self):
@@ -256,7 +256,7 @@ class Manager:
                                                             master=self._window, canvas=canvas,
                                                             text="Select Game:",
                                                             variable=value[0], values=value,
-                                                            row=row, cul=340, drop_cul=480,
+                                                            row=row, cul=340, drop_cul=430,
                                                             tags=["text"], tag="GameSelect",
                                                             description_name="GameSelect",
                                                             command= lambda event: self.LoadNewGameInfo()
