@@ -10,7 +10,7 @@ import ttkbootstrap as ttk
 class Manager:
 
     patches = []
-    patchInfo = None
+    _patchInfo = None
     _window = ttk.Window
     constyle = Style
 
@@ -19,10 +19,13 @@ class Manager:
         Game_Manager.LoadPatches()
         FileManager.Initialize(window, self)
         self.patches = Game_Manager.GetPatches()
+        self._patchInfo = self.patches[2]
+
+        # Load Patch Info
+        self.ultracam_beyond = self._patchInfo.LoadJson()
 
         # This should be set Dynamically
-        self.patchInfo = self.patches[1]
-        log.info(f"{self.patchInfo.Folder}")
+        log.info(f"{self._patchInfo.Folder}")
 
         self._window = window
         self.constyle = Style(theme=theme.lower())
@@ -65,14 +68,9 @@ class Manager:
         self.presets = load_json("beyond_presets.json", presetsurl)
         self.version_options = load_json("Version.json", versionurl)
         self.cheat_options = load_json("Cheats.json", cheatsurl)
-        self.ultracam_beyond = load_json("UltraCam_Template.json", ultracambeyond)
         self.Legacy_settings = load_json("Legacy_presets.json", Legacy_presets_url)
 
         self.benchmarks = {}
-
-        if os.path.exists(os.path.join("TOTKOptimizer/UltraCam_Template.json")):
-            with open("TOTKOptimizer/UltraCam_Template.json", "r", encoding="utf-8") as file:
-                self.ultracam_beyond = json.load(file)
 
         # Local text variable
         self.switch_text = ttk.StringVar(value="Switch to Ryujinx")

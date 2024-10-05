@@ -37,10 +37,10 @@ class ModCreator:
 
     @classmethod
     # This no longer works, it's currently disabled and unused, the logic may be refractored in the future.
-    def CreateExefs(cls, directory, version_options, selected_options):
+    def CreateExefs(cls, patchinfo, directory, version_options, selected_options):
         for version_option in version_options:
             version = version_option.get("version", "")
-            mod_path = os.path.join(directory, "Mod Manager Patch", "exefs")
+            mod_path = os.path.join(directory, patchinfo.ModName, "exefs")
 
             # Create the directory if it doesn't exist
             os.makedirs(mod_path, exist_ok=True)

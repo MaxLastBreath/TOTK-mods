@@ -432,7 +432,7 @@
             ]
         },
         "freecam": {
-            "Name": "FreeCam",
+            "Name": "FreeCam NEW",
             "Class": "bool",
             "Section": "main",
             "Auto": false,

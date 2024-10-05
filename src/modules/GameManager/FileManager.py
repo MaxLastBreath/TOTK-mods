@@ -5,13 +5,11 @@ from modules.TOTK_Optimizer_Modules import *
 from configuration.settings import *
 from modules.config import *
 from tkinter import ttk
-import threading
-import re
 
 class FileManager:
 
     _window = None
-    _frontend = None
+    _frontend = None # Manager class
 
     is_extracting = False
     mode = "Legacy"
@@ -83,7 +81,7 @@ class FileManager:
                 local_dir = os.path.join(home_directory, ".local", "share")
                 for folder in os.listdir(local_dir):
                     cls.Globaldir = os.path.join(local_dir, folder)
-                    if os.path.exists(os.path.join(cls.Globaldir, "load", "0100F2C0115B6000")):
+                    if os.path.exists(os.path.join(cls.Globaldir, "load", cls._frontend._patchInfo.ID)):
                         print(f"Found Legacy Emu folder at: {cls.Globaldir}")
                         cls.configdir = os.path.join(cls.Globaldir, "qt-config.ini")
                         cls.TOTKconfig = os.path.join(cls.Globaldir, "custom")
@@ -97,7 +95,7 @@ class FileManager:
                 flatpak_dir = os.path.join(home_directory, ".var", "app")
                 for folder in os.listdir(local_dir):
                     cls.Globaldir = os.path.join(local_dir, folder, "config", "yuzu")
-                    if os.path.exists(os.path.join(cls.Globaldir, "load", "0100F2C0115B6000")):
+                    if os.path.exists(os.path.join(cls.Globaldir, "load", cls._frontend._patchInfo.ID)):
                         print(f"Found Legacy Emu folder at: {cls.Globaldir}")
                         cls.configdir = os.path.join(cls.Globaldir, "qt-config.ini")
                         cls.TOTKconfig = os.path.join(cls.Globaldir, "custom")
@@ -116,9 +114,9 @@ class FileManager:
                 cls.load_dir = os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{cls.Globaldir}/load')).replace('"', "")
                 if cls.nand_dir.startswith('"'):
                     cls.nand_dir = cls.nand_dir.strip('"')[0]
-                cls.load_dir = os.path.join(cls.load_dir, "0100F2C0115B6000")
+                cls.load_dir = os.path.join(cls.load_dir, cls._frontend._patchInfo.ID)
 
-                cls.Legacydir = os.path.normpath(os.path.join(home_directory, ".local", "share", "yuzu", "load", "0100F2C0115B6000"))
+                cls.Legacydir = os.path.normpath(os.path.join(home_directory, ".local", "share", "yuzu", "load", cls._frontend._patchInfo.ID))
                 return
 
             if mode == "Ryujinx":
@@ -130,9 +128,9 @@ class FileManager:
                     cls.Globaldir = flatpak
                     cls.nand_dir = os.path.join(f"{cls.Globaldir}", "bis", "user", "save")
                     cls.sdmc_dir = os.path.join(f"{cls.Globaldir}", "sdcard")
-                    cls.load_dir = os.path.join(f"{cls.Globaldir}", "mods", "contents", "0100f2c0115b6000")
+                    cls.load_dir = os.path.join(f"{cls.Globaldir}", "mods", "contents", cls._frontend._patchInfo.ID)
                     cls.Legacydir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents",
-                                                "0100f2c0115b6000")
+                                                cls._frontend._patchInfo.ID)
                     cls.ryujinx_config = os.path.join(cls.Globaldir, "Config.json")
                     return
 
@@ -140,8 +138,8 @@ class FileManager:
                 cls.TOTKconfig = None
                 cls.nand_dir = os.path.join(f"{cls.Globaldir}", "bis", "user", "save")
                 cls.sdmc_dir = os.path.join(f"{cls.Globaldir}", "sdcard")
-                cls.load_dir = os.path.join(f"{cls.Globaldir}", "mods", "contents", "0100f2C0115B6000")
-                cls.Legacydir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents", "0100f2C0115B6000")
+                cls.load_dir = os.path.join(f"{cls.Globaldir}", "mods", "contents", cls._frontend._patchInfo.ID)
+                cls.Legacydir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents", cls._frontend._patchInfo.ID)
                 cls.ryujinx_config = os.path.join(cls.Globaldir, "Config.json")
                 return
         # Default Dir for Windows or user folder.
@@ -155,7 +153,7 @@ class FileManager:
                 appdata = os.path.join(home_directory, "AppData", "Roaming")
                 for folder in os.listdir(appdata):
                     cls.Globaldir = os.path.join(appdata, folder)
-                    if os.path.exists(os.path.join(cls.Globaldir, "load", "0100F2C0115B6000")):
+                    if os.path.exists(os.path.join(cls.Globaldir, "load", cls._frontend._patchInfo.ID)):
                         print(f"Found Legacy Emu folder at: {cls.Globaldir}")
                         break
                     else:
@@ -170,10 +168,10 @@ class FileManager:
                     cls.sdmc_dir = os.path.normpath(config_parser.get('Data%20Storage', 'sdmc_directory', fallback=f'{os.path.join(Legacypath, "../user/sdmc")}')).replace('"', "")
                     if cls.nand_dir.startswith('"'):
                         cls.nand_dir = cls.nand_dir.strip('"')[0]
-                    cls.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{os.path.join(Legacypath, "../user/nand")}')), "0100F2C0115B6000").replace('"', "")
+                    cls.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{os.path.join(Legacypath, "../user/nand")}')), cls._frontend._patchInfo.ID).replace('"', "")
                     if cls.load_dir.startswith('"'):
                         cls.load_dir = cls.load_dir.strip('"')[0]
-                    cls.Legacydir = os.path.join(cls.Globaldir, "load", "0100F2C0115B6000").replace('"', "")
+                    cls.Legacydir = os.path.join(cls.Globaldir, "load", cls._frontend._patchInfo.ID).replace('"', "")
                     NEWLegacy_path = os.path.normpath(os.path.join(userfolder, "../"))
                     cls.Globaldir = os.path.join(NEWLegacy_path, "user")
                     qt_config_save_dir = os.path.normpath(os.path.join(cls.nand_dir, "../../"))
@@ -209,12 +207,10 @@ class FileManager:
                     cls.sdmc_dir = os.path.normpath(config_parser.get('Data%20Storage', 'sdmc_directory', fallback=f'{cls.Globaldir}/sdmc')).replace('"', "").replace('"', "")
                     if cls.nand_dir.startswith('"'):
                         cls.nand_dir = cls.nand_dir.strip('"')[0]
-                    cls.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{cls.Globaldir}/load')), "0100F2C0115B6000").replace('"', "")
+                    cls.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{cls.Globaldir}/load')), cls._frontend._patchInfo.ID).replace('"', "")
                     if cls.load_dir.startswith('"'):
                         cls.load_dir = cls.load_dir.strip('"')[0]
-                    cls.Legacydir = os.path.join(cls.Globaldir, "load", "0100F2C0115B6000")
-
-
+                    cls.Legacydir = os.path.join(cls.Globaldir, "load", cls._frontend._patchInfo.ID)
                     return
             if mode == "Ryujinx":
                 if os.path.exists(portablefolder):
@@ -222,9 +218,9 @@ class FileManager:
                     cls.TOTKconfig = None
                     cls.ryujinx_config = os.path.join(portablefolder, "Config.json")
                     cls.nand_dir = os.path.join(f"{portablefolder}", "bis", "user", "save")
-                    cls.load_dir = os.path.join(f"{portablefolder}", "mods", "contents", "0100f2C0115b6000")
+                    cls.load_dir = os.path.join(f"{portablefolder}", "mods", "contents", cls._frontend._patchInfo.ID)
                     cls.sdmc_dir = os.path.join(f"{portablefolder}", "sdcard")
-                    cls.Legacydir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", "0100f2C0115B6000")
+                    cls.Legacydir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", cls._frontend._patchInfo.ID)
                     return
                 else:
                     cls.Globaldir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx")
@@ -232,7 +228,7 @@ class FileManager:
                     cls.TOTKconfig = None
                     cls.ryujinx_config = os.path.join(cls.Globaldir, "Config.json")
                     cls.nand_dir = os.path.join(f"{cls.Globaldir}", "bis", "user", "save")
-                    cls.load_dir = os.path.join(f"{cls.Globaldir}", "mods", "contents", "0100f2C0115b6000")
+                    cls.load_dir = os.path.join(f"{cls.Globaldir}", "mods", "contents", cls._frontend._patchInfo.ID)
                     cls.sdmc_dir = os.path.join(f"{cls.Globaldir}", "sdcard")
                     cls.Legacydir = cls.load_dir
                     return
@@ -244,7 +240,7 @@ class FileManager:
                 cls.ryujinx_config = os.path.join(cls.Globaldir, "Config.json")
                 cls.nand_dir = os.path.join(f"{cls.Globaldir}", "bis", "user", "save")
                 cls.sdmc_dir = os.path.join(f"{cls.Globaldir}", "sdcard")
-                cls.load_dir = os.path.join(f"{cls.Globaldir}", "mods", "contents", "0100f2C0115B6000")
+                cls.load_dir = os.path.join(f"{cls.Globaldir}", "mods", "contents", cls._frontend._patchInfo.ID)
                 cls.Legacydir = cls.load_dir
                 return
 
@@ -554,10 +550,10 @@ class FileManager:
         ProgressBar.Run(cls._window, run_tasks)
 
     @classmethod
-    def select_game_file(command=None):
+    def select_game_file(cls, command=None):
         # Open a file dialog to browse and select Legacy.exe
         game_path = filedialog.askopenfilename(
-            title=f"Please select Tears of The Kingdom Game File.",
+            title=f"Please select Tears of {cls._frontend._patchInfo.Name}.",
             filetypes=[("Nintendo Gamefile", ["*.nsp", "*.xci", "*.NSP", "*.XCI"]), ("All Files", "*.*")]
         )
         if game_path:
@@ -566,7 +562,8 @@ class FileManager:
 
             if not config.has_section("Paths"):
                 config.add_section("Paths")
-            config.set("Paths", "game_path", game_path)
+            
+            config.set("Paths", f"{cls._frontend._patchInfo.Name}", game_path)
         else:
             return
         with open(localconfig, "w", encoding="utf-8") as configfile:
@@ -574,43 +571,43 @@ class FileManager:
         return game_path
 
     @classmethod
-    def launch_GAME(self):
+    def launch_GAME(cls):
         config = configparser.ConfigParser()
         config.read(localconfig, encoding="utf-8")
-        Game_PATH = config.get("Paths", "game_path", fallback="None")
+        Game_PATH = config.get("Paths", f"{cls._frontend._patchInfo.Name}", fallback="None")
 
         if not os.path.exists(Game_PATH):
             log.warning(f"Game not found in {Game_PATH}\n Please select your game file.")
-            Game_PATH = self.select_game_file()
+            Game_PATH = cls.select_game_file()
 
         log.info(f"Launching game {Game_PATH}")
 
-        if self.mode == "Legacy":
+        if cls.mode == "Legacy":
             mode = "yuzu.exe"
             if is_process_running("yuzu.exe"):
                 log.info("Legacy is already running in the background.")
                 return
 
-            Legacypath = self.load_Legacy_path(localconfig)
+            Legacypath = cls.load_Legacy_path(localconfig)
             if os.path.exists(Legacypath):
                 Legacy_PATH = Legacypath
             else:
-                Legacy_PATH = self.select_Legacy_exe()
+                Legacy_PATH = cls.select_Legacy_exe()
 
             cmd = [f'{Legacy_PATH}', '-u', '1', '-f', '-g', f'{Game_PATH}']
 
-        if self.mode == "Ryujinx":
+        if cls.mode == "Ryujinx":
             mode = "Ryujinx.exe"
 
             if is_process_running("Ryujinx.exe"):
                 log.info("Ryujinx is already running in the background.")
                 return
 
-            ryujinx_path = self.load_Legacy_path(localconfig)
+            ryujinx_path = cls.load_Legacy_path(localconfig)
             if os.path.exists(ryujinx_path):
                 Ryujinx_PATH = ryujinx_path
             else:
-                Ryujinx_PATH = self.select_Legacy_exe()
+                Ryujinx_PATH = cls.select_Legacy_exe()
                 if Ryujinx_PATH is None: log.warning("Ryujinx wasn't found.")
 
 

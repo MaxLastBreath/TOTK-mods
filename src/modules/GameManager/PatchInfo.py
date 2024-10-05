@@ -1,3 +1,5 @@
+import json, os
+
 class PatchInfo:
     Folder = "Patches/Tears Of The Kingdom"
     Name = "Tears of The Kingdom"
@@ -17,4 +19,6 @@ class PatchInfo:
         self.Config = configloc
 
     def LoadJson(self):
-        print()
+        Location = os.path.join(self.Folder, "Options.json")
+        with open(Location, "r", encoding="utf-8") as file:
+            return json.load(file)
