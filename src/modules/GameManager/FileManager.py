@@ -475,6 +475,7 @@ class FileManager:
                     config.write(configfile)
 
         def UpdateSettings():
+            return # return early, this is no longer used but want to keep order of execution.
             log.info("Checking for Settings...")
             ProgressBar.string.set("Creating Settings..")
             if cls._frontend.selected_settings.get() == "No Change":

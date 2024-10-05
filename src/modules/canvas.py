@@ -78,6 +78,10 @@ class Canvas_Create:
 
         # add outline and user-tag to the outlined text.
         outline_tag = ["outline", tag]
+
+        for item in tags:
+            outline_tag.append(item)
+
         # create an outline to the text.
         canvas.create_text(
                            scale(cul) + scale(1),
@@ -118,7 +122,7 @@ class Canvas_Create:
                                                window=dropdown,
                                                width=scale(width),
                                                height=CBHEIGHT,
-                                               tags=tag
+                                               tags=tags
                                                )
         # bind canvas
         dropdown.bind("<<ComboboxSelected>>", command)
@@ -151,6 +155,10 @@ class Canvas_Create:
 
         # add outline and user-tag to the outlined text.
         outline_tag = ["outline", tag]
+
+        for item in tags:
+            outline_tag.append(item)
+
         # create an outline to the text.
         canvas.create_text(
             scale(cul) + scale(1),
@@ -193,7 +201,7 @@ class Canvas_Create:
             window=scale_box,
             width=scale(width),
             height=scale(12),
-            tags=tag,
+            tags=tags,
         )
 
         # bind canvas
@@ -284,8 +292,13 @@ class Canvas_Create:
             active_color_new = None
         elif is_active is True:
             tags.append("active_text")
+
         # add outline and user-tag to the outlined text.
         outline_tag = ["outline", tag]
+
+        for item in tags:
+            outline_tag.append(item)
+
         # create an outline to the text.
         canvas.create_text(
                            scale(cul) + scale(1),
@@ -330,7 +343,7 @@ class Canvas_Create:
                                                window=checkbutton,
                                                width = scale(11),
                                                height = scale(11),
-                                               tags=tag
+                                               tags=tags
                                                )
         # attempt to make a Hover tip
         canvas.tag_bind(text_line, "<Button-1>", lambda event: toggle(event, new_variable))

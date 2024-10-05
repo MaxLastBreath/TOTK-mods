@@ -3,9 +3,16 @@ from configuration.settings_config import Setting
 from modules.TOTK_Optimizer_Modules import * # imports all needed files.
 from modules.GameManager.GameManager import *
 from modules.GameManager.FileManager import *
-import threading
-import webbrowser
+import threading, webbrowser, os, copy
 import ttkbootstrap as ttk
+
+def increase_row(row, cul_sel, cul_tex):
+    row += 40
+    if row >= 480:
+        row = 160
+        cul_tex += 180
+        cul_sel += 180
+    return row, cul_sel, cul_tex
 
 class Manager:
 
@@ -13,6 +20,7 @@ class Manager:
     _patchInfo = None
     _window = ttk.Window
     constyle = Style
+    os_platform = platform.system()
 
     def __init__(self, window):
         
@@ -86,6 +94,96 @@ class Manager:
     def warning(self, e):
         messagebox.showwarning(f"{e}")
 
+
+    def LoadNewGameInfo(self):
+        for item in self.patches:
+            if (self.PatchName.get() == item.Name):
+                self._patchInfo = item
+                self.ultracam_beyond = self._patchInfo.LoadJson()
+                pos_dict = copy.deepcopy(self.Back_Pos)
+                self.DeletePatches()
+                self.LoadPatches(self.all_canvas[0], pos_dict)
+                self.toggle_page(0, "main")
+
+    def LoadPatches(self, canvas, pos_dict):
+        keys = self.ultracam_beyond.get("Keys", [""])
+
+        for name in keys:
+            dicts = keys[name]
+
+            patch_var = None
+            patch_list = dicts.get("Name_Values", [""])
+            patch_values = dicts.get("Values")
+            patch_name = dicts.get("Name")
+            patch_auto = dicts.get("Auto")
+            section_auto = dicts.get("Section")
+            patch_description = dicts.get("Description")
+            patch_default_index = dicts.get("Default")
+            pos = pos_dict[section_auto]
+            if patch_auto is True:
+                self.BEYOND_Patches[name] = ttk.StringVar(master=self._window, value="auto")
+                continue
+
+            if dicts["Class"].lower() == "dropdown":
+                patch_var = self.on_canvas.create_combobox(
+                            master=self._window, canvas=canvas,
+                            text=patch_name,
+                            values=patch_list, variable=patch_list[patch_default_index],
+                            row=pos[0], cul=pos[1], drop_cul=pos[2], width=100,
+                            tags=["dropdown", "patchinfo"], tag=section_auto,
+                            text_description=patch_description
+                            )
+                new_pos = increase_row(pos[0], pos[1], pos[2])
+                pos[0] = new_pos[0]
+                pos[1] = new_pos[1]
+                pos[2] = new_pos[2]
+
+            if dicts["Class"].lower() == "scale":
+                patch_type = dicts.get("Type")
+                patch_increments = dicts.get("Increments")
+                patch_var = self.on_canvas.create_scale(
+                    master=self._window, canvas=canvas,
+                    text=patch_name,
+                    scale_from=patch_values[0], scale_to=patch_values[1], type=patch_type,
+                    row=pos[0], cul=pos[1], drop_cul=pos[2], width=100, increments=float(patch_increments),
+                    tags=["scale", "patchinfo"], tag=section_auto,
+                    text_description=patch_description
+                )
+                if patch_type == "f32":
+                    print(f"{patch_name} - {patch_default_index}")
+                    patch_var.set(float(patch_default_index))
+                else:
+                    patch_var.set(patch_default_index)
+
+                canvas.itemconfig(patch_name, text=f"{float(patch_default_index)}")
+                new_pos = increase_row(pos[0], pos[1], pos[2])
+                pos[0] = new_pos[0]
+                pos[1] = new_pos[1]
+                pos[2] = new_pos[2]
+
+            if dicts["Class"].lower() == "bool":
+                patch_var = self.on_canvas.create_checkbutton(
+                    master=self._window, canvas=canvas,
+                    text=patch_name,
+                    variable="Off",
+                    row=pos[3], cul=pos[4], drop_cul=pos[5],
+                    tags=["bool", "patchinfo"], tag=section_auto,
+                    text_description=patch_description
+                )
+                if patch_default_index:
+                    patch_var.set("On")
+                new_pos = increase_row(pos[3], pos[4], pos[5])
+                pos[3] = new_pos[0]
+                pos[4] = new_pos[1]
+                pos[5] = new_pos[2]
+
+            if patch_var is None:
+                continue
+            self.BEYOND_Patches[name] = patch_var
+
+    def DeletePatches(self):
+        self.all_canvas[0].delete("patchinfo")
+    
     def create_canvas(self):
 
         # clear list.
@@ -113,14 +211,6 @@ class Manager:
         cul_tex_2 = 400
         cul_sel_2 = 550
 
-        def increase_row(row, cul_sel, cul_tex):
-            row += 40
-            if row >= 480:
-                row = 160
-                cul_tex += 180
-                cul_sel += 180
-            return row, cul_sel, cul_tex
-
         # Run Scripts for checking OS and finding location
         FileManager.checkpath(self.mode)
         FileManager.DetectOS(self.mode)
@@ -147,16 +237,29 @@ class Manager:
 
         # Setting Preset - returns variable.
 
-        value = ["No Change"]
-        for item in self.Legacy_settings:
-            value.append(item)
-        self.selected_settings = self.on_canvas.create_combobox(
+        # value = ["No Change"]
+        # for item in self.Legacy_settings:
+        #     value.append(item)
+        # self.selected_settings = self.on_canvas.create_combobox(
+        #                                                     master=self._window, canvas=canvas,
+        #                                                     text="Legacy SETTINGS:",
+        #                                                     variable=value[0], values=value,
+        #                                                     row=row, cul=340, drop_cul=480,
+        #                                                     tags=["text"], tag="Legacy",
+        #                                                     description_name="Settings"
+        #                                                 )
+
+        value = []
+        for item in self.patches:
+            value.append(item.Name)
+        self.PatchName = self.on_canvas.create_combobox(
                                                             master=self._window, canvas=canvas,
-                                                            text="Legacy SETTINGS:",
+                                                            text="Select Game:",
                                                             variable=value[0], values=value,
                                                             row=row, cul=340, drop_cul=480,
-                                                            tags=["text"], tag="Legacy",
-                                                            description_name="Settings"
+                                                            tags=["text"], tag="GameSelect",
+                                                            description_name="GameSelect",
+                                                            command= lambda event: self.LoadNewGameInfo()
                                                         )
 
         row += 40
@@ -277,80 +380,9 @@ class Manager:
             "extra": [row, cul_tex, cul_sel,  row_2, cul_tex_2, cul_sel_2]
         }
 
-        keys = self.ultracam_beyond.get("Keys", [""])
+        self.Back_Pos = copy.deepcopy(pos_dict)
 
-        for name in keys:
-            dicts = keys[name]
-
-            patch_var = None
-            patch_list = dicts.get("Name_Values", [""])
-            patch_values = dicts.get("Values")
-            patch_name = dicts.get("Name")
-            patch_auto = dicts.get("Auto")
-            section_auto = dicts.get("Section")
-            patch_description = dicts.get("Description")
-            patch_default_index = dicts.get("Default")
-            pos = pos_dict[section_auto]
-            if patch_auto is True:
-                self.BEYOND_Patches[name] = ttk.StringVar(master=self._window, value="auto")
-                continue
-
-            if dicts["Class"].lower() == "dropdown":
-                patch_var = self.on_canvas.create_combobox(
-                            master=self._window, canvas=canvas,
-                            text=patch_name,
-                            values=patch_list, variable=patch_list[patch_default_index],
-                            row=pos[0], cul=pos[1], drop_cul=pos[2], width=100,
-                            tags=["dropdown"], tag=section_auto,
-                            text_description=patch_description
-                            )
-                new_pos = increase_row(pos[0], pos[1], pos[2])
-                pos[0] = new_pos[0]
-                pos[1] = new_pos[1]
-                pos[2] = new_pos[2]
-
-            if dicts["Class"].lower() == "scale":
-                patch_type = dicts.get("Type")
-                patch_increments = dicts.get("Increments")
-                patch_var = self.on_canvas.create_scale(
-                    master=self._window, canvas=canvas,
-                    text=patch_name,
-                    scale_from=patch_values[0], scale_to=patch_values[1], type=patch_type,
-                    row=pos[0], cul=pos[1], drop_cul=pos[2], width=100, increments=float(patch_increments),
-                    tags=["scale"], tag=section_auto,
-                    text_description=patch_description
-                )
-                if patch_type == "f32":
-                    print(f"{patch_name} - {patch_default_index}")
-                    patch_var.set(float(patch_default_index))
-                else:
-                    patch_var.set(patch_default_index)
-
-                canvas.itemconfig(patch_name, text=f"{float(patch_default_index)}")
-                new_pos = increase_row(pos[0], pos[1], pos[2])
-                pos[0] = new_pos[0]
-                pos[1] = new_pos[1]
-                pos[2] = new_pos[2]
-
-            if dicts["Class"].lower() == "bool":
-                patch_var = self.on_canvas.create_checkbutton(
-                    master=self._window, canvas=canvas,
-                    text=patch_name,
-                    variable="Off",
-                    row=pos[3], cul=pos[4], drop_cul=pos[5],
-                    tags=["bool"], tag=section_auto,
-                    text_description=patch_description
-                )
-                if patch_default_index:
-                    patch_var.set("On")
-                new_pos = increase_row(pos[3], pos[4], pos[5])
-                pos[3] = new_pos[0]
-                pos[4] = new_pos[1]
-                pos[5] = new_pos[2]
-
-            if patch_var is None:
-                continue
-            self.BEYOND_Patches[name] = patch_var
+        self.LoadPatches(canvas, pos_dict)
 
         row = pos_dict["main"][0]
         row_2 = pos_dict["main"][3]
