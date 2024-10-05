@@ -87,6 +87,10 @@ class Manager:
         messagebox.showwarning(f"{e}")
 
     def create_canvas(self):
+
+        # clear list.
+        self.BEYOND_Patches = {}
+
         # Create Canvas
         self.maincanvas = ttk.Canvas(self._window, width=scale(1200), height=scale(600))
         canvas = self.maincanvas
@@ -267,7 +271,6 @@ class Manager:
         ##              AUTO PATCH INFO STARTS HERE ALL CONTROLLED IN JSON FILE.
         ##              THIS IS FOR ULTRACAM BEYOND GRAPHICS AND PERFORMANCE (2.0)
         ##              REMOVED DFPS, SINCE ULTRACAM BEYOND DOES IT ALL AND SO MUCH BETTER.
-        ##
 
         pos_dict = {
             "main": [row,  cul_tex, cul_sel, row_2, cul_tex_2, cul_sel_2],
