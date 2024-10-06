@@ -7,3 +7,4 @@ ttkbootstrap
 screeninfo
 psutil
 GPUtil
+colorlog

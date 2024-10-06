@@ -76,7 +76,8 @@ except Exception as e:
     log.warning(f"The System Memory was not detected, nothing to be concerned about. {e}")
     total_memory = "Undetected"
 
-superlog.info(f"\n\n\n\nAttempting to start Application.\n"
+superlog.info(
+            f"\n\n\n\nAttempting to start Application.\n"
             f"__SystemINFO__\n"
             f"System: {platform.system()}\n"
             f"GPU: {gpu_name}\n"

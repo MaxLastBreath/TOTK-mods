@@ -22,8 +22,6 @@ class Manager:
 
     old_cheats = {}
     benchmarks = {}
-    cheat_version = ttk.StringVar(value="Version - 1.2.1")
-    switch_text = ttk.StringVar(value="Switch to Ryujinx")
 
     _patchInfo = None
     _window = ttk.Window
@@ -34,6 +32,7 @@ class Manager:
     is_Ani_Paused = False
     tooltip_active = False
     warn_again = "yes"
+
 
     def __init__(self, window):
 
@@ -88,6 +87,10 @@ class Manager:
         self.version_options = load_json("Version.json", versionurl)
         self.cheat_options = load_json("Cheats.json", cheatsurl)
         self.Legacy_settings = load_json("Legacy_presets.json", Legacy_presets_url)
+
+        # Local text variable
+        self.switch_text = ttk.StringVar(value="Switch to Ryujinx")
+        self.cheat_version = ttk.StringVar(value="Version - 1.2.1")
 
         # Load Canvas
         Load_ImagePath(self)
