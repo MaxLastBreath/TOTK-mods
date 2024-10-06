@@ -2,7 +2,6 @@ from modules.canvas import *
 from modules.qt_config import *
 from modules.backup import *
 from modules.logger import *
-from modules.launch import *
 from modules.config import *
 from modules.patches import *
 from modules.image_paths import *

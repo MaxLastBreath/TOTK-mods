@@ -1,10 +1,11 @@
 from modules.FrontEnd.ProgressBar import ProgressBar
+from modules.GameManager.LaunchManager import LaunchManager
 from modules.GameManager.ModCreator import ModCreator
 from configuration.settings_config import Setting
 from modules.TOTK_Optimizer_Modules import *
 from configuration.settings import *
 from modules.config import *
-from tkinter import ttk
+import ttkbootstrap as ttk
 import shutil
 
 class FileManager:
@@ -49,17 +50,6 @@ class FileManager:
     
     @classmethod
     def checkpath(cls, mode):
-        if cls.is_extracting is True:
-            cls.configdir = None
-            cls.TOTKconfig = None
-            cls.nand_dir = None
-            cls.ryujinx_config = None
-            cls.sdmc = None
-            cls.load_dir = os.getcwd()
-            cls.Legacydir = os.getcwd()
-            cls.Globaldir = os.getcwd()
-            return
-
         home_directory = os.path.expanduser("~")
         # Default Dir for Linux/SteamOS
         cls.os_platform = platform.system()
@@ -83,7 +73,7 @@ class FileManager:
                 for folder in os.listdir(local_dir):
                     cls.Globaldir = os.path.join(local_dir, folder)
                     if os.path.exists(os.path.join(cls.Globaldir, "load", cls._frontend._patchInfo.ID)):
-                        print(f"Found Legacy Emu folder at: {cls.Globaldir}")
+                        superlog.info(f"Found Legacy Emu folder at: {cls.Globaldir}")
                         cls.configdir = os.path.join(cls.Globaldir, "qt-config.ini")
                         cls.TOTKconfig = os.path.join(cls.Globaldir, "custom")
                         new_path = os.path.dirname(os.path.dirname(cls.Globaldir))
@@ -97,7 +87,7 @@ class FileManager:
                 for folder in os.listdir(local_dir):
                     cls.Globaldir = os.path.join(local_dir, folder, "config", "yuzu")
                     if os.path.exists(os.path.join(cls.Globaldir, "load", cls._frontend._patchInfo.ID)):
-                        print(f"Found Legacy Emu folder at: {cls.Globaldir}")
+                        superlog.info(f"Found Legacy Emu folder at: {cls.Globaldir}")
                         cls.configdir = os.path.join(cls.Globaldir, "qt-config.ini")
                         cls.TOTKconfig = os.path.join(cls.Globaldir, "custom")
                         new_path = os.path.dirname(os.path.dirname(cls.Globaldir))
@@ -143,6 +133,7 @@ class FileManager:
                 cls.Legacydir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents", cls._frontend._patchInfo.ID)
                 cls.ryujinx_config = os.path.join(cls.Globaldir, "Config.json")
                 return
+            
         # Default Dir for Windows or user folder.
         elif cls.os_platform == "Windows":
             Legacypath = cls.load_Legacy_path(localconfig)
@@ -155,7 +146,7 @@ class FileManager:
                 for folder in os.listdir(appdata):
                     cls.Globaldir = os.path.join(appdata, folder)
                     if os.path.exists(os.path.join(cls.Globaldir, "load", cls._frontend._patchInfo.ID)):
-                        print(f"Found Legacy Emu folder at: {cls.Globaldir}")
+                        superlog.info(f"Found Legacy Emu folder at: {cls.Globaldir}")
                         break
                     else:
                         cls.Globaldir = os.path.join(home_directory, "AppData", "Roaming", "yuzu")
@@ -258,9 +249,9 @@ class FileManager:
     @classmethod
     def DetectOS(cls, mode):
         if cls.os_platform == "Linux":
-            log.info("Detected a Linux based SYSTEM!")
+            superlog.info("Detected a Linux based SYSTEM!")
         elif cls.os_platform == "Windows":
-            log.info("Detected a Windows based SYSTEM!")
+            superlog.info("Detected a Windows based SYSTEM!")
             if mode == "Legacy":
                 if os.path.exists(cls.configdir):
                     log.info("a qt-config.ini file found!")
@@ -274,11 +265,15 @@ class FileManager:
     def TransferMods(cls):
         patchinfo = cls._frontend._patchInfo
         source = os.path.join(patchinfo.Folder, patchinfo.ModFolder)
-        destination = os.path.join(cls.Globaldir, "load", patchinfo.ID, patchinfo.ModName)
 
-        os.makedirs(destination, exist_ok=True)
-
-        shutil.copytree(source, destination, dirs_exist_ok=True)
+        if cls.is_extracting is False:
+            destination = os.path.join(cls.Globaldir, "load", patchinfo.ID, patchinfo.ModName)
+            os.makedirs(destination, exist_ok=True)
+            shutil.copytree(source, destination, dirs_exist_ok=True)
+        else :
+            destination = os.path.join(os.getcwd(), patchinfo.ModName)
+            os.makedirs(destination, exist_ok=True)
+            shutil.copytree(source, destination, dirs_exist_ok=True)
 
     @classmethod
     def submit(cls, mode=None):
@@ -301,7 +296,7 @@ class FileManager:
 
         def run_tasks():
             if mode == "Cheats":
-                log.info("Starting TASKs for Cheat Patch..")
+                superlog.info("Starting TASKs for Cheat Patch..")
                 tasklist = [Create_Mod_Patch("Cheats")]
                 if get_setting("cheat-backup") in ["On"]:
                     tasklist.append(backup(cls))
@@ -312,10 +307,10 @@ class FileManager:
                     task
                     time.sleep(0.05)
                 ProgressBar.Destroy()
-                log.info("Tasks have been COMPLETED. Feel free to Launch the game.")
+                superlog.info("Tasks have been COMPLETED. Feel free to Launch the game.")
                 return
             if mode== None:
-                log.info("Starting TASKs for Normal Patch..")
+                superlog.info("Starting TASKs for Normal Patch..")
                 def stop_extracting():
                     cls.is_extracting = False
 
@@ -330,7 +325,7 @@ class FileManager:
                     time.sleep(0.05)
                 
                 ProgressBar.End(cls._frontend)
-                log.info("Tasks have been COMPLETED. Feel free to Launch the game.")
+                superlog.info("Tasks have been COMPLETED. Feel free to Launch the game.")
                 return
 
         def Create_Mod_Patch(mode=None):
@@ -345,7 +340,7 @@ class FileManager:
                 return
 
             elif mode == None:
-                log.info("Starting Mod Creator.")
+                superlog.info("Starting Mod Creator.")
                 log.info(f"Generating mod at {modDir}")
                 os.makedirs(modDir, exist_ok=True)
 
@@ -359,6 +354,9 @@ class FileManager:
                 cls.add_list.append("UltraCam")
 
                 ini_file_path = os.path.join(modDir, patchInfo.ModName, patchInfo.Config)
+                if cls.is_extracting: # do this if we are extracting the mod.
+                    ini_file_path = os.path.join(os.getcwd(), patchInfo.ModName, patchInfo.Config)
+                
                 ini_file_directory = os.path.dirname(ini_file_path)
                 os.makedirs(ini_file_directory, exist_ok=True)
 
@@ -420,7 +418,7 @@ class FileManager:
                 log.warning(f"FAILED TO DOWNLOAD ULTRACAM BEYOND! {e}")
 
         def Exe_Running():
-            is_Program_Opened = is_process_running(cls.mode + ".exe")
+            is_Program_Opened = LaunchManager.is_process_running(cls._frontend.mode + ".exe")
             message = (f"{cls.mode}.exe is Running, \n"
                        f"The Optimizer Requires {cls.mode}.exe to be closed."
                        f"\nDo you wish to close {cls.mode}.exe?")
@@ -451,69 +449,3 @@ class FileManager:
             cls.remove_list.clear()
     
         ProgressBar.Run(cls._window, run_tasks)
-
-    @classmethod
-    def select_game_file(cls, command=None):
-        # Open a file dialog to browse and select Legacy.exe
-        game_path = filedialog.askopenfilename(
-            title=f"Please select Tears of {cls._frontend._patchInfo.Name}.",
-            filetypes=[("Nintendo Gamefile", ["*.nsp", "*.xci", "*.NSP", "*.XCI"]), ("All Files", "*.*")]
-        )
-        if game_path:
-            config = configparser.ConfigParser()
-            config.read(localconfig, encoding="utf-8")
-
-            if not config.has_section("Paths"):
-                config.add_section("Paths")
-            
-            config.set("Paths", f"{cls._frontend._patchInfo.Name}", game_path)
-        else:
-            return
-        with open(localconfig, "w", encoding="utf-8") as configfile:
-            config.write(configfile, space_around_delimiters=False)
-        return game_path
-
-    @classmethod
-    def launch_GAME(cls):
-        config = configparser.ConfigParser()
-        config.read(localconfig, encoding="utf-8")
-        Game_PATH = config.get("Paths", f"{cls._frontend._patchInfo.Name}", fallback="None")
-
-        if not os.path.exists(Game_PATH):
-            log.warning(f"Game not found in {Game_PATH}\n Please select your game file.")
-            Game_PATH = cls.select_game_file()
-
-        log.info(f"Launching game {Game_PATH}")
-
-        if cls.mode == "Legacy":
-            mode = "yuzu.exe"
-            if is_process_running("yuzu.exe"):
-                log.info("Legacy is already running in the background.")
-                return
-
-            Legacypath = cls.load_Legacy_path(localconfig)
-            if os.path.exists(Legacypath):
-                Legacy_PATH = Legacypath
-            else:
-                Legacy_PATH = cls.select_Legacy_exe()
-
-            cmd = [f'{Legacy_PATH}', '-u', '1', '-f', '-g', f'{Game_PATH}']
-
-        if cls.mode == "Ryujinx":
-            mode = "Ryujinx.exe"
-
-            if is_process_running("Ryujinx.exe"):
-                log.info("Ryujinx is already running in the background.")
-                return
-
-            ryujinx_path = cls.load_Legacy_path(localconfig)
-            if os.path.exists(ryujinx_path):
-                Ryujinx_PATH = ryujinx_path
-            else:
-                Ryujinx_PATH = cls.select_Legacy_exe()
-                if Ryujinx_PATH is None: log.warning("Ryujinx wasn't found.")
-
-
-            cmd = [f'{Ryujinx_PATH}', '-f', f'{Game_PATH}']
-
-        process = subprocess.Popen(cmd, shell=False)

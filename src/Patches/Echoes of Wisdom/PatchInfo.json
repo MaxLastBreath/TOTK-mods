@@ -1,9 +1,9 @@
 {
     "Name" : "Echoes of Wisdom",
-    "ID" : "0100F2C0115B6000",
-    "ModName" : "!!!TOTK Optimizer",
-    "ModConfig" : "UltraCam/maxlastbreath.ini",
+    "ID" : "01008CF01BAAC000",
+    "ModName" : "!!!EOW Optimizer",
+    "ModConfig" : "romfs/UltraCam/maxlastbreath.ini",
     "Config" : "Options.json",
     "ModFolder" : "UltraCam",
-    "Versions" : ["1.1.0", "1.1.1", "1.1.2", "1.2.0", "1.2.1"]
+    "Versions" : ["1.0.1"]
 }

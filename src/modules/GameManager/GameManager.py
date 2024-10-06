@@ -1,4 +1,5 @@
 from modules.GameManager.PatchInfo import PatchInfo
+from modules.logger import log, superlog
 import json
 import os
 
@@ -16,18 +17,18 @@ class Game_Manager:
         if not os.path.exists(patch_directory):
            raise "NO PATCHES FOUND, Please check your installation"
         
-        print(patch_directory)
-        
+        superlog.info("Looking for supported games...")
+
         for folder in os.listdir(patch_directory):
             patchfolder = os.path.join(patch_directory, folder)
 
             for gamefolder in os.listdir(patchfolder):
                 filepath =  os.path.join(patchfolder, gamefolder)
-
+                
                 if (gamefolder == "PatchInfo.json"):
                     with open(filepath, "r", encoding="utf-8") as file:
                         jsonfile = json.load(file)
-                    print(f"{jsonfile['ID']}, {jsonfile['Name']}, {jsonfile['Versions']}")
+                    log.info(f"{jsonfile['Name']} [{jsonfile['ID']}] : {jsonfile['Versions']}")
 
                     cls.GamePatches.append(
                             PatchInfo(

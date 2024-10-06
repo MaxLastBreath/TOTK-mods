@@ -578,7 +578,7 @@ class Canvas_Create:
         self.is_Ani_Paused = True
 
     def on_closing(self, master):
-        print("Closing Window")
+        superlog.critical("User Exit Application.")
         self.is_Ani_running = False
         master.destroy()
 

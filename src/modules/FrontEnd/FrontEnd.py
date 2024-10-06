@@ -1,8 +1,10 @@
 from configuration.settings import *
 from configuration.settings_config import Setting
 from modules.TOTK_Optimizer_Modules import * # imports all needed files.
-from modules.GameManager.GameManager import *
-from modules.GameManager.FileManager import *
+from modules.GameManager.GameManager import Game_Manager
+from modules.GameManager.FileManager import FileManager
+from modules.GameManager.LaunchManager import LaunchManager
+from modules.load_elements import create_tab_buttons, load_UI_elements
 import threading, webbrowser, os, copy
 import ttkbootstrap as ttk
 
@@ -15,7 +17,6 @@ def increase_row(row, cul_sel, cul_tex):
     return row, cul_sel, cul_tex
 
 class Manager:
-
     patches = []
     _patchInfo = None
     _window = ttk.Window
@@ -32,9 +33,6 @@ class Manager:
         # Load Patch Info
         self.ultracam_beyond = self._patchInfo.LoadJson()
 
-        # This should be set Dynamically
-        log.info(f"{self._patchInfo.Folder}")
-
         self._window = window
         self.constyle = Style(theme=theme.lower())
         self.constyle.configure("TButton", font=btnfont)
@@ -44,7 +42,7 @@ class Manager:
 
         # Set initialize different Classes.
         self.on_canvas = Canvas_Create()
-        self.setting = Setting()
+        self.setting = Setting(self)
 
         # Append all canvas in Manager class.
         self.all_canvas = []
@@ -282,7 +280,7 @@ class Manager:
         # Reset to Appdata
         def Legacy_appdata():
             FileManager.checkpath(self.mode)
-            log.info("Successfully Defaulted to Appdata!")
+            superlog.info("Successfully Defaulted to Appdata!")
             save_user_choices(self, self.config, "appdata", None)
 
         self.on_canvas.create_button(
@@ -437,7 +435,7 @@ class Manager:
             canvas=canvas,
             row=510, cul=25 + int(self.apply_element.width() / sf),
             img_1=self.launch_element, img_2=self.launch_element_active,
-            command=lambda event: FileManager.launch_GAME()
+            command=lambda event: LaunchManager.launch_GAME(self, FileManager)
         )
 
         # extract
@@ -620,12 +618,12 @@ class Manager:
                 home_directory = os.path.dirname(Legacy_path)
                 fullpath = os.path.dirname(Legacy_path)
                 if any(item in os.listdir(fullpath) for item in ["user", "portable"]):
-                    log.info(
+                    superlog.info(
                         f"Successfully selected {self.mode}.exe! And a portable folder was found at {home_directory}!")
                     FileManager.checkpath(self.mode)
                     return Legacy_path
                 else:
-                    log.info(f"Portable folder for {self.mode} not found defaulting to appdata directory!")
+                    superlog.info(f"Portable folder for {self.mode} not found defaulting to appdata directory!")
                     FileManager.checkpath(self.mode)
                     return Legacy_path
 
@@ -661,7 +659,7 @@ class Manager:
 
     def toggle_page(self, event, show):
         self.maincanvas.itemconfig(show, state="normal")
-        log.info(show)
+        log.debug(show)
         for state in self.all_pages:
             if state is not show:
                 self.maincanvas.itemconfig(state, state="hidden")
@@ -743,5 +741,4 @@ class Manager:
 
     def extract_patches(self):
         FileManager.is_extracting = True
-        FileManager.checkpath(self.mode)
         FileManager.submit()

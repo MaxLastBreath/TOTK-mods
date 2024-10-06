@@ -1,4 +1,4 @@
-from modules.logger import log
+from modules.logger import log, superlog
 from modules.config import *
 import re, os
 
@@ -20,7 +20,7 @@ class ModCreator:
 
     @classmethod
     def CreateCheats(cls, filemgr):
-        log.info("Starting Cheat patcher.")
+        superlog.info("Starting Cheat patcher.")
         save_user_choices(filemgr, filemgr.config, None, "Cheats")
         selected_cheats = {}
         for option_name, option_var in filemgr._frontend.selected_cheats.items():
@@ -47,7 +47,7 @@ class ModCreator:
             except Exception as e:
                 log.error(f"ERROR! FAILED TO CREATE CHEAT PATCH. {e}")
         filemgr._frontend.remove_list.append("Cheat Manager Patch")
-        log.info("Applied cheats successfully.")
+        superlog.info("Applied cheats successfully.")
 
     @classmethod
     # This no longer works, it's currently disabled and unused, the logic may be refractored in the future.

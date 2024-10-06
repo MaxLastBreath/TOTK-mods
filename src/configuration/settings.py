@@ -1,13 +1,11 @@
 from modules.colors import Color
 from modules.scaling import *
 from modules.json import *
-import time
 from modules.download import *
-import logging
-from tkinter import messagebox
+from modules.logger import log, superlog
 import configparser
 
-Version = "manager-2.1.0"
+Version = "manager-3.0.0"
 repo_url_raw = 'https://github.com/MaxLastBreath/TOTK-mods'
 repo_url = 'https://api.github.com/repos/MaxLastBreath/TOTK-mods'
 localconfig = "TOTKOptimizer.ini"
@@ -49,6 +47,8 @@ def get_setting(args=None):
     is_cheat_backup = config.get("Settings", "cheat-backup", fallback="Off")
     is_animation = config.get("Settings", "animation", fallback="On")
     DFPS_version = config.get("Updates", "dfps", fallback="1.1.0")
+
+    superlog.info(f"Version : {Version}")
 
     if args in ["back", "backup", "auto-backup"]:
         return is_auto_backup

@@ -2,24 +2,29 @@ from ttkbootstrap import *
 import ttkbootstrap as ttk
 from _tkinter import TclError
 from configuration.settings import *
+from modules.GameManager.LaunchManager import LaunchManager
 from modules.scaling import scale, sf
 from modules.colors import Color
 from modules.canvas import Canvas_Create
-from modules.launch import *
 
 class Setting:
-    def __init__(self):
-        self.window = None
-        self.w_scale_var = None
-        self.backup_var = None
-        self.backup_cheat_var = None
-        self.ani_var = None
+    _window = None
+    _manager = None
+    w_scale_var = None
+    backup_var = None
+    backup_cheat_var = None
+    ani_var = None
+
+    # Initialize after the window in manager is set.
+    def __init__(self, manager):
+        self.window = manager._window
+        self._manager = manager
         self.canvas_create = Canvas_Create()
         self.Colors = Color()
         self.config = configparser.ConfigParser()
         self.config.read(localconfig)
 
-    def settingswindow(self, style, canvases=list):
+    def settingswindow(self, style, canvases):
         self.style = style
         self.createwindow()
         canvas_obj = self.canvas(canvases)
@@ -162,7 +167,7 @@ class Setting:
             row=row, cul=cul_tex,
             tags=["Button"], tag=None,
             description_name="Apply",
-            command=select_game_file
+            command=lambda event : LaunchManager.select_game_file(self._manager)
         )
         row += 40
 
@@ -173,7 +178,7 @@ class Setting:
             tags=["Button"], tag=None,
             description_name="Apply",
             style="success",
-            command=lambda: self.saveconfig(canvases)
+            command=lambda: self.saveconfig(self._manager.all_canvas)
         )
         return canvas_obj
 

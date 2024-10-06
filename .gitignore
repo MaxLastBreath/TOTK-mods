@@ -32,3 +32,4 @@ src/modules/logger.txt
 /src/dist
 /src/build
 venv
+*.log
