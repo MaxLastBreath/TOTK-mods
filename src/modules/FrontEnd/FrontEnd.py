@@ -18,19 +18,42 @@ def increase_row(row, cul_sel, cul_tex):
 
 class Manager:
     patches = []
+    all_canvas = []
+
+    old_cheats = {}
+    benchmarks = {}
+    cheat_version = ttk.StringVar(value="Version - 1.2.1")
+    switch_text = ttk.StringVar(value="Switch to Ryujinx")
+
     _patchInfo = None
     _window = ttk.Window
     constyle = Style
     os_platform = platform.system()
+    Curr_Benchmark = None
+    is_Ani_running = False
+    is_Ani_Paused = False
+    tooltip_active = False
+    warn_again = "yes"
 
     def __init__(self, window):
+
+        """
+        Initializes the frontend canvas UI.\n
+        This also Initializes Game_Manager, FileManager, Canvas_Create and Settings.\n
+        The following is being set and done :\n
+        Reads each game's patch Info. Creates an array of each available game through the Game_Manager.\n
+        Load's the current game's Information.\n
+        Creates the entire UI framework, all the canvas, images and ETC.
+        """
         
         Game_Manager.LoadPatches()
         FileManager.Initialize(window, self)
         self.patches = Game_Manager.GetPatches()
+
+        # Game from config should be chosen here.
         self._patchInfo = self.patches[2]
 
-        # Load Patch Info
+        # Load Patch Info for current game.
         self.ultracam_beyond = self._patchInfo.LoadJson()
 
         self._window = window
@@ -38,14 +61,11 @@ class Manager:
         self.constyle.configure("TButton", font=btnfont)
 
         # ULTRACAM 2.0 PATCHES ARE SAVED HERE.
-        self.BEYOND_Patches = {}
+        self.UserChoices = {}
 
         # Set initialize different Classes.
         self.on_canvas = Canvas_Create()
         self.setting = Setting(self)
-
-        # Append all canvas in Manager class.
-        self.all_canvas = []
 
         # Load the Config.
         self.config = localconfig
@@ -59,15 +79,8 @@ class Manager:
             self.mode = "Ryujinx"
 
         # Set neccesary variables.
-        self.Curr_Benchmark = None
-        self.is_Ani_running = False
-        self.is_Ani_Paused = False
-        self.tooltip_active = False
-        self.warn_again = "yes"
         self.title_id = title_id
         self.config_title_id = config_title_id
-        self.old_cheats = {}
-        self.cheat_version = ttk.StringVar(value="Version - 1.2.1")
 
         # Initialize Json Files.
         self.description = load_json("Description.json", descurl)
@@ -75,11 +88,6 @@ class Manager:
         self.version_options = load_json("Version.json", versionurl)
         self.cheat_options = load_json("Cheats.json", cheatsurl)
         self.Legacy_settings = load_json("Legacy_presets.json", Legacy_presets_url)
-
-        self.benchmarks = {}
-
-        # Local text variable
-        self.switch_text = ttk.StringVar(value="Switch to Ryujinx")
 
         # Load Canvas
         Load_ImagePath(self)
@@ -118,7 +126,7 @@ class Manager:
             patch_default_index = dicts.get("Default")
             pos = pos_dict[section_auto]
             if patch_auto is True:
-                self.BEYOND_Patches[name] = ttk.StringVar(master=self._window, value="auto")
+                self.UserChoices[name] = ttk.StringVar(master=self._window, value="auto")
                 continue
 
             if dicts["Class"].lower() == "dropdown":
@@ -176,16 +184,16 @@ class Manager:
 
             if patch_var is None:
                 continue
-            self.BEYOND_Patches[name] = patch_var
+            self.UserChoices[name] = patch_var
 
     def DeletePatches(self):
-        self.BEYOND_Patches.clear()
+        self.UserChoices.clear()
         self.all_canvas[0].delete("patchinfo")
     
     def create_canvas(self):
 
         # clear list.
-        self.BEYOND_Patches = {}
+        self.UserChoices = {}
 
         # Create Canvas
         self.maincanvas = ttk.Canvas(self._window, width=scale(1200), height=scale(600))

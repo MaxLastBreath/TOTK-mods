@@ -2,12 +2,7 @@ from configuration.settings import Version
 from packaging.version import parse
 from tkinter import messagebox
 from modules.logger import log
-import requests
-import shutil
-import platform
-import sys
-import glob
-import os
+import requests, shutil, platform, sys, glob, os
 
 textver = Version.strip("manager-")
 GITHUB = "TOTK-mods"

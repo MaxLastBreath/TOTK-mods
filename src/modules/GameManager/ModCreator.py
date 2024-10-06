@@ -5,6 +5,9 @@ import re, os
 class ModCreator:
 
     def convert_resolution(width, height, ARR_width, ARR_height):
+        """
+        Increases resolutions based on aspect ratio, very likely to not be used in the future.
+        """
         original_aspect_ratio = width / height
 
         if ARR_width / ARR_height > original_aspect_ratio:
@@ -20,6 +23,9 @@ class ModCreator:
 
     @classmethod
     def CreateCheats(cls, filemgr):
+        """
+        This function creates a cheat manager patcher, primarily used only for TOTK right now.
+        """
         superlog.info("Starting Cheat patcher.")
         save_user_choices(filemgr, filemgr.config, None, "Cheats")
         selected_cheats = {}
@@ -52,6 +58,9 @@ class ModCreator:
     @classmethod
     # This no longer works, it's currently disabled and unused, the logic may be refractored in the future.
     def CreateExefs(cls, patchinfo, directory, version_options, selected_options):
+        """
+        creates an EXEFs patch for the respective game.
+        """
         for version_option in version_options:
             version = version_option.get("version", "")
             mod_path = os.path.join(directory, patchinfo.ModName, "exefs")
@@ -84,9 +93,18 @@ class ModCreator:
 
     @classmethod
     def UCAutoPatcher(cls, manager, config):
+        """
+        This function configues the mod's config file (.ini) dynamically based on games.
+        Requires manager, which then fetches UserChoices from manager to read all the different parameters.
+
+        Parameters:
+        manager (FrontEnd): The frontend UI manager.
+        config (configparser): The config file parser.
+        """
+        
         patch_info = manager.ultracam_beyond.get("Keys", [""])
 
-        for patch in manager.BEYOND_Patches:
+        for patch in manager.UserChoices:
             if patch.lower() in ["resolution", "aspect ratio"]:
                 continue
 
@@ -100,7 +118,7 @@ class ModCreator:
                 config[patch_Config[0]] = {}
 
             # In case we have an auto patch.
-            if manager.BEYOND_Patches[patch] == "auto" or manager.BEYOND_Patches[patch].get() == "auto":
+            if manager.UserChoices[patch] == "auto" or manager.UserChoices[patch].get() == "auto":
                 if patch_class.lower() == "dropdown":
                     patch_Names = patch_dict["Values"]
                     config[patch_Config[0]][patch_Config[1]] = str(patch_Names[patch_Default])
@@ -109,33 +127,45 @@ class ModCreator:
                 continue
 
             if patch_class.lower() == "bool" or patch_class.lower() == "scale":
-                config[patch_Config[0]][patch_Config[1]] = manager.BEYOND_Patches[patch].get()
+                config[patch_Config[0]][patch_Config[1]] = manager.UserChoices[patch].get()
 
             if patch_class.lower() == "dropdown":
                 # exclusive to dropdown.
                 patch_Names = patch_dict["Name_Values"]
                 patch_Values = patch_dict["Values"]
-                index = patch_Names.index(manager.BEYOND_Patches[patch].get())
+                index = patch_Names.index(manager.UserChoices[patch].get())
                 config[patch_Config[0]][patch_Config[1]] = str(patch_Values[index])
 
     @classmethod
     def UCResolutionPatcher(cls, filemgr, manager, config):
+        """
+        This function configues the mod's config file (.ini) dynamically based on games.
+        This function requires the file manager in order to read the locations of Ryujinx config file and Legacy config file respectively.
+        This function also uses the UI manager to read the state of our UI, if we are using "Legacy" or Ryujinx modes respectively.
+        Requires manager, which then fetches UserChoices from manager to read the resolution, shadows and aspect ratios parameters.
+        
+        Parameters:
+        filemgr (FileManager): the file manager is required here.
+        manager (FrontEnd): The frontend UI manager.
+        config (configparser): The config file parser.
+        """
+
         patch_info = manager.ultracam_beyond.get("Keys", [""])
 
         try: 
-            resolution = manager.BEYOND_Patches["resolution"].get()
+            resolution = manager.UserChoices["resolution"].get()
         except Exception as e :
             resolution = 1
 
         try:
-            shadows = int(manager.BEYOND_Patches["shadow resolution"].get().split("x")[0])
+            shadows = int(manager.UserChoices["shadow resolution"].get().split("x")[0])
         except Exception as e :
             shadows = 1024
 
         if "resolution" not in patch_info:
             return
 
-        # ARR = manager.BEYOND_Patches["aspect ratio"].get().split("x")
+        # ARR = manager.UserChoices["aspect ratio"].get().split("x")
         ARR = [16, 9]
         New_Resolution = patch_info["resolution"]["Values"][patch_info["resolution"]["Name_Values"].index(resolution)].split("x")
         New_Resolution = cls.convert_resolution(int(New_Resolution[0]), int(New_Resolution[1]), int(ARR[0]), int(ARR[1]))

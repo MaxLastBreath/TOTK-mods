@@ -51,11 +51,11 @@ def load_UI_elements(self, canvas):
         if self.Curr_Benchmark is None:
             return
         patch_info = self.ultracam_beyond.get("Keys", [""])
-        resolution = self.BEYOND_Patches["resolution"].get()
-        shadows = int(self.BEYOND_Patches["shadow resolution"].get().split("x")[0])
+        resolution = self.UserChoices["resolution"].get()
+        shadows = int(self.UserChoices["shadow resolution"].get().split("x")[0])
 
-        if "aspect ratio" in self.BEYOND_Patches:
-            ARR = self.BEYOND_Patches["aspect ratio"].get().split("x")
+        if "aspect ratio" in self.UserChoices:
+            ARR = self.UserChoices["aspect ratio"].get().split("x")
             Resolution = patch_info["resolution"]["Values"][
                 patch_info["resolution"]["Name_Values"].index(resolution)].split("x")
             Resolution = convert_resolution(int(Resolution[0]), int(Resolution[1]), int(ARR[0]),
@@ -71,7 +71,7 @@ def load_UI_elements(self, canvas):
         benchmark_result += (
             f"- **{CPU}**\n"
             f"- **{total_memory}** GB RAM at **{FREQUENCY}** MHz\n"
-            f"- **{New_Resolution}** and Shadows: **{shadows}**, FPS CAP: **{self.BEYOND_Patches['fps'].get()}**\n"
+            f"- **{New_Resolution}** and Shadows: **{shadows}**, FPS CAP: **{self.UserChoices['fps'].get()}**\n"
             f"## Results:\n"
             f"- Total Frames **{self.benchmarks[self.Curr_Benchmark]['Total Frames']}**\n"
             f"- Average FPS **{self.benchmarks[self.Curr_Benchmark]['Average FPS']}**\n"
