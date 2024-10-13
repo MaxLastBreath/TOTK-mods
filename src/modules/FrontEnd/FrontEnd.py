@@ -31,6 +31,7 @@ class Manager:
     is_Ani_running = False
     is_Ani_Paused = False
     tooltip_active = False
+    LabelText = None
     warn_again = "yes"
 
     def __init__(self, window):
@@ -112,6 +113,10 @@ class Manager:
                 self.toggle_page(0, "main")
                 save_config_game(self, self.config) # comes from config.py
 
+    def ChangeName(self):
+        self.all_canvas[0].itemconfig(self.LabelText[0], text=self._patchInfo.Name)
+        self.all_canvas[0].itemconfig(self.LabelText[1], text=self._patchInfo.Name)
+
     def LoadPatches(self, canvas, pos_dict):
         keys = self.ultracam_beyond.get("Keys", [""])
 
@@ -187,8 +192,10 @@ class Manager:
             if patch_var is None:
                 continue
             self.UserChoices[name] = patch_var
-            Canvas_Create.Change_Background_Image(self.all_canvas[0], os.path.join(self._patchInfo.Folder, "image.jpg"))
 
+            # Change Name and Load Image.
+            self.ChangeName()
+            Canvas_Create.Change_Background_Image(self.all_canvas[0], os.path.join(self._patchInfo.Folder, "image.jpg"))
 
     def DeletePatches(self):
         self.UserChoices.clear()
@@ -371,12 +378,12 @@ class Manager:
         )
 
         # BIG TEXT.
-        Canvas_Create.create_label(
-                                    master=self._window, canvas=canvas,
-                                    text="Tears Of The Kingdom", font=bigfont, color=BigTextcolor,
-                                    description_name="Mod Improvements", anchor="c",
-                                    row=row, cul=575,
-                                    tags=["Big-Text"]
+        self.LabelText = Canvas_Create.create_label(
+                                        master=self._window, canvas=canvas,
+                                        text="Tears Of The Kingdom", font=bigfont, color=BigTextcolor,
+                                        description_name="Mod Improvements", anchor="c",
+                                        row=row, cul=575,
+                                        tags=["Big-Text", "Middle-Text"]
                                     )
 
         row += 40
@@ -715,7 +722,7 @@ class Manager:
             if self.mode == "Legacy":
                 self.mode = "Ryujinx"
                 for canvas in self.all_canvas:
-                    canvas.itemconfig("overlay-1", image=self.background_RyuBG)
+                    # canvas.itemconfig("overlay-1", image=self.background_RyuBG)
                     canvas.itemconfig("information", text=f"{self.mode} TOTK Optimizer")
                     canvas.itemconfig("Legacy", state="hidden")
                 if self.os_platform == "Darwin":
@@ -726,7 +733,7 @@ class Manager:
             elif self.mode == "Ryujinx" and self.os_platform != "Darwin":
                 self.mode = "Legacy"
                 for canvas in self.all_canvas:
-                    canvas.itemconfig("overlay-1", image=self.background_LegacyBG)
+                    # canvas.itemconfig("overlay-1", image=self.background_LegacyBG)
                     canvas.itemconfig("information", text=f"{self.mode} TOTK Optimizer")
                     canvas.itemconfig("Legacy", state="normal")
                 # change text
@@ -735,7 +742,7 @@ class Manager:
         elif command == "false":
             if self.mode == "Ryujinx":
                 for canvas in self.all_canvas:
-                    canvas.itemconfig("overlay-1", image=self.background_RyuBG)
+                    # canvas.itemconfig("overlay-1", image=self.background_RyuBG)
                     canvas.itemconfig("information", text=f"{self.mode} TOTK Optimizer")
                     canvas.itemconfig("Legacy", state="hidden")
                 if self.os_platform == "Darwin":

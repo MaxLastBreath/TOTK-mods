@@ -425,17 +425,18 @@ class Canvas_Create:
         if outline_tag is not None:
             outline_tag = [outline_tag, tag]
         # create an outline to the text.
-        canvas.create_text(
-                           scale(cul) + scale(1),
-                           scale(row) + scale(1),
-                           text=text,
-                           anchor=anchor,
-                           justify=justify,
-                           fill=outline_color,
-                           font=font,
-                           tags=outline_tag,
-                           )
-        # create the text and the variable for the dropdown.
+        text_outline = canvas.create_text(
+                                        scale(cul) + scale(1),
+                                        scale(row) + scale(1),
+                                        text=text,
+                                        anchor=anchor,
+                                        justify=justify,
+                                        fill=outline_color,
+                                        font=font,
+                                        tags=outline_tag,
+                                        )
+        
+        # create the text and the variable.
         text_line = canvas.create_text(
                                        scale(cul),
                                        scale(row),
@@ -455,6 +456,7 @@ class Canvas_Create:
                               text=text_description,
                               master=master
                               )
+        return text_line, text_outline #return textID
 
     @classmethod
     def image_Button(cls, canvas,
@@ -701,8 +703,8 @@ class Canvas_Create:
         newImage = cls.Photo_Image(
                                     image_path=_path,
                                     width=1200, height=600,
+                                    blur = 2
                                     )
         
         cls.LoadedImages.append(ImageContext(_path, newImage))
-
         canvas.itemconfig("background", image=newImage)

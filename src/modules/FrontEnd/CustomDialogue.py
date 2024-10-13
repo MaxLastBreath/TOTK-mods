@@ -7,8 +7,6 @@ class CustomDialog(ttk.Toplevel):
         self.title(title)
         self.geometry(f"{scale(width)}x{scale(height)}")
 
-        Canvas_Create = Canvas_Create()
-
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
 

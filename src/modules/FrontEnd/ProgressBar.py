@@ -1,5 +1,6 @@
 from modules.FrontEnd.CustomDialogue import CustomDialog
 from modules.logger import *
+from modules.FrontEnd.CanvasMgr import Canvas_Create
 import ttkbootstrap as ttk
 import threading
 
@@ -42,22 +43,22 @@ class ProgressBar:
 
         m = 1.3
         # Kofi button.
-        element_1 = manager.on_canvas.Photo_Image(
+        element_1 = Canvas_Create.Photo_Image(
             image_path="support.png",
             width=int(70* m), height=int(48* m),
         )
 
-        element_2 = manager.on_canvas.Photo_Image(
+        element_2 = Canvas_Create.Photo_Image(
             image_path="support_active.png",
             width=int(70* m), height=int(48* m),
         )
 
-        element_3 = manager.on_canvas.Photo_Image(
+        element_3 = Canvas_Create.Photo_Image(
             image_path="no_thanks.png",
             width=int(70* m), height=int(48* m),
         )
 
-        element_4 = manager.on_canvas.Photo_Image(
+        element_4 = Canvas_Create.Photo_Image(
             image_path="no_thanks_active.png",
             width=int(70* m), height=int(48* m),
         )
