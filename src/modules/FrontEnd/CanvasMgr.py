@@ -2,7 +2,6 @@ from PIL import Image, ImageTk, ImageFilter, ImageOps
 from idlelib.tooltip import Hovertip
 from tkinter import *
 from configuration.settings import *
-from ttkbootstrap import *
 import ttkbootstrap as ttk
 import sys
 import time
@@ -104,7 +103,7 @@ class Canvas_Create:
                            )
 
         # create the text and the variable for the dropdown.
-        new_variable = tk.StringVar(master=master, value=variable)
+        new_variable = ttk.StringVar(master=master, value=variable)
         text_line = canvas.create_text(
                                        scale(cul),
                                        scale(row),
@@ -181,7 +180,7 @@ class Canvas_Create:
             tags=outline_tag
         )
         # create the text and the variable for the dropdown.
-        new_variable = tk.StringVar(master=master, value=variable)
+        new_variable = ttk.StringVar(master=master, value=variable)
         text_line = canvas.create_text(
             scale(cul),
             scale(row),
@@ -322,7 +321,7 @@ class Canvas_Create:
                            tags=outline_tag
                            )
         # create the text and the variable for the dropdown.
-        new_variable = tk.StringVar(master=master, value=variable)
+        new_variable = ttk.StringVar(master=master, value=variable)
         text_line = canvas.create_text(
                                        scale(cul),
                                        scale(row),
@@ -573,10 +572,10 @@ class Canvas_Create:
         y += the_canvas.winfo_rooty()
 
         master.after(50)
-        cls.tooltip = tk.Toplevel()
+        cls.tooltip = ttk.Toplevel()
         cls.tooltip.wm_overrideredirect(True)
         cls.tooltip.geometry(f"+{x + scale(20)}+{y + scale(25)}")
-        tooltip_label = tk.Label(
+        tooltip_label = ttk.Label(
                                  master=cls.tooltip,
                                  text=tool_text,
                                  background="gray",
@@ -665,7 +664,7 @@ class Canvas_Create:
                     auto_contrast=False, img_scale=None):
 
         UI_path = cls.get_UI_path(image_path)
-        image = Image.open(UI_path)
+        image = ttk.Image.open(UI_path)
         if isinstance(img_scale, int) or isinstance(img_scale, float):
             width = int(width * img_scale)
             height = int(height * img_scale)
