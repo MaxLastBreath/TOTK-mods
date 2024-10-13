@@ -5,6 +5,9 @@ import os
 
 class Game_Manager:
     GamePatches = []
+    DefaultID = "0100F2C0115B6001"
+    Directory = "Patches"
+    PatchFile = "PatchInfo.json"
 
     def __init__(self):
         self.LoadPatches()
@@ -12,33 +15,33 @@ class Game_Manager:
     @classmethod
     def LoadPatches(cls):
         current_directory = os.path.curdir
-        patch_directory =  os.path.join(current_directory, "Patches")
+        patch_directory =  os.path.join(current_directory, cls.Directory)
 
         if not os.path.exists(patch_directory):
-           raise "NO PATCHES FOUND, Please check your installation"
+           raise "NO PATCHES FOUND, Please confirm your installation is correct."
         
         superlog.info("Looking for supported games...")
 
         for folder in os.listdir(patch_directory):
             patchfolder = os.path.join(patch_directory, folder)
 
-            for gamefolder in os.listdir(patchfolder):
-                filepath =  os.path.join(patchfolder, gamefolder)
+            for filename in os.listdir(patchfolder):
+                filepath =  os.path.join(patchfolder, filename)
                 
-                if (gamefolder == "PatchInfo.json"):
+                if (filename == cls.PatchFile):
                     with open(filepath, "r", encoding="utf-8") as file:
                         jsonfile = json.load(file)
                     log.info(f"{jsonfile['Name']} [{jsonfile['ID']}] : {jsonfile['Versions']}")
 
                     cls.GamePatches.append(
                             PatchInfo(
-                                    patchfolder,
-                                    jsonfile["ID"], 
-                                    jsonfile["Name"], 
-                                    jsonfile["Versions"],
-                                    jsonfile["ModName"],
-                                    jsonfile["ModConfig"],
-                                    jsonfile["ModFolder"],
+                                        patchfolder,
+                                        jsonfile["ID"], 
+                                        jsonfile["Name"], 
+                                        jsonfile["Versions"],
+                                        jsonfile["ModName"],
+                                        jsonfile["ModConfig"],
+                                        jsonfile["ModFolder"],
                                       )
                         )
                     
@@ -52,7 +55,7 @@ class Game_Manager:
         
         # if we don't find anything return TOTK patch.
         for item in cls.GamePatches:
-            if item.ID.lower() == "0100F2C0115B6001".lower():
+            if item.ID.lower() == cls.DefaultID.lower():
                 return item
                         
     @classmethod
@@ -60,7 +63,3 @@ class Game_Manager:
         if not cls.GamePatches:
             cls.LoadPatches()
         return cls.GamePatches
-    
-    @classmethod
-    def FindCurrentPatch(clss):
-        print("Does Nothing")

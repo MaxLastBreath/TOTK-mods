@@ -48,7 +48,7 @@ class Manager:
         FileManager.Initialize(window, self)
         self.patches = Game_Manager.GetPatches()
 
-        # Load the Config.
+        # Save the config string in class variable config
         self.config = localconfig
 
         # Game from config should be chosen here.
@@ -114,6 +114,7 @@ class Manager:
                 self.LoadPatches(self.all_canvas[0], pos_dict)
                 self.toggle_page(0, "main")
                 save_config_game(self, self.config) # comes from config.py
+                self.on_canvas.Change_Background_Image(self.all_canvas[0], os.path.join(self._patchInfo.Folder, "image.png"))
 
     def LoadPatches(self, canvas, pos_dict):
         keys = self.ultracam_beyond.get("Keys", [""])
@@ -266,7 +267,7 @@ class Manager:
         self.PatchName = self.on_canvas.create_combobox(
                                                             master=self._window, canvas=canvas,
                                                             text="Select Game:",
-                                                            variable=value[0], values=value,
+                                                            variable=self._patchInfo.Name, values=value,
                                                             row=row, cul=340, drop_cul=430,
                                                             tags=["text"], tag="GameSelect",
                                                             description_name="GameSelect",

@@ -55,13 +55,22 @@ def toggle(event, var):
     else:
         var.set("On")
 
+class ImageContext:
+    path = ""
+    object = None
+
+    def __init__(self, _path, _object):
+        self.path = _path
+        self.object = _object
+
+
 class Canvas_Create:
-    def __init__(self):
-        self.tooltip = None
-        self.window = None
-        self.tooltip_active = None
-        self.is_Ani_running = True
-        self.is_Ani_Paused = False
+    LoadedImages = []
+    tooltip = None
+    window = None
+    tooltip_active = None
+    is_Ani_running = True
+    is_Ani_Paused = False
 
     def create_combobox(self, canvas,
                         text, master, description_name=None, text_description= None, variable=any, values=[],
@@ -661,3 +670,18 @@ class Canvas_Create:
                 time.sleep(0.5)
             if self.is_effect_active is False:
                 break
+
+    def Change_Background_Image(self, canvas, _path):
+        for item in self.LoadedImages:
+            if (item.path == _path):
+                canvas.itemconfig("background", image=item.object)
+                return
+            
+        newImage = self.Photo_Image(
+                                    image_path=_path,
+                                    width=1200, height=600,
+                                    )
+        
+        self.LoadedImages.append(ImageContext(_path, newImage))
+
+        canvas.itemconfig("background", image=newImage)
