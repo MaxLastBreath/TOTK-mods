@@ -1,3 +1,5 @@
+from modules.FrontEnd.CanvasMgr import *
+
 def create_patches(self, row=120, cul_tex=400, cul_sel=550):
     versionvalues = []
 
@@ -13,7 +15,7 @@ def create_patches(self, row=120, cul_tex=400, cul_sel=550):
     # Make UltraCam Patches First.
 
     UltraCam_Option = "Improve Fog"
-    self.fog_var = self.on_canvas.create_checkbutton(
+    self.fog_var = Canvas_Create.create_checkbutton(
         master=self.window, canvas=self.maincanvas,
         text=UltraCam_Option,
         variable="Off",
@@ -41,7 +43,7 @@ def create_patches(self, row=120, cul_tex=400, cul_sel=550):
                 continue
 
             # Create checkbox
-            version_option_var = self.on_canvas.create_checkbutton(
+            version_option_var = Canvas_Create.create_checkbutton(
                 master=self.window, canvas=self.maincanvas,
                 text=version_option_name,
                 variable="Off",

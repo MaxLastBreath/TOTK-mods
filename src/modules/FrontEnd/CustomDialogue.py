@@ -1,4 +1,4 @@
-from modules.canvas import *
+from modules.FrontEnd.CanvasMgr import *
 
 class CustomDialog(ttk.Toplevel):
     def __init__(self, parent, title, message, custom_yes = str, custom_no = str, yes_img_1 = None, yes_img_2=None, no_img_1= None, no_img_2= None, width = int, height = int):
@@ -7,7 +7,7 @@ class CustomDialog(ttk.Toplevel):
         self.title(title)
         self.geometry(f"{scale(width)}x{scale(height)}")
 
-        self.on_canvas = Canvas_Create()
+        Canvas_Create = Canvas_Create()
 
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
@@ -19,14 +19,14 @@ class CustomDialog(ttk.Toplevel):
         canvas = ttk.Canvas(self, width=scale(width), height=scale(height))
         canvas.pack()
 
-        self.background = self.on_canvas.Photo_Image(
+        self.background = Canvas_Create.Photo_Image(
             image_path="BG_ASK.jpg",
             width=width, height=height,
         )
 
         canvas.create_image(0, 0, anchor="nw", image=self.background, tags="overlay")
 
-        self.on_canvas.create_label(
+        Canvas_Create.create_label(
                                     master=self, canvas=canvas,
                                     text=message, font=("bahnschrift", 15), color=textcolor,
                                     row=scale(10), anchor="nw", justify="center",
@@ -34,14 +34,14 @@ class CustomDialog(ttk.Toplevel):
                                     )
 
         if (yes_img_1 is not None and yes_img_2 is not None):
-            self.on_canvas.image_Button(
+            Canvas_Create.image_Button(
                 canvas=canvas,
                 row=height - 60, cul=scale(20),
                 img_1=yes_img_1, img_2=yes_img_2,
                 command=self.on_yes
             )
         else:
-            self.on_canvas.create_button(
+            Canvas_Create.create_button(
                 master=self, canvas=canvas,
                 btn_text=custom_yes,
                 row=height-60, cul=scale(20 - (20+80)), width=8,
@@ -50,14 +50,14 @@ class CustomDialog(ttk.Toplevel):
                 command=self.on_yes
             )
         if (no_img_1 is not None and no_img_2 is not None):
-            self.on_canvas.image_Button(
+            Canvas_Create.image_Button(
                 canvas=canvas,
                 row=height - 60, cul=scale(width-(20+scale(no_img_1.width()))),
                 img_1=no_img_1, img_2=no_img_2,
                 command=self.on_no
             )
         else:
-            self.on_canvas.create_button(
+            Canvas_Create.create_button(
                 master=self, canvas=canvas,
                 btn_text=custom_yes,
                 row=height-60, cul=width-(20), width=8,

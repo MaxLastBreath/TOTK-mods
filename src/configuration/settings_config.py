@@ -5,7 +5,7 @@ from configuration.settings import *
 from modules.GameManager.LaunchManager import LaunchManager
 from modules.scaling import scale, sf
 from modules.colors import Color
-from modules.canvas import Canvas_Create
+from modules.FrontEnd.CanvasMgr import Canvas_Create
 
 class Setting:
     _window = None
@@ -19,7 +19,6 @@ class Setting:
     def __init__(self, manager):
         self.window = manager._window
         self._manager = manager
-        self.canvas_create = Canvas_Create()
         self.Colors = Color()
         self.config = configparser.ConfigParser()
         self.config.read(localconfig)
@@ -49,7 +48,7 @@ class Setting:
         # font dropdown menu
         font_list = ["Arial", "Georgia", "Calibri", "Triforce", "Segoe", "The Wild Breath of Zelda", "Times New Roman", "Tahoma", "Impact", "Lucida", "Bahnschrift"]
         font_list.sort()
-        self.font_var = self.canvas_create.create_combobox(
+        self.font_var = Canvas_Create().create_combobox(
             master=window, canvas=canvas_obj,
             text="Select font:",
             variable="Arial", values=font_list,
@@ -65,7 +64,7 @@ class Setting:
         item_list = self.Colors.getlist()
         item_list.sort()
         canvas_obj.create_rectangle(scale(cul_sel+110), scale(row-10), scale(cul_sel+110+20), scale(row+10), fill="red", tags="swatch1")
-        self.color_var = self.canvas_create.create_combobox(
+        self.color_var = Canvas_Create().create_combobox(
             master=window, canvas=canvas_obj,
             text="Text Color:",
             variable="cyan", values=item_list,
@@ -78,7 +77,7 @@ class Setting:
         row += 40
 
         canvas_obj.create_rectangle(scale(cul_sel + 110), scale(row - 10), scale(cul_sel + 110 + 20), scale(row + 10), fill="red", tags="swatch2")
-        self.outline_var = self.canvas_create.create_combobox(
+        self.outline_var = Canvas_Create().create_combobox(
             master=window, canvas=canvas_obj,
             text="Shadow Color:",
             variable="purple", values=item_list,
@@ -91,7 +90,7 @@ class Setting:
         row += 40
 
         canvas_obj.create_rectangle(scale(cul_sel + 110), scale(row - 10), scale(cul_sel + 110 + 20), scale(row + 10), fill="red", tags="swatch3")
-        self.active_var = self.canvas_create.create_combobox(
+        self.active_var = Canvas_Create().create_combobox(
             master=window, canvas=canvas_obj,
             text="Active Text Color:",
             variable="red", values=item_list,
@@ -104,7 +103,7 @@ class Setting:
         row += 40
         # style dropdown menu
         style_list = self.style.theme_names()
-        self.style_var = self.canvas_create.create_combobox(
+        self.style_var = Canvas_Create().create_combobox(
             master=window, canvas=canvas_obj,
             text="Choose GUI Style:",
             variable="flatly", values=style_list,
@@ -117,7 +116,7 @@ class Setting:
 
         # on/off scale with windows.
         values = ["On", "Off", "1.0x", "1.5x", "2.0x", "2.5x", "3.0x"]
-        self.w_scale_var = self.canvas_create.create_combobox(
+        self.w_scale_var = Canvas_Create().create_combobox(
             master=window, canvas=canvas_obj,
             text="Scale with Windows:",
             variable="On", values=values,
@@ -129,7 +128,7 @@ class Setting:
         row += 40
 
         # on/off Auto Backup
-        self.backup_var = self.canvas_create.create_checkbutton(
+        self.backup_var = Canvas_Create().create_checkbutton(
             master=window, canvas=canvas_obj,
             text="Auto Backup",
             variable="Off",
@@ -140,7 +139,7 @@ class Setting:
         row += 40
 
         # on/off Auto Backup for Cheats
-        self.backup_cheat_var = self.canvas_create.create_checkbutton(
+        self.backup_cheat_var = Canvas_Create().create_checkbutton(
             master=window, canvas=canvas_obj,
             text="Auto Backup(Cheats):",
             variable="On",
@@ -151,7 +150,7 @@ class Setting:
         row += 40
 
         # on/off Animations
-        self.ani_var = self.canvas_create.create_checkbutton(
+        self.ani_var = Canvas_Create().create_checkbutton(
             master=window, canvas=canvas_obj,
             text="GUI Animations:",
             variable="On",
@@ -161,7 +160,7 @@ class Setting:
         )
         row += 40
 
-        self.canvas_create.create_label(
+        Canvas_Create().create_label(
             master=window, canvas=canvas_obj,
             text="Select Game File",
             row=row, cul=cul_tex,
@@ -171,7 +170,7 @@ class Setting:
         )
         row += 40
 
-        self.canvas_create.create_button(
+        Canvas_Create().create_button(
             master=window, canvas=canvas_obj,
             btn_text="Apply",
             row=row, cul=cul_tex, width=6, padding=5,

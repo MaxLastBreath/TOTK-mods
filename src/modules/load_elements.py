@@ -1,21 +1,19 @@
-import pyperclip
-
 from configuration.settings import *
 from modules.benchmarks import *
-import subprocess
+import pyperclip
 
 def load_UI_elements(manager, canvas):
     # Images and Effects
     canvas.create_image(0, 0, anchor="nw", image=manager.background_image, tags="background")
     canvas.create_image(0, 0, anchor="nw", image=manager.background_LegacyBG, tags="overlay-1")
-    canvas.create_image(0, 0, anchor="nw", image=manager.background_UI, tags="overlay")
+    # canvas.create_image(0, 0, anchor="nw", image=manager.background_UI, tags="overlay")
     canvas.create_image(0, 0, anchor="nw", image=manager.background_UI_element, tags="overlay")
 
     # Info text BG
     canvas.create_image(0 - scale(20), 0, anchor="nw", image=manager.background_UI3, tags="overlay")
 
     for location, image in manager.benchmark_dicts.items():
-        manager.on_canvas.set_image(
+        Canvas_Create.set_image(
             canvas=canvas,
             row=285, cul=980,
             anchor="c",
@@ -24,7 +22,7 @@ def load_UI_elements(manager, canvas):
             state="hidden"
         )
 
-    manager.on_canvas.set_image(
+    Canvas_Create.set_image(
         canvas=canvas,
         row=285, cul=980,
         anchor="c",
@@ -32,7 +30,7 @@ def load_UI_elements(manager, canvas):
         tag="no_benchmark",
     )
 
-    manager.on_canvas.set_image(
+    Canvas_Create.set_image(
         canvas=canvas,
         row=500, cul=980,
         anchor="c",
@@ -40,7 +38,7 @@ def load_UI_elements(manager, canvas):
         tag="benchmark_border",
     )
 
-    manager.on_canvas.image_Button(
+    Canvas_Create.image_Button(
         canvas=canvas,
         row=505, cul=980, anchor="c",
         img_1=manager.bench_load_element, img_2=manager.bench_load_element_active,
@@ -80,7 +78,7 @@ def load_UI_elements(manager, canvas):
         )
 
         pyperclip.copy(benchmark_result)
-    manager.on_canvas.create_label(
+    Canvas_Create.create_label(
         master=manager._window, canvas=canvas,
         text=f"{gpu_name}\n"
               f"{CPU}\n"
@@ -91,7 +89,7 @@ def load_UI_elements(manager, canvas):
         tags=["PC_info"], tag=["PC_info"], outline_tag="PC_info"
     )
 
-    manager.on_canvas.create_label(
+    Canvas_Create.create_label(
         master=manager._window, canvas=canvas,
         text=f"Turn on Direct Keyboard.\n"
              f"Press G after loading in game.\n"
@@ -104,21 +102,21 @@ def load_UI_elements(manager, canvas):
     )
 
     # Create Active Buttons.
-    manager.on_canvas.image_Button(
+    Canvas_Create.image_Button(
         canvas=canvas,
         row=162, cul=794,
         img_1=manager.master_sword_element, img_2=manager.master_sword_element_active, effect_folder="effect1",
         command=lambda event: manager.open_browser("Kofi")
     )
 
-    manager.on_canvas.image_Button(
+    Canvas_Create.image_Button(
         canvas=canvas,
         row=162, cul=1007,
         img_1=manager.master_sword_element2, img_2=manager.master_sword_element2_active,
         command=lambda event: manager.open_browser("Github")
     )
 
-    manager.on_canvas.image_Button(
+    Canvas_Create.image_Button(
         canvas=canvas,
         row=220, cul=978, anchor="c",
         img_1=manager.hylian_element, img_2=manager.hylian_element_active,
@@ -126,7 +124,7 @@ def load_UI_elements(manager, canvas):
     )
 
     # Information text.
-    manager.on_canvas.create_label(
+    Canvas_Create.create_label(
         master=manager._window, canvas=canvas,
         text=manager.text_content,
         description_name="Info_Label",
@@ -138,7 +136,7 @@ def load_UI_elements(manager, canvas):
 def create_tab_buttons(manager, canvas):
     if not canvas == manager.maincanvas:
         # Kofi Button
-        manager.on_canvas.create_button(
+        Canvas_Create.create_button(
             master=manager._window, canvas=canvas,
             btn_text="Donate", textvariable=manager.switch_text,
             style="success",
@@ -148,7 +146,7 @@ def create_tab_buttons(manager, canvas):
             command=lambda: manager.open_browser("Kofi")
         )
         # Github Button
-        manager.on_canvas.create_button(
+        Canvas_Create.create_button(
             master=manager._window, canvas=canvas,
             btn_text="Github", textvariable=manager.switch_text,
             style="success",
@@ -161,7 +159,7 @@ def create_tab_buttons(manager, canvas):
     # Create tabs
 
     # Switch mode between Ryujinx and Legacy
-    manager.on_canvas.create_button(
+    Canvas_Create.create_button(
         master=manager._window, canvas=canvas,
         btn_text="Switch", textvariable=manager.switch_text,
         style="Danger",
@@ -184,7 +182,7 @@ def create_tab_buttons(manager, canvas):
         e = "n"
 
     # 1 - Main
-    manager.on_canvas.create_button(
+    Canvas_Create.create_button(
         master=manager._window, canvas=canvas,
         btn_text="Main",
         style=button1style,
@@ -194,7 +192,7 @@ def create_tab_buttons(manager, canvas):
         command=manager.show_main_canvas
     )
     # 2 - Cheats
-    manager.on_canvas.create_button(
+    Canvas_Create.create_button(
         master=manager._window, canvas=canvas,
         btn_text="Cheats",
         style=button2style,
@@ -204,7 +202,7 @@ def create_tab_buttons(manager, canvas):
         command=manager.show_cheat_canvas
     )
     # 3 - Settings
-    manager.on_canvas.create_button(
+    Canvas_Create.create_button(
         master=manager._window, canvas=canvas,
         btn_text="Settings",
         style=button3style,

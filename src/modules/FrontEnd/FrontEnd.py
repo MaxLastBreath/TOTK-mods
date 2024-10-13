@@ -64,9 +64,6 @@ class Manager:
 
         # ULTRACAM 2.0 PATCHES ARE SAVED HERE.
         self.UserChoices = {}
-
-        # Set initialize different Classes.
-        self.on_canvas = Canvas_Create()
         self.setting = Setting(self)
 
         # Read the Current Emulator Mode.
@@ -98,7 +95,7 @@ class Manager:
         self.switchmode("false")
 
         #Window protocols
-        self._window.protocol("WM_DELETE_WINDOW", lambda: self.on_canvas.on_closing(self._window))
+        self._window.protocol("WM_DELETE_WINDOW", lambda: Canvas_Create.on_closing(self._window))
 
     def warning(self, e):
         messagebox.showwarning(f"{e}")
@@ -114,7 +111,6 @@ class Manager:
                 self.LoadPatches(self.all_canvas[0], pos_dict)
                 self.toggle_page(0, "main")
                 save_config_game(self, self.config) # comes from config.py
-                self.on_canvas.Change_Background_Image(self.all_canvas[0], os.path.join(self._patchInfo.Folder, "image.png"))
 
     def LoadPatches(self, canvas, pos_dict):
         keys = self.ultracam_beyond.get("Keys", [""])
@@ -136,7 +132,7 @@ class Manager:
                 continue
 
             if dicts["Class"].lower() == "dropdown":
-                patch_var = self.on_canvas.create_combobox(
+                patch_var = Canvas_Create.create_combobox(
                             master=self._window, canvas=canvas,
                             text=patch_name,
                             values=patch_list, variable=patch_list[patch_default_index],
@@ -152,7 +148,7 @@ class Manager:
             if dicts["Class"].lower() == "scale":
                 patch_type = dicts.get("Type")
                 patch_increments = dicts.get("Increments")
-                patch_var = self.on_canvas.create_scale(
+                patch_var = Canvas_Create.create_scale(
                     master=self._window, canvas=canvas,
                     text=patch_name,
                     scale_from=patch_values[0], scale_to=patch_values[1], type=patch_type,
@@ -173,7 +169,7 @@ class Manager:
                 pos[2] = new_pos[2]
 
             if dicts["Class"].lower() == "bool":
-                patch_var = self.on_canvas.create_checkbutton(
+                patch_var = Canvas_Create.create_checkbutton(
                     master=self._window, canvas=canvas,
                     text=patch_name,
                     variable="Off",
@@ -191,6 +187,8 @@ class Manager:
             if patch_var is None:
                 continue
             self.UserChoices[name] = patch_var
+            Canvas_Create.Change_Background_Image(self.all_canvas[0], os.path.join(self._patchInfo.Folder, "image.jpg"))
+
 
     def DeletePatches(self):
         self.UserChoices.clear()
@@ -237,7 +235,7 @@ class Manager:
         # Create preset menu.
         presets = {"Saved": {}} | load_json("beyond_presets.json", presetsurl)
         values = list(presets.keys())
-        self.selected_preset = self.on_canvas.create_combobox(
+        self.selected_preset = Canvas_Create.create_combobox(
                                                             master=self._window, canvas=canvas,
                                                             text="OPTIMIZER PRESETS:",
                                                             variable=values[0], values=values,
@@ -252,7 +250,7 @@ class Manager:
         # value = ["No Change"]
         # for item in self.Legacy_settings:
         #     value.append(item)
-        # self.selected_settings = self.on_canvas.create_combobox(
+        # self.selected_settings = Canvas_Create.create_combobox(
         #                                                     master=self._window, canvas=canvas,
         #                                                     text="Legacy SETTINGS:",
         #                                                     variable=value[0], values=value,
@@ -264,7 +262,7 @@ class Manager:
         value = []
         for item in self.patches:
             value.append(item.Name)
-        self.PatchName = self.on_canvas.create_combobox(
+        self.PatchName = Canvas_Create.create_combobox(
                                                             master=self._window, canvas=canvas,
                                                             text="Select Game:",
                                                             variable=self._patchInfo.Name, values=value,
@@ -282,7 +280,7 @@ class Manager:
             self.select_Legacy_exe()
 
         text = "SELECT EXECUTABLE"
-        self.on_canvas.create_button(
+        Canvas_Create.create_button(
                                     master=self._window, canvas=canvas,
                                     btn_text="Browse",
                                     row=row, cul=cul_sel, width=6,
@@ -297,7 +295,7 @@ class Manager:
             superlog.info("Successfully Defaulted to Appdata!")
             save_user_choices(self, self.config, "appdata", None)
 
-        self.on_canvas.create_button(
+        Canvas_Create.create_button(
                                     master=self._window, canvas=canvas,
                                     btn_text="Use Appdata",
                                     row=row, cul=cul_sel + 68, width=9,
@@ -308,7 +306,7 @@ class Manager:
         backupbutton = cul_sel + 165
 
 
-        self.on_canvas.create_label(
+        Canvas_Create.create_label(
                                     master=self._window, canvas=canvas,
                                     text=text,
                                     description_name="Browse",
@@ -318,7 +316,7 @@ class Manager:
                                     )
 
         # Create a Backup button
-        self.on_canvas.create_button(
+        Canvas_Create.create_button(
                                     master=self._window, canvas=canvas,
                                     btn_text="Backup",
                                     row=row, cul=backupbutton, width=7,
@@ -327,7 +325,7 @@ class Manager:
                                     command=lambda: backup(self)
         )
 
-        self.on_canvas.create_button(
+        Canvas_Create.create_button(
                                     master=self._window, canvas=canvas,
                                     btn_text="Clear Shaders",
                                     row=row, cul=backupbutton+78, width=9,
@@ -337,35 +335,35 @@ class Manager:
         )
         row += 40
 
-        self.graphics_element = self.on_canvas.Photo_Image(
+        self.graphics_element = Canvas_Create.Photo_Image(
             image_path="graphics.png",
             width=int(70*1.6), height=int(48*1.6),
         )
 
-        self.graphics_element_active = self.on_canvas.Photo_Image(
+        self.graphics_element_active = Canvas_Create.Photo_Image(
             image_path="graphics_active.png",
             width=int(70*1.6), height=int(48*1.6),
         )
 
-        self.extra_element = self.on_canvas.Photo_Image(
+        self.extra_element = Canvas_Create.Photo_Image(
             image_path="extra.png",
             width=int(70*1.6), height=int(48*1.6),
         )
 
-        self.extra_element_active = self.on_canvas.Photo_Image(
+        self.extra_element_active = Canvas_Create.Photo_Image(
             image_path="extra_active.png",
             width=int(70*1.6), height=int(48*1.6),
         )
 
         # Graphics & Extra & More - the -20 is extra
-        self.on_canvas.image_Button(
+        Canvas_Create.image_Button(
             canvas=canvas,
             row=row - 35, cul=cul_tex - 10 - 20,
             img_1=self.graphics_element, img_2=self.graphics_element_active,
             command=lambda event: self.toggle_page(event, "main")
         )
 
-        self.on_canvas.image_Button(
+        Canvas_Create.image_Button(
             canvas=canvas,
             row=row - 35, cul=cul_tex + 190 - 10,
             img_1=self.extra_element, img_2=self.extra_element_active,
@@ -373,7 +371,7 @@ class Manager:
         )
 
         # BIG TEXT.
-        self.on_canvas.create_label(
+        Canvas_Create.create_label(
                                     master=self._window, canvas=canvas,
                                     text="Tears Of The Kingdom", font=bigfont, color=BigTextcolor,
                                     description_name="Mod Improvements", anchor="c",
@@ -399,45 +397,45 @@ class Manager:
         row = pos_dict["main"][0]
         row_2 = pos_dict["main"][3]
 
-        self.apply_element = self.on_canvas.Photo_Image(
+        self.apply_element = Canvas_Create.Photo_Image(
                         image_path="apply.png",
                         width=int(70*1.5), height=int(48*1.5),
                         )
 
-        self.apply_element_active = self.on_canvas.Photo_Image(
+        self.apply_element_active = Canvas_Create.Photo_Image(
                         image_path="apply_active.png",
                         width=int(70*1.5), height=int(48*1.5),
                         )
 
-        self.launch_element = self.on_canvas.Photo_Image(
+        self.launch_element = Canvas_Create.Photo_Image(
                         image_path="launch.png",
                         width=int(70*1.5), height=int(48*1.5),
                         )
-        self.launch_element_active = self.on_canvas.Photo_Image(
+        self.launch_element_active = Canvas_Create.Photo_Image(
                         image_path="launch_active.png",
                         width=int(70*1.5), height=int(48*1.5),
                         )
 
-        self.extract_element = self.on_canvas.Photo_Image(
+        self.extract_element = Canvas_Create.Photo_Image(
                         image_path="extract.png",
                         width=int(70*1.5), height=int(48*1.5),
                         )
-        self.extract_element_active = self.on_canvas.Photo_Image(
+        self.extract_element_active = Canvas_Create.Photo_Image(
                         image_path="extract_active.png",
                         width=int(70*1.5), height=int(48*1.5),
                         )
 
-        self.LOGO_element = self.on_canvas.Photo_Image(
+        self.LOGO_element = Canvas_Create.Photo_Image(
                         image_path="optimizer_logo.png",
                         width=int(3316/10), height=int(823/10),
                         )
 
-        self.LOGO_element_active = self.on_canvas.Photo_Image(
+        self.LOGO_element_active = Canvas_Create.Photo_Image(
                         image_path="optimizer_logo_active.png",
                         width=int(3316/10), height=int(823/10),
                         )
 
-        self.on_canvas.image_Button(
+        Canvas_Create.image_Button(
             canvas=canvas,
             row=510, cul=25,
             img_1=self.apply_element, img_2=self.apply_element_active,
@@ -445,7 +443,7 @@ class Manager:
         )
 
         # reverse scale.
-        self.on_canvas.image_Button(
+        Canvas_Create.image_Button(
             canvas=canvas,
             row=510, cul=25 + int(self.apply_element.width() / sf),
             img_1=self.launch_element, img_2=self.launch_element_active,
@@ -453,14 +451,14 @@ class Manager:
         )
 
         # extract
-        self.on_canvas.image_Button(
+        Canvas_Create.image_Button(
             canvas=canvas,
             row=510, cul=25 + int(7 + int(self.apply_element.width() / sf) * 2),
             img_1=self.extract_element, img_2=self.extract_element_active,
             command=lambda event: self.extract_patches()
         )
 
-        self.on_canvas.image_Button(
+        Canvas_Create.image_Button(
             canvas=canvas,
             row=520, cul=850,
             img_1=self.LOGO_element, img_2=self.LOGO_element_active,
@@ -493,7 +491,7 @@ class Manager:
                 if key == "Aversion":
                     versionvalues.append("Version - " + value)
 
-        self.cheat_version = self.on_canvas.create_combobox(
+        self.cheat_version = Canvas_Create.create_combobox(
                                                             master=self._window, canvas=canvas,
                                                             text="",
                                                             values=versionvalues, variable=versionvalues[1],
@@ -532,7 +530,7 @@ class Manager:
                 # Create label
                 if version_option_name not in ["Source", "Version", "Aversion", "Cheat Example"]:
 
-                    version_option_var = self.on_canvas.create_checkbutton(
+                    version_option_var = Canvas_Create.create_checkbutton(
                         master=self._window, canvas=canvas,
                         text=version_option_name,
                         variable="Off",
@@ -568,7 +566,7 @@ class Manager:
 
 
         # Create a submit button
-        self.on_canvas.create_button(
+        Canvas_Create.create_button(
                                     master=self._window, canvas=canvas,
                                     btn_text="Apply Cheats",
                                     row=520, cul=39, width=9, padding=5,
@@ -579,7 +577,7 @@ class Manager:
         )
 
         # Create a submit button
-        self.on_canvas.create_button(
+        Canvas_Create.create_button(
                                     master=self._window, canvas=canvas,
                                     btn_text="Reset Cheats",
                                     row=520, cul=277+6+2, width=8, padding=5,
@@ -589,7 +587,7 @@ class Manager:
                                     command=ResetCheats
         )
         # Read Cheats
-        self.on_canvas.create_button(
+        Canvas_Create.create_button(
                                     master=self._window, canvas=canvas,
                                     btn_text="Read Saved Cheats",
                                     row=520, cul=366+2, width=11, padding=5,
@@ -600,7 +598,7 @@ class Manager:
         )
 
         #Backup
-        self.on_canvas.create_button(
+        Canvas_Create.create_button(
                                     master=self._window, canvas=canvas,
                                     btn_text="Backup",
                                     row=520, cul=479+2, width=7, padding=5,
@@ -667,7 +665,7 @@ class Manager:
         return Legacy_path
 
     def show_main_canvas(self):
-        self.on_canvas.is_Ani_Paused = True
+        Canvas_Create.is_Ani_Paused = True
         self.cheatcanvas.pack_forget()
         self.maincanvas.pack()
 
@@ -679,12 +677,12 @@ class Manager:
                 self.maincanvas.itemconfig(state, state="hidden")
 
     def show_cheat_canvas(self):
-        self.on_canvas.is_Ani_Paused = False
+        Canvas_Create.is_Ani_Paused = False
         self.cheatcanvas.pack()
         self.maincanvas.pack_forget()
 
         self.ani = threading.Thread(name="cheatbackground",
-                                    target=lambda: self.on_canvas.canvas_animation(self._window, self.cheatcanvas))
+                                    target=lambda: Canvas_Create.canvas_animation(self._window, self.cheatcanvas))
         if not self.is_Ani_running == True:
             self.is_Ani_running = True
             self.ani.start()

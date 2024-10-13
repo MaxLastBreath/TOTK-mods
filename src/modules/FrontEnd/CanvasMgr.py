@@ -59,9 +59,9 @@ class ImageContext:
     path = ""
     object = None
 
-    def __init__(self, _path, _object):
-        self.path = _path
-        self.object = _object
+    def __init__(cls, _path, _object):
+        cls.path = _path
+        cls.object = _object
 
 
 class Canvas_Create:
@@ -72,7 +72,8 @@ class Canvas_Create:
     is_Ani_running = True
     is_Ani_Paused = False
 
-    def create_combobox(self, canvas,
+    @classmethod
+    def create_combobox(cls, canvas,
                         text, master, description_name=None, text_description= None, variable=any, values=[],
                         row=40, cul=40, drop_cul=180, width=150, style="warning",
                         tags=[], tag=None, command=None, is_active=True):
@@ -136,7 +137,7 @@ class Canvas_Create:
         # bind canvas
         dropdown.bind("<<ComboboxSelected>>", command)
         # attempt to make a Hovertip
-        self.read_description(
+        cls.read_description(
                               canvas=canvas,
                               option=description_name,
                               text= text_description,
@@ -149,7 +150,8 @@ class Canvas_Create:
         row += 40
         return new_variable
 
-    def create_scale(self, canvas,
+    @classmethod
+    def create_scale(cls, canvas,
                         text, master, description_name=None, text_description= None, variable=any, scale_from= 1, scale_to= 100, increments = 5,
                         row=40, cul=40, drop_cul=180, width=150, style="warning", type = "s32",
                         tags=[], tag=None, command=None, is_active=True):
@@ -216,7 +218,7 @@ class Canvas_Create:
         # bind canvas
         scale_box.bind("<<ComboboxSelected>>", command)
         # attempt to make a Hovertip
-        self.read_description(
+        cls.read_description(
             canvas=canvas,
             option=description_name,
             position_list=[scale_box, text_line],
@@ -248,7 +250,7 @@ class Canvas_Create:
             activefil=active_color_new
         )
 
-        self.read_description(
+        cls.read_description(
             canvas=canvas,
             option=description_name,
             text= text_description,
@@ -288,8 +290,9 @@ class Canvas_Create:
 
         return new_variable
 
+    @classmethod
     def create_checkbutton(
-            self, master, canvas,
+            cls, master, canvas,
             text, description_name=None, text_description = None, variable=any,
             row=40, cul=40, drop_cul=180,
             tags=[], tag=None, command=None, is_active=True, style="success"):
@@ -356,7 +359,7 @@ class Canvas_Create:
                                                )
         # attempt to make a Hover tip
         canvas.tag_bind(text_line, "<Button-1>", lambda event: toggle(event, new_variable))
-        self.read_description(
+        cls.read_description(
                               canvas=canvas,
                               option=description_name,
                               position_list=[checkbutton, text_line],
@@ -366,8 +369,9 @@ class Canvas_Create:
         row += 40
         return new_variable
 
+    @classmethod
     def create_button(
-            self, master, canvas,
+            cls, master, canvas,
             btn_text, description_name=None, text_description = None, textvariable=None,
             row=40, cul=40, width=None, padding=None, pos="w",
             tags=[], tag=None,
@@ -397,7 +401,7 @@ class Canvas_Create:
             tags=tags
         )
 
-        self.read_description(
+        cls.read_description(
             canvas=canvas,
             option=description_name,
             position_list=[button],
@@ -406,7 +410,8 @@ class Canvas_Create:
         )
         return
 
-    def create_label(self, master, canvas,
+    @classmethod
+    def create_label(cls, master, canvas,
                         text, description_name=None, text_description = None, font=textfont, color=textcolor, active_fill=None,
                         row=40, cul=40, anchor="w", justify="left",
                         tags=[], tag=None, outline_tag=None, command=None
@@ -443,7 +448,7 @@ class Canvas_Create:
                                        activefil=active_fill,
                                        )
         canvas.tag_bind(text_line, "<Button-1>", command)
-        self.read_description(
+        cls.read_description(
                               canvas=canvas,
                               option=description_name,
                               position_list=[text_line],
@@ -451,7 +456,8 @@ class Canvas_Create:
                               master=master
                               )
 
-    def image_Button(self, canvas,
+    @classmethod
+    def image_Button(cls, canvas,
                      row, cul, anchor="nw",
                      img_1=any, img_2=any, effect_folder=None,
                      tag_1=None, tag_2=None,
@@ -471,11 +477,11 @@ class Canvas_Create:
         canvas.create_image(scale(cul), scale(row), anchor=anchor, image=img_2, state="hidden", tags=tag_2)
 
         # Bind the actions for the button.
-        canvas.tag_bind(tag_1, "<Enter>", lambda event: self.toggle_img(
+        canvas.tag_bind(tag_1, "<Enter>", lambda event: cls.toggle_img(
                                                                         canvas=canvas, mode="Enter",
                                                                         tag_1=tag_1, tag_2=tag_2,
                                                                         event=event))
-        canvas.tag_bind(tag_2, "<Leave>", lambda event: self.toggle_img(
+        canvas.tag_bind(tag_2, "<Leave>", lambda event: cls.toggle_img(
                                                                         canvas=canvas, mode="Leave",
                                                                         tag_1=tag_1, tag_2=tag_2,
                                                                         event=event))
@@ -483,19 +489,20 @@ class Canvas_Create:
         canvas.tag_bind(tag_1, "<Button-1>", command)
         
         return tag_1, tag_2
-        new_folder_path = self.get_UI_path(effect_folder)
+        new_folder_path = cls.get_UI_path(effect_folder)
         effect_img_list = os.listdir(new_folder_path)
         if effect_folder is not None:
             for item in effect_img_list:
                 print(effect_img_list)
                 new_item_path = os.path.join(new_folder_path, item)
-                effect_img = self.Photo_Image(
+                effect_img = cls.Photo_Image(
                                               image_path=new_item_path,
                                               width=img_1.width(), height=img_1.height(),
                                              )
         return tag_1, tag_2
 
-    def set_image(self, canvas,
+    @classmethod
+    def set_image(cls, canvas,
                      row, cul, anchor="nw",
                      img=any,
                      tag=None,
@@ -509,7 +516,8 @@ class Canvas_Create:
 
         canvas.create_image(scale(cul), scale(row), anchor=anchor, image=img, state=state, tags=[tag])
 
-    def toggle_img(self, canvas, mode, tag_1, tag_2, event=None):
+    @classmethod
+    def toggle_img(cls, canvas, mode, tag_1, tag_2, event=None):
         if mode.lower() == "enter":
             canvas.itemconfig(tag_1, state="hidden")
             canvas.itemconfig(tag_2, state="normal")
@@ -517,7 +525,8 @@ class Canvas_Create:
             canvas.itemconfig(tag_1, state="normal")
             canvas.itemconfig(tag_2, state="hidden")
 
-    def read_description(self, canvas, option, text = None, position_list=list, master=any):
+    @classmethod
+    def read_description(cls, canvas, option, text = None, position_list=list, master=any):
         if f"{option}" not in description and text is None:
             return
         for position in position_list:
@@ -526,10 +535,10 @@ class Canvas_Create:
                 if canvas_item:
                     if text is not None:
                         hover = text
-                        self.create_tooltip(canvas, position, hover, master)
+                        cls.create_tooltip(canvas, position, hover, master)
                     else:
                         hover = description[f"{option}"]
-                        self.create_tooltip(canvas, position, hover, master)
+                        cls.create_tooltip(canvas, position, hover, master)
                     break
             except TclError as e:
                 if text is not None:
@@ -539,9 +548,10 @@ class Canvas_Create:
                     hover = text
                     Hovertip(position, f"{hover}", hover_delay=Hoverdelay)
 
-    def create_tooltip(self, canvas, position, hover, master):
+    @classmethod
+    def create_tooltip(cls, canvas, position, hover, master):
 
-        canvas.tag_bind(position, "<Enter>", lambda event: self.show_tooltip(
+        canvas.tag_bind(position, "<Enter>", lambda event: cls.show_tooltip(
                                                                              event=event,
                                                                              item=position,
                                                                              tool_text=hover,
@@ -550,21 +560,22 @@ class Canvas_Create:
                                                                              )
                         )
 
-        canvas.tag_bind(position, "<Leave>", lambda event: self.hide_tooltip(event=event))
-        canvas.tag_bind(position, "<Return>", lambda event: self.hide_tooltip(event))
+        canvas.tag_bind(position, "<Leave>", lambda event: cls.hide_tooltip(event=event))
+        canvas.tag_bind(position, "<Return>", lambda event: cls.hide_tooltip(event))
 
-    def show_tooltip(self, event, item, tool_text, the_canvas, master):
+    @classmethod
+    def show_tooltip(cls, event, item, tool_text, the_canvas, master):
         bbox = the_canvas.bbox(item)
         x, y = bbox[0], bbox[1]
         x += the_canvas.winfo_rootx()
         y += the_canvas.winfo_rooty()
 
         master.after(50)
-        self.tooltip = tk.Toplevel()
-        self.tooltip.wm_overrideredirect(True)
-        self.tooltip.geometry(f"+{x + scale(20)}+{y + scale(25)}")
+        cls.tooltip = tk.Toplevel()
+        cls.tooltip.wm_overrideredirect(True)
+        cls.tooltip.geometry(f"+{x + scale(20)}+{y + scale(25)}")
         tooltip_label = tk.Label(
-                                 master=self.tooltip,
+                                 master=cls.tooltip,
                                  text=tool_text,
                                  background="gray",
                                  relief="solid",
@@ -573,27 +584,32 @@ class Canvas_Create:
                                  )
         tooltip_label.pack()
 
-        self.tooltip_active = True
+        cls.tooltip_active = True
 
-    def hide_tooltip(self, event):
-        self.tooltip.destroy()
-        self.tooltip_active = False
+    @classmethod
+    def hide_tooltip(cls, event):
+        cls.tooltip.destroy()
+        cls.tooltip_active = False
 
-    def focus(self, event):
+    @classmethod
+    def focus(cls, event):
         # Handle animations and events during those animations.
-        self.is_Ani_Paused = False
-        
-    def un_focus(self, event):
-        self.is_Ani_Paused = True
+        cls.is_Ani_Paused = False
 
-    def on_closing(self, master):
+    @classmethod    
+    def un_focus(cls, event):
+        cls.is_Ani_Paused = True
+
+    @classmethod
+    def on_closing(cls, master):
         superlog.critical("User Exit Application.")
-        self.is_Ani_running = False
+        cls.is_Ani_running = False
         master.destroy()
 
-    def canvas_animation(self, master, canvas):
-        master.bind("<Enter>", self.focus)
-        master.bind("<Leave>", self.un_focus)
+    @classmethod
+    def canvas_animation(cls, master, canvas):
+        master.bind("<Enter>", cls.focus)
+        master.bind("<Leave>", cls.un_focus)
         x = 0
         y = 0
         m = 1
@@ -603,9 +619,9 @@ class Canvas_Create:
             m *= 2
         a = scale(m)
         while True:
-            if self.is_Ani_running is False:
+            if cls.is_Ani_running is False:
                 return
-            if self.is_Ani_Paused is False or get_setting("ani") in ["Off", "Disabled"]:
+            if cls.is_Ani_Paused is False or get_setting("ani") in ["Off", "Disabled"]:
                 if x < 1000:
                     x += m
                     canvas.move("background", -a, 0)
@@ -624,7 +640,8 @@ class Canvas_Create:
             else:
                 time.sleep(0.2)
 
-    def get_UI_path(self, file_name, folder_name="GUI"):
+    @classmethod
+    def get_UI_path(cls, file_name, folder_name="GUI"):
         if getattr(sys, 'frozen', False):
             base_path = sys._MEIPASS
             path = os.path.join(base_path, folder_name, file_name)
@@ -633,17 +650,19 @@ class Canvas_Create:
         else:
             base_path = os.path.dirname(os.path.abspath(__file__))
             base_path = os.path.dirname(base_path)
+            base_path = os.path.dirname(base_path) # run twice, due to changes to file location
             path = os.path.join(base_path, folder_name, file_name)
             if not os.path.exists(path):
                 return file_name
         return path
 
-    def Photo_Image(self, image_path=str, is_stored=False,
+    @classmethod
+    def Photo_Image(cls, image_path=str, is_stored=False,
                     width=None, height=None,
                     blur=None, mirror=False, flip=False,
                     auto_contrast=False, img_scale=None):
 
-        UI_path = self.get_UI_path(image_path)
+        UI_path = cls.get_UI_path(image_path)
         image = Image.open(UI_path)
         if isinstance(img_scale, int) or isinstance(img_scale, float):
             width = int(width * img_scale)
@@ -661,27 +680,29 @@ class Canvas_Create:
         new_photo_image = ImageTk.PhotoImage(image)
         return new_photo_image
 
-    def effect(self, canvas, img_list=list):
-        self.is_effect_active = True
+    @classmethod
+    def effect(cls, canvas, img_list=list):
+        cls.is_effect_active = True
         while True:
             for image in img_list:
                 canvas.withtag("effect", state="hidden")
                 canvas.withtag(image, state="active")
                 time.sleep(0.5)
-            if self.is_effect_active is False:
+            if cls.is_effect_active is False:
                 break
 
-    def Change_Background_Image(self, canvas, _path):
-        for item in self.LoadedImages:
+    @classmethod
+    def Change_Background_Image(cls, canvas, _path):
+        for item in cls.LoadedImages:
             if (item.path == _path):
                 canvas.itemconfig("background", image=item.object)
                 return
             
-        newImage = self.Photo_Image(
+        newImage = cls.Photo_Image(
                                     image_path=_path,
                                     width=1200, height=600,
                                     )
         
-        self.LoadedImages.append(ImageContext(_path, newImage))
+        cls.LoadedImages.append(ImageContext(_path, newImage))
 
         canvas.itemconfig("background", image=newImage)

@@ -1,4 +1,4 @@
-from modules.canvas import *
+from modules.FrontEnd.CanvasMgr import *
 from modules.qt_config import *
 from modules.backup import *
 from modules.logger import *
