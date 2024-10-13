@@ -215,9 +215,9 @@ def apply_selected_preset(Manager, event=None):
         # Apply the selected preset from the online presets
         apply_preset(Manager, Manager.presets[selected_preset])
 
-def write_Legacy_config(Manager, configfile, title_id, section, setting, selection):
-    os.makedirs(configfile, exist_ok=True)
-    Custom_Config = os.path.join(configfile, f"{title_id}.ini")
+def write_Legacy_config(Manager, config_file, title_id, section, setting, selection):
+    os.makedirs(config_file, exist_ok=True)
+    Custom_Config = os.path.join(config_file, f"{title_id}.ini")
     Legacyconfig = configparser.ConfigParser()
     Legacyconfig.read(Custom_Config, encoding="utf-8")
     if not Legacyconfig.has_section(section):
@@ -225,14 +225,35 @@ def write_Legacy_config(Manager, configfile, title_id, section, setting, selecti
     Legacyconfig[f"{section}"][f"{setting}\\use_global"] = "false"
     Legacyconfig[f"{section}"][f"{setting}\\default"] = "false"
     Legacyconfig[f"{section}"][f"{setting}"] = selection
-    with open(Custom_Config, "w", encoding="utf-8") as configfile:
-        Legacyconfig.write(configfile, space_around_delimiters=False)
+    with open(Custom_Config, "w", encoding="utf-8") as config_file:
+        Legacyconfig.write(config_file, space_around_delimiters=False)
 
-def write_ryujinx_config(Manager, configfile, setting, selection):
-    with open(configfile, "r", encoding="utf-8") as file:
+def write_ryujinx_config(Manager, config_file, setting, selection):
+    with open(config_file, "r", encoding="utf-8") as file:
         data = json.load(file)
         data[setting] = selection
 
-    os.remove(configfile)
-    with open(configfile, 'w', encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
+    os.remove(config_file)
+    with open(config_file, 'w', encoding="utf-8") as file:
+        json.dump(data, file, indent=2)
+
+def load_config_game(Manager, config_file):
+    ''' Loads the current selected Configuration game. '''
+    config = configparser.ConfigParser()
+    config.read(config_file, encoding="utf-8")
+    if not config.has_section("Options"):
+        config["Options"] = {}
+        return "0"
+    
+    return config.get("Options", "Game")
+
+def save_config_game(Manager, config_file):
+    ''' Saves the current selected Configuration game. '''
+    config = configparser.ConfigParser()
+    config.read(config_file, encoding="utf-8")
+    if not config.has_section("Options"):
+        config["Options"] = {}
+    config.set("Options", "Game", Manager._patchInfo.ID)
+
+    with open(config_file, 'w', encoding="utf-8") as file:
+        config.write(file)

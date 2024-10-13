@@ -41,6 +41,19 @@ class Game_Manager:
                                     jsonfile["ModFolder"],
                                       )
                         )
+                    
+    @classmethod
+    def GetJsonByID(cls, ID : str):
+        '''Finds the current json file for a TITLEID.'''
+
+        for item in cls.GamePatches:
+            if ID.lower() == item.ID.lower():
+                return item
+        
+        # if we don't find anything return TOTK patch.
+        for item in cls.GamePatches:
+            if item.ID.lower() == "0100F2C0115B6001".lower():
+                return item
                         
     @classmethod
     def GetPatches(cls):

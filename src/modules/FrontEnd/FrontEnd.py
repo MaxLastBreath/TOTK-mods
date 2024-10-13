@@ -33,7 +33,6 @@ class Manager:
     tooltip_active = False
     warn_again = "yes"
 
-
     def __init__(self, window):
 
         """
@@ -49,8 +48,12 @@ class Manager:
         FileManager.Initialize(window, self)
         self.patches = Game_Manager.GetPatches()
 
+        # Load the Config.
+        self.config = localconfig
+
         # Game from config should be chosen here.
         self._patchInfo = self.patches[2]
+        self._patchInfo = Game_Manager.GetJsonByID(load_config_game(self, self.config))
 
         # Load Patch Info for current game.
         self.ultracam_beyond = self._patchInfo.LoadJson()
@@ -65,9 +68,6 @@ class Manager:
         # Set initialize different Classes.
         self.on_canvas = Canvas_Create()
         self.setting = Setting(self)
-
-        # Load the Config.
-        self.config = localconfig
 
         # Read the Current Emulator Mode.
         self.mode = config.get("Mode", "managermode", fallback="Legacy")
@@ -104,6 +104,7 @@ class Manager:
         messagebox.showwarning(f"{e}")
 
     def LoadNewGameInfo(self):
+        '''Loads new Game info from the combobox (dropdown Menu).'''
         for item in self.patches:
             if (self.PatchName.get() == item.Name):
                 self._patchInfo = item
@@ -112,6 +113,7 @@ class Manager:
                 self.DeletePatches()
                 self.LoadPatches(self.all_canvas[0], pos_dict)
                 self.toggle_page(0, "main")
+                save_config_game(self, self.config) # comes from config.py
 
     def LoadPatches(self, canvas, pos_dict):
         keys = self.ultracam_beyond.get("Keys", [""])
