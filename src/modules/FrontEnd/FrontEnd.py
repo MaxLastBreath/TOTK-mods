@@ -329,7 +329,7 @@ class Manager:
                                     row=row, cul=backupbutton, width=7,
                                     tags=["Button"],
                                     description_name="Backup",
-                                    command=lambda: backup(Manager)
+                                    command=lambda: FileManager.backup()
         )
 
         Canvas_Create.create_button(
@@ -338,7 +338,7 @@ class Manager:
                                     row=row, cul=backupbutton+78, width=9,
                                     tags=["Button", "Legacy"],
                                     description_name="Shaders",
-                                    command=lambda: clean_shaders(Manager)
+                                    command=lambda: FileManager.clean_shaders()
         )
         row += 40
 
@@ -612,7 +612,7 @@ class Manager:
                                     tags=["Button"],
                                     style="default",
                                     description_name="Backup",
-                                    command=lambda: backup(Manager)
+                                    command=lambda: FileManager.backup()
         )
         loadCheats()
         load_user_choices(Manager, Manager.config)
