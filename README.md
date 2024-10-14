@@ -1,6 +1,6 @@
 <img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=6c7086&height=120&section=header"/>
 
-# <p align=center> ![LOGO_GITHUB](https://github.com/user-attachments/assets/fdbf332a-5ae1-4599-8cf3-9747999fbcf4) </p>
+# <p align=center> ![optimizer_logo](https://github.com/user-attachments/assets/21e6e10e-00af-480b-834b-64d7b1bfe946) </p>
 
 
 
