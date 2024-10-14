@@ -18,14 +18,24 @@ class ResolutionVector:
         return self.s / 1024
 
     def getscale(self):
-        return self.w * self.h / 16 * 9
+        scale = float(self.w * self.h) / float(1920 * 1080)
+        return scale
     
     def getFullScale(self):
         if (self.getShadowScale() > self.getscale()):
-            return self.getShadowScale
+            return self.getShadowScale()
         else :
             return self.getscale()
-
+    
+    def getRamLayout(self):
+        layout = 0
+        if  (self.getFullScale() < 0):
+            layout = 0
+        if(self.getFullScale() > 1):
+            layout = 1
+        if(self.getFullScale() > 5):
+            layout = 2
+        return layout
 
 class ModCreator:
 
@@ -145,23 +155,29 @@ class ModCreator:
                 config[patch_Config[0]][patch_Config[1]] = str(patch_Values[index])
 
     @classmethod
-    def UCAspectRatioPatcher(cls, manager, config):
-        patch_info = manager.ultracam_beyond.get("Keys", [""])
-        
-        if "aspect" not in patch_info:
-            return
-        
-        ARIndex = patch_info["aspect"]["Name_Values"].index(manager.UserChoices["aspect"].get())
-        AspectList = patch_info["aspect"]["Values"][ARIndex]
-        AspectRatio = ResolutionVector(AspectList[0], AspectList[1])
+    def UCRyujinxRamPatcher(cls, manager, filemgr, layout):
 
-        Section = patch_info["aspect"]["Config_Class"][0]
-        Width = patch_info["aspect"]["Config_Class"][1]
-        Height = patch_info["aspect"]["Config_Class"][2]
+        '''Patches Ryujinx specific Settings, such as RAM from 4 or 8GB.'''
 
-        config[Section][Width]  = str(AspectRatio.w)
-        config[Section][Height] = str(AspectRatio.h)
-        
+        if (layout > 0):
+            log.warning(f"Expanding Ryujinx RAM mode to 8GB, {layout}")
+            write_ryujinx_config(manager, filemgr.ryujinx_config, "expand_ram", True)
+        else:
+            log.warning(f"Reverting Ryujinx RAM mode to 4GB, {layout}")
+            write_ryujinx_config(manager, filemgr.ryujinx_config, "expand_ram", False)
+
+    @classmethod
+    def UCLegacyRamPatcher(cls, manager, filemgr, layout):
+
+        '''Patches bunch of settings in Legacy Emulators, VRAM, RAM etc. Based on Resolution and shadow resolution outputs mostly.'''
+
+        write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "Core", "memory_layout_mode", str(layout))
+        write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "System", "use_docked_mode", "true")
+
+        if layout > 0:
+            write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "Renderer", "vram_usage_mode", "1")
+        else:
+            write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "Renderer", "vram_usage_mode", "0")
 
     @classmethod
     def UCResolutionPatcher(cls, filemgr, manager, config):
@@ -197,30 +213,13 @@ class ModCreator:
         Resolution = ResolutionVector(ResInfo[0], ResInfo[1])
         Resolution.addShadows(shadows)
 
-        layout = 0
-        if  (Resolution.getFullScale() < 0):
-            layout = 0
-        elif(Resolution.getFullScale() > 1):
-            layout = 1
-        elif(Resolution.getFullScale() > 5):
-            layout = 2
-
         if manager.mode == "Legacy":
             write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "Renderer", "resolution_setup", "2")
-            write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "Core", "memory_layout_mode", str(layout))
-            write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "System", "use_docked_mode", "true")
-
-            if layout > 0:
-                write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "Renderer", "vram_usage_mode", "1")
-            else:
-                write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "Renderer", "vram_usage_mode", "0")
+            cls.UCLegacyRamPatcher(manager, filemgr, Resolution.getRamLayout())
 
         if manager.mode == "Ryujinx":
             write_ryujinx_config(manager, filemgr.ryujinx_config, "res_scale", 1)
-            if (layout > 0):
-                write_ryujinx_config(manager, filemgr.ryujinx_config, "expand_ram", True)
-            else:
-                write_ryujinx_config(manager, filemgr.ryujinx_config, "expand_ram", False)
+            cls.UCRyujinxRamPatcher(manager, filemgr, Resolution.getRamLayout())
 
         Section =   patch_info["resolution"]["Config_Class"][0]
         Width   =   patch_info["resolution"]["Config_Class"][1]
@@ -228,3 +227,21 @@ class ModCreator:
 
         config[Section][Width]  = str(int(Resolution.w))
         config[Section][Height] = str(int(Resolution.h))
+
+    @classmethod
+    def UCAspectRatioPatcher(cls, manager, config):
+        patch_info = manager.ultracam_beyond.get("Keys", [""])
+        
+        if "aspect" not in patch_info:
+            return
+        
+        ARIndex = patch_info["aspect"]["Name_Values"].index(manager.UserChoices["aspect"].get())
+        AspectList = patch_info["aspect"]["Values"][ARIndex]
+        AspectRatio = ResolutionVector(AspectList[0], AspectList[1])
+
+        Section = patch_info["aspect"]["Config_Class"][0]
+        Width = patch_info["aspect"]["Config_Class"][1]
+        Height = patch_info["aspect"]["Config_Class"][2]
+
+        config[Section][Width]  = str(AspectRatio.w)
+        config[Section][Height] = str(AspectRatio.h)
