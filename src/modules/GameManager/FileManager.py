@@ -12,7 +12,7 @@ import shutil
 class FileManager:
 
     _window = None
-    _frontend = None # Manager class
+    _manager = None # Manager class
 
     is_extracting = False
     mode = "Legacy"
@@ -29,7 +29,7 @@ class FileManager:
     @classmethod
     # Initialize our Window here.
     def Initialize(filemgr, Window, Manager):
-        filemgr._frontend = Manager
+        filemgr._manager = Manager
         filemgr._window = Window
 
     @classmethod
@@ -74,7 +74,7 @@ class FileManager:
             local_dir = os.path.join(home_directory, ".local", "share")
             for folder in os.listdir(local_dir):
                 filemgr.Globaldir = os.path.join(local_dir, folder)
-                if os.path.exists(os.path.join(filemgr.Globaldir, "load", filemgr._frontend._patchInfo.ID)):
+                if os.path.exists(os.path.join(filemgr.Globaldir, "load", filemgr._manager._patchInfo.ID)):
                     superlog.info(f"Found Legacy Emu folder at: {filemgr.Globaldir}")
                     filemgr.configdir = os.path.join(filemgr.Globaldir, "qt-config.ini")
                     filemgr.TOTKconfig = os.path.join(filemgr.Globaldir, "custom")
@@ -86,7 +86,7 @@ class FileManager:
 
             for folder in os.listdir(local_dir):
                 filemgr.Globaldir = os.path.join(local_dir, folder, "config", "yuzu")
-                if os.path.exists(os.path.join(filemgr.Globaldir, "load", filemgr._frontend._patchInfo.ID)):
+                if os.path.exists(os.path.join(filemgr.Globaldir, "load", filemgr._manager._patchInfo.ID)):
                     superlog.info(f"Found Legacy Emu folder at: {filemgr.Globaldir}")
                     filemgr.configdir = os.path.join(filemgr.Globaldir, "qt-config.ini")
                     filemgr.TOTKconfig = os.path.join(filemgr.Globaldir, "custom")
@@ -105,9 +105,9 @@ class FileManager:
             filemgr.load_dir = os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{filemgr.Globaldir}/load')).replace('"', "")
             if filemgr.nand_dir.startswith('"'):
                 filemgr.nand_dir = filemgr.nand_dir.strip('"')[0]
-            filemgr.load_dir = os.path.join(filemgr.load_dir, filemgr._frontend._patchInfo.ID)
+            filemgr.load_dir = os.path.join(filemgr.load_dir, filemgr._manager._patchInfo.ID)
 
-            filemgr.Legacydir = os.path.normpath(os.path.join(home_directory, ".local", "share", "yuzu", "load", filemgr._frontend._patchInfo.ID))
+            filemgr.Legacydir = os.path.normpath(os.path.join(home_directory, ".local", "share", "yuzu", "load", filemgr._manager._patchInfo.ID))
             return
 
         if mode == "Ryujinx":
@@ -119,9 +119,9 @@ class FileManager:
                 filemgr.Globaldir = flatpak
                 filemgr.nand_dir = os.path.join(f"{filemgr.Globaldir}", "bis", "user", "save")
                 filemgr.sdmc_dir = os.path.join(f"{filemgr.Globaldir}", "sdcard")
-                filemgr.load_dir = os.path.join(f"{filemgr.Globaldir}", "mods", "contents", filemgr._frontend._patchInfo.ID)
+                filemgr.load_dir = os.path.join(f"{filemgr.Globaldir}", "mods", "contents", filemgr._manager._patchInfo.ID)
                 filemgr.Legacydir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents",
-                                            filemgr._frontend._patchInfo.ID)
+                                            filemgr._manager._patchInfo.ID)
                 filemgr.ryujinx_config = os.path.join(filemgr.Globaldir, "Config.json")
                 return
 
@@ -129,8 +129,8 @@ class FileManager:
             filemgr.TOTKconfig = None
             filemgr.nand_dir = os.path.join(f"{filemgr.Globaldir}", "bis", "user", "save")
             filemgr.sdmc_dir = os.path.join(f"{filemgr.Globaldir}", "sdcard")
-            filemgr.load_dir = os.path.join(f"{filemgr.Globaldir}", "mods", "contents", filemgr._frontend._patchInfo.ID)
-            filemgr.Legacydir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents", filemgr._frontend._patchInfo.ID)
+            filemgr.load_dir = os.path.join(f"{filemgr.Globaldir}", "mods", "contents", filemgr._manager._patchInfo.ID)
+            filemgr.Legacydir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents", filemgr._manager._patchInfo.ID)
             filemgr.ryujinx_config = os.path.join(filemgr.Globaldir, "Config.json")
             return
 
@@ -151,7 +151,7 @@ class FileManager:
             appdata = os.path.join(home_directory, "AppData", "Roaming")
             for folder in os.listdir(appdata):
                 filemgr.Globaldir = os.path.join(appdata, folder)
-                if os.path.exists(os.path.join(filemgr.Globaldir, "load", filemgr._frontend._patchInfo.ID)):
+                if os.path.exists(os.path.join(filemgr.Globaldir, "load", filemgr._manager._patchInfo.ID)):
                     superlog.info(f"Found Legacy Emu folder at: {filemgr.Globaldir}")
                     break
                 else:
@@ -169,12 +169,12 @@ class FileManager:
                 if filemgr.nand_dir.startswith('"'):
                     filemgr.nand_dir = filemgr.nand_dir.strip('"')[0]
 
-                filemgr.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{os.path.join(Legacypath, "../user/nand")}')), filemgr._frontend._patchInfo.ID).replace('"', "")
+                filemgr.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{os.path.join(Legacypath, "../user/nand")}')), filemgr._manager._patchInfo.ID).replace('"', "")
                 
                 if filemgr.load_dir.startswith('"'):
                     filemgr.load_dir = filemgr.load_dir.strip('"')[0]
 
-                filemgr.Legacydir = os.path.join(filemgr.Globaldir, "load", filemgr._frontend._patchInfo.ID).replace('"', "")
+                filemgr.Legacydir = os.path.join(filemgr.Globaldir, "load", filemgr._manager._patchInfo.ID).replace('"', "")
                 
                 NEWLegacy_path = os.path.normpath(os.path.join(userfolder, "../"))
                 filemgr.Globaldir = os.path.join(NEWLegacy_path, "user")
@@ -214,12 +214,12 @@ class FileManager:
                 if filemgr.nand_dir.startswith('"'):
                     filemgr.nand_dir = filemgr.nand_dir.strip('"')[0]
 
-                filemgr.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{filemgr.Globaldir}/load')), filemgr._frontend._patchInfo.ID).replace('"', "")
+                filemgr.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{filemgr.Globaldir}/load')), filemgr._manager._patchInfo.ID).replace('"', "")
                 
                 if filemgr.load_dir.startswith('"'):
                     filemgr.load_dir = filemgr.load_dir.strip('"')[0]
 
-                filemgr.Legacydir = os.path.join(filemgr.Globaldir, "load", filemgr._frontend._patchInfo.ID)
+                filemgr.Legacydir = os.path.join(filemgr.Globaldir, "load", filemgr._manager._patchInfo.ID)
                 return
             
         if mode == "Ryujinx":
@@ -228,9 +228,9 @@ class FileManager:
                 filemgr.TOTKconfig = None
                 filemgr.ryujinx_config = os.path.join(portablefolder, "Config.json")
                 filemgr.nand_dir = os.path.join(f"{portablefolder}", "bis", "user", "save")
-                filemgr.load_dir = os.path.join(f"{portablefolder}", "mods", "contents", filemgr._frontend._patchInfo.ID)
+                filemgr.load_dir = os.path.join(f"{portablefolder}", "mods", "contents", filemgr._manager._patchInfo.ID)
                 filemgr.sdmc_dir = os.path.join(f"{portablefolder}", "sdcard")
-                filemgr.Legacydir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", filemgr._frontend._patchInfo.ID)
+                filemgr.Legacydir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", filemgr._manager._patchInfo.ID)
                 return
             else:
                 filemgr.Globaldir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx")
@@ -238,7 +238,7 @@ class FileManager:
                 filemgr.TOTKconfig = None
                 filemgr.ryujinx_config = os.path.join(filemgr.Globaldir, "Config.json")
                 filemgr.nand_dir = os.path.join(f"{filemgr.Globaldir}", "bis", "user", "save")
-                filemgr.load_dir = os.path.join(f"{filemgr.Globaldir}", "mods", "contents", filemgr._frontend._patchInfo.ID)
+                filemgr.load_dir = os.path.join(f"{filemgr.Globaldir}", "mods", "contents", filemgr._manager._patchInfo.ID)
                 filemgr.sdmc_dir = os.path.join(f"{filemgr.Globaldir}", "sdcard")
                 filemgr.Legacydir = filemgr.load_dir
                 return
@@ -257,7 +257,7 @@ class FileManager:
             filemgr.ryujinx_config = os.path.join(filemgr.Globaldir, "Config.json")
             filemgr.nand_dir = os.path.join(f"{filemgr.Globaldir}", "bis", "user", "save")
             filemgr.sdmc_dir = os.path.join(f"{filemgr.Globaldir}", "sdcard")
-            filemgr.load_dir = os.path.join(f"{filemgr.Globaldir}", "mods", "contents", filemgr._frontend._patchInfo.ID)
+            filemgr.load_dir = os.path.join(f"{filemgr.Globaldir}", "mods", "contents", filemgr._manager._patchInfo.ID)
             filemgr.Legacydir = filemgr.load_dir
             return
         
@@ -309,7 +309,7 @@ class FileManager:
 
         '''Transfer mod files to the emulator/switch location(s)...'''
 
-        patchinfo = filemgr._frontend._patchInfo
+        patchinfo = filemgr._manager._patchInfo
         source = os.path.join(patchinfo.Folder, patchinfo.ModFolder)
 
         if filemgr.is_extracting is False:
@@ -327,8 +327,8 @@ class FileManager:
 
         if filemgr.mode == "Legacy":
             testforuserdir = os.path.join(filemgr.nand_dir, "user", "save", "0000000000000000")
-            target_folder = filemgr._frontend._patchInfo.ID
-            GameName = filemgr._frontend._patchInfo.Name
+            target_folder = filemgr._manager._patchInfo.ID
+            GameName = filemgr._manager._patchInfo.Name
 
             # checks each individual folder ID for each user and finds the ones with saves for the selected game. Then backups the saves!
             for root, dirs, files in os.walk(testforuserdir):
@@ -371,10 +371,10 @@ class FileManager:
                                     message="Are you sure you want to delete your shaders?\n"
                                             "This could Improve performance.")
         emu_dir = filemgr.Globaldir
-        if filemgr._frontend.mode == "Legacy":
-            shaders = os.path.join(emu_dir, f"shader/{filemgr._frontend._patchInfo.ID}")
-        if filemgr._frontend.mode == "Ryujinx":
-            shaders = os.path.join(emu_dir, f"games/{filemgr._frontend._patchInfo.ID}/cache/shader")
+        if filemgr._manager.mode == "Legacy":
+            shaders = os.path.join(emu_dir, f"shader/{filemgr._manager._patchInfo.ID}")
+        if filemgr._manager.mode == "Ryujinx":
+            shaders = os.path.join(emu_dir, f"games/{filemgr._manager._patchInfo.ID}/cache/shader")
         if answer is True:
             try:
                 shutil.rmtree(shaders)
@@ -434,14 +434,14 @@ class FileManager:
                     task
                     time.sleep(0.05)
                 
-                ProgressBar.End(filemgr._frontend)
+                ProgressBar.End(filemgr._manager)
                 superlog.info("Tasks have been COMPLETED. Feel free to Launch the game.")
                 return
 
         def Create_Mod_Patch(mode=None):
-            save_user_choices(filemgr._frontend, filemgr._frontend.config)
+            save_user_choices(filemgr._manager, filemgr._manager.config)
 
-            patchInfo = filemgr._frontend._patchInfo
+            patchInfo = filemgr._manager._patchInfo
             modDir = os.path.join(filemgr.Globaldir, f"load/{patchInfo.ID}")
 
             if mode == "Cheats":
@@ -476,8 +476,9 @@ class FileManager:
                     config.read(ini_file_path)
 
                 ## TOTK UC BEYOND AUTO PATCHER
-                ModCreator.UCAutoPatcher(filemgr._frontend, config)
-                ModCreator.UCResolutionPatcher(filemgr, filemgr._frontend, config)
+                ModCreator.UCAutoPatcher(filemgr._manager, config)
+                ModCreator.UCResolutionPatcher(filemgr, filemgr._manager, config)
+                ModCreator.UCAspectRatioPatcher(filemgr._manager, config)
 
                 ## WRITE IN CONFIG FILE FOR UC 2.0
                 with open(ini_file_path, 'w+', encoding="utf-8") as configfile:
@@ -487,14 +488,14 @@ class FileManager:
             return # return early, this is no longer used but want to keep order of execution.
             log.info("Checking for Settings...")
             ProgressBar.string.set("Creating Settings..")
-            if filemgr._frontend.selected_settings.get() == "No Change":
+            if filemgr._manager.selected_settings.get() == "No Change":
                 ProgressBar.string.set("No Settings Required..")
                 return
             if filemgr.mode == "Legacy":
                 setting_preset = filemgr.Legacy_settings[filemgr.selected_settings.get()]
                 for section in setting_preset:
                     for option in setting_preset[section]:
-                        write_Legacy_config(filemgr, filemgr.TOTKconfig, filemgr._frontend.title_id, section, option, str(setting_preset[section][option]))
+                        write_Legacy_config(filemgr, filemgr.TOTKconfig, filemgr._manager.title_id, section, option, str(setting_preset[section][option]))
             ProgressBar.string.set("Finished Creating Settings..")
 
         # Unused Function, used for downloading UltraCam beyond, but no longer needed as we store it locally.
@@ -528,7 +529,7 @@ class FileManager:
                 log.warning(f"FAILED TO DOWNLOAD ULTRACAM BEYOND! {e}")
 
         def Exe_Running():
-            is_Program_Opened = LaunchManager.is_process_running(filemgr._frontend.mode + ".exe")
+            is_Program_Opened = LaunchManager.is_process_running(filemgr._manager.mode + ".exe")
             message = (f"{filemgr.mode}.exe is Running, \n"
                        f"The Optimizer Requires {filemgr.mode}.exe to be closed."
                        f"\nDo you wish to close {filemgr.mode}.exe?")
@@ -547,9 +548,9 @@ class FileManager:
             # Run the Main code to Enable and Disable necessary Mods, the remove ensures the mods are enabled.
             if filemgr.mode == "Legacy":
                 for item in filemgr.add_list:
-                    modify_disabled_key(filemgr.configdir, filemgr.load_dir, qtconfig, filemgr._frontend.config_title_id, item, action="add")
+                    modify_disabled_key(filemgr.configdir, filemgr.load_dir, qtconfig, filemgr._manager._patchInfo.IDtoNum(), item, action="add")
                 for item in filemgr.remove_list:
-                    modify_disabled_key(filemgr.configdir, filemgr.load_dir, qtconfig, filemgr._frontend.config_title_id, item, action="remove")
+                    modify_disabled_key(filemgr.configdir, filemgr.load_dir, qtconfig, filemgr._manager._patchInfo.IDtoNum(), item, action="remove")
             if filemgr.mode == "Ryujinx" or platform.system() == "Linux" and not filemgr.is_extracting:
                 for item in filemgr.add_list:
                     item_dir = os.path.join(filemgr.load_dir, item)

@@ -42,7 +42,7 @@ class Manager:
         The following is being set and done :\n
         Reads each game's patch Info. Creates an array of each available game through the Game_Manager.\n
         Load's the current game's Information.\n
-        Creates the entire UI framework, all the canvas, images and ETC.
+        Handles the entire UI framework, all the canvas, images and ETC.
         """
         
         Game_Manager.LoadPatches()
@@ -75,19 +75,15 @@ class Manager:
         if platform.system() == "Darwin":
             Manager.mode = "Ryujinx"
 
-        # Set neccesary variables.
-        Manager.title_id = title_id
-        Manager.config_title_id = config_title_id
-
         # Initialize Json Files.
-        Manager.description = load_json("Description.json", descurl)
-        Manager.presets = load_json("beyond_presets.json", presetsurl)
-        Manager.version_options = load_json("Version.json", versionurl)
-        Manager.cheat_options = load_json("Cheats.json", cheatsurl)
-        Manager.Legacy_settings = load_json("Legacy_presets.json", Legacy_presets_url)
+        Manager.description     =   load_json("Description.json",       descurl           )
+        Manager.presets         =   load_json("beyond_presets.json",    presetsurl        )
+        Manager.version_options =   load_json("Version.json",           versionurl        )
+        Manager.cheat_options   =   load_json("Cheats.json",            cheatsurl         )
+        Manager.Legacy_settings =   load_json("Legacy_presets.json",    Legacy_presets_url)
 
         # Local text variable
-        Manager.switch_text = ttk.StringVar(value="Switch to Ryujinx")
+        Manager.switch_text =   ttk.StringVar(value="Switch to Ryujinx")
         Manager.cheat_version = ttk.StringVar(value="Version - 1.2.1")
 
         # Load Canvas
@@ -196,6 +192,7 @@ class Manager:
             # Change Name and Load Image.
             Manager.ChangeName()
             Canvas_Create.Change_Background_Image(Manager.all_canvas[0], os.path.join(Manager._patchInfo.Folder, "image.jpg"))
+            load_user_choices(Manager, Manager.config)
 
     def DeletePatches(Manager):
         Manager.UserChoices.clear()
@@ -257,6 +254,7 @@ class Manager:
         # value = ["No Change"]
         # for item in Manager.Legacy_settings:
         #     value.append(item)
+
         # Manager.selected_settings = Canvas_Create.create_combobox(
         #                                                     master=Manager._window, canvas=canvas,
         #                                                     text="Legacy SETTINGS:",
@@ -342,25 +340,18 @@ class Manager:
         )
         row += 40
 
-        Manager.graphics_element = Canvas_Create.Photo_Image(
-            image_path="graphics.png",
-            width=int(70*1.6), height=int(48*1.6),
-        )
-
-        Manager.graphics_element_active = Canvas_Create.Photo_Image(
-            image_path="graphics_active.png",
-            width=int(70*1.6), height=int(48*1.6),
-        )
-
-        Manager.extra_element = Canvas_Create.Photo_Image(
-            image_path="extra.png",
-            width=int(70*1.6), height=int(48*1.6),
-        )
-
-        Manager.extra_element_active = Canvas_Create.Photo_Image(
-            image_path="extra_active.png",
-            width=int(70*1.6), height=int(48*1.6),
-        )
+        Manager.graphics_element =      Canvas_Create.Photo_Image(image_path="graphics.png",        width=int(70*1.6), height=int(48*1.6))
+        Manager.graphics_element_active=Canvas_Create.Photo_Image(image_path="graphics_active.png",width=int(70*1.6), height=int(48*1.6))
+        Manager.extra_element =         Canvas_Create.Photo_Image(image_path="extra.png",           width=int(70*1.6), height=int(48*1.6))
+        Manager.extra_element_active =  Canvas_Create.Photo_Image(image_path="extra_active.png",    width=int(70*1.6), height=int(48*1.6))
+        Manager.apply_element =         Canvas_Create.Photo_Image(image_path="apply.png",           width=int(70*1.5), height=int(48*1.5))
+        Manager.apply_element_active =  Canvas_Create.Photo_Image(image_path="apply_active.png",    width=int(70*1.5), height=int(48*1.5))
+        Manager.launch_element =        Canvas_Create.Photo_Image(image_path="launch.png",          width=int(70*1.5), height=int(48*1.5))
+        Manager.launch_element_active = Canvas_Create.Photo_Image(image_path="launch_active.png",   width=int(70*1.5), height=int(48*1.5))
+        Manager.extract_element =       Canvas_Create.Photo_Image(image_path="extract.png",         width=int(70*1.5), height=int(48*1.5))
+        Manager.extract_element_active= Canvas_Create.Photo_Image(image_path="extract_active.png",  width=int(70*1.5), height=int(48*1.5))
+        Manager.LOGO_element =          Canvas_Create.Photo_Image(image_path="optimizer_logo.png",  width=int(3316/10), height=int(823/10))
+        Manager.LOGO_element_active =   Canvas_Create.Photo_Image(image_path="optimizer_logo_active.png",width=int(3316/10), height=int(823/10))
 
         # Graphics & Extra & More - the -20 is extra
         Canvas_Create.image_Button(
@@ -403,44 +394,6 @@ class Manager:
 
         row = pos_dict["main"][0]
         row_2 = pos_dict["main"][3]
-
-        Manager.apply_element = Canvas_Create.Photo_Image(
-                        image_path="apply.png",
-                        width=int(70*1.5), height=int(48*1.5),
-                        )
-
-        Manager.apply_element_active = Canvas_Create.Photo_Image(
-                        image_path="apply_active.png",
-                        width=int(70*1.5), height=int(48*1.5),
-                        )
-
-        Manager.launch_element = Canvas_Create.Photo_Image(
-                        image_path="launch.png",
-                        width=int(70*1.5), height=int(48*1.5),
-                        )
-        Manager.launch_element_active = Canvas_Create.Photo_Image(
-                        image_path="launch_active.png",
-                        width=int(70*1.5), height=int(48*1.5),
-                        )
-
-        Manager.extract_element = Canvas_Create.Photo_Image(
-                        image_path="extract.png",
-                        width=int(70*1.5), height=int(48*1.5),
-                        )
-        Manager.extract_element_active = Canvas_Create.Photo_Image(
-                        image_path="extract_active.png",
-                        width=int(70*1.5), height=int(48*1.5),
-                        )
-
-        Manager.LOGO_element = Canvas_Create.Photo_Image(
-                        image_path="optimizer_logo.png",
-                        width=int(3316/10), height=int(823/10),
-                        )
-
-        Manager.LOGO_element_active = Canvas_Create.Photo_Image(
-                        image_path="optimizer_logo_active.png",
-                        width=int(3316/10), height=int(823/10),
-                        )
 
         Canvas_Create.image_Button(
             canvas=canvas,
@@ -723,7 +676,7 @@ class Manager:
                 Manager.mode = "Ryujinx"
                 for canvas in Manager.all_canvas:
                     # canvas.itemconfig("overlay-1", image=Manager.background_RyuBG)
-                    canvas.itemconfig("information", text=f"{Manager.mode} TOTK Optimizer")
+                    # canvas.itemconfig("information", text=f"{Manager.mode} TOTK Optimizer")
                     canvas.itemconfig("Legacy", state="hidden")
                 if Manager.os_platform == "Darwin":
                     Manager.switch_text.set("Only Ryujinx supported")
@@ -734,7 +687,7 @@ class Manager:
                 Manager.mode = "Legacy"
                 for canvas in Manager.all_canvas:
                     # canvas.itemconfig("overlay-1", image=Manager.background_LegacyBG)
-                    canvas.itemconfig("information", text=f"{Manager.mode} TOTK Optimizer")
+                    # canvas.itemconfig("information", text=f"{Manager.mode} TOTK Optimizer")
                     canvas.itemconfig("Legacy", state="normal")
                 # change text
                 Manager.switch_text.set("Switch to Ryujinx")
@@ -743,7 +696,7 @@ class Manager:
             if Manager.mode == "Ryujinx":
                 for canvas in Manager.all_canvas:
                     # canvas.itemconfig("overlay-1", image=Manager.background_RyuBG)
-                    canvas.itemconfig("information", text=f"{Manager.mode} TOTK Optimizer")
+                    # canvas.itemconfig("information", text=f"{Manager.mode} TOTK Optimizer")
                     canvas.itemconfig("Legacy", state="hidden")
                 if Manager.os_platform == "Darwin":
                     Manager.switch_text.set("Only Ryujinx supported")

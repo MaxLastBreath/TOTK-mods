@@ -4,7 +4,8 @@ import os, json
 def apply_preset(Manager, preset_options):
     # Manager.fetch_var(Manager.ui_var, preset_options, "UI")
     # Manager.fetch_var(Manager.fp_var, preset_options, "First Person")
-    Manager.fetch_var(Manager.selected_settings, preset_options, "Settings")
+    # Manager.fetch_var(Manager.selected_settings, preset_options, "Settings") # set Legacy settings.
+
     patch_info = Manager.ultracam_beyond.get("Keys", [""])
 
     for option_key, option_value in preset_options.items():

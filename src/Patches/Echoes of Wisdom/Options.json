@@ -1,7 +1,7 @@
 {
     "Keys": {
         "freecam": {
-            "Name": "FreeCam NEW",
+            "Name": "FreeCam EOW",
             "Class": "bool",
             "Section": "main",
             "Auto": false,
@@ -30,22 +30,22 @@
                 "MaxFramerate"
             ]
         },
-        "menu fps": {
-            "Name": "Menu FPS",
+        "lod": {
+            "Name": "Level Of Detail",
             "Class": "scale",
             "Section": "main",
             "Auto": false,
             "Values": [
-                20,
-                120
+                -1,
+                15
             ],
             "Type": "s32",
-            "Default": 60,
-            "Increments": 5,
-            "Description": "UltraCam Beyond NEW MENU FPS CAP. Set to your desire.",
+            "Default": 0,
+            "Increments": 1,
+            "Description": "UltraCam EOW, Level of Detail setting, -1 is the highest and 0 is default, 15 is LOW Quality.",
             "Config_Class": [
-                "Features",
-                "MenuFPSLock"
+                "Resolution",
+                "LevelOfDetail"
             ]
         },
         "fov": {
@@ -58,24 +58,12 @@
                 120
             ],
             "Type": "s32",
-            "Default": 50,
-            "Increments": 5,
+            "Default": 28,
+            "Increments": 3,
             "Description": "UltraCam Beyond NEW FOV setting, allows you to set FOV to anything\nThis now also scales up everything related to FOV.",
             "Config_Class": [
                 "Features",
                 "Fov"
-            ]
-        },
-        "quality improvements": {
-            "Name": "Quality Improvements",
-            "Class": "bool",
-            "Section": "main",
-            "Auto": false,
-            "Default": true,
-            "Description": "UltraCam Beyond Quality Improvements. This disables FXAA, FSR and Dynamic Resolution\nWARNING: SHOULD ALWAYS BE TURNED ON WITH HIGH RESOLUTION",
-            "Config_Class": [
-                "Resolution",
-                "QualityImprovements"
             ]
         },
         "resolution": {
@@ -87,46 +75,53 @@
                 "720p",
                 "900p",
                 "1080p",
-                "1152p"
+                "1152p",
+                "1296p"
             ],
             "Values": [
                 "1280x720",
                 "1600x900",
                 "1920x1080",
-                "2048x1152"
+                "2048x1152",
+                "2304x1296"
             ],
             "Default": 2,
-            "Description": "UltraCam Beyond NEW Resolution Scaling uses internal resolution\nWARNING: ANYTHING OVER 1440P REQUIRES EXTENDED MEMORY",
+            "Description": "UltraCam EOW Resolution Scaling uses internal resolution\n",
             "Config_Class": [
                 "Resolution",
                 "Width",
                 "Height"
             ]
         },
-        "render distance": {
-            "Name": "Render Distance",
+        "aspect": {
+            "Name": "Aspect Ratio",
             "Class": "dropdown",
             "Section": "main",
             "Auto": false,
             "Name_Values": [
-                "VERY LOW",
-                "LOW",
-                "MEDIUM",
-                "DEFAULT",
-                "(EXPERIMENTAL) HAS ISSUES"
+                "16 by 9",
+                "16 by 10",
+                "20 by 9",
+                "21 by 9",
+                "21.5 by 9",
+                "32 by 9",
+                "4 by 4"
             ],
             "Values": [
-                1000,
-                5000,
-                12500,
-                25000,
-                35000
+                [16, 9],
+                [16, 10],
+                [20, 9],
+                [21, 9],
+                [21.5, 9],
+                [32, 9],
+                [9, 9]
             ],
-            "Default": 3,
-            "Description": "UltraCam Beyond Render Distance.\nDefault is 25000. Increased is 50000.\nMay see a small benefit on low, up to 20% fps.\nExpect the game to use fog like rendering Minecraft.",
+            "Default": 0,
+            "Description": "UltraCam EOW Aspect Ratios\n",
             "Config_Class": [
-                "Resolution",
-                "RenderDistance"
+                "Aspect",
+                "Width",
+                "Height"
             ]
         },
         "hide ui": {
@@ -205,31 +200,6 @@
             "Config_Class": [
                 "UltraCam",
                 "AnimationFadeout"
-            ]
-        },
-        "benchmark": {
-            "Name": "Benchmark Selection",
-            "Class": "dropdown",
-            "Section": "extra",
-            "Auto": false,
-            "Name_Values": [
-                "Kakariko",
-                "Great Sky Island",
-                "Lookout Landing",
-                "Goron City",
-                "Korok Forest"
-            ],
-            "Values": [
-                0,
-                1,
-                2,
-                3
-            ],
-            "Default": 1,
-            "Description": "UltraCam Beyond preset default benchmark.\nTrigger when you press G",
-            "Config_Class": [
-                "Benchmark",
-                "Benchmark"
             ]
         }
     }

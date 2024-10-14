@@ -20,6 +20,9 @@ class PatchInfo:
         self.Config = configloc
         self.ModFolder = modfolder
 
+    def IDtoNum(self):
+        return int(self.ID, 16)
+
     def LoadJson(self):
         Location = os.path.join(self.Folder, "Options.json")
         with open(Location, "r", encoding="utf-8") as file:

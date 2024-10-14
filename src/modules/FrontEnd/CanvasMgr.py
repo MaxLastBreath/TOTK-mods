@@ -64,9 +64,11 @@ class ImageContext:
 
 
 class Canvas_Create:
+
+    ''' TOTK Optimizer framework for handling images, toolboxes etc... '''
+    
     LoadedImages = []
     tooltip = None
-    window = None
     tooltip_active = None
     is_Ani_running = True
     is_Ani_Paused = False

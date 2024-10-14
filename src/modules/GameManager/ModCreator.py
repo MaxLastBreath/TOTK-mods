@@ -2,24 +2,32 @@ from modules.logger import log, superlog
 from modules.config import *
 import re, os
 
+class ResolutionVector:
+    w = 16
+    h = 9
+    s = 1024
+
+    def __init__(self, x, y):
+        self.w = float(x)
+        self.h = float(y)
+
+    def addShadows(self, shadows):
+        self.s = float(shadows)
+
+    def getShadowScale(self):
+        return self.s / 1024
+
+    def getscale(self):
+        return self.w * self.h / 16 * 9
+    
+    def getFullScale(self):
+        if (self.getShadowScale() > self.getscale()):
+            return self.getShadowScale
+        else :
+            return self.getscale()
+
+
 class ModCreator:
-
-    def convert_resolution(width, height, ARR_width, ARR_height):
-        """
-        Increases resolutions based on aspect ratio, very likely to not be used in the future.
-        """
-        original_aspect_ratio = width / height
-
-        if ARR_width / ARR_height > original_aspect_ratio:
-            # Horizontal aspect ratio
-            new_width = int(height * (ARR_width / ARR_height))
-            new_height = height
-        else:
-            # Vertical aspect ratio
-            new_height = int(width * (ARR_height / ARR_width))
-            new_width = width
-
-        return new_width, new_height
 
     @classmethod
     def CreateCheats(cls, filemgr):
@@ -29,10 +37,10 @@ class ModCreator:
         superlog.info("Starting Cheat patcher.")
         save_user_choices(filemgr, filemgr.config, None, "Cheats")
         selected_cheats = {}
-        for option_name, option_var in filemgr._frontend.selected_cheats.items():
+        for option_name, option_var in filemgr._manager.selected_cheats.items():
             selected_cheats[option_name] = option_var.get()
         # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Legacy together.
-        for version_option in filemgr._frontend.cheat_options:
+        for version_option in filemgr._manager.cheat_options:
             version = version_option.get("Version", "")
             mod_path = os.path.join(filemgr.load_dir, "Cheat Manager Patch", "cheats")
 
@@ -52,7 +60,7 @@ class ModCreator:
                                 file.write(value + "\n")
             except Exception as e:
                 log.error(f"ERROR! FAILED TO CREATE CHEAT PATCH. {e}")
-        filemgr._frontend.remove_list.append("Cheat Manager Patch")
+        filemgr._manager.remove_list.append("Cheat Manager Patch")
         superlog.info("Applied cheats successfully.")
 
     @classmethod
@@ -137,6 +145,25 @@ class ModCreator:
                 config[patch_Config[0]][patch_Config[1]] = str(patch_Values[index])
 
     @classmethod
+    def UCAspectRatioPatcher(cls, manager, config):
+        patch_info = manager.ultracam_beyond.get("Keys", [""])
+        
+        if "aspect" not in patch_info:
+            return
+        
+        ARIndex = patch_info["aspect"]["Name_Values"].index(manager.UserChoices["aspect"].get())
+        AspectList = patch_info["aspect"]["Values"][ARIndex]
+        AspectRatio = ResolutionVector(AspectList[0], AspectList[1])
+
+        Section = patch_info["aspect"]["Config_Class"][0]
+        Width = patch_info["aspect"]["Config_Class"][1]
+        Height = patch_info["aspect"]["Config_Class"][2]
+
+        config[Section][Width]  = str(AspectRatio.w)
+        config[Section][Height] = str(AspectRatio.h)
+        
+
+    @classmethod
     def UCResolutionPatcher(cls, filemgr, manager, config):
         """
         This function configues the mod's config file (.ini) dynamically based on games.
@@ -157,45 +184,36 @@ class ModCreator:
         except Exception as e :
             resolution = 1
 
-        try:
-            shadows = int(manager.UserChoices["shadow resolution"].get().split("x")[0])
-        except Exception as e :
-            shadows = 1024
-
         if "resolution" not in patch_info:
             return
+        
+        if "shadows" in patch_info:
+            shadows = int(manager.UserChoices["shadow resolution"].get().split("x")[0])
+        else:
+            shadows = 1024
 
-        # ARR = manager.UserChoices["aspect ratio"].get().split("x")
-        ARR = [16, 9]
-        New_Resolution = patch_info["resolution"]["Values"][patch_info["resolution"]["Name_Values"].index(resolution)].split("x")
-        New_Resolution = cls.convert_resolution(int(New_Resolution[0]), int(New_Resolution[1]), int(ARR[0]), int(ARR[1]))
-
-        scale_1080 = 1920*1080
-        scale_shadows = round(shadows / 1024)
-        New_Resolution_scale = int(New_Resolution[0]) * int(New_Resolution[1])
-        new_scale = New_Resolution_scale / scale_1080
-
-        if (scale_shadows > new_scale):
-            new_scale = scale_shadows
-            log.info(f"scale:{new_scale}")
+        ResInfo = patch_info["resolution"]["Values"][patch_info["resolution"]["Name_Values"].index(resolution)].split("x")
+        
+        Resolution = ResolutionVector(ResInfo[0], ResInfo[1])
+        Resolution.addShadows(shadows)
 
         layout = 0
-        if(new_scale < 0):
+        if  (Resolution.getFullScale() < 0):
             layout = 0
-        if(new_scale > 1):
+        elif(Resolution.getFullScale() > 1):
             layout = 1
-        if(new_scale > 6):
+        elif(Resolution.getFullScale() > 5):
             layout = 2
 
         if manager.mode == "Legacy":
-            write_Legacy_config(manager, filemgr.TOTKconfig, manager.title_id, "Renderer", "resolution_setup", "2")
-            write_Legacy_config(manager, filemgr.TOTKconfig, manager.title_id, "Core", "memory_layout_mode", f"{layout}")
-            write_Legacy_config(manager, filemgr.TOTKconfig, manager.title_id, "System", "use_docked_mode", "true")
+            write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "Renderer", "resolution_setup", "2")
+            write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "Core", "memory_layout_mode", str(layout))
+            write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "System", "use_docked_mode", "true")
 
             if layout > 0:
-                write_Legacy_config(manager, filemgr.TOTKconfig, manager.title_id, "Renderer", "vram_usage_mode", "1")
+                write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "Renderer", "vram_usage_mode", "1")
             else:
-                write_Legacy_config(manager, filemgr.TOTKconfig, manager.title_id, "Renderer", "vram_usage_mode", "0")
+                write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "Renderer", "vram_usage_mode", "0")
 
         if manager.mode == "Ryujinx":
             write_ryujinx_config(manager, filemgr.ryujinx_config, "res_scale", 1)
@@ -204,5 +222,9 @@ class ModCreator:
             else:
                 write_ryujinx_config(manager, filemgr.ryujinx_config, "expand_ram", False)
 
-        config["Resolution"]["Width"] = str(New_Resolution[0])
-        config["Resolution"]["Height"] = str(New_Resolution[1])
+        Section =   patch_info["resolution"]["Config_Class"][0]
+        Width   =   patch_info["resolution"]["Config_Class"][1]
+        Height  =   patch_info["resolution"]["Config_Class"][2]
+
+        config[Section][Width]  = str(int(Resolution.w))
+        config[Section][Height] = str(int(Resolution.h))
