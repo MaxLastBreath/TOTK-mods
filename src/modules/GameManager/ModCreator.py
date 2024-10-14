@@ -7,27 +7,45 @@ class ResolutionVector:
     h = 9
     s = 1024
 
-    def __init__(self, x, y):
-        self.w = float(x)
-        self.h = float(y)
+    def __init__(self, width, height):
+
+        '''Initialize the class with Width and Height of the desired Resolution.'''
+
+        self.w = float(width)
+        self.h = float(height)
 
     def addShadows(self, shadows):
+
+        '''Add Shadow Resolution if game supports it.'''
+
         self.s = float(shadows)
 
     def getShadowScale(self):
-        return self.s / 1024
+
+        '''Get the amount of shadow increased in float.'''
+
+        return float(self.s / 1024)
 
     def getscale(self):
+
+        '''Get the Total Increase of resolution in float.'''
+
         scale = float(self.w * self.h) / float(1920 * 1080)
         return scale
     
     def getFullScale(self):
+
+        '''Get the the higher scale between Resolution and Shadow Resolution.'''
+
         if (self.getShadowScale() > self.getscale()):
             return self.getShadowScale()
         else :
             return self.getscale()
     
     def getRamLayout(self):
+
+        '''Get the Estimated Ram Layout.'''
+
         layout = 0
         if  (self.getFullScale() < 0):
             layout = 0
@@ -41,9 +59,9 @@ class ModCreator:
 
     @classmethod
     def CreateCheats(cls, filemgr):
-        """
-        This function creates a cheat manager patcher, primarily used only for TOTK right now.
-        """
+
+        """This function creates a cheat manager patcher, primarily used only for TOTK right now."""
+
         superlog.info("Starting Cheat patcher.")
         save_user_choices(filemgr, filemgr.config, None, "Cheats")
         selected_cheats = {}
@@ -76,9 +94,9 @@ class ModCreator:
     @classmethod
     # This no longer works, it's currently disabled and unused, the logic may be refractored in the future.
     def CreateExefs(cls, patchinfo, directory, version_options, selected_options):
-        """
-        creates an EXEFs patch for the respective game.
-        """
+        
+        """creates an EXEFs patch for the respective game."""
+
         for version_option in version_options:
             version = version_option.get("version", "")
             mod_path = os.path.join(directory, patchinfo.ModName, "exefs")
@@ -111,6 +129,7 @@ class ModCreator:
 
     @classmethod
     def UCAutoPatcher(cls, manager, config):
+
         """
         This function configues the mod's config file (.ini) dynamically based on games.
         Requires manager, which then fetches UserChoices from manager to read all the different parameters.
@@ -181,6 +200,7 @@ class ModCreator:
 
     @classmethod
     def UCResolutionPatcher(cls, filemgr, manager, config):
+
         """
         This function configues the mod's config file (.ini) dynamically based on games.
         This function requires the file manager in order to read the locations of Ryujinx config file and Legacy config file respectively.
@@ -230,6 +250,15 @@ class ModCreator:
 
     @classmethod
     def UCAspectRatioPatcher(cls, manager, config):
+
+        '''
+        Patches Aspect Ratios for specific games...
+
+        Parameters:
+        manager (Manager Class): The frontend UI manager.
+        config (configparser): The config file parser.
+        '''
+
         patch_info = manager.ultracam_beyond.get("Keys", [""])
         
         if "aspect" not in patch_info:
