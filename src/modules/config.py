@@ -84,6 +84,11 @@ def setGameConfig(Manager, config):
 def loadGameConfig(Manager, config):
     # Load UltraCam Beyond new patches.
     patch_info = Manager.ultracam_beyond.get("Keys", [""])
+    GameID = Manager._patchInfo.ID
+
+    if not config.has_section(GameID):
+        return
+
     for patch in Manager.UserChoices:
         patch_dict = patch_info[patch]
         patch_class = patch_dict["Class"]
@@ -91,12 +96,14 @@ def loadGameConfig(Manager, config):
         if patch_class.lower() == "dropdown":
             patch_Names = patch_dict["Name_Values"]
             try:
-                Manager.UserChoices[patch].set(patch_Names[int(config["Beyond"][patch])])
+                PatchIndex = int(config.get(GameID, patch))
+                Manager.UserChoices[patch].set(patch_Names[PatchIndex])
             except KeyError:
                 pass
             except ValueError:
-                if config["Beyond"][patch] == "auto":
-                    Manager.UserChoices[patch].set(patch_Names[int(patch_default)])
+                if config[Manager._patchInfo.ID][patch] == "auto":
+                    PatchIndex = int(patch_default)
+                    Manager.UserChoices[patch].set(patch_Names[PatchIndex])
                     continue
             continue
         if patch_class.lower() == "scale":
@@ -106,14 +113,14 @@ def loadGameConfig(Manager, config):
             patch_type = patch_dict["Type"]
 
             if patch_type == "f32":
-                Manager.UserChoices[patch].set(float(config[config[Manager._patchInfo.Name]][patch]))
+                Manager.UserChoices[patch].set(float(config.get(GameID, patch)))
             else:
-                Manager.UserChoices[patch].set(config[config[Manager._patchInfo.Name]][patch])
+                Manager.UserChoices[patch].set(config.get(GameID, patch))
         except KeyError:
             pass
         try:
             if patch_class.lower() == "bool":
-                Manager.UserChoices[patch].set(config[config[Manager._patchInfo.Name]][patch])
+                Manager.UserChoices[patch].set(config.get(GameID, patch))
         except KeyError:
             pass
 
@@ -177,7 +184,7 @@ def load_user_choices(Manager, config_file, mode=None):
         except AttributeError:
             pass
 
-    # loadGameConfig(Manager, config)
+    loadGameConfig(Manager, config)
 
     # Load the enable/disable choices
     for option_name, option_var in Manager.selected_options.items():

@@ -12,7 +12,7 @@ if __name__ == "__main__":
             windll.user32.SetProcessDPIAware()
 
         window = ttk.Window(scaling=sf)
-        window.title(f"TOTK Optimizer {textver}")
+        window.title(f"NX Optimizer {textver}")
         main = Manager(window)
         window_width = scale(1200)
         window_height = scale(600)
@@ -30,6 +30,7 @@ if __name__ == "__main__":
         if platform.system() != "Darwin":
             delete_old_exe()
             check_for_updates()
+        
         window.mainloop()
     except Exception as e:
         log.critical("ERROR AT MAIN: " + e)

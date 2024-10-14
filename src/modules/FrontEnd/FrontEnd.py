@@ -108,6 +108,7 @@ class Manager:
                 Manager.LoadPatches(Manager.all_canvas[0], pos_dict)
                 Manager.toggle_page(0, "main")
                 save_config_game(Manager, Manager.config) # comes from config.py
+                load_user_choices(Manager, Manager.config)
 
     def ChangeName(Manager):
         Manager.all_canvas[0].itemconfig(Manager.LabelText[0], text=Manager._patchInfo.Name)
@@ -192,7 +193,6 @@ class Manager:
             # Change Name and Load Image.
             Manager.ChangeName()
             Canvas_Create.Change_Background_Image(Manager.all_canvas[0], os.path.join(Manager._patchInfo.Folder, "image.jpg"))
-            load_user_choices(Manager, Manager.config)
 
     def DeletePatches(Manager):
         Manager.UserChoices.clear()
