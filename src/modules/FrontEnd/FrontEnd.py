@@ -5,6 +5,7 @@ from modules.GameManager.GameManager import Game_Manager
 from modules.GameManager.PatchInfo import PatchInfo
 from modules.GameManager.FileManager import FileManager
 from modules.GameManager.LaunchManager import LaunchManager
+from modules.FrontEnd.TextureMgr import TextureMgr
 from modules.load_elements import create_tab_buttons, load_UI_elements
 import threading, webbrowser, os, copy
 import ttkbootstrap as ttk
@@ -51,6 +52,7 @@ class Manager:
 
         Game_Manager.LoadPatches()
         FileManager.Initialize(window, Manager)
+        TextureMgr.Initialize()  # load all images.
         Manager.patches = Game_Manager.GetPatches()
 
         # Save the config string in class variable config
@@ -404,55 +406,16 @@ class Manager:
 
         row += 40
 
-        Manager.graphics_element = Canvas_Create.Photo_Image(
-            image_path="graphics.png", width=int(70 * 1.6), height=int(48 * 1.6)
-        )
-        Manager.graphics_element_active = Canvas_Create.Photo_Image(
-            image_path="graphics_active.png", width=int(70 * 1.6), height=int(48 * 1.6)
-        )
-
-        Manager.extra_element = Canvas_Create.Photo_Image(
-            image_path="extra.png", width=int(70 * 1.6), height=int(48 * 1.6)
-        )
-        Manager.extra_element_active = Canvas_Create.Photo_Image(
-            image_path="extra_active.png", width=int(70 * 1.6), height=int(48 * 1.6)
-        )
-        Manager.apply_element = Canvas_Create.Photo_Image(
-            image_path="apply.png", width=int(70 * 1.5), height=int(48 * 1.5)
-        )
-        Manager.apply_element_active = Canvas_Create.Photo_Image(
-            image_path="apply_active.png", width=int(70 * 1.5), height=int(48 * 1.5)
-        )
-        Manager.launch_element = Canvas_Create.Photo_Image(
-            image_path="launch.png", width=int(70 * 1.5), height=int(48 * 1.5)
-        )
-        Manager.launch_element_active = Canvas_Create.Photo_Image(
-            image_path="launch_active.png", width=int(70 * 1.5), height=int(48 * 1.5)
-        )
-        Manager.extract_element = Canvas_Create.Photo_Image(
-            image_path="extract.png", width=int(70 * 1.5), height=int(48 * 1.5)
-        )
-        Manager.extract_element_active = Canvas_Create.Photo_Image(
-            image_path="extract_active.png", width=int(70 * 1.5), height=int(48 * 1.5)
-        )
-        Manager.LOGO_element = Canvas_Create.Photo_Image(
-            image_path="optimizer_logo.png", width=int(3316 / 10), height=int(823 / 10)
-        )
-        Manager.LOGO_element_active = Canvas_Create.Photo_Image(
-            image_path="optimizer_logo_active.png",
-            width=int(3316 / 10),
-            height=int(823 / 10),
-        )
-
         # Graphics & Extra & More - the -20 is extra
         page_1 = Canvas_Create.image_Button(
             canvas=canvas,
             row=row - 35,
             cul=cul_tex - 10 - 20,
             name="main",
-            img_1=Manager.graphics_element,
-            img_2=Manager.graphics_element_active,
+            img_1=TextureMgr.Request("graphics.png"),
+            img_2=TextureMgr.Request("graphics_active.png"),
             command=lambda e: Manager.toggle_pages("main"),
+            Type=ButtonToggle.Dynamic,
         )
 
         page_2 = Canvas_Create.image_Button(
@@ -460,9 +423,10 @@ class Manager:
             row=row - 35,
             cul=cul_tex + 190 - 10,
             name="extra",
-            img_1=Manager.extra_element,
-            img_2=Manager.extra_element_active,
+            img_1=TextureMgr.Request("extra.png"),
+            img_2=TextureMgr.Request("extra_active.png"),
             command=lambda e: Manager.toggle_pages("extra"),
+            Type=ButtonToggle.Dynamic,
         )
 
         Manager.PageBtns.append(page_1)
@@ -504,8 +468,8 @@ class Manager:
             canvas=canvas,
             row=510,
             cul=25,
-            img_1=Manager.apply_element,
-            img_2=Manager.apply_element_active,
+            img_1=TextureMgr.Request("apply.png"),
+            img_2=TextureMgr.Request("apply_active.png"),
             command=lambda event: FileManager.submit(),
         )
 
@@ -513,9 +477,9 @@ class Manager:
         Canvas_Create.image_Button(
             canvas=canvas,
             row=510,
-            cul=25 + int(Manager.apply_element.width() / sf),
-            img_1=Manager.launch_element,
-            img_2=Manager.launch_element_active,
+            cul=25 + int(TextureMgr.Request("apply.png").width() / sf),
+            img_1=TextureMgr.Request("launch.png"),
+            img_2=TextureMgr.Request("launch_active.png"),
             command=lambda event: LaunchManager.launch_GAME(Manager, FileManager),
         )
 
@@ -523,9 +487,9 @@ class Manager:
         Canvas_Create.image_Button(
             canvas=canvas,
             row=510,
-            cul=25 + int(7 + int(Manager.apply_element.width() / sf) * 2),
-            img_1=Manager.extract_element,
-            img_2=Manager.extract_element_active,
+            cul=25 + int(7 + int(TextureMgr.Request("launch.png").width() / sf) * 2),
+            img_1=TextureMgr.Request("extract.png"),
+            img_2=TextureMgr.Request("extract_active.png"),
             command=lambda event: Manager.extract_patches(),
         )
 
@@ -533,8 +497,8 @@ class Manager:
             canvas=canvas,
             row=520,
             cul=850,
-            img_1=Manager.LOGO_element,
-            img_2=Manager.LOGO_element_active,
+            img_1=TextureMgr.Request("optimizer_logo.png"),
+            img_2=TextureMgr.Request("optimizer_logo_active.png"),
             command=lambda event: Manager.open_browser("Kofi"),
         )
 

@@ -586,6 +586,7 @@ class Canvas_Create:
         img_2: ttk.PhotoImage = any,
         isOn: bool = False,
         command: Callable = None,
+        Type: ButtonToggle = ButtonToggle.Static,
     ) -> ImageButton:
 
         ImageBtn: ImageButton = ImageButton(
@@ -599,7 +600,7 @@ class Canvas_Create:
 
         ImageBtn.BindImages(scale(cul), scale(row), img_1, img_2, anchor)
         ImageBtn.BindCommand(command)
-        ImageBtn.MakeDynamic(True)
+        ImageBtn.MakeDynamic(Type)
 
         return ImageBtn
 
@@ -805,7 +806,7 @@ class Canvas_Create:
         flip: bool = False,
         auto_contrast: bool = False,
         img_scale: int = None,
-    ):
+    ) -> PhotoImage:
 
         UI_path = cls.get_UI_path(image_path)
         image = ttk.Image.open(UI_path)
@@ -823,6 +824,7 @@ class Canvas_Create:
         if auto_contrast is True:
             image = ImageOps.autocontrast(image)
         new_photo_image = ImageTk.PhotoImage(image)
+
         return new_photo_image
 
     @classmethod
