@@ -799,13 +799,25 @@ class Manager:
 
     def Cheat_UI_elements(Manager, canvas):
         Manager.cheatbg = canvas.create_image(
-            0, -scale(300), anchor="nw", image=Manager.blurbackground, tags="background"
+            0,
+            -scale(300),
+            anchor="nw",
+            image=TextureMgr.Request("image_cheats.png"),
+            tags="background",
         )
         canvas.create_image(
-            0, 0, anchor="nw", image=Manager.background_LegacyBG, tags="overlay-1"
+            0,
+            0,
+            anchor="nw",
+            image=TextureMgr.Request("Legacy_BG.png"),
+            tags="overlay-1",
         )
         canvas.create_image(
-            0, 0, anchor="nw", image=Manager.background_UI_Cheats, tags="overlay"
+            0,
+            0,
+            anchor="nw",
+            image=TextureMgr.Request("BG_Left_Cheats.png"),
+            tags="overlay",
         )
 
     def switchmode(Manager, command="true"):
@@ -813,7 +825,7 @@ class Manager:
             if Manager.mode == "Legacy":
                 Manager.mode = "Ryujinx"
                 for canvas in Manager.all_canvas:
-                    # canvas.itemconfig("overlay-1", image=Manager.background_RyuBG)
+                    # canvas.itemconfig("overlay-1", image=TextureMgr.Request("Ryujinx_BG.png"))
                     # canvas.itemconfig("information", text=f"{Manager.mode} TOTK Optimizer")
                     canvas.itemconfig("Legacy", state="hidden")
 
@@ -826,7 +838,7 @@ class Manager:
             elif Manager.mode == "Ryujinx" and Manager.os_platform != "Darwin":
                 Manager.mode = "Legacy"
                 for canvas in Manager.all_canvas:
-                    # canvas.itemconfig("overlay-1", image=Manager.background_LegacyBG)
+                    # canvas.itemconfig("overlay-1", image=TextureMgr.Request("Legacy_BG.png"))
                     # canvas.itemconfig("information", text=f"{Manager.mode} TOTK Optimizer")
                     canvas.itemconfig("Legacy", state="normal")
                 # change text
@@ -836,7 +848,7 @@ class Manager:
         elif command == "false":
             if Manager.mode == "Ryujinx":
                 for canvas in Manager.all_canvas:
-                    # canvas.itemconfig("overlay-1", image=Manager.background_RyuBG)
+                    # canvas.itemconfig("overlay-1", image=TextureMgr.Request("Ryujinx_BG.png"))
                     # canvas.itemconfig("information", text=f"{Manager.mode} TOTK Optimizer")
                     canvas.itemconfig("Legacy", state="hidden")
                 if Manager.os_platform == "Darwin":

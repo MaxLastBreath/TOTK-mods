@@ -1,27 +1,43 @@
 from modules.FrontEnd.CanvasMgr import Canvas_Create
+from modules.FrontEnd.TextureMgr import TextureMgr
 from configuration.settings import *
 from modules.benchmarks import *
 import pyperclip
 
 
 def load_UI_elements(manager, canvas):
+
+    manager.benchmark_dicts = {
+        "Korok Forest": TextureMgr.Request("benchmark_korok.png"),
+        "Lookout Landing": TextureMgr.Request("benchmark_lookout.png"),
+        "Kakariko": TextureMgr.Request("benchmark_kakariko.png"),
+        "Great Sky Island": TextureMgr.Request("benchmark_great_sky_island.png"),
+        "Goron City": TextureMgr.Request("benchmark_goron.png"),
+        "Depths": TextureMgr.Request("benchmark_depths.png"),
+        "Zora Domain": TextureMgr.Request("benchmark_zora.png"),
+    }
+
     # Images and Effects
     canvas.create_image(
-        0, 0, anchor="nw", image=manager.background_image, tags="background"
+        0, 0, anchor="nw", image=TextureMgr.Request("image.jpg"), tags="background"
     )
     canvas.create_image(
-        0, 0, anchor="nw", image=manager.background_LegacyBG, tags="overlay-1"
+        0, 0, anchor="nw", image=TextureMgr.Request("Legacy_BG.png"), tags="overlay-1"
     )
-    # canvas.create_image(0, 0, anchor="nw", image=manager.background_UI, tags="overlay")
     canvas.create_image(
-        0, 0, anchor="nw", image=manager.background_UI_element, tags="overlay"
+        0, 0, anchor="nw", image=TextureMgr.Request("BG_Left_2.png"), tags="overlay"
     )
 
     # Info text BG
     canvas.create_image(
-        0 - scale(20), 0, anchor="nw", image=manager.background_UI3, tags="overlay"
+        0 - scale(20),
+        0,
+        anchor="nw",
+        image=TextureMgr.Request("BG_Right_UI.png"),
+        tags="overlay",
     )
 
+    # Benchmark Images..?
     for location, image in manager.benchmark_dicts.items():
         Canvas_Create.set_image(
             canvas=canvas,
@@ -38,7 +54,7 @@ def load_UI_elements(manager, canvas):
         row=285,
         cul=980,
         anchor="c",
-        img=manager.default_benchmark,
+        img=TextureMgr.Request("benchmarks_first.png"),
         tag="no_benchmark",
     )
 
@@ -47,7 +63,7 @@ def load_UI_elements(manager, canvas):
         row=500,
         cul=980,
         anchor="c",
-        img=manager.benchmark_border,
+        img=TextureMgr.Request("benchmark_border.png"),
         tag="benchmark_border",
     )
 
@@ -56,9 +72,9 @@ def load_UI_elements(manager, canvas):
         row=505,
         cul=980,
         anchor="c",
-        img_1=manager.bench_load_element,
-        img_2=manager.bench_load_element_active,
-        command=lambda event: load_benchmark(manager),
+        img_1=TextureMgr.Request("benchmark_loading.png"),
+        img_2=TextureMgr.Request("benchmark_loading_active.png"),
+        command=lambda e: load_benchmark(manager),
     )
 
     def copy(manager):
@@ -128,8 +144,8 @@ def load_UI_elements(manager, canvas):
         canvas=canvas,
         row=162,
         cul=794,
-        img_1=manager.master_sword_element,
-        img_2=manager.master_sword_element_active,
+        img_1=TextureMgr.Request("Master_Sword.png"),
+        img_2=TextureMgr.Request("Master_Sword_active.png"),
         command=lambda event: manager.open_browser("Kofi"),
     )
 
@@ -137,8 +153,8 @@ def load_UI_elements(manager, canvas):
         canvas=canvas,
         row=162,
         cul=1007,
-        img_1=manager.master_sword_element2,
-        img_2=manager.master_sword_element2_active,
+        img_1=TextureMgr.Request("Master_Sword2.png"),
+        img_2=TextureMgr.Request("Master_Sword_active2.png"),
         command=lambda event: manager.open_browser("Github"),
     )
 
@@ -147,8 +163,8 @@ def load_UI_elements(manager, canvas):
         row=220,
         cul=978,
         anchor="c",
-        img_1=manager.hylian_element,
-        img_2=manager.hylian_element_active,
+        img_1=TextureMgr.Request("Hylian_Shield.png"),
+        img_2=TextureMgr.Request("Hylian_Shield_Active.png"),
         command=lambda event: manager.open_browser("Discord"),
     )
 
