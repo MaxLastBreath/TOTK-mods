@@ -8,9 +8,14 @@ textver = Version.strip("manager-")
 GITHUB = "TOTK-mods"
 OWNER = "MaxLastBreath"
 
+
 def show_confirmation_dialog(remote_version_str):
-    result = messagebox.askyesno("Confirmation", f"Mod Manager version {remote_version_str} was found, do you want to apply the update?")
+    result = messagebox.askyesno(
+        "Confirmation",
+        f"Mod Manager version {remote_version_str} was found, do you want to apply the update?",
+    )
     return result
+
 
 # Check For Update
 def check_for_updates():
@@ -27,14 +32,16 @@ def check_for_updates():
             if remote_version > parse(textver):
                 confirmation_result = show_confirmation_dialog(remote_version_str)
                 if confirmation_result:
-                   download_update(release_info["assets"])
+                    download_update(release_info["assets"])
                 else:
                     return
             else:
                 log.info("No Updates Found. Your app is up to date.")
     except requests.exceptions.ConnectionError as e:
         log.warning(
-        "No internet connection or api limit reached. You won't be able to check for Updates.")
+            "No internet connection or api limit reached. You won't be able to check for Updates."
+        )
+
 
 def download_update(assets):
     current_platform = platform.system()
@@ -42,7 +49,7 @@ def download_update(assets):
     for asset in assets:
         asset_name = asset["name"]
         asset_url = asset["browser_download_url"]
-        
+
         if current_platform == "Linux" and asset_name.endswith(".AppImage"):
             log.info(f"Downloading {asset_name}")
             try:
@@ -71,6 +78,7 @@ def download_update(assets):
 
             log.info("Asset downloaded successfully.")
         apply_update(assets)
+
 
 def apply_update(assets):
     log.info("Applying Update...")
@@ -110,6 +118,7 @@ def apply_update(assets):
 
     log.info("Update Applied. Exiting...")
     sys.exit()
+
 
 def delete_old_exe():
     executable_directory = os.path.dirname(os.path.abspath(sys.argv[0]))

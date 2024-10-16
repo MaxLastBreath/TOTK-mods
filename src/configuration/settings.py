@@ -6,8 +6,8 @@ from modules.logger import log, superlog
 import configparser
 
 Version = "manager-3.0.0"
-repo_url_raw = 'https://github.com/MaxLastBreath/TOTK-mods'
-repo_url = 'https://api.github.com/repos/MaxLastBreath/TOTK-mods'
+repo_url_raw = "https://github.com/MaxLastBreath/TOTK-mods"
+repo_url = "https://api.github.com/repos/MaxLastBreath/TOTK-mods"
 localconfig = "TOTKOptimizer.ini"
 
 if platform.system() == "Darwin":
@@ -23,6 +23,7 @@ w_scale = ""
 is_auto_backup = ""
 is_cheat_backup = ""
 is_animation = ""
+
 
 def get_setting(args=None):
     global font, tcolor, theme, toutline, tactive, is_animation, is_cheat_backup, is_auto_backup, w_scale
@@ -70,7 +71,7 @@ def set_setting(args, value):
             config.add_section("Updates")
         config.set("Updates", "dfps", value)
 
-    with open(localconfig, 'w', encoding="utf-8") as config_file:
+    with open(localconfig, "w", encoding="utf-8") as config_file:
         config.write(config_file, space_around_delimiters=False)
 
 
@@ -80,11 +81,11 @@ FPS = 0.05
 
 # SET animation FPS to lower if higher resolution.
 if sf > 1.0:
-    CH +=5
+    CH += 5
 
 if sf > 1.5:
     FPS = 0.1
-    CH +=5
+    CH += 5
 
 CBHEIGHT = CH
 html_color = Color()
@@ -114,7 +115,9 @@ Legacy_presets_url = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/
 ultracambeyond = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/UltraCam_Template.json"
 
 # Download UltraCam
-New_UCBeyond_Download = f"{repo_url_raw}/raw/main/scripts/Mods/UltraCam/UltraCamBeyond.zip"
+New_UCBeyond_Download = (
+    f"{repo_url_raw}/raw/main/scripts/Mods/UltraCam/UltraCamBeyond.zip"
+)
 
 # FP download:
 FP_Mod = f"{repo_url_raw}/raw/main/scripts/Mods/FP%20Mods/First%20Person.zip"

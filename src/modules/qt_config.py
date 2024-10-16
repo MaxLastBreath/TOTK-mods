@@ -5,6 +5,7 @@ import platform
 from modules.logger import *
 from configparser import Interpolation
 
+
 # Ensure % doesn't cause issues in config, with mods like % drop rate.
 class CustomInterpolation(Interpolation):
     def before_get(self, parser, section, option, value, defaults):
@@ -14,6 +15,7 @@ class CustomInterpolation(Interpolation):
         if value.startswith("%") and not value.startswith("%%"):
             return value.replace("%", "%%", 1)
         return value
+
 
 def get_config_parser():
     config = configparser.ConfigParser(interpolation=CustomInterpolation())
@@ -37,12 +39,15 @@ def find_folder_index_by_name(directory_path, folder_name):
     except ValueError:
         return None
 
+
 def find_title_id_index(config, config_title_id):
     section = f"DisabledAddOns"
     if not config.has_section(section):
         config.add_section(section)
-        log.info(f"Config has not been able, identify config_title_id: {config_title_id},"
-                 f"the manager will continue but the mods may not be turned off as expected.")
+        log.info(
+            f"Config has not been able, identify config_title_id: {config_title_id},"
+            f"the manager will continue but the mods may not be turned off as expected."
+        )
         return None
     else:
         for key, value in config.items(section):
@@ -51,8 +56,10 @@ def find_title_id_index(config, config_title_id):
                 return TitleIndexnum
     return None
 
+
 def remove_duplicates(arr):
     return list(set(arr))
+
 
 def get_d_values(config, properindex):
     section = "DisabledAddOns"
@@ -70,7 +77,7 @@ def clean_disabled_addons(config, config_title_id):
     if properindex == None:
         return
     for key in config[section]:
-        match = re.match('^' + properindex + r'\\disabled\\\d+\\d', key)
+        match = re.match("^" + properindex + r"\\disabled\\\d+\\d", key)
         if match:
             keys_to_remove.append(key)
 
@@ -78,11 +85,13 @@ def clean_disabled_addons(config, config_title_id):
         config.remove_option(section, key)
 
 
-def find_and_remove_entry(configdir, directory, config, config_title_id, entry_to_remove):
+def find_and_remove_entry(
+    configdir, directory, config, config_title_id, entry_to_remove
+):
     properindex = find_title_id_index(config, config_title_id)
     if properindex == None:
         return
-        
+
     section = "DisabledAddOns"
     d_values = sorted(get_d_values(config, properindex))
     if not config.has_section(section):
@@ -92,7 +101,7 @@ def find_and_remove_entry(configdir, directory, config, config_title_id, entry_t
     testforfolder = find_folder_index_by_name(directory, entry_to_remove)
     if testforfolder is None:
         return
-   
+
     try:
         while entry_to_remove in d_values:
             d_values.remove(entry_to_remove)
@@ -150,7 +159,9 @@ def add_entry(configdir, directory, config, config_title_id, entry_to_add):
     write_config_file(configdir, config)
 
 
-def modify_disabled_key(configdir, directory, config, config_title_id, entry, action='add'):
+def modify_disabled_key(
+    configdir, directory, config, config_title_id, entry, action="add"
+):
     if platform.system() == "Linux":
         return
 
@@ -167,5 +178,5 @@ def modify_disabled_key(configdir, directory, config, config_title_id, entry, ac
 
 
 def write_config_file(configdir, config):
-    with open(configdir, 'w', encoding="utf-8") as config_file:
+    with open(configdir, "w", encoding="utf-8") as config_file:
         config.write(config_file, space_around_delimiters=False)

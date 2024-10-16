@@ -8,7 +8,8 @@ import time
 import string
 import random
 
-def next_index(event, var, list=list, increase = 1, command=None):
+
+def next_index(event, var, list=list, increase=1, command=None):
     value = str(var.get())
     string_list = [str(item) for item in list]
     index = string_list.index(value)
@@ -16,12 +17,13 @@ def next_index(event, var, list=list, increase = 1, command=None):
     if index == len(list):
         index = 0
     if index < 0:
-        index = len(list) -1
+        index = len(list) - 1
     var.set(list[index])
     if command is not None:
         command(event)
 
-def change_scale(event, var, max, min, increments = float, command=None):
+
+def change_scale(event, var, max, min, increments=float, command=None):
     new_value = float(var.get()) + increments
     if new_value > float(min):
         new_value = float(min)
@@ -40,19 +42,22 @@ def change_scale(event, var, max, min, increments = float, command=None):
     if command is not None:
         command(event)
 
-def update_text(event, canvas, name, var, type = "s32"):
+
+def update_text(event, canvas, name, var, type="s32"):
     if type == "s32":
         var.set(round(float(var.get())))
         canvas.itemconfig(name, text=int(var.get()))
     if type == "f32":
-        var.set(round(float(var.get())* 10) / 10)
+        var.set(round(float(var.get()) * 10) / 10)
         canvas.itemconfig(name, text=float(var.get()))
+
 
 def toggle(event, var):
     if var.get() == "On":
         var.set("Off")
     else:
         var.set("On")
+
 
 class ImageContext:
     path = ""
@@ -63,6 +68,7 @@ class ImageContext:
         cls.object = _object
 
 
+# fmt: off
 class Canvas_Create:
 
     ''' TOTK Optimizer framework for handling images, toolboxes etc... '''
@@ -78,6 +84,7 @@ class Canvas_Create:
                         text, master, description_name=None, text_description= None, variable=any, values=[],
                         row=40, cul=40, drop_cul=180, width=150, style="warning",
                         tags=[], tag=None, command=None, is_active=True):
+        
         # create text
         active_color_new = active_color
         if tag is not None:
@@ -125,7 +132,7 @@ class Canvas_Create:
                                 state="readonly",
                                 bootstyle = style,
                                 )
-
+        
         dropdown_window = canvas.create_window(
                                                scale(drop_cul),
                                                scale(row),
@@ -135,6 +142,7 @@ class Canvas_Create:
                                                height=CBHEIGHT,
                                                tags=tags
                                                )
+
         # bind canvas
         dropdown.bind("<<ComboboxSelected>>", command)
         # attempt to make a Hovertip
@@ -181,6 +189,7 @@ class Canvas_Create:
             font=textfont,
             tags=outline_tag
         )
+
         # create the text and the variable for the dropdown.
         new_variable = ttk.StringVar(master=master, value=variable)
         text_line = canvas.create_text(
@@ -417,14 +426,15 @@ class Canvas_Create:
                         row=40, cul=40, anchor="w", justify="left",
                         tags=[], tag=None, outline_tag=None, command=None
                      ):
+        
         # create text
         if tag is not None:
             tags.append(tag)
         if command is not None and active_fill is None:
             active_fill = active_color
-        # add outline and user-tag to the outlined text.
-        if outline_tag is not None:
+        if outline_tag is not None: # add outline and user-tag to the outlined text.
             outline_tag = [outline_tag, tag]
+
         # create an outline to the text.
         text_outline = canvas.create_text(
                                         scale(cul) + scale(1),
@@ -466,6 +476,7 @@ class Canvas_Create:
                      tag_1=None, tag_2=None,
                      command=None
                      ):
+        
         # If strings are not defined use random tags.
         if tag_1 is None:
             tag_1 = random.choices(string.ascii_uppercase +
@@ -475,6 +486,7 @@ class Canvas_Create:
             tag_2 = random.choices(string.ascii_uppercase +
                            string.digits, k=8)
             tag_2 = ''.join(tag_2)
+
         # Trigger Animation
         canvas.create_image(scale(cul), scale(row), anchor=anchor, image=img_1, state="normal", tags=tag_1)
         canvas.create_image(scale(cul), scale(row), anchor=anchor, image=img_2, state="hidden", tags=tag_2)
@@ -578,12 +590,12 @@ class Canvas_Create:
         cls.tooltip.wm_overrideredirect(True)
         cls.tooltip.geometry(f"+{x + scale(20)}+{y + scale(25)}")
         tooltip_label = ttk.Label(
-                                 master=cls.tooltip,
-                                 text=tool_text,
-                                 background="gray",
-                                 relief="solid",
-                                 borderwidth=1,
-                                 justify="left"
+                                    master=cls.tooltip,
+                                    text=tool_text,
+                                    background="gray",
+                                    relief="solid",
+                                    borderwidth=1,
+                                    justify="left"
                                  )
         tooltip_label.pack()
 

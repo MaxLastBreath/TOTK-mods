@@ -1,12 +1,13 @@
 from configuration.settings import *
 from configuration.settings_config import Setting
-from modules.TOTK_Optimizer_Modules import * # imports all needed files.
+from modules.TOTK_Optimizer_Modules import *  # imports all needed files.
 from modules.GameManager.GameManager import Game_Manager
 from modules.GameManager.FileManager import FileManager
 from modules.GameManager.LaunchManager import LaunchManager
 from modules.load_elements import create_tab_buttons, load_UI_elements
 import threading, webbrowser, os, copy
 import ttkbootstrap as ttk
+
 
 def increase_row(row, cul_sel, cul_tex):
     row += 40
@@ -15,6 +16,7 @@ def increase_row(row, cul_sel, cul_tex):
         cul_tex += 180
         cul_sel += 180
     return row, cul_sel, cul_tex
+
 
 class Manager:
     patches = []
@@ -35,7 +37,6 @@ class Manager:
     warn_again = "yes"
 
     def __init__(Manager, window):
-
         """
         Initializes the frontend canvas UI.\n
         This also Initializes Game_Manager, FileManager, Canvas_Create and Settings.\n
@@ -44,7 +45,7 @@ class Manager:
         Load's the current game's Information.\n
         Handles the entire UI framework, all the canvas, images and ETC.
         """
-        
+
         Game_Manager.LoadPatches()
         FileManager.Initialize(window, Manager)
         Manager.patches = Game_Manager.GetPatches()
@@ -54,7 +55,9 @@ class Manager:
 
         # Game from config should be chosen here.
         Manager._patchInfo = Manager.patches[2]
-        Manager._patchInfo = Game_Manager.GetJsonByID(load_config_game(Manager, Manager.config))
+        Manager._patchInfo = Game_Manager.GetJsonByID(
+            load_config_game(Manager, Manager.config)
+        )
 
         # Load Patch Info for current game.
         Manager.ultracam_beyond = Manager._patchInfo.LoadJson()
@@ -76,14 +79,14 @@ class Manager:
             Manager.mode = "Ryujinx"
 
         # Initialize Json Files.
-        Manager.description     =   load_json("Description.json",       descurl           )
-        Manager.presets         =   load_json("beyond_presets.json",    presetsurl        )
-        Manager.version_options =   load_json("Version.json",           versionurl        )
-        Manager.cheat_options   =   load_json("Cheats.json",            cheatsurl         )
-        Manager.Legacy_settings =   load_json("Legacy_presets.json",    Legacy_presets_url)
+        Manager.description = load_json("Description.json", descurl)
+        Manager.presets = load_json("beyond_presets.json", presetsurl)
+        Manager.version_options = load_json("Version.json", versionurl)
+        Manager.cheat_options = load_json("Cheats.json", cheatsurl)
+        Manager.Legacy_settings = load_json("Legacy_presets.json", Legacy_presets_url)
 
         # Local text variable
-        Manager.switch_text =   ttk.StringVar(value="Switch to Ryujinx")
+        Manager.switch_text = ttk.StringVar(value="Switch to Ryujinx")
         Manager.cheat_version = ttk.StringVar(value="Version - 1.2.1")
 
         # Load Canvas
@@ -91,28 +94,34 @@ class Manager:
         Manager.load_canvas()
         Manager.switchmode("false")
 
-        #Window protocols
-        Manager._window.protocol("WM_DELETE_WINDOW", lambda: Canvas_Create.on_closing(Manager._window))
+        # Window protocols
+        Manager._window.protocol(
+            "WM_DELETE_WINDOW", lambda: Canvas_Create.on_closing(Manager._window)
+        )
 
     def warning(Manager, e):
         messagebox.showwarning(f"{e}")
 
     def LoadNewGameInfo(Manager):
-        '''Loads new Game info from the combobox (dropdown Menu).'''
+        """Loads new Game info from the combobox (dropdown Menu)."""
         for item in Manager.patches:
-            if (Manager.PatchName.get() == item.Name):
+            if Manager.PatchName.get() == item.Name:
                 Manager._patchInfo = item
                 Manager.ultracam_beyond = Manager._patchInfo.LoadJson()
                 pos_dict = copy.deepcopy(Manager.Back_Pos)
                 Manager.DeletePatches()
                 Manager.LoadPatches(Manager.all_canvas[0], pos_dict)
                 Manager.toggle_page(0, "main")
-                save_config_game(Manager, Manager.config) # comes from config.py
+                save_config_game(Manager, Manager.config)  # comes from config.py
                 load_user_choices(Manager, Manager.config)
 
     def ChangeName(Manager):
-        Manager.all_canvas[0].itemconfig(Manager.LabelText[0], text=Manager._patchInfo.Name)
-        Manager.all_canvas[0].itemconfig(Manager.LabelText[1], text=Manager._patchInfo.Name)
+        Manager.all_canvas[0].itemconfig(
+            Manager.LabelText[0], text=Manager._patchInfo.Name
+        )
+        Manager.all_canvas[0].itemconfig(
+            Manager.LabelText[1], text=Manager._patchInfo.Name
+        )
 
     def LoadPatches(Manager, canvas, pos_dict):
         keys = Manager.ultracam_beyond.get("Keys", [""])
@@ -130,18 +139,26 @@ class Manager:
             patch_default_index = dicts.get("Default")
             pos = pos_dict[section_auto]
             if patch_auto is True:
-                Manager.UserChoices[name] = ttk.StringVar(master=Manager._window, value="auto")
+                Manager.UserChoices[name] = ttk.StringVar(
+                    master=Manager._window, value="auto"
+                )
                 continue
 
             if dicts["Class"].lower() == "dropdown":
                 patch_var = Canvas_Create.create_combobox(
-                            master=Manager._window, canvas=canvas,
-                            text=patch_name,
-                            values=patch_list, variable=patch_list[patch_default_index],
-                            row=pos[0], cul=pos[1], drop_cul=pos[2], width=100,
-                            tags=["dropdown", "patchinfo"], tag=section_auto,
-                            text_description=patch_description
-                            )
+                    master=Manager._window,
+                    canvas=canvas,
+                    text=patch_name,
+                    values=patch_list,
+                    variable=patch_list[patch_default_index],
+                    row=pos[0],
+                    cul=pos[1],
+                    drop_cul=pos[2],
+                    width=100,
+                    tags=["dropdown", "patchinfo"],
+                    tag=section_auto,
+                    text_description=patch_description,
+                )
                 new_pos = increase_row(pos[0], pos[1], pos[2])
                 pos[0] = new_pos[0]
                 pos[1] = new_pos[1]
@@ -151,12 +168,20 @@ class Manager:
                 patch_type = dicts.get("Type")
                 patch_increments = dicts.get("Increments")
                 patch_var = Canvas_Create.create_scale(
-                    master=Manager._window, canvas=canvas,
+                    master=Manager._window,
+                    canvas=canvas,
                     text=patch_name,
-                    scale_from=patch_values[0], scale_to=patch_values[1], type=patch_type,
-                    row=pos[0], cul=pos[1], drop_cul=pos[2], width=100, increments=float(patch_increments),
-                    tags=["scale", "patchinfo"], tag=section_auto,
-                    text_description=patch_description
+                    scale_from=patch_values[0],
+                    scale_to=patch_values[1],
+                    type=patch_type,
+                    row=pos[0],
+                    cul=pos[1],
+                    drop_cul=pos[2],
+                    width=100,
+                    increments=float(patch_increments),
+                    tags=["scale", "patchinfo"],
+                    tag=section_auto,
+                    text_description=patch_description,
                 )
                 if patch_type == "f32":
                     print(f"{patch_name} - {patch_default_index}")
@@ -172,12 +197,16 @@ class Manager:
 
             if dicts["Class"].lower() == "bool":
                 patch_var = Canvas_Create.create_checkbutton(
-                    master=Manager._window, canvas=canvas,
+                    master=Manager._window,
+                    canvas=canvas,
                     text=patch_name,
                     variable="Off",
-                    row=pos[3], cul=pos[4], drop_cul=pos[5],
-                    tags=["bool", "patchinfo"], tag=section_auto,
-                    text_description=patch_description
+                    row=pos[3],
+                    cul=pos[4],
+                    drop_cul=pos[5],
+                    tags=["bool", "patchinfo"],
+                    tag=section_auto,
+                    text_description=patch_description,
                 )
                 if patch_default_index:
                     patch_var.set("On")
@@ -192,19 +221,24 @@ class Manager:
 
             # Change Name and Load Image.
             Manager.ChangeName()
-            Canvas_Create.Change_Background_Image(Manager.all_canvas[0], os.path.join(Manager._patchInfo.Folder, "image.jpg"))
+            Canvas_Create.Change_Background_Image(
+                Manager.all_canvas[0],
+                os.path.join(Manager._patchInfo.Folder, "image.jpg"),
+            )
 
     def DeletePatches(Manager):
         Manager.UserChoices.clear()
         Manager.all_canvas[0].delete("patchinfo")
-    
+
     def create_canvas(Manager):
 
         # clear list.
         Manager.UserChoices = {}
 
         # Create Canvas
-        Manager.maincanvas = ttk.Canvas(Manager._window, width=scale(1200), height=scale(600))
+        Manager.maincanvas = ttk.Canvas(
+            Manager._window, width=scale(1200), height=scale(600)
+        )
         canvas = Manager.maincanvas
         Manager.maincanvas.pack()
         Manager.all_canvas.append(Manager.maincanvas)
@@ -240,14 +274,18 @@ class Manager:
         presets = {"Saved": {}} | load_json("beyond_presets.json", presetsurl)
         values = list(presets.keys())
         Manager.selected_preset = Canvas_Create.create_combobox(
-                                                            master=Manager._window, canvas=canvas,
-                                                            text="OPTIMIZER PRESETS:",
-                                                            variable=values[0], values=values,
-                                                            row=row, cul=cul_tex - 20,
-                                                            tags=["text"], tag="Optimizer",
-                                                            description_name="Presets",
-                                                            command=lambda event: apply_selected_preset(Manager)
-                                                        )
+            master=Manager._window,
+            canvas=canvas,
+            text="OPTIMIZER PRESETS:",
+            variable=values[0],
+            values=values,
+            row=row,
+            cul=cul_tex - 20,
+            tags=["text"],
+            tag="Optimizer",
+            description_name="Presets",
+            command=lambda event: apply_selected_preset(Manager),
+        )
 
         # Setting Preset - returns variable.
 
@@ -267,32 +305,42 @@ class Manager:
         value = []
         for item in Manager.patches:
             value.append(item.Name)
+
         Manager.PatchName = Canvas_Create.create_combobox(
-                                                            master=Manager._window, canvas=canvas,
-                                                            text="Select Game:",
-                                                            variable=Manager._patchInfo.Name, values=value,
-                                                            row=row, cul=340, drop_cul=430,
-                                                            tags=["text"], tag="GameSelect",
-                                                            description_name="GameSelect",
-                                                            command= lambda event: Manager.LoadNewGameInfo()
-                                                        )
+            master=Manager._window,
+            canvas=canvas,
+            text="Select Game:",
+            variable=Manager._patchInfo.Name,
+            values=value,
+            row=row,
+            cul=340,
+            drop_cul=430,
+            tags=["text"],
+            tag="GameSelect",
+            description_name="GameSelect",
+            command=lambda event: Manager.LoadNewGameInfo(),
+        )
 
         row += 40
         # Create a label for Legacy.exe selection
         backupbutton = cul_sel
         command = lambda event: Manager.select_Legacy_exe()
+
         def browse():
             Manager.select_Legacy_exe()
 
         text = "SELECT EXECUTABLE"
         Canvas_Create.create_button(
-                                    master=Manager._window, canvas=canvas,
-                                    btn_text="Browse",
-                                    row=row, cul=cul_sel, width=6,
-                                    tags=["Button"],
-                                    description_name="Browse",
-                                    command=lambda: browse()
-                                    )
+            master=Manager._window,
+            canvas=canvas,
+            btn_text="Browse",
+            row=row,
+            cul=cul_sel,
+            width=6,
+            tags=["Button"],
+            description_name="Browse",
+            command=lambda: browse(),
+        )
 
         # Reset to Appdata
         def Legacy_appdata():
@@ -301,81 +349,130 @@ class Manager:
             save_user_choices(Manager, Manager.config, "appdata", None)
 
         Canvas_Create.create_button(
-                                    master=Manager._window, canvas=canvas,
-                                    btn_text="Use Appdata",
-                                    row=row, cul=cul_sel + 68, width=9,
-                                    tags=["Button"],
-                                    description_name="Reset",
-                                    command=Legacy_appdata
-                                    )
+            master=Manager._window,
+            canvas=canvas,
+            btn_text="Use Appdata",
+            row=row,
+            cul=cul_sel + 68,
+            width=9,
+            tags=["Button"],
+            description_name="Reset",
+            command=Legacy_appdata,
+        )
+
         backupbutton = cul_sel + 165
 
-
         Canvas_Create.create_label(
-                                    master=Manager._window, canvas=canvas,
-                                    text=text,
-                                    description_name="Browse",
-                                    row=row, cul=cul_tex - 20,
-                                    tags=["text"], tag=["Select-EXE"], outline_tag="outline",
-                                    command=command
-                                    )
+            master=Manager._window,
+            canvas=canvas,
+            text=text,
+            description_name="Browse",
+            row=row,
+            cul=cul_tex - 20,
+            tags=["text"],
+            tag=["Select-EXE"],
+            outline_tag="outline",
+            command=command,
+        )
 
         # Create a Backup button
         Canvas_Create.create_button(
-                                    master=Manager._window, canvas=canvas,
-                                    btn_text="Backup",
-                                    row=row, cul=backupbutton, width=7,
-                                    tags=["Button"],
-                                    description_name="Backup",
-                                    command=lambda: FileManager.backup()
+            master=Manager._window,
+            canvas=canvas,
+            btn_text="Backup",
+            row=row,
+            cul=backupbutton,
+            width=7,
+            tags=["Button"],
+            description_name="Backup",
+            command=lambda: FileManager.backup(),
         )
 
         Canvas_Create.create_button(
-                                    master=Manager._window, canvas=canvas,
-                                    btn_text="Clear Shaders",
-                                    row=row, cul=backupbutton+78, width=9,
-                                    tags=["Button", "Legacy"],
-                                    description_name="Shaders",
-                                    command=lambda: FileManager.clean_shaders()
+            master=Manager._window,
+            canvas=canvas,
+            btn_text="Clear Shaders",
+            row=row,
+            cul=backupbutton + 78,
+            width=9,
+            tags=["Button", "Legacy"],
+            description_name="Shaders",
+            command=lambda: FileManager.clean_shaders(),
         )
+
         row += 40
 
-        Manager.graphics_element =      Canvas_Create.Photo_Image(image_path="graphics.png",        width=int(70*1.6), height=int(48*1.6))
-        Manager.graphics_element_active=Canvas_Create.Photo_Image(image_path="graphics_active.png",width=int(70*1.6), height=int(48*1.6))
-        Manager.extra_element =         Canvas_Create.Photo_Image(image_path="extra.png",           width=int(70*1.6), height=int(48*1.6))
-        Manager.extra_element_active =  Canvas_Create.Photo_Image(image_path="extra_active.png",    width=int(70*1.6), height=int(48*1.6))
-        Manager.apply_element =         Canvas_Create.Photo_Image(image_path="apply.png",           width=int(70*1.5), height=int(48*1.5))
-        Manager.apply_element_active =  Canvas_Create.Photo_Image(image_path="apply_active.png",    width=int(70*1.5), height=int(48*1.5))
-        Manager.launch_element =        Canvas_Create.Photo_Image(image_path="launch.png",          width=int(70*1.5), height=int(48*1.5))
-        Manager.launch_element_active = Canvas_Create.Photo_Image(image_path="launch_active.png",   width=int(70*1.5), height=int(48*1.5))
-        Manager.extract_element =       Canvas_Create.Photo_Image(image_path="extract.png",         width=int(70*1.5), height=int(48*1.5))
-        Manager.extract_element_active= Canvas_Create.Photo_Image(image_path="extract_active.png",  width=int(70*1.5), height=int(48*1.5))
-        Manager.LOGO_element =          Canvas_Create.Photo_Image(image_path="optimizer_logo.png",  width=int(3316/10), height=int(823/10))
-        Manager.LOGO_element_active =   Canvas_Create.Photo_Image(image_path="optimizer_logo_active.png",width=int(3316/10), height=int(823/10))
+        Manager.graphics_element = Canvas_Create.Photo_Image(
+            image_path="graphics.png", width=int(70 * 1.6), height=int(48 * 1.6)
+        )
+        Manager.graphics_element_active = Canvas_Create.Photo_Image(
+            image_path="graphics_active.png", width=int(70 * 1.6), height=int(48 * 1.6)
+        )
+        Manager.extra_element = Canvas_Create.Photo_Image(
+            image_path="extra.png", width=int(70 * 1.6), height=int(48 * 1.6)
+        )
+        Manager.extra_element_active = Canvas_Create.Photo_Image(
+            image_path="extra_active.png", width=int(70 * 1.6), height=int(48 * 1.6)
+        )
+        Manager.apply_element = Canvas_Create.Photo_Image(
+            image_path="apply.png", width=int(70 * 1.5), height=int(48 * 1.5)
+        )
+        Manager.apply_element_active = Canvas_Create.Photo_Image(
+            image_path="apply_active.png", width=int(70 * 1.5), height=int(48 * 1.5)
+        )
+        Manager.launch_element = Canvas_Create.Photo_Image(
+            image_path="launch.png", width=int(70 * 1.5), height=int(48 * 1.5)
+        )
+        Manager.launch_element_active = Canvas_Create.Photo_Image(
+            image_path="launch_active.png", width=int(70 * 1.5), height=int(48 * 1.5)
+        )
+        Manager.extract_element = Canvas_Create.Photo_Image(
+            image_path="extract.png", width=int(70 * 1.5), height=int(48 * 1.5)
+        )
+        Manager.extract_element_active = Canvas_Create.Photo_Image(
+            image_path="extract_active.png", width=int(70 * 1.5), height=int(48 * 1.5)
+        )
+        Manager.LOGO_element = Canvas_Create.Photo_Image(
+            image_path="optimizer_logo.png", width=int(3316 / 10), height=int(823 / 10)
+        )
+        Manager.LOGO_element_active = Canvas_Create.Photo_Image(
+            image_path="optimizer_logo_active.png",
+            width=int(3316 / 10),
+            height=int(823 / 10),
+        )
 
         # Graphics & Extra & More - the -20 is extra
         Canvas_Create.image_Button(
             canvas=canvas,
-            row=row - 35, cul=cul_tex - 10 - 20,
-            img_1=Manager.graphics_element, img_2=Manager.graphics_element_active,
-            command=lambda event: Manager.toggle_page(event, "main")
+            row=row - 35,
+            cul=cul_tex - 10 - 20,
+            img_1=Manager.graphics_element,
+            img_2=Manager.graphics_element_active,
+            command=lambda event: Manager.toggle_page(event, "main"),
         )
 
         Canvas_Create.image_Button(
             canvas=canvas,
-            row=row - 35, cul=cul_tex + 190 - 10,
-            img_1=Manager.extra_element, img_2=Manager.extra_element_active,
-            command=lambda event: Manager.toggle_page(event, "extra")
+            row=row - 35,
+            cul=cul_tex + 190 - 10,
+            img_1=Manager.extra_element,
+            img_2=Manager.extra_element_active,
+            command=lambda event: Manager.toggle_page(event, "extra"),
         )
 
         # BIG TEXT.
         Manager.LabelText = Canvas_Create.create_label(
-                                        master=Manager._window, canvas=canvas,
-                                        text="Tears Of The Kingdom", font=bigfont, color=BigTextcolor,
-                                        description_name="Mod Improvements", anchor="c",
-                                        row=row, cul=575,
-                                        tags=["Big-Text", "Middle-Text"]
-                                    )
+            master=Manager._window,
+            canvas=canvas,
+            text="Tears Of The Kingdom",
+            font=bigfont,
+            color=BigTextcolor,
+            description_name="Mod Improvements",
+            anchor="c",
+            row=row,
+            cul=575,
+            tags=["Big-Text", "Middle-Text"],
+        )
 
         row += 40
 
@@ -384,8 +481,8 @@ class Manager:
         ##              REMOVED DFPS, SINCE ULTRACAM BEYOND DOES IT ALL AND SO MUCH BETTER.
 
         pos_dict = {
-            "main": [row,  cul_tex, cul_sel, row_2, cul_tex_2, cul_sel_2],
-            "extra": [row, cul_tex, cul_sel,  row_2, cul_tex_2, cul_sel_2]
+            "main": [row, cul_tex, cul_sel, row_2, cul_tex_2, cul_sel_2],
+            "extra": [row, cul_tex, cul_sel, row_2, cul_tex_2, cul_sel_2],
         }
 
         Manager.Back_Pos = copy.deepcopy(pos_dict)
@@ -397,32 +494,40 @@ class Manager:
 
         Canvas_Create.image_Button(
             canvas=canvas,
-            row=510, cul=25,
-            img_1=Manager.apply_element, img_2=Manager.apply_element_active,
-            command=lambda event: FileManager.submit()
+            row=510,
+            cul=25,
+            img_1=Manager.apply_element,
+            img_2=Manager.apply_element_active,
+            command=lambda event: FileManager.submit(),
         )
 
         # reverse scale.
         Canvas_Create.image_Button(
             canvas=canvas,
-            row=510, cul=25 + int(Manager.apply_element.width() / sf),
-            img_1=Manager.launch_element, img_2=Manager.launch_element_active,
-            command=lambda event: LaunchManager.launch_GAME(Manager, FileManager)
+            row=510,
+            cul=25 + int(Manager.apply_element.width() / sf),
+            img_1=Manager.launch_element,
+            img_2=Manager.launch_element_active,
+            command=lambda event: LaunchManager.launch_GAME(Manager, FileManager),
         )
 
         # extract
         Canvas_Create.image_Button(
             canvas=canvas,
-            row=510, cul=25 + int(7 + int(Manager.apply_element.width() / sf) * 2),
-            img_1=Manager.extract_element, img_2=Manager.extract_element_active,
-            command=lambda event: Manager.extract_patches()
+            row=510,
+            cul=25 + int(7 + int(Manager.apply_element.width() / sf) * 2),
+            img_1=Manager.extract_element,
+            img_2=Manager.extract_element_active,
+            command=lambda event: Manager.extract_patches(),
         )
 
         Canvas_Create.image_Button(
             canvas=canvas,
-            row=520, cul=850,
-            img_1=Manager.LOGO_element, img_2=Manager.LOGO_element_active,
-            command=lambda event: Manager.open_browser("Kofi")
+            row=520,
+            cul=850,
+            img_1=Manager.LOGO_element,
+            img_2=Manager.LOGO_element_active,
+            command=lambda event: Manager.open_browser("Kofi"),
         )
 
         # Load Saved User Options.
@@ -435,7 +540,10 @@ class Manager:
 
     def create_cheat_canvas(Manager):
         # Create Cheat Canvas
-        Manager.cheatcanvas = ttk.Canvas(Manager._window, width=scale(1200), height=scale(600))
+        Manager.cheatcanvas = ttk.Canvas(
+            Manager._window, width=scale(1200), height=scale(600)
+        )
+
         Manager.cheatcanvas.pack(expand=1, fill=BOTH)
         canvas = Manager.cheatcanvas
         Manager.all_canvas.append(Manager.cheatcanvas)
@@ -452,25 +560,34 @@ class Manager:
                     versionvalues.append("Version - " + value)
 
         Manager.cheat_version = Canvas_Create.create_combobox(
-                                                            master=Manager._window, canvas=canvas,
-                                                            text="",
-                                                            values=versionvalues, variable=versionvalues[1],
-                                                            row=520, cul=130+2, drop_cul=130+2,
-                                                            tags=["text"], tag=None,
-                                                            description_name="CheatVersion",
-                                                            command=lambda event: loadCheats()
-                                                            )
-        load_user_choices(Manager, Manager.config)
+            master=Manager._window,
+            canvas=canvas,
+            text="",
+            values=versionvalues,
+            variable=versionvalues[1],
+            row=520,
+            cul=130 + 2,
+            drop_cul=130 + 2,
+            tags=["text"],
+            tag=None,
+            description_name="CheatVersion",
+            command=lambda event: loadCheats(),
+        )
 
+        load_user_choices(Manager, Manager.config)
 
         def loadCheats():
             row = 40
             cul_tex = 40
             cul_sel = 200
 
-            corrent_cheats = Manager.cheat_options[versionvalues.index(Manager.cheat_version.get())].items()
+            corrent_cheats = Manager.cheat_options[
+                versionvalues.index(Manager.cheat_version.get())
+            ].items()
             corrent_cheats_dict = dict(corrent_cheats)
-            sorted_cheats = dict(sorted(corrent_cheats_dict.items(), key=lambda item: item[0]))
+            sorted_cheats = dict(
+                sorted(corrent_cheats_dict.items(), key=lambda item: item[0])
+            )
             try:
                 for key_var, value in Manager.selected_cheats.items():
                     value = value.get()
@@ -488,15 +605,24 @@ class Manager:
                     continue
 
                 # Create label
-                if version_option_name not in ["Source", "Version", "Aversion", "Cheat Example"]:
+                if version_option_name not in [
+                    "Source",
+                    "Version",
+                    "Aversion",
+                    "Cheat Example",
+                ]:
 
                     version_option_var = Canvas_Create.create_checkbutton(
-                        master=Manager._window, canvas=canvas,
+                        master=Manager._window,
+                        canvas=canvas,
                         text=version_option_name,
                         variable="Off",
-                        row=row, cul=cul_tex, drop_cul=cul_sel,
-                        tags=["text"], tag="cheats",
-                        description_name=version_option_name
+                        row=row,
+                        cul=cul_tex,
+                        drop_cul=cul_sel,
+                        tags=["text"],
+                        tag="cheats",
+                        description_name=version_option_name,
                     )
 
                     # Create enable/disable dropdown menu
@@ -516,57 +642,75 @@ class Manager:
                     cul_tex += 200
                     cul_sel += 200
 
-
         def ResetCheats():
             try:
                 for key, value in Manager.selected_cheats.items():
                     value.set("Off")
             except AttributeError as e:
-                log.error(f"Error found from ResetCheats, the script will continue. {e}")
-
+                log.error(
+                    f"Error found from ResetCheats, the script will continue. {e}"
+                )
 
         # Create a submit button
         Canvas_Create.create_button(
-                                    master=Manager._window, canvas=canvas,
-                                    btn_text="Apply Cheats",
-                                    row=520, cul=39, width=9, padding=5,
-                                    tags=["Button"],
-                                    style="success",
-                                    description_name="Apply Cheats",
-                                    command=lambda: FileManager.submit()
+            master=Manager._window,
+            canvas=canvas,
+            btn_text="Apply Cheats",
+            row=520,
+            cul=39,
+            width=9,
+            padding=5,
+            tags=["Button"],
+            style="success",
+            description_name="Apply Cheats",
+            command=lambda: FileManager.submit(),
         )
 
         # Create a submit button
         Canvas_Create.create_button(
-                                    master=Manager._window, canvas=canvas,
-                                    btn_text="Reset Cheats",
-                                    row=520, cul=277+6+2, width=8, padding=5,
-                                    tags=["Button"],
-                                    style="default",
-                                    description_name="Reset Cheats",
-                                    command=ResetCheats
+            master=Manager._window,
+            canvas=canvas,
+            btn_text="Reset Cheats",
+            row=520,
+            cul=277 + 6 + 2,
+            width=8,
+            padding=5,
+            tags=["Button"],
+            style="default",
+            description_name="Reset Cheats",
+            command=ResetCheats,
         )
+
         # Read Cheats
         Canvas_Create.create_button(
-                                    master=Manager._window, canvas=canvas,
-                                    btn_text="Read Saved Cheats",
-                                    row=520, cul=366+2, width=11, padding=5,
-                                    tags=["Button"],
-                                    style="default",
-                                    description_name="Read Cheats",
-                                    command=lambda: load_user_choices(Manager, Manager.config, "Cheats")
+            master=Manager._window,
+            canvas=canvas,
+            btn_text="Read Saved Cheats",
+            row=520,
+            cul=366 + 2,
+            width=11,
+            padding=5,
+            tags=["Button"],
+            style="default",
+            description_name="Read Cheats",
+            command=lambda: load_user_choices(Manager, Manager.config, "Cheats"),
         )
 
-        #Backup
+        # Backup
         Canvas_Create.create_button(
-                                    master=Manager._window, canvas=canvas,
-                                    btn_text="Backup",
-                                    row=520, cul=479+2, width=7, padding=5,
-                                    tags=["Button"],
-                                    style="default",
-                                    description_name="Backup",
-                                    command=lambda: FileManager.backup()
+            master=Manager._window,
+            canvas=canvas,
+            btn_text="Backup",
+            row=520,
+            cul=479 + 2,
+            width=7,
+            padding=5,
+            tags=["Button"],
+            style="default",
+            description_name="Backup",
+            command=lambda: FileManager.backup(),
         )
+
         loadCheats()
         load_user_choices(Manager, Manager.config)
 
@@ -574,10 +718,13 @@ class Manager:
         if Manager.os_platform == "Windows":
             Legacy_path = filedialog.askopenfilename(
                 title=f"Please select {Manager.mode}.exe",
-                filetypes=[("Executable files", "*.exe"), ("All Files", "*.*")]
+                filetypes=[("Executable files", "*.exe"), ("All Files", "*.*")],
             )
+
             executable_name = Legacy_path
-            if executable_name.endswith("Ryujinx.exe") or executable_name.endswith("Ryujinx.Ava.exe"):
+            if executable_name.endswith("Ryujinx.exe") or executable_name.endswith(
+                "Ryujinx.Ava.exe"
+            ):
                 if Manager.mode == "Legacy":
                     Manager.switchmode("true")
             else:
@@ -591,30 +738,34 @@ class Manager:
                 fullpath = os.path.dirname(Legacy_path)
                 if any(item in os.listdir(fullpath) for item in ["user", "portable"]):
                     superlog.info(
-                        f"Successfully selected {Manager.mode}.exe! And a portable folder was found at {home_directory}!")
+                        f"Successfully selected {Manager.mode}.exe! And a portable folder was found at {home_directory}!"
+                    )
                     FileManager.checkpath(Manager.mode)
                     return Legacy_path
                 else:
-                    superlog.info(f"Portable folder for {Manager.mode} not found defaulting to appdata directory!")
+                    superlog.info(
+                        f"Portable folder for {Manager.mode} not found defaulting to appdata directory!"
+                    )
                     FileManager.checkpath(Manager.mode)
                     return Legacy_path
-
-                # Update the Legacy.exe path in the current session
-                Manager.Legacy_path = Legacy_path
             else:
                 FileManager.checkpath(Manager.mode)
                 return None
-            # Save the selected Legacy.exe path to a configuration file
-            save_user_choices(Manager, Manager.config, Legacy_path)
+
         if Manager.os_platform == "Linux":
             Legacy_path = filedialog.askopenfilename(
                 title=f"Please select {Manager.mode}.AppImage",
-                filetypes=[("Select AppImages or Executable: ", "*.*"), ("All Files", "*.*")]
+                filetypes=[
+                    ("Select AppImages or Executable: ", "*.*"),
+                    ("All Files", "*.*"),
+                ],
             )
 
             executable_name = Legacy_path
 
-            if executable_name.startswith("Ryujinx") or executable_name.startswith("Ryujinx.ava"):
+            if executable_name.startswith("Ryujinx") or executable_name.startswith(
+                "Ryujinx.ava"
+            ):
                 if Manager.mode == "Legacy":
                     Manager.switchmode("true")
             else:
@@ -641,8 +792,13 @@ class Manager:
         Manager.cheatcanvas.pack()
         Manager.maincanvas.pack_forget()
 
-        Manager.ani = threading.Thread(name="cheatbackground",
-                                    target=lambda: Canvas_Create.canvas_animation(Manager._window, Manager.cheatcanvas))
+        Manager.ani = threading.Thread(
+            name="cheatbackground",
+            target=lambda: Canvas_Create.canvas_animation(
+                Manager._window, Manager.cheatcanvas
+            ),
+        )
+
         if not Manager.is_Ani_running == True:
             Manager.is_Ani_running = True
             Manager.ani.start()
@@ -666,9 +822,15 @@ class Manager:
         load_benchmark(Manager)
 
     def Cheat_UI_elements(Manager, canvas):
-        Manager.cheatbg = canvas.create_image(0, -scale(300), anchor="nw", image=Manager.blurbackground, tags="background")
-        canvas.create_image(0, 0, anchor="nw", image=Manager.background_LegacyBG, tags="overlay-1")
-        canvas.create_image(0, 0, anchor="nw", image=Manager.background_UI_Cheats, tags="overlay")
+        Manager.cheatbg = canvas.create_image(
+            0, -scale(300), anchor="nw", image=Manager.blurbackground, tags="background"
+        )
+        canvas.create_image(
+            0, 0, anchor="nw", image=Manager.background_LegacyBG, tags="overlay-1"
+        )
+        canvas.create_image(
+            0, 0, anchor="nw", image=Manager.background_UI_Cheats, tags="overlay"
+        )
 
     def switchmode(Manager, command="true"):
         if command == "true":
@@ -678,11 +840,13 @@ class Manager:
                     # canvas.itemconfig("overlay-1", image=Manager.background_RyuBG)
                     # canvas.itemconfig("information", text=f"{Manager.mode} TOTK Optimizer")
                     canvas.itemconfig("Legacy", state="hidden")
+
                 if Manager.os_platform == "Darwin":
                     Manager.switch_text.set("Only Ryujinx supported")
                 else:
                     Manager.switch_text.set("Switch to Legacy")
                 return
+
             elif Manager.mode == "Ryujinx" and Manager.os_platform != "Darwin":
                 Manager.mode = "Legacy"
                 for canvas in Manager.all_canvas:
@@ -692,6 +856,7 @@ class Manager:
                 # change text
                 Manager.switch_text.set("Switch to Ryujinx")
                 return
+
         elif command == "false":
             if Manager.mode == "Ryujinx":
                 for canvas in Manager.all_canvas:
@@ -703,6 +868,7 @@ class Manager:
                 else:
                     Manager.switch_text.set("Switch to Legacy")
                 return
+
         elif command == "Mode":
             return Manager.mode
 

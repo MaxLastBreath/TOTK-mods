@@ -1,5 +1,6 @@
 import json, os
 
+
 class PatchInfo:
     Folder = "Patches/Tears Of The Kingdom"
     Name = "Tears of The Kingdom"
@@ -8,8 +9,8 @@ class PatchInfo:
     Config = "UltraCam/maxlastbreath.ini"
     ModFolder = ""
     Versions = []
-    
-    def __init__(self, folder = str, _id = str, name = str, versions=None, modName = str, configloc = str, modfolder = str):
+
+    def __init__(self, folder = str, _id = str, name = str, versions=None, modName = str, configloc = str, modfolder = str):  # fmt: skip
         if versions is None:
             versions = []
         self.Folder = folder

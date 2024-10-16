@@ -9,10 +9,11 @@ import ttkbootstrap as ttk
 import subprocess
 import shutil
 
+
 class FileManager:
 
     _window = None
-    _manager = None # Manager class
+    _manager = None  # Manager class
 
     is_extracting = False
     mode = "Legacy"
@@ -37,6 +38,7 @@ class FileManager:
         return filemgr
 
     @classmethod
+    # fmt: off
     def load_Legacy_path(filemgr, config_file):
         if filemgr.mode == "Legacy":
             config = configparser.ConfigParser()
@@ -48,8 +50,9 @@ class FileManager:
             config.read(config_file, encoding="utf-8")
             ryujinx_path = config.get('Paths', 'ryujinxpath', fallback="Appdata")
             return ryujinx_path
-    
+
     @classmethod
+    # fmt: off
     def LinuxPaths(filemgr, mode):
 
         '''Check for Linux Specific Directories...'''
@@ -135,6 +138,7 @@ class FileManager:
             return
 
     @classmethod
+    # fmt: off
     def WindowsPaths(filemgr, mode):
 
         '''Check for Windows Specific Directories...'''
@@ -244,6 +248,7 @@ class FileManager:
                 return
 
     @classmethod
+    # fmt: off
     def MacOSPaths(filemgr, mode):
 
         '''Check for MacOS Specific Directories...'''
@@ -260,8 +265,9 @@ class FileManager:
             filemgr.load_dir = os.path.join(f"{filemgr.Globaldir}", "mods", "contents", filemgr._manager._patchInfo.ID)
             filemgr.Legacydir = filemgr.load_dir
             return
-        
+
     @classmethod
+    # fmt: off
     def checkpath(filemgr, mode):
 
         '''The Primary Logic the TOTK Optimizer uses to find each emulator.'''
@@ -288,8 +294,7 @@ class FileManager:
 
     @classmethod
     def DetectOS(filemgr, mode):
-
-        '''Detects the current OS... Used only for Debugging.'''
+        """Detects the current OS... Used only for Debugging."""
 
         if filemgr.os_platform == "Linux":
             superlog.info("Detected a Linux based SYSTEM!")
@@ -299,34 +304,39 @@ class FileManager:
                 if os.path.exists(filemgr.configdir):
                     log.info("a qt-config.ini file found!")
                 else:
-                    log.warning("qt-config.ini not found, the script will assume default appdata directories, "
-                                "please reopen Legacy for consistency and make sure TOTK is present..!")
+                    log.warning(
+                        "qt-config.ini not found, the script will assume default appdata directories, "
+                        "please reopen Legacy for consistency and make sure TOTK is present..!"
+                    )
         elif filemgr.os_platform == "Darwin":
             log.info("Detected a MacOS based SYSTEM!")
 
     @classmethod
     def TransferMods(filemgr):
-
-        '''Transfer mod files to the emulator/switch location(s)...'''
+        """Transfer mod files to the emulator/switch location(s)..."""
 
         patchinfo = filemgr._manager._patchInfo
         source = os.path.join(patchinfo.Folder, patchinfo.ModFolder)
 
         if filemgr.is_extracting is False:
-            destination = os.path.join(filemgr.Globaldir, "load", patchinfo.ID, patchinfo.ModName)
+            destination = os.path.join(
+                filemgr.Globaldir, "load", patchinfo.ID, patchinfo.ModName
+            )
             os.makedirs(destination, exist_ok=True)
             shutil.copytree(source, destination, dirs_exist_ok=True)
-        else :
+        else:
             destination = os.path.join(os.getcwd(), patchinfo.ModName)
             os.makedirs(destination, exist_ok=True)
             shutil.copytree(source, destination, dirs_exist_ok=True)
 
     @classmethod
     def backup(filemgr):
-        ''' Backup save files for a specific game, for Ryujinx it fetches all games. '''
+        """Backup save files for a specific game, for Ryujinx it fetches all games."""
 
         if filemgr.mode == "Legacy":
-            testforuserdir = os.path.join(filemgr.nand_dir, "user", "save", "0000000000000000")
+            testforuserdir = os.path.join(
+                filemgr.nand_dir, "user", "save", "0000000000000000"
+            )
             target_folder = filemgr._manager._patchInfo.ID
             GameName = filemgr._manager._patchInfo.Name
 
@@ -339,7 +349,7 @@ class FileManager:
         # Create the 'backup' folder inside the mod manager directory if it doesn't exist
         elif filemgr.mode == "Ryujinx":
             folder_to_backup = filemgr.nand_dir
-            
+
         script_dir = os.path.dirname(os.path.abspath(sys.executable))
         backup_folder_path = os.path.join(script_dir, "backup")
         os.makedirs(backup_folder_path, exist_ok=True)
@@ -357,7 +367,9 @@ class FileManager:
             if os.path.exists(folder_to_backup):
                 shutil.make_archive(backup_file_path, "zip", folder_to_backup)
                 os.rename(backup_file_path + ".zip", backup_file_path)
-                messagebox.showinfo("Backup", f"Backup created successfully: {backup_file}")
+                messagebox.showinfo(
+                    "Backup", f"Backup created successfully: {backup_file}"
+                )
             else:
                 messagebox.showerror("Backup Error", "Folder to backup not found.")
 
@@ -367,14 +379,18 @@ class FileManager:
 
     @classmethod
     def clean_shaders(filemgr):
-        answer = messagebox.askyesno(title="Legacy Shader Warning.",
-                                    message="Are you sure you want to delete your shaders?\n"
-                                            "This could Improve performance.")
+        answer = messagebox.askyesno(
+            title="Legacy Shader Warning.",
+            message="Are you sure you want to delete your shaders?\n"
+            "This could Improve performance.",
+        )
         emu_dir = filemgr.Globaldir
         if filemgr._manager.mode == "Legacy":
             shaders = os.path.join(emu_dir, f"shader/{filemgr._manager._patchInfo.ID}")
         if filemgr._manager.mode == "Ryujinx":
-            shaders = os.path.join(emu_dir, f"games/{filemgr._manager._patchInfo.ID}/cache/shader")
+            shaders = os.path.join(
+                emu_dir, f"games/{filemgr._manager._patchInfo.ID}/cache/shader"
+            )
         if answer is True:
             try:
                 shutil.rmtree(shaders)
@@ -396,7 +412,8 @@ class FileManager:
             qtconfig.optionxform = lambda option: option
             try:
                 qtconfig.read(filemgr.configdir)
-            except Exception as e: log.warning(f"Couldn't' find QT-config {e}")
+            except Exception as e:
+                log.warning(f"Couldn't' find QT-config {e}")
         else:
             qtconfig = None
 
@@ -417,14 +434,24 @@ class FileManager:
                     task
                     time.sleep(0.05)
                 ProgressBar.Destroy()
-                superlog.info("Tasks have been COMPLETED. Feel free to Launch the game.")
+                superlog.info(
+                    "Tasks have been COMPLETED. Feel free to Launch the game."
+                )
                 return
-            if mode== None:
+            if mode == None:
                 superlog.info("Starting TASKs for Normal Patch..")
+
                 def stop_extracting():
                     filemgr.is_extracting = False
 
-                tasklist = [Exe_Running(), filemgr.TransferMods(), UpdateSettings(), Create_Mod_Patch(), Disable_Mods(), stop_extracting()]
+                tasklist = [
+                    Exe_Running(),
+                    filemgr.TransferMods(),
+                    UpdateSettings(),
+                    Create_Mod_Patch(),
+                    Disable_Mods(),
+                    stop_extracting(),
+                ]
                 if get_setting("auto-backup") in ["On"]:
                     tasklist.append(filemgr.backup())
                 com = 100 // len(tasklist)
@@ -433,9 +460,11 @@ class FileManager:
                     com += com
                     task
                     time.sleep(0.05)
-                
+
                 ProgressBar.End(filemgr._manager)
-                superlog.info("Tasks have been COMPLETED. Feel free to Launch the game.")
+                superlog.info(
+                    "Tasks have been COMPLETED. Feel free to Launch the game."
+                )
                 return
 
         def Create_Mod_Patch(mode=None):
@@ -463,10 +492,14 @@ class FileManager:
                 filemgr.add_list.append("Mod Manager Patch")
                 filemgr.add_list.append("UltraCam")
 
-                ini_file_path = os.path.join(modDir, patchInfo.ModName, patchInfo.Config)
-                if filemgr.is_extracting: # do this if we are extracting the mod.
-                    ini_file_path = os.path.join(os.getcwd(), patchInfo.ModName, patchInfo.Config)
-                
+                ini_file_path = os.path.join(
+                    modDir, patchInfo.ModName, patchInfo.Config
+                )
+                if filemgr.is_extracting:  # do this if we are extracting the mod.
+                    ini_file_path = os.path.join(
+                        os.getcwd(), patchInfo.ModName, patchInfo.Config
+                    )
+
                 ini_file_directory = os.path.dirname(ini_file_path)
                 os.makedirs(ini_file_directory, exist_ok=True)
 
@@ -481,21 +514,30 @@ class FileManager:
                 ModCreator.UCAspectRatioPatcher(filemgr._manager, config)
 
                 ## WRITE IN CONFIG FILE FOR UC 2.0
-                with open(ini_file_path, 'w+', encoding="utf-8") as configfile:
+                with open(ini_file_path, "w+", encoding="utf-8") as configfile:
                     config.write(configfile)
 
         def UpdateSettings():
-            return # return early, this is no longer used but want to keep order of execution.
+            return  # return early, this is no longer used but want to keep order of execution.
             log.info("Checking for Settings...")
             ProgressBar.string.set("Creating Settings..")
             if filemgr._manager.selected_settings.get() == "No Change":
                 ProgressBar.string.set("No Settings Required..")
                 return
             if filemgr.mode == "Legacy":
-                setting_preset = filemgr.Legacy_settings[filemgr.selected_settings.get()]
+                setting_preset = filemgr.Legacy_settings[
+                    filemgr.selected_settings.get()
+                ]
                 for section in setting_preset:
                     for option in setting_preset[section]:
-                        write_Legacy_config(filemgr, filemgr.TOTKconfig, filemgr._manager.title_id, section, option, str(setting_preset[section][option]))
+                        write_Legacy_config(
+                            filemgr,
+                            filemgr.TOTKconfig,
+                            filemgr._manager.title_id,
+                            section,
+                            option,
+                            str(setting_preset[section][option]),
+                        )
             ProgressBar.string.set("Finished Creating Settings..")
 
         # Unused Function, used for downloading UltraCam beyond, but no longer needed as we store it locally.
@@ -514,10 +556,15 @@ class FileManager:
 
                 # Apply UltraCam from local folder.
                 if os.path.exists("TOTKOptimizer/exefs"):
-                    log.info("Found a local UltraCam Folder. COPYING to !!!TOTK Optimizer.")
+                    log.info(
+                        "Found a local UltraCam Folder. COPYING to !!!TOTK Optimizer."
+                    )
                     if os.path.exists(os.path.join(Mod_directory, "exefs")):
                         shutil.rmtree(os.path.join(Mod_directory, "exefs"))
-                    shutil.copytree(os.path.join("TOTKOptimizer/exefs"), os.path.join(Mod_directory, "exefs"))
+                    shutil.copytree(
+                        os.path.join("TOTKOptimizer/exefs"),
+                        os.path.join(Mod_directory, "exefs"),
+                    )
                     log.info("\n\nEARLY ACCESS ULTRACAM APPLIED\n\n.")
                     return
 
@@ -529,14 +576,23 @@ class FileManager:
                 log.warning(f"FAILED TO DOWNLOAD ULTRACAM BEYOND! {e}")
 
         def Exe_Running():
-            is_Program_Opened = LaunchManager.is_process_running(filemgr._manager.mode + ".exe")
-            message = (f"{filemgr.mode}.exe is Running, \n"
-                       f"The Optimizer Requires {filemgr.mode}.exe to be closed."
-                       f"\nDo you wish to close {filemgr.mode}.exe?")
+            is_Program_Opened = LaunchManager.is_process_running(
+                filemgr._manager.mode + ".exe"
+            )
+
+            message = (
+                f"{filemgr.mode}.exe is Running, \n"
+                f"The Optimizer Requires {filemgr.mode}.exe to be closed."
+                f"\nDo you wish to close {filemgr.mode}.exe?"
+            )
             if is_Program_Opened is True:
-                response = messagebox.askyesno("Warning", message, icon=messagebox.WARNING)
+                response = messagebox.askyesno(
+                    "Warning", message, icon=messagebox.WARNING
+                )
                 if response is True:
-                    subprocess.run(["taskkill", "/F", "/IM", f"{filemgr.mode}.exe"], check=True)
+                    subprocess.run(
+                        ["taskkill", "/F", "/IM", f"{filemgr.mode}.exe"], check=True
+                    )
             if is_Program_Opened is False:
                 log.info(f"{filemgr.mode}.exe is closed, working as expected.")
 
@@ -547,16 +603,34 @@ class FileManager:
             filemgr.remove_list = set(filemgr.remove_list)
             # Run the Main code to Enable and Disable necessary Mods, the remove ensures the mods are enabled.
             if filemgr.mode == "Legacy":
+
                 for item in filemgr.add_list:
-                    modify_disabled_key(filemgr.configdir, filemgr.load_dir, qtconfig, filemgr._manager._patchInfo.IDtoNum(), item, action="add")
+                    modify_disabled_key(
+                        filemgr.configdir,
+                        filemgr.load_dir,
+                        qtconfig,
+                        filemgr._manager._patchInfo.IDtoNum(),
+                        item,
+                        action="add",
+                    )
+
                 for item in filemgr.remove_list:
-                    modify_disabled_key(filemgr.configdir, filemgr.load_dir, qtconfig, filemgr._manager._patchInfo.IDtoNum(), item, action="remove")
-            if filemgr.mode == "Ryujinx" or platform.system() == "Linux" and not filemgr.is_extracting:
+                    modify_disabled_key(
+                        filemgr.configdir,
+                        filemgr.load_dir,
+                        qtconfig,
+                        filemgr._manager._patchInfo.IDtoNum(),
+                        item,
+                        action="remove",
+                    )
+
+            # fmt: off
+            if (filemgr.mode == "Ryujinx" or platform.system() == "Linux" and not filemgr.is_extracting):
                 for item in filemgr.add_list:
                     item_dir = os.path.join(filemgr.load_dir, item)
                     if os.path.exists(item_dir):
                         shutil.rmtree(item_dir)
             filemgr.add_list.clear()
             filemgr.remove_list.clear()
-    
+
         ProgressBar.Run(filemgr._window, run_tasks)

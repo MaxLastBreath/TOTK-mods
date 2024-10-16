@@ -4,6 +4,7 @@ from modules.FrontEnd.CanvasMgr import Canvas_Create
 import ttkbootstrap as ttk
 import threading
 
+
 class ProgressBar:
 
     string = None
@@ -11,6 +12,7 @@ class ProgressBar:
     progress_window = None
 
     @classmethod
+    # fmt: off
     def Run(cls, window, tasks):
         cls.progress_window = ttk.Toplevel(window)
         cls.progress_window.title("Downloading")
@@ -45,36 +47,42 @@ class ProgressBar:
         # Kofi button.
         element_1 = Canvas_Create.Photo_Image(
             image_path="support.png",
-            width=int(70* m), height=int(48* m),
+            width=int(70 * m),
+            height=int(48 * m),
         )
 
         element_2 = Canvas_Create.Photo_Image(
             image_path="support_active.png",
-            width=int(70* m), height=int(48* m),
+            width=int(70 * m),
+            height=int(48 * m),
         )
 
         element_3 = Canvas_Create.Photo_Image(
             image_path="no_thanks.png",
-            width=int(70* m), height=int(48* m),
+            width=int(70 * m),
+            height=int(48 * m),
         )
 
         element_4 = Canvas_Create.Photo_Image(
             image_path="no_thanks_active.png",
-            width=int(70* m), height=int(48* m),
+            width=int(70 * m),
+            height=int(48 * m),
         )
 
         if not manager.os_platform == "Linux":
-            dialog = CustomDialog(manager, "TOTK Optimizer Tasks Completed",
-                                    "",
-                                    yes_img_1=element_1,
-                                    yes_img_2=element_2,
-                                    no_img_1=element_3,
-                                    no_img_2=element_4,
-                                    custom_no="No Thanks",
-                                    width=384,
-                                    height=216
-                                    )
+            dialog = CustomDialog(
+                manager,
+                "TOTK Optimizer Tasks Completed",
+                "",
+                yes_img_1=element_1,
+                yes_img_2=element_2,
+                no_img_1=element_3,
+                no_img_2=element_4,
+                custom_no="No Thanks",
+                width=384,
+                height=216,
+            )
+
             dialog.wait_window()
             if dialog.result:
                 manager.open_browser("kofi")
-    

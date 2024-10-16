@@ -17,6 +17,7 @@ ask_again = "Yes"
 if platform.system() == "Darwin":
     localconfig = os.path.join(macos_path, localconfig)
 
+
 def load_json(name, url):
     global ask_again
     # Check if the .presets folder exists, if not, create it
@@ -72,23 +73,25 @@ time_config.read(localconfig, encoding="utf-8")
 
 old_time = float(time_config.get("Time", "api", fallback=0))
 
+
 # Pull new links only once an hour. - Avoids overwhelming Github API.
 def fetch_local_json(name):
-    if getattr(sys, 'frozen', False):
+    if getattr(sys, "frozen", False):
         base_path = sys._MEIPASS
     else:
         base_path = os.path.dirname(os.path.abspath(__file__))
         base_path = os.path.dirname(base_path)
-    
+
     if platform.system() == "Darwin":
         base_path = macos_path
 
-    return os.path.join(base_path, f'json.data/{name}')
+    return os.path.join(base_path, f"json.data/{name}")
+
 
 def load_values_from_json():
     global AR_list, AR_dict, UI_list, UI_dict, FP_list, FP_dict, DFPS_list, DFPS_dict
 
-    json_file_path = 'json.data/api.json'
+    json_file_path = "json.data/api.json"
     try:
         logging.info(f"Loading api.json file..")
         with open(json_file_path, "r", encoding="utf-8") as json_file:
@@ -104,11 +107,14 @@ def load_values_from_json():
 
     log.info("Succesfully loaded api.json.")
 
+
 try:
     if time.time() - old_time >= 3600 or not os.path.exists("json.data/api.json"):
         logging.info(f"Attempting to create API instructions. {time.ctime()}")
 
-        DFPS = get_zip_list_and_dict("https://api.github.com/repos/MaxLastBreath/TOTK-mods/contents/scripts/Mods/DFPS")
+        DFPS = get_zip_list_and_dict(
+            "https://api.github.com/repos/MaxLastBreath/TOTK-mods/contents/scripts/Mods/DFPS"
+        )
         DFPS_list = DFPS[0]
         DFPS_list.reverse()
         DFPS_dict = DFPS[1]
@@ -117,7 +123,8 @@ try:
         cur_beta = 0
         # Push the Latest available version link.
         for item in DFPS_list:
-            if item == "Latest": continue
+            if item == "Latest":
+                continue
             vers = item.split(" ")[1]
             if item.endswith(")"):
                 beta1 = item.split("(Beta")[1]
@@ -135,10 +142,7 @@ try:
         DFPS_list.insert(0, "Latest")
         DFPS_dict["Latest"] = DFPS_dict.get(full_latest)
 
-        api_json = {
-            "DFPS_list": DFPS_list,
-            "DFPS_dict": DFPS_dict
-        }
+        api_json = {"DFPS_list": DFPS_list, "DFPS_dict": DFPS_dict}
         logging.info(f"Attempting to create api.json.")
         json_path = "json.data"
 
@@ -149,27 +153,35 @@ try:
             os.makedirs(json_path)
         try:
             logging.info(f"Creating api.json file..")
-            with open(os.path.join(json_path, "api.json"), "w", encoding="utf-8") as json_file:
+            with open(
+                os.path.join(json_path, "api.json"), "w", encoding="utf-8"
+            ) as json_file:
                 json.dump(api_json, json_file, indent=4)
         except PermissionError as e:
-            logging.error(f"Permission error has been detected while "
-                          f"creating api.json, attempting to delete api.json.")
+            logging.error(
+                f"Permission error has been detected while "
+                f"creating api.json, attempting to delete api.json."
+            )
             shutil.rmtree(os.path.join(json_path, "api.json"))
         # Save Time.
         if not time_config.has_section("Time"):
             time_config["Time"] = {}
         logging.info(f"Adding API time to config_file. {time.ctime()}.")
         time_config["Time"]["api"] = f"{time.time()}"
-        with open(localconfig, 'w', encoding="utf-8") as file:
+        with open(localconfig, "w", encoding="utf-8") as file:
             time_config.write(file)
     else:
         logging.info(f"Attempting to load local api.json..")
         load_values_from_json()
 except requests.exceptions.ConnectionError as e:
-    logging.error(f"Couldn't create api.json, no internet connection."
-                  f"Application will now fetch api.json locally.")
+    logging.error(
+        f"Couldn't create api.json, no internet connection."
+        f"Application will now fetch api.json locally."
+    )
     load_values_from_json()
 except TypeError as e:
-    logging.error("Couldn't find local api.json data,"
-                  "Application will default to stored api.json data.")
+    logging.error(
+        "Couldn't find local api.json data,"
+        "Application will default to stored api.json data."
+    )
     load_values_from_json()

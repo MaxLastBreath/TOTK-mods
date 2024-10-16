@@ -1,5 +1,6 @@
 from modules.FrontEnd.CanvasMgr import *
 
+
 def create_patches(self, row=120, cul_tex=400, cul_sel=550):
     versionvalues = []
 
@@ -16,12 +17,16 @@ def create_patches(self, row=120, cul_tex=400, cul_sel=550):
 
     UltraCam_Option = "Improve Fog"
     self.fog_var = Canvas_Create.create_checkbutton(
-        master=self.window, canvas=self.maincanvas,
+        master=self.window,
+        canvas=self.maincanvas,
         text=UltraCam_Option,
         variable="Off",
-        row=row + 40, cul=cul_tex, drop_cul=cul_sel,
-        tags=["text"], tag="patches",
-        description_name="Improve Fog"
+        row=row + 40,
+        cul=cul_tex,
+        drop_cul=cul_sel,
+        tags=["text"],
+        tag="patches",
+        description_name="Improve Fog",
     )
 
     self.selected_options[UltraCam_Option] = self.fog_var
@@ -38,23 +43,32 @@ def create_patches(self, row=120, cul_tex=400, cul_sel=550):
         # Create label
         if version_option_name not in ["Source", "nsobid", "offset", "version"]:
 
-            if self.DFPS_var == "UltraCam" and version_option_name in self.ultracam_options.get(
-                    "Skip_Patches"):
+            if (
+                self.DFPS_var == "UltraCam"
+                and version_option_name in self.ultracam_options.get("Skip_Patches")
+            ):
                 continue
 
             # Create checkbox
             version_option_var = Canvas_Create.create_checkbutton(
-                master=self.window, canvas=self.maincanvas,
+                master=self.window,
+                canvas=self.maincanvas,
                 text=version_option_name,
                 variable="Off",
-                row=row + 40, cul=cul_tex, drop_cul=cul_sel,
-                tags=["text"], tag="patches",
-                description_name=version_option_name
+                row=row + 40,
+                cul=cul_tex,
+                drop_cul=cul_sel,
+                tags=["text"],
+                tag="patches",
+                description_name=version_option_name,
             )
             self.selected_options[version_option_name] = version_option_var
 
             try:
-                if self.old_patches.get(version_option_name) == "On" and not self.old_patches == {}:
+                if (
+                    self.old_patches.get(version_option_name) == "On"
+                    and not self.old_patches == {}
+                ):
                     version_option_var.set("On")
             except AttributeError as e:
                 self.old_patches = {}

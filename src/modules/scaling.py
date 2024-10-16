@@ -13,6 +13,7 @@ config = configparser.ConfigParser()
 config.read(CONFIG_FILE_LOCAL_OPTIMIZER)
 w_scale = config.get("Settings", "scale", fallback="On")
 
+
 def Auto_SF():
     if w_scale == "Off":
         return 1.0
@@ -47,11 +48,12 @@ def Auto_SF():
             sf = 3.0
     return sf
 
+
 # Use First Monitor to determine SF, this bypasses scaling from windows.
 sf = Auto_SF()
+
 
 def scale(scale):
     if sf == 1.0:
         return scale
     return int(float(scale * sf))
-

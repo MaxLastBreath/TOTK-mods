@@ -7,10 +7,13 @@ OWNER = "MaxLastBreath"
 url = f"https://api.github.com/repos/MaxLastBreath/TOTK-mods/releases"
 search_tag = "manager"
 
+
 def write_print(args):
     file.write(args)
     print(args)
 
+
+# fmt: off
 if __name__ == "__main__":
     response = requests.get(url)
     with open("Downloads.txt", "w") as file:

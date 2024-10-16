@@ -1,6 +1,7 @@
 from configuration.settings import *
 import os, json
 
+# fmt: off
 def apply_preset(Manager, preset_options):
     # Manager.fetch_var(Manager.ui_var, preset_options, "UI")
     # Manager.fetch_var(Manager.fp_var, preset_options, "First Person")

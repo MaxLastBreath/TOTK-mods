@@ -1,9 +1,10 @@
-import logging, sys, platform, psutil, os, colorlog 
+import logging, sys, platform, psutil, os, colorlog
 from modules.macos import macos_path
 from modules.scaling import *
 import modules.hwinfo as hwinfo
 
-def start_logger(file = "logger.log", Name = None, formatter = None):
+
+def start_logger(file="logger.log", Name=None, formatter=None):
 
     filename = file
 
@@ -22,11 +23,14 @@ def start_logger(file = "logger.log", Name = None, formatter = None):
     file_handler.setLevel(logging.DEBUG)
 
     console_handler = logging.StreamHandler(sys.stdout)
-    
+
     console_handler.setFormatter(formatter)
-    file_handler.setFormatter(logging.Formatter(
-        "TIME: %(asctime)s,%(msecs)d - %(name)s - %(levelname)s: %(message)s",
-        datefmt='%H:%M:%S'))
+    file_handler.setFormatter(
+        logging.Formatter(
+            "TIME: %(asctime)s,%(msecs)d - %(name)s - %(levelname)s: %(message)s",
+            datefmt="%H:%M:%S",
+        )
+    )
 
     # Add handlers to the logger
     new_logger.addHandler(file_handler)
@@ -34,16 +38,17 @@ def start_logger(file = "logger.log", Name = None, formatter = None):
 
     return new_logger
 
+
 formatter = colorlog.ColoredFormatter(
     "%(log_color)s%(asctime)s : %(levelname)s : %(message)s",
-    datefmt='%H:%M:%S',
+    datefmt="%H:%M:%S",
     log_colors={
-        'DEBUG': 'green',
-        'INFO': 'purple',
-        'WARNING': 'yellow',
-        'ERROR': 'red',
-        'CRITICAL': 'bold_red',
-    }
+        "DEBUG": "green",
+        "INFO": "purple",
+        "WARNING": "yellow",
+        "ERROR": "red",
+        "CRITICAL": "bold_red",
+    },
 )
 
 # logger 1
@@ -51,14 +56,14 @@ log = start_logger("logger.log", None, formatter)
 
 formatter = colorlog.ColoredFormatter(
     "%(log_color)s%(asctime)s : %(levelname)s : %(message)s",
-    datefmt='%H:%M:%S',
+    datefmt="%H:%M:%S",
     log_colors={
-        'DEBUG': 'yellow',
-        'INFO': 'green',
-        'WARNING': 'yellow',
-        'ERROR': 'red',
-        'CRITICAL': 'bold_red',
-    }
+        "DEBUG": "yellow",
+        "INFO": "green",
+        "WARNING": "yellow",
+        "ERROR": "red",
+        "CRITICAL": "bold_red",
+    },
 )
 
 # logger 2 for green color text.
@@ -70,21 +75,23 @@ gpu_name = hwinfo.get_gpu_name(log)
 # Print Memory
 try:
     memory_info = psutil.virtual_memory()
-    total_memory = memory_info.total//1048576000
+    total_memory = memory_info.total // 1048576000
     memory_used = memory_info.percent
 except Exception as e:
-    log.warning(f"The System Memory was not detected, nothing to be concerned about. {e}")
+    log.warning(
+        f"The System Memory was not detected, nothing to be concerned about. {e}"
+    )
     total_memory = "Undetected"
 
 superlog.info(
-            f"\n\n\n\nAttempting to start Application.\n"
-            f"__SystemINFO__\n"
-            f"System: {platform.system()}\n"
-            f"GPU: {gpu_name}\n"
-            f"RAM: {total_memory} GB {FREQUENCY} MHz and used {memory_used}%\n"
-            f"CPU: {CPU}"
-            f"\n"
-            )
+    f"\n\n\n\nAttempting to start Application.\n"
+    f"__SystemINFO__\n"
+    f"System: {platform.system()}\n"
+    f"GPU: {gpu_name}\n"
+    f"RAM: {total_memory} GB {FREQUENCY} MHz and used {memory_used}%\n"
+    f"CPU: {CPU}"
+    f"\n"
+)
 
 
 def write_data(file_name, data, mode, space=None):

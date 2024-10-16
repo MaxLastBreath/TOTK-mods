@@ -3,6 +3,7 @@ from modules.logger import *
 import os
 import re
 
+
 def load_last_benchmark(self, name):
     self.maincanvas.itemconfig(name, state="normal")
     self.Curr_Benchmark = name
@@ -13,18 +14,20 @@ def load_last_benchmark(self, name):
             continue
         self.maincanvas.itemconfig(item, state="hidden")
     try:
-        self.maincanvas.itemconfig("benchmark_info",text=
-                                        f"TOTAL Frames - {self.benchmarks[name]['Total Frames']} Frames\n"
-                                        f"Average - {self.benchmarks[name]['Average FPS']} FPS\n"
-                                        f"1% Lowest FPS - {self.benchmarks[name]['1% Low FPS']} FPS\n"
-                                        f"0.1% Lowest FPS - {self.benchmarks[name]['0.1% Lowest FPS']} FPS\n"
-                                   )
+        self.maincanvas.itemconfig(
+            "benchmark_info",
+            text=f"TOTAL Frames - {self.benchmarks[name]['Total Frames']} Frames\n"
+            f"Average - {self.benchmarks[name]['Average FPS']} FPS\n"
+            f"1% Lowest FPS - {self.benchmarks[name]['1% Low FPS']} FPS\n"
+            f"0.1% Lowest FPS - {self.benchmarks[name]['0.1% Lowest FPS']} FPS\n",
+        )
         self.maincanvas.itemconfig("no_benchmark", state="hidden")
     except Exception as e:
         log.error(f"Benchmark failed. {e}")
         self.maincanvas.itemconfig("no_benchmark", state="normal")
         for item in self.benchmark_dicts:
             self.maincanvas.itemconfig(item, state="hidden")
+
 
 def load_benchmark(self):
     benchmark_file = os.path.join(FileManager.sdmc_dir, "TOTKBenchmark.txt")
@@ -39,7 +42,10 @@ def load_benchmark(self):
                     next_line = next(benchmarks).strip()
                     pattern = r"(\d+(\.\d+)?)"
                     frames = re.findall(pattern, next_line)
-                    numbers = [float(num[0]) if '.' in num[0] else int(num[0]) for num in frames]
+                    numbers = [
+                        float(num[0]) if "." in num[0] else int(num[0])
+                        for num in frames
+                    ]
                     if numbers[2] == 1:
                         numbers.pop(2)
                     if numbers[3] == 0.1:
