@@ -7,9 +7,9 @@ import threading
 
 class ProgressBar:
 
-    string = None
-    progress_bar = None
-    progress_window = None
+    string: str = None
+    progress_bar: ttk.Progressbar = None
+    progress_window: ttk.Window = None
 
     @classmethod
     # fmt: off

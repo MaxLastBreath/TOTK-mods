@@ -9,7 +9,7 @@ import string
 import random
 
 
-def next_index(event, var, list=list, increase=1, command=None):
+def next_index(event, var: ttk.Variable, list: list, increase: int = 1, command=None):
     value = str(var.get())
     string_list = [str(item) for item in list]
     index = string_list.index(value)
@@ -23,7 +23,7 @@ def next_index(event, var, list=list, increase=1, command=None):
         command(event)
 
 
-def change_scale(event, var, max, min, increments=float, command=None):
+def change_scale(event:None, var: ttk.Variable, max:float, min:float, increments: float, command=None):  # fmt: skip
     new_value = float(var.get()) + increments
     if new_value > float(min):
         new_value = float(min)
@@ -43,7 +43,7 @@ def change_scale(event, var, max, min, increments=float, command=None):
         command(event)
 
 
-def update_text(event, canvas, name, var, type="s32"):
+def update_text(event:None, canvas: ttk.Canvas, name: str, var: ttk.Variable, type: str = "s32"):  # fmt: skip
     if type == "s32":
         var.set(round(float(var.get())))
         canvas.itemconfig(name, text=int(var.get()))
@@ -52,7 +52,7 @@ def update_text(event, canvas, name, var, type="s32"):
         canvas.itemconfig(name, text=float(var.get()))
 
 
-def toggle(event, var):
+def toggle(event, var: ttk.Variable):
     if var.get() == "On":
         var.set("Off")
     else:
@@ -60,8 +60,8 @@ def toggle(event, var):
 
 
 class ImageContext:
-    path = ""
-    object = None
+    path: str = ""
+    object: ttk.PhotoImage = None
 
     def __init__(cls, _path, _object):
         cls.path = _path
@@ -73,17 +73,17 @@ class Canvas_Create:
 
     ''' TOTK Optimizer framework for handling images, toolboxes etc... '''
     
-    LoadedImages = []
+    LoadedImages: list[ImageContext] = []
     tooltip = None
     tooltip_active = None
     is_Ani_running = True
     is_Ani_Paused = False
 
     @classmethod
-    def create_combobox(cls, canvas,
-                        text, master, description_name=None, text_description= None, variable=any, values=[],
-                        row=40, cul=40, drop_cul=180, width=150, style="warning",
-                        tags=[], tag=None, command=None, is_active=True):
+    def create_combobox(cls, canvas: ttk.Canvas,
+                        text: str, master: ttk.Window, description_name: str = None, text_description: str = None, variable: ttk.StringVar = any, values=[],
+                        row: int = 40, cul: int = 40, drop_cul: int = 180, width: int = 150, style: str = "warning",
+                        tags: list[str] =[], tag: str = None, command: None = None, is_active: bool =True):
         
         # create text
         active_color_new = active_color

@@ -2,6 +2,7 @@ from configuration.settings import *
 from configuration.settings_config import Setting
 from modules.TOTK_Optimizer_Modules import *  # imports all needed files.
 from modules.GameManager.GameManager import Game_Manager
+from modules.GameManager.PatchInfo import PatchInfo
 from modules.GameManager.FileManager import FileManager
 from modules.GameManager.LaunchManager import LaunchManager
 from modules.load_elements import create_tab_buttons, load_UI_elements
@@ -19,22 +20,23 @@ def increase_row(row, cul_sel, cul_tex):
 
 
 class Manager:
-    patches = []
-    all_canvas = []
+    patches: list[PatchInfo] = []
+    all_canvas: list[ttk.Canvas] = []
 
-    old_cheats = {}
-    benchmarks = {}
+    old_cheats: dict = {}
+    benchmarks: dict = {}
 
-    _patchInfo = None
-    _window = ttk.Window
-    constyle = Style
-    os_platform = platform.system()
+    _patchInfo: PatchInfo = None
+    _window: ttk.Window
+    constyle: ttk.Style
+    os_platform: str = platform.system()
+
     Curr_Benchmark = None
-    is_Ani_running = False
-    is_Ani_Paused = False
-    tooltip_active = False
-    LabelText = None
-    warn_again = "yes"
+    is_Ani_running: bool = False
+    is_Ani_Paused: bool = False
+    tooltip_active: bool = False
+    LabelText: None
+    warn_again: str = "yes"
 
     def __init__(Manager, window):
         """
@@ -812,7 +814,6 @@ class Manager:
         elif web == "Discord":
             url = "https://discord.gg/7MMv4yGfhM"
         webbrowser.open(url)
-        return
 
     def load_canvas(Manager):
         # Main
@@ -875,7 +876,6 @@ class Manager:
     def fetch_var(Manager, var, dict, option):
         if not dict.get(option, "") == "":
             var.set(dict.get(option, ""))
-        return
 
     def extract_patches(Manager):
         FileManager.is_extracting = True

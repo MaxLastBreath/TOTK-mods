@@ -2,13 +2,13 @@ import json, os
 
 
 class PatchInfo:
-    Folder = "Patches/Tears Of The Kingdom"
-    Name = "Tears of The Kingdom"
-    ID = "0100F2C0115B6000"
-    ModName = "!!!TOTK Optimizer"
-    Config = "UltraCam/maxlastbreath.ini"
-    ModFolder = ""
-    Versions = []
+    Folder: str = "Patches/Tears Of The Kingdom"
+    Name: str = "Tears of The Kingdom"
+    ID: str = "0100F2C0115B6000"
+    ModName: str = "!!!TOTK Optimizer"
+    Config: str = "UltraCam/maxlastbreath.ini"
+    ModFolder: str = ""
+    Versions: list[str] = []
 
     def __init__(self, folder = str, _id = str, name = str, versions=None, modName = str, configloc = str, modfolder = str):  # fmt: skip
         if versions is None:

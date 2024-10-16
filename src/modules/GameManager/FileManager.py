@@ -1,7 +1,7 @@
+from __future__ import annotations
 from modules.FrontEnd.ProgressBar import ProgressBar
 from modules.GameManager.LaunchManager import LaunchManager
 from modules.GameManager.ModCreator import ModCreator
-from configuration.settings_config import Setting
 from modules.TOTK_Optimizer_Modules import *
 from configuration.settings import *
 from modules.config import *
@@ -12,8 +12,8 @@ import shutil
 
 class FileManager:
 
-    _window = None
-    _manager = None  # Manager class
+    _window: ttk.Window
+    _manager: any
 
     is_extracting = False
     mode = "Legacy"
@@ -29,17 +29,15 @@ class FileManager:
 
     @classmethod
     # Initialize our Window here.
-    def Initialize(filemgr, Window, Manager):
-        filemgr._manager = Manager
+    def Initialize(filemgr, Window, Mgr):
+        from modules.FrontEnd.FrontEnd import Manager  # avoid Circular Imports.
+
+        filemgr._manager: Manager = Mgr
         filemgr._window = Window
 
     @classmethod
-    def GetClass(filemgr):
-        return filemgr
-
-    @classmethod
     # fmt: off
-    def load_Legacy_path(filemgr, config_file):
+    def load_Legacy_path(filemgr, config_file: str):
         if filemgr.mode == "Legacy":
             config = configparser.ConfigParser()
             config.read(config_file, encoding="utf-8")
@@ -53,7 +51,7 @@ class FileManager:
 
     @classmethod
     # fmt: off
-    def LinuxPaths(filemgr, mode):
+    def LinuxPaths(filemgr, mode: str):
 
         '''Check for Linux Specific Directories...'''
 
@@ -139,7 +137,7 @@ class FileManager:
 
     @classmethod
     # fmt: off
-    def WindowsPaths(filemgr, mode):
+    def WindowsPaths(filemgr, mode:str):
 
         '''Check for Windows Specific Directories...'''
 
@@ -249,7 +247,7 @@ class FileManager:
 
     @classmethod
     # fmt: off
-    def MacOSPaths(filemgr, mode):
+    def MacOSPaths(filemgr, mode:str):
 
         '''Check for MacOS Specific Directories...'''
 
@@ -268,7 +266,7 @@ class FileManager:
 
     @classmethod
     # fmt: off
-    def checkpath(filemgr, mode):
+    def checkpath(filemgr, mode:str):
 
         '''The Primary Logic the TOTK Optimizer uses to find each emulator.'''
 
@@ -293,7 +291,7 @@ class FileManager:
             filemgr.warning(f"Unable to create directories, please run {filemgr.mode}, {e}")
 
     @classmethod
-    def DetectOS(filemgr, mode):
+    def DetectOS(filemgr, mode: str):
         """Detects the current OS... Used only for Debugging."""
 
         if filemgr.os_platform == "Linux":
@@ -402,7 +400,7 @@ class FileManager:
             log.info("Shaders deletion declined.")
 
     @classmethod
-    def submit(filemgr, mode=None):
+    def submit(filemgr, mode: str | None = None):
         filemgr.add_list = []
         filemgr.remove_list = []
         filemgr.checkpath(mode)
@@ -467,7 +465,7 @@ class FileManager:
                 )
                 return
 
-        def Create_Mod_Patch(mode=None):
+        def Create_Mod_Patch(mode: str | None = None):
             save_user_choices(filemgr._manager, filemgr._manager.config)
 
             patchInfo = filemgr._manager._patchInfo

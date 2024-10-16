@@ -3,7 +3,7 @@ import subprocess
 import GPUtil
 
 
-def get_cpu_info(log) -> [str, str]:
+def get_cpu_info(log) -> [str, str]:  # type: ignore
     try:
         if platform.system() == "Windows":
             import wmi

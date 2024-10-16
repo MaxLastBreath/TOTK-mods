@@ -4,9 +4,9 @@ import re, os
 
 
 class ResolutionVector:
-    w = 16
-    h = 9
-    s = 1024
+    w: float | int = 16
+    h: float | int = 9
+    s: int = 1024
 
     def __init__(self, width, height):
         """Initialize the class with Width and Height of the desired Resolution."""
