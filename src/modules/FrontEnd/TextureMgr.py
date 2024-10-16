@@ -137,13 +137,23 @@ class TextureMgr:
         )
         TextureMgr.CreateTexture(
             image_path="benchmark_loading.png",
-            width=int(154 / 2.5),
-            height=int(150 / 2.5),
+            width=int(115),
+            height=int(43),
         )
         TextureMgr.CreateTexture(
             image_path="benchmark_loading_active.png",
-            width=int(154 / 2.5),
-            height=int(150 / 2.5),
+            width=int(115),
+            height=int(43),
+        )
+        TextureMgr.CreateTexture(
+            image_path="Switch_Button.png",
+            width=int(115 * 1.2),
+            height=int(43 * 1.2),
+        )
+        TextureMgr.CreateTexture(
+            image_path="Switch_Button_2.png",
+            width=int(115 * 1.2),
+            height=int(43 * 1.2),
         )
         TextureMgr.CreateTexture(
             image_path="Legacy_BG.png",
@@ -208,5 +218,62 @@ class TextureMgr:
             height=600,
         )
         TextureMgr.CreateTexture(
-            image_path="image_cheats.png", width=1200, height=600, img_scale=2.0, blur=3
+            image_path="browse.png",
+            width=int(115 * 0.8),
+            height=int(43 * 0.8),
+        )
+        TextureMgr.CreateTexture(
+            image_path="browse_a.png",
+            width=int(115 * 0.9),
+            height=int(43 * 0.9),
+        )
+        TextureMgr.CreateTexture(
+            image_path="autosearch.png",
+            width=int(115 * 0.8),
+            height=int(43 * 0.8),
+        )
+        TextureMgr.CreateTexture(
+            image_path="autosearch_a.png",
+            width=int(115 * 0.9),
+            height=int(43 * 0.9),
+        )
+        TextureMgr.CreateTexture(
+            image_path="backup.png",
+            width=int(115 * 0.8),
+            height=int(43 * 0.8),
+        )
+        TextureMgr.CreateTexture(
+            image_path="backup_a.png",
+            width=int(115 * 0.9),
+            height=int(43 * 0.9),
+        )
+        TextureMgr.CreateTexture(
+            image_path="shaders.png",
+            width=int(115 * 0.8),
+            height=int(43 * 0.8),
+        )
+        TextureMgr.CreateTexture(
+            image_path="shaders_a.png",
+            width=int(115 * 0.9),
+            height=int(43 * 0.9),
+        )
+        TextureMgr.CreateTexture(
+            image_path="main.png",
+            width=int(115 * 0.7),
+            height=int(43 * 0.7),
+        )
+        TextureMgr.CreateTexture(
+            image_path="main_a.png",
+            width=int(115 * 0.8),
+            height=int(43 * 0.8),
+        )
+        TextureMgr.CreateTexture(
+            image_path="cheats.png",
+            width=int(115 * 0.7),
+            height=int(43 * 0.7),
+        )
+        TextureMgr.CreateTexture(
+            image_path="cheats_a.png",
+            width=int(115 * 0.8),
+            height=int(43 * 0.8),
         )

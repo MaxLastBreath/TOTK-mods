@@ -13,6 +13,7 @@ class ImageButton:
     tagOn: str
     tagOff: str
     Type: ButtonToggle
+    FullTags = []
 
     def __init__(
         self,
@@ -23,6 +24,7 @@ class ImageButton:
         tagOff: str,
         Type: ButtonToggle = ButtonToggle.Static,
         isOn: bool = False,
+        tags=[],
     ):
         self._Window = window
         self._Canvas = canvas
@@ -31,6 +33,7 @@ class ImageButton:
         self.tagOff = tagOff
         self.Type = Type
         self.IsOn = ttk.BooleanVar(window, isOn)
+        self.FullTags = tags
 
     def get(self):
         return self.IsOn.get()
@@ -39,10 +42,10 @@ class ImageButton:
         self.IsOn.set(isActive)
 
     def toggle(self):
-        if self.get() is True:
-            self.set(False)
+        if self.IsOn.get() is True:
+            self.IsOn.set(False)
         else:
-            self.set(True)
+            self.IsOn.set(True)
 
     def MakeDynamic(self, bool: ButtonToggle):
         self.Type = bool
@@ -51,10 +54,10 @@ class ImageButton:
         if callable(OnClick):
             OnClick(event)
 
-        if self.Type == ButtonToggle.Dynamic:
+        if self.Type == ButtonToggle.StaticDynamic:
             self.toggle()
 
-        if self.Type == ButtonToggle.StaticDynamic:
+        if self.Type == ButtonToggle.Dynamic:
             self.toggle()
 
     def BindCommand(self, OnClick: Callable):
@@ -67,10 +70,17 @@ class ImageButton:
         )
 
         self._Canvas.tag_bind(
-            self.tagOn, "<Enter>", lambda e: self.ActivateImage(WidgetState.Enter)
+            self.tagOn, "<Enter>", lambda e: self.ActivateImage(WidgetState.Enter)  # fmt:skip
         )
         self._Canvas.tag_bind(
-            self.tagOff, "<Leave>", lambda e: self.ActivateImage(WidgetState.Leave)
+            self.tagOff, "<Leave>", lambda e: self.ActivateImage(WidgetState.Leave)  # fmt:skip
+        )
+
+        self._Canvas.tag_bind(
+            self.tagOff, "<Enter>", lambda e: self.ActivateImage(WidgetState.Enter)  # fmt:skip
+        )
+        self._Canvas.tag_bind(
+            self.tagOn, "<Leave>", lambda e: self.ActivateImage(WidgetState.Leave)  # fmt:skip
         )
 
     def BindImages(
@@ -81,14 +91,21 @@ class ImageButton:
         ImageOff: ttk.PhotoImage,
         anchor: str = "nw",
     ):
+
+        tags = self.FullTags.copy()
+        tags.append(self.tagOn)
+
         self._Canvas.create_image(
             cul,
             row,
             anchor=anchor,
             image=ImageOn,
             state="normal",
-            tags=self.tagOn,
+            tags=tags,
         )
+
+        tags = self.FullTags.copy()
+        tags.append(self.tagOff)
 
         self._Canvas.create_image(
             cul,
@@ -96,17 +113,29 @@ class ImageButton:
             anchor=anchor,
             image=ImageOff,
             state="hidden",
-            tags=self.tagOff,
+            tags=tags,
         )
 
-    def ToggleImg(self, State: WidgetState):
-        if State == WidgetState.Enter:
-            self._Canvas.itemconfig(self.tagOn, state="hidden")
-            self._Canvas.itemconfig(self.tagOff, state="normal")
+    def ToggleImg(
+        self,
+        State: WidgetState,
+    ):
+        if self.get() is True and self.Type is ButtonToggle.Dynamic:
+            if State == WidgetState.Enter:
+                self._Canvas.itemconfig(self.tagOn, state="normal")
+                self._Canvas.itemconfig(self.tagOff, state="hidden")
 
-        if State == WidgetState.Leave:
-            self._Canvas.itemconfig(self.tagOn, state="normal")
-            self._Canvas.itemconfig(self.tagOff, state="hidden")
+            if State == WidgetState.Leave:
+                self._Canvas.itemconfig(self.tagOn, state="hidden")
+                self._Canvas.itemconfig(self.tagOff, state="normal")
+        else:
+            if State == WidgetState.Enter:
+                self._Canvas.itemconfig(self.tagOn, state="hidden")
+                self._Canvas.itemconfig(self.tagOff, state="normal")
+
+            if State == WidgetState.Leave:
+                self._Canvas.itemconfig(self.tagOn, state="normal")
+                self._Canvas.itemconfig(self.tagOff, state="hidden")
 
     def ActivateImage(self, State: WidgetState):
         if self.Type == ButtonToggle.StaticDynamic:

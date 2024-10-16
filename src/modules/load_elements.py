@@ -1,8 +1,36 @@
-from modules.FrontEnd.CanvasMgr import Canvas_Create
+from modules.FrontEnd.CanvasMgr import Canvas_Create, ButtonToggle
 from modules.FrontEnd.TextureMgr import TextureMgr
 from configuration.settings import *
 from modules.benchmarks import *
 import pyperclip
+
+
+def copy(manager):
+    if manager.Curr_Benchmark is None:
+        return
+    patch_info = manager.ultracam_beyond.get("Keys", [""])
+    resolution = manager.UserChoices["resolution"].get()
+    shadows = int(manager.UserChoices["shadow resolution"].get().split("x")[0])
+
+    system_os = "MacOS" if platform.system() == "Darwin" else platform.system()
+    benchmark_result = (
+        f"## **{manager.Curr_Benchmark}** Tears Of The Kingdom on {system_os}\n"
+    )
+
+    if platform.system() != "Darwin":
+        benchmark_result += f"- **{gpu_name}**\n"
+    benchmark_result += (
+        f"- **{CPU}**\n"
+        f"- **{total_memory}** GB RAM at **{FREQUENCY}** MHz\n"
+        f"- **{resolution}** and Shadows: **{shadows}**, FPS CAP: **{manager.UserChoices['fps'].get()}**\n"
+        f"## Results:\n"
+        f"- Total Frames **{manager.benchmarks[manager.Curr_Benchmark]['Total Frames']}**\n"
+        f"- Average FPS **{manager.benchmarks[manager.Curr_Benchmark]['Average FPS']}**\n"
+        f"- 1% Lows **{manager.benchmarks[manager.Curr_Benchmark]['1% Low FPS']}** FPS\n"
+        f"- 0.1% Lows **{manager.benchmarks[manager.Curr_Benchmark]['0.1% Lowest FPS']}** FPS\n"
+    )
+
+    pyperclip.copy(benchmark_result)
 
 
 def load_UI_elements(manager, canvas):
@@ -28,7 +56,7 @@ def load_UI_elements(manager, canvas):
         0, 0, anchor="nw", image=TextureMgr.Request("BG_Left_2.png"), tags="overlay"
     )
 
-    # Info text BG
+    # Benchmark Window.
     canvas.create_image(
         0 - scale(20),
         0,
@@ -37,11 +65,13 @@ def load_UI_elements(manager, canvas):
         tags="overlay",
     )
 
+    Offset = 255
+
     # Benchmark Images..?
     for location, image in manager.benchmark_dicts.items():
         Canvas_Create.set_image(
             canvas=canvas,
-            row=285,
+            row=285 - Offset,
             cul=980,
             anchor="c",
             img=image,
@@ -51,58 +81,31 @@ def load_UI_elements(manager, canvas):
 
     Canvas_Create.set_image(
         canvas=canvas,
-        row=285,
+        row=285 - Offset,
         cul=980,
         anchor="c",
         img=TextureMgr.Request("benchmarks_first.png"),
         tag="no_benchmark",
     )
 
-    Canvas_Create.set_image(
-        canvas=canvas,
-        row=500,
-        cul=980,
-        anchor="c",
-        img=TextureMgr.Request("benchmark_border.png"),
-        tag="benchmark_border",
-    )
+    # Canvas_Create.set_image(
+    #     canvas=canvas,
+    #     row=500,
+    #     cul=980,
+    #     anchor="c",
+    #     img=TextureMgr.Request("benchmark_border.png"),
+    #     tag="benchmark_border",
+    # )
 
     Canvas_Create.image_Button(
         canvas=canvas,
-        row=505,
+        row=505 - Offset,
         cul=980,
         anchor="c",
         img_1=TextureMgr.Request("benchmark_loading.png"),
         img_2=TextureMgr.Request("benchmark_loading_active.png"),
         command=lambda e: load_benchmark(manager),
     )
-
-    def copy(manager):
-        if manager.Curr_Benchmark is None:
-            return
-        patch_info = manager.ultracam_beyond.get("Keys", [""])
-        resolution = manager.UserChoices["resolution"].get()
-        shadows = int(manager.UserChoices["shadow resolution"].get().split("x")[0])
-
-        system_os = "MacOS" if platform.system() == "Darwin" else platform.system()
-        benchmark_result = (
-            f"## **{manager.Curr_Benchmark}** Tears Of The Kingdom on {system_os}\n"
-        )
-
-        if platform.system() != "Darwin":
-            benchmark_result += f"- **{gpu_name}**\n"
-        benchmark_result += (
-            f"- **{CPU}**\n"
-            f"- **{total_memory}** GB RAM at **{FREQUENCY}** MHz\n"
-            f"- **{resolution}** and Shadows: **{shadows}**, FPS CAP: **{manager.UserChoices['fps'].get()}**\n"
-            f"## Results:\n"
-            f"- Total Frames **{manager.benchmarks[manager.Curr_Benchmark]['Total Frames']}**\n"
-            f"- Average FPS **{manager.benchmarks[manager.Curr_Benchmark]['Average FPS']}**\n"
-            f"- 1% Lows **{manager.benchmarks[manager.Curr_Benchmark]['1% Low FPS']}** FPS\n"
-            f"- 0.1% Lows **{manager.benchmarks[manager.Curr_Benchmark]['0.1% Lowest FPS']}** FPS\n"
-        )
-
-        pyperclip.copy(benchmark_result)
 
     Canvas_Create.create_label(
         master=manager._window,
@@ -111,7 +114,7 @@ def load_UI_elements(manager, canvas):
         description_name="Benchmarks",
         anchor="nw",
         command=lambda e: copy(manager),
-        row=310,
+        row=310 - Offset,
         cul=820,
         font=biggyfont,
         active_fill="cyan",
@@ -130,7 +133,7 @@ def load_UI_elements(manager, canvas):
         description_name="Benchmarks",
         anchor="nw",
         command=lambda e: copy(manager),
-        row=400,
+        row=400 - Offset,
         cul=820,
         font=biggyfont,
         active_fill="cyan",
@@ -139,10 +142,12 @@ def load_UI_elements(manager, canvas):
         outline_tag="benchmark_info",
     )
 
+    LogoOffset = 100
+
     # Create Active Buttons.
     Canvas_Create.image_Button(
         canvas=canvas,
-        row=162,
+        row=162 + LogoOffset,
         cul=794,
         img_1=TextureMgr.Request("Master_Sword.png"),
         img_2=TextureMgr.Request("Master_Sword_active.png"),
@@ -151,7 +156,7 @@ def load_UI_elements(manager, canvas):
 
     Canvas_Create.image_Button(
         canvas=canvas,
-        row=162,
+        row=162 + LogoOffset,
         cul=1007,
         img_1=TextureMgr.Request("Master_Sword2.png"),
         img_2=TextureMgr.Request("Master_Sword_active2.png"),
@@ -160,7 +165,7 @@ def load_UI_elements(manager, canvas):
 
     Canvas_Create.image_Button(
         canvas=canvas,
-        row=220,
+        row=220 + LogoOffset,
         cul=978,
         anchor="c",
         img_1=TextureMgr.Request("Hylian_Shield.png"),
@@ -168,21 +173,21 @@ def load_UI_elements(manager, canvas):
         command=lambda event: manager.open_browser("Discord"),
     )
 
-    # Information text.
-    Canvas_Create.create_label(
-        master=manager._window,
-        canvas=canvas,
-        text=manager.text_content,
-        description_name="Info_Label",
-        justify="center",
-        anchor="n",
-        row=35,
-        cul=975,
-        font=biggyfont,
-        tags=["Info_Label"],
-        tag=["Info_Label"],
-        outline_tag="Info_Label",
-    )
+    # # Information text.
+    # Canvas_Create.create_label(
+    #     master=manager._window,
+    #     canvas=canvas,
+    #     text=manager.text_content,
+    #     description_name="Info_Label",
+    #     justify="center",
+    #     anchor="n",
+    #     row=35,
+    #     cul=975,
+    #     font=biggyfont,
+    #     tags=["Info_Label"],
+    #     tag=["Info_Label"],
+    #     outline_tag="Info_Label",
+    # )
 
 
 def create_tab_buttons(manager, canvas):
@@ -192,7 +197,6 @@ def create_tab_buttons(manager, canvas):
             master=manager._window,
             canvas=canvas,
             text="Donate",
-            textvariable=manager.switch_text,
             style="success",
             row=1130,
             cul=520,
@@ -203,12 +207,12 @@ def create_tab_buttons(manager, canvas):
             description_name="Kofi",
             command=lambda: manager.open_browser("Kofi"),
         )
+
         # Github Button
         Canvas_Create.create_button(
             master=manager._window,
             canvas=canvas,
             text="Github",
-            textvariable=manager.switch_text,
             style="success",
             row=1066,
             cul=520,
@@ -220,22 +224,6 @@ def create_tab_buttons(manager, canvas):
             command=lambda: manager.open_browser("Github"),
         )
 
-    # Create tabs
-
-    # Switch mode between Ryujinx and Legacy
-    Canvas_Create.create_button(
-        master=manager._window,
-        canvas=canvas,
-        text="Switch",
-        textvariable=manager.switch_text,
-        style="Danger",
-        row=11,
-        cul=138,
-        width=12,
-        tags=["Button"],
-        description_name="Switch",
-        command=manager.switchmode,
-    )
     # Make the button active for current canvas.
     button1style = "default"
     button2style = "default"
@@ -250,43 +238,43 @@ def create_tab_buttons(manager, canvas):
         e = "n"
 
     # 1 - Main
-    Canvas_Create.create_button(
-        master=manager._window,
+    Canvas_Create.image_Button(
         canvas=canvas,
-        text="Main",
-        style=button1style,
-        row=11,
-        cul=26,
-        width=5,
-        tags=["Button"],
-        description_name="Main",
-        command=manager.show_main_canvas,
+        row=15,
+        cul=65,
+        name="Main",
+        anchor="c",
+        img_1=TextureMgr.Request("main.png"),
+        img_2=TextureMgr.Request("main_a.png"),
+        command=lambda e: manager.show_main_canvas(),
+        Type=ButtonToggle.Static,
     )
-    # 2 - Cheats
-    Canvas_Create.create_button(
-        master=manager._window,
+
+    # 1 - Cheats
+    Canvas_Create.image_Button(
         canvas=canvas,
-        text="Cheats",
-        style=button2style,
-        row=11,
-        cul=77,
-        width=6,
-        tags=["Button"],
-        description_name="Cheats",
-        command=manager.show_cheat_canvas,
+        row=15,
+        cul=65 + 80,
+        name="Main",
+        anchor="c",
+        img_1=TextureMgr.Request("cheats.png"),
+        img_2=TextureMgr.Request("cheats_a.png"),
+        command=lambda e: manager.show_cheat_canvas(),
+        Type=ButtonToggle.Static,
     )
+
     # 3 - Settings
-    Canvas_Create.create_button(
-        master=manager._window,
-        canvas=canvas,
-        text="Settings",
-        style=button3style,
-        row=11,
-        cul=257,
-        width=8,
-        tags=["Button"],
-        description_name="Settings",
-        command=lambda: manager.setting.settingswindow(
-            manager.constyle, manager.all_canvas
-        ),
-    )
+    # Canvas_Create.create_button(
+    #     master=manager._window,
+    #     canvas=canvas,
+    #     text="Settings",
+    #     style=button3style,
+    #     row=11,
+    #     cul=257,
+    #     width=8,
+    #     tags=["Button"],
+    #     description_name="Settings",
+    #     command=lambda: manager.setting.settingswindow(
+    #         manager.constyle, manager.all_canvas
+    #     ),
+    # )

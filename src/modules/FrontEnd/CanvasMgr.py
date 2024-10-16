@@ -584,6 +584,7 @@ class Canvas_Create:
         anchor: str = "nw",
         img_1: ttk.PhotoImage = any,
         img_2: ttk.PhotoImage = any,
+        tags=[],
         isOn: bool = False,
         command: Callable = None,
         Type: ButtonToggle = ButtonToggle.Static,
@@ -596,6 +597,7 @@ class Canvas_Create:
             CreateRandomTag(name),
             CreateRandomTag(name),
             isOn,
+            tags=tags,
         )
 
         ImageBtn.BindImages(scale(cul), scale(row), img_1, img_2, anchor)

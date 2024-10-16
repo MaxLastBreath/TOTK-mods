@@ -233,6 +233,7 @@ class FileManager:
                 filemgr.load_dir = os.path.join(f"{portablefolder}", "mods", "contents", filemgr._manager._patchInfo.ID)
                 filemgr.sdmc_dir = os.path.join(f"{portablefolder}", "sdcard")
                 filemgr.Legacydir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", filemgr._manager._patchInfo.ID)
+                superlog.info(f"Checking Ryujinx {filemgr.ryujinx_config}, {filemgr.nand_dir}, {filemgr.load_dir}, {filemgr.sdmc_dir}, {filemgr.Legacydir}")
                 return
             else:
                 filemgr.Globaldir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx")
@@ -317,9 +318,7 @@ class FileManager:
         source = os.path.join(patchinfo.Folder, patchinfo.ModFolder)
 
         if filemgr.is_extracting is False:
-            destination = os.path.join(
-                filemgr.Globaldir, "load", patchinfo.ID, patchinfo.ModName
-            )
+            destination = os.path.join(filemgr.load_dir, patchinfo.ModName)
             os.makedirs(destination, exist_ok=True)
             shutil.copytree(source, destination, dirs_exist_ok=True)
         else:
@@ -469,7 +468,7 @@ class FileManager:
             save_user_choices(filemgr._manager, filemgr._manager.config)
 
             patchInfo = filemgr._manager._patchInfo
-            modDir = os.path.join(filemgr.Globaldir, f"load/{patchInfo.ID}")
+            modDir = filemgr.load_dir
 
             if mode == "Cheats":
                 ProgressBar.string.set("Creating Cheat Patches.")

@@ -58,5 +58,5 @@ def load_benchmark(self):
                     }
                     Last_Found = keyword
         load_last_benchmark(self, Last_Found)
-    except FileNotFoundError:
-        log.info("No Benchmarks detected.")
+    except Exception as e:
+        log.error(f"Benchmark Failed. {e}")

@@ -40,6 +40,9 @@ class Manager:
     LabelText: None
     warn_again: str = "yes"
 
+    mode = "Ryujinx"
+    ModeType: ImageButton
+
     def __init__(Manager, window):
         """
         Initializes the frontend canvas UI.\n
@@ -90,13 +93,14 @@ class Manager:
         Manager.Legacy_settings = load_json("Legacy_presets.json", Legacy_presets_url)
 
         # Local text variable
-        Manager.switch_text = ttk.StringVar(value="Switch to Ryujinx")
         Manager.cheat_version = ttk.StringVar(value="Version - 1.2.1")
 
         # Load Canvas
-        Load_ImagePath(Manager)
+        # Load_ImagePath(Manager)
         Manager.load_canvas()
-        Manager.switchmode("false")
+
+        log.warning(f"Emulator {Manager.mode}")
+        Manager.switchmode(True)
 
         # Window protocols
         Manager._window.protocol(
@@ -333,39 +337,19 @@ class Manager:
         def browse():
             Manager.select_Legacy_exe()
 
+        # Canvas_Create.create_button(
+        #     master=Manager._window,
+        #     canvas=canvas,
+        #     text="Browse",
+        #     row=row,
+        #     cul=cul_sel,
+        #     width=6,
+        #     tags=["Button"],
+        #     description_name="Browse",
+        #     command=lambda: browse(),
+        # )
+
         text = "SELECT EXECUTABLE"
-        Canvas_Create.create_button(
-            master=Manager._window,
-            canvas=canvas,
-            text="Browse",
-            row=row,
-            cul=cul_sel,
-            width=6,
-            tags=["Button"],
-            description_name="Browse",
-            command=lambda: browse(),
-        )
-
-        # Reset to Appdata
-        def Legacy_appdata():
-            FileManager.checkpath(Manager.mode)
-            superlog.info("Successfully Defaulted to Appdata!")
-            save_user_choices(Manager, Manager.config, "appdata", None)
-
-        Canvas_Create.create_button(
-            master=Manager._window,
-            canvas=canvas,
-            text="Use Appdata",
-            row=row,
-            cul=cul_sel + 68,
-            width=9,
-            tags=["Button"],
-            description_name="Reset",
-            command=Legacy_appdata,
-        )
-
-        backupbutton = cul_sel + 165
-
         Canvas_Create.create_label(
             master=Manager._window,
             canvas=canvas,
@@ -379,29 +363,63 @@ class Manager:
             command=command,
         )
 
-        # Create a Backup button
-        Canvas_Create.create_button(
-            master=Manager._window,
+        Offset = 170
+
+        btn = Canvas_Create.image_Button(
             canvas=canvas,
-            text="Backup",
-            row=row,
-            cul=backupbutton,
-            width=7,
+            row=row - 5,
+            cul=cul_tex + Offset,
+            name="browse",
+            anchor="c",
+            img_1=TextureMgr.Request("browse.png"),
+            img_2=TextureMgr.Request("browse_a.png"),
+            command=lambda e: browse(),
             tags=["Button"],
-            description_name="Backup",
-            command=lambda: FileManager.backup(),
         )
 
-        Canvas_Create.create_button(
-            master=Manager._window,
+        # Reset to Appdata
+        def appdata():
+            FileManager.checkpath(Manager.mode)
+            superlog.info("Successfully Defaulted to Appdata!")
+            save_user_choices(Manager, Manager.config, "appdata", None)
+
+        btn = Canvas_Create.image_Button(
             canvas=canvas,
-            text="Clear Shaders",
-            row=row,
-            cul=backupbutton + 78,
-            width=9,
-            tags=["Button", "Legacy"],
-            description_name="Shaders",
-            command=lambda: FileManager.clean_shaders(),
+            row=row - 5,
+            cul=cul_tex + Offset + 92,
+            name="appdata",
+            anchor="c",
+            img_1=TextureMgr.Request("autosearch.png"),
+            img_2=TextureMgr.Request("autosearch_a.png"),
+            command=lambda e: browse(),
+            tags=["Button"],
+        )
+
+        backupbutton = cul_sel + 165
+
+        # Create a Backup button
+        btn = Canvas_Create.image_Button(
+            canvas=canvas,
+            row=row - 5,
+            cul=cul_tex + Offset + 92 * 2,
+            name="backup",
+            anchor="c",
+            img_1=TextureMgr.Request("backup.png"),
+            img_2=TextureMgr.Request("backup_a.png"),
+            command=lambda e: FileManager.backup(),
+            tags=["Button"],
+        )
+
+        btn = Canvas_Create.image_Button(
+            canvas=canvas,
+            row=row - 5,
+            cul=cul_tex + Offset + 92 * 3,
+            name="shaders",
+            anchor="c",
+            img_1=TextureMgr.Request("shaders.png"),
+            img_2=TextureMgr.Request("shaders_a.png"),
+            command=lambda e: FileManager.clean_shaders,
+            tags=["Button"],
         )
 
         row += 40
@@ -471,6 +489,16 @@ class Manager:
             img_1=TextureMgr.Request("apply.png"),
             img_2=TextureMgr.Request("apply_active.png"),
             command=lambda event: FileManager.submit(),
+        )
+
+        Manager.ModeType = Canvas_Create.image_Button(
+            canvas=canvas,
+            row=20,
+            cul=620,
+            img_1=TextureMgr.Request("Switch_Button.png"),
+            img_2=TextureMgr.Request("Switch_Button_2.png"),
+            command=lambda event: Manager.switchmode(),
+            Type=ButtonToggle.Dynamic,
         )
 
         # reverse scale.
@@ -695,13 +723,13 @@ class Manager:
 
             executable_name = Legacy_path
             if executable_name.endswith("Ryujinx.exe") or executable_name.endswith(
-                "Ryujinx.Ava.exe"
+                "Ava.exe"
             ):
                 if Manager.mode == "Legacy":
-                    Manager.switchmode("true")
+                    Manager.switchmode(True)
             else:
                 if Manager.mode == "Ryujinx":
-                    Manager.switchmode("true")
+                    Manager.switchmode(True)
 
             if Legacy_path:
                 # Save the selected Legacy.exe path to a configuration file
@@ -739,10 +767,10 @@ class Manager:
                 "Ryujinx.ava"
             ):
                 if Manager.mode == "Legacy":
-                    Manager.switchmode("true")
+                    Manager.switchmode(True)
             else:
                 if Manager.mode == "Ryujinx":
-                    Manager.switchmode("true")
+                    Manager.switchmode(True)
 
             save_user_choices(Manager, Manager.config, Legacy_path)
         return Legacy_path
@@ -802,7 +830,7 @@ class Manager:
             0,
             -scale(300),
             anchor="nw",
-            image=TextureMgr.Request("image_cheats.png"),
+            image=TextureMgr.Request("image.jpg"),
             tags="background",
         )
         canvas.create_image(
@@ -820,45 +848,31 @@ class Manager:
             tags="overlay",
         )
 
-    def switchmode(Manager, command="true"):
-        if command == "true":
-            if Manager.mode == "Legacy":
-                Manager.mode = "Ryujinx"
-                for canvas in Manager.all_canvas:
-                    # canvas.itemconfig("overlay-1", image=TextureMgr.Request("Ryujinx_BG.png"))
-                    # canvas.itemconfig("information", text=f"{Manager.mode} TOTK Optimizer")
-                    canvas.itemconfig("Legacy", state="hidden")
-
-                if Manager.os_platform == "Darwin":
-                    Manager.switch_text.set("Only Ryujinx supported")
-                else:
-                    Manager.switch_text.set("Switch to Legacy")
-                return
-
-            elif Manager.mode == "Ryujinx" and Manager.os_platform != "Darwin":
-                Manager.mode = "Legacy"
-                for canvas in Manager.all_canvas:
-                    # canvas.itemconfig("overlay-1", image=TextureMgr.Request("Legacy_BG.png"))
-                    # canvas.itemconfig("information", text=f"{Manager.mode} TOTK Optimizer")
-                    canvas.itemconfig("Legacy", state="normal")
-                # change text
-                Manager.switch_text.set("Switch to Ryujinx")
-                return
-
-        elif command == "false":
+    def switchmode(Manager, Force=False):
+        if Force is True:
             if Manager.mode == "Ryujinx":
-                for canvas in Manager.all_canvas:
-                    # canvas.itemconfig("overlay-1", image=TextureMgr.Request("Ryujinx_BG.png"))
-                    # canvas.itemconfig("information", text=f"{Manager.mode} TOTK Optimizer")
-                    canvas.itemconfig("Legacy", state="hidden")
-                if Manager.os_platform == "Darwin":
-                    Manager.switch_text.set("Only Ryujinx supported")
-                else:
-                    Manager.switch_text.set("Switch to Legacy")
-                return
+                Manager.ModeType.set(False)
+            else:
+                Manager.ModeType.set(True)
+            Manager.ModeType.ToggleImg(WidgetState.Leave)
+            superlog.info(f"Switched to {Manager.mode}")
+            FileManager.checkpath(Manager.mode)
+            return
 
-        elif command == "Mode":
-            return Manager.mode
+        if Manager.ModeType.get() is True:
+            Manager.mode = "Ryujinx"
+            for canvas in Manager.all_canvas:
+                canvas.itemconfig("Legacy", state="hidden")
+                canvas.itemconfig("Ryujinx", state="normal")
+
+        elif Manager.os_platform != "Darwin":
+            Manager.mode = "Legacy"
+            for canvas in Manager.all_canvas:
+                canvas.itemconfig("Legacy", state="normal")
+                canvas.itemconfig("Ryujinx", state="hidden")
+
+        superlog.info(f"Switched to {Manager.mode}")
+        FileManager.checkpath(Manager.mode)
 
     def fetch_var(Manager, var, dict, option):
         if not dict.get(option, "") == "":
