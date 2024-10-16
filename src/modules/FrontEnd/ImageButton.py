@@ -1,6 +1,7 @@
 from modules.FrontEnd.WidgetStates import *
 import ttkbootstrap as ttk
 from typing import Callable
+from modules.logger import *
 
 
 class ImageButton:
@@ -38,22 +39,22 @@ class ImageButton:
         self.IsOn.set(isActive)
 
     def toggle(self):
-        if self.IsOn.get() is True:
-            self.IsOn.set(False)
+        if self.get() is True:
+            self.set(False)
         else:
-            self.IsOn.set(True)
+            self.set(True)
 
-    def MakeDynamic(self, bool: bool):
-        if bool is True:
-            self.Type = ButtonToggle.Dynamic
-        else:
-            self.Type = ButtonToggle.Static
+    def MakeDynamic(self, bool: ButtonToggle):
+        self.Type = bool
 
     def ToggleCommand(self, OnClick: Callable, event: None):
         if callable(OnClick):
             OnClick(event)
 
         if self.Type == ButtonToggle.Dynamic:
+            self.toggle()
+
+        if self.Type == ButtonToggle.StaticDynamic:
             self.toggle()
 
     def BindCommand(self, OnClick: Callable):
@@ -108,7 +109,7 @@ class ImageButton:
             self._Canvas.itemconfig(self.tagOff, state="hidden")
 
     def ActivateImage(self, State: WidgetState):
-        if self.Type == ButtonToggle.Dynamic:
+        if self.Type == ButtonToggle.StaticDynamic:
             if self.get() is False:
                 self.ToggleImg(State)
         else:

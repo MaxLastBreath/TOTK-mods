@@ -6,6 +6,7 @@ import random
 class ButtonToggle(Enum):
     Dynamic = 0
     Static = 1
+    StaticDynamic = 2
 
 
 class WidgetState(Enum):

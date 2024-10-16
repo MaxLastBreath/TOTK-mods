@@ -415,7 +415,7 @@ class Manager:
             img_1=TextureMgr.Request("graphics.png"),
             img_2=TextureMgr.Request("graphics_active.png"),
             command=lambda e: Manager.toggle_pages("main"),
-            Type=ButtonToggle.Dynamic,
+            Type=ButtonToggle.StaticDynamic,
         )
 
         page_2 = Canvas_Create.image_Button(
@@ -426,7 +426,7 @@ class Manager:
             img_1=TextureMgr.Request("extra.png"),
             img_2=TextureMgr.Request("extra_active.png"),
             command=lambda e: Manager.toggle_pages("extra"),
-            Type=ButtonToggle.Dynamic,
+            Type=ButtonToggle.StaticDynamic,
         )
 
         Manager.PageBtns.append(page_1)
