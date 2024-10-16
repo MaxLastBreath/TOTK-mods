@@ -6,6 +6,7 @@ from configuration.settings import *
 import argparse
 
 latest_version = Version.strip("manager-")
+program_name = "NX Optimizer"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-o", "--os")
@@ -18,7 +19,7 @@ def create_zip(source_dir, dest_file):
             for file in files:
                 file_path = os.path.join(root, file)
                 relative_path = os.path.relpath(file_path, source_dir)
-                zip_path = os.path.join("NX Optimizer", relative_path)
+                zip_path = os.path.join(program_name, relative_path)
                 zipf.write(file_path, zip_path)
 
 
@@ -41,7 +42,7 @@ if __name__ == "__main__":
             "pyinstaller",
             "run.py",
             "--onedir",
-            f"--name=NX Optimizer {latest_version}",
+            f"--name={program_name} {latest_version}",
             "--add-data",
             "GUI;GUI",
             "--add-data",
@@ -51,15 +52,15 @@ if __name__ == "__main__":
         ]
         subprocess.run(command, shell=True)
         create_zip(
-            f"dist/NX Optimizer {latest_version}",
-            f"dist/NX_Optimizer_{latest_version}_Windows.zip",
+            f"dist/{program_name} {latest_version}",
+            f"dist/{program_name.replace(' ', '_')}_{latest_version}_Windows.zip",
         )
 
     elif platform.system() == "Linux":
         command = [
             "pyinstaller",
             "--onedir",
-            f"--name=NX Optimizer {latest_version}",
+            f"--name={program_name} {latest_version}",
             "run.py",
             "--add-data",
             "GUI:GUI",
@@ -72,8 +73,8 @@ if __name__ == "__main__":
         ]
         subprocess.run(command, check=True)
         create_zip(
-            f"dist/NX Optimizer {latest_version}",
-            f"dist/NX_Optimizer_{latest_version}_Linux.zip",
+            f"dist/{program_name} {latest_version}",
+            f"dist/{program_name.replace(' ', '_')}_{latest_version}_Linux.zip",
         )
 
     elif platform.system() == "Darwin":
@@ -82,7 +83,7 @@ if __name__ == "__main__":
             "--onefile",
             "--windowed",
             "--noconfirm",
-            f"--name=NX Optimizer",
+            f"--name={program_name}",
             "run.py",
             "--add-data",
             "GUI:GUI",
@@ -101,19 +102,20 @@ if __name__ == "__main__":
             processor = "Intel"
 
         os.mkdir("dist/archive")
-        os.rename("dist/NX Optimizer.app", "dist/archive/NX Optimizer.app")
+        os.rename(f"dist/{program_name}.app", f"dist/archive/{program_name}.app")
         create_zip(
             "dist/archive",
-            f"dist/NX_Optimizer_{latest_version}_MacOS_{processor}.zip",
+            f"dist/{program_name.replace(' ', '_')}_{latest_version}_MacOS_{processor}.zip",
         )
 
     # Remove unnecessary files
-    if os.path.exists("dist/NX Optimizer"):
-        if os.path.isdir("dist/NX Optimizer"):
-            delete_directory("dist/NX Optimizer")
+    if os.path.exists(f"dist/{program_name}"):
+        if os.path.isdir(f"dist/{program_name}"):
+            delete_directory(f"dist/{program_name}")
         else:
-            os.remove("dist/NX Optimizer")
-    if os.path.exists(f"dist/NX Optimizer {latest_version}"):
-        delete_directory(f"dist/NX Optimizer {latest_version}")
+            os.remove(f"dist/{program_name}")
+
+    if os.path.exists(f"dist/{program_name} {latest_version}"):
+        delete_directory(f"dist/{program_name} {latest_version}")
     if os.path.exists("dist/archive"):
         delete_directory("dist/archive")

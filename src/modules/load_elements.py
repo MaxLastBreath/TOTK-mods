@@ -1,3 +1,4 @@
+from modules.FrontEnd.CanvasMgr import Canvas_Create
 from configuration.settings import *
 from modules.benchmarks import *
 import pyperclip
@@ -67,18 +68,6 @@ def load_UI_elements(manager, canvas):
         resolution = manager.UserChoices["resolution"].get()
         shadows = int(manager.UserChoices["shadow resolution"].get().split("x")[0])
 
-        if "aspect ratio" in manager.UserChoices:
-            ARR = manager.UserChoices["aspect ratio"].get().split("x")
-            Resolution = patch_info["resolution"]["Values"][
-                patch_info["resolution"]["Name_Values"].index(resolution)
-            ].split("x")
-            Resolution = convert_resolution(
-                int(Resolution[0]), int(Resolution[1]), int(ARR[0]), int(ARR[1])
-            )
-            New_Resolution = f"{Resolution[0]}x{Resolution[1]}"
-        else:
-            New_Resolution = resolution
-
         system_os = "MacOS" if platform.system() == "Darwin" else platform.system()
         benchmark_result = (
             f"## **{manager.Curr_Benchmark}** Tears Of The Kingdom on {system_os}\n"
@@ -89,7 +78,7 @@ def load_UI_elements(manager, canvas):
         benchmark_result += (
             f"- **{CPU}**\n"
             f"- **{total_memory}** GB RAM at **{FREQUENCY}** MHz\n"
-            f"- **{New_Resolution}** and Shadows: **{shadows}**, FPS CAP: **{manager.UserChoices['fps'].get()}**\n"
+            f"- **{resolution}** and Shadows: **{shadows}**, FPS CAP: **{manager.UserChoices['fps'].get()}**\n"
             f"## Results:\n"
             f"- Total Frames **{manager.benchmarks[manager.Curr_Benchmark]['Total Frames']}**\n"
             f"- Average FPS **{manager.benchmarks[manager.Curr_Benchmark]['Average FPS']}**\n"

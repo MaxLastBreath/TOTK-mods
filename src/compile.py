@@ -4,6 +4,7 @@ import os
 from configuration.settings import *
 
 latest_version = Version.strip("manager-")
+program_name = "NX Optimizer"
 
 if __name__ == "__main__":
     if platform.system() == "Windows":
@@ -11,7 +12,7 @@ if __name__ == "__main__":
             "pyinstaller",
             "run.py",
             "--onefile",
-            f"--name=NX Optimizer {latest_version}",
+            f"--name={program_name} {latest_version}",
             "--add-data",
             "GUI;GUI",
             "--add-data",
@@ -25,7 +26,7 @@ if __name__ == "__main__":
         command = [
             "pyinstaller",
             "--onefile",
-            f"--name=NX Optimizer {latest_version}.AppImage",
+            f"--name={program_name} {latest_version}.AppImage",
             "run.py",
             "--add-data",
             "GUI:GUI",
@@ -43,7 +44,7 @@ if __name__ == "__main__":
             "--onefile",
             "--windowed",
             "--noconfirm",
-            f"--name=NX Optimizer",
+            f"--name={program_name}",
             "run.py",
             "--add-data",
             "GUI:GUI",
@@ -56,5 +57,5 @@ if __name__ == "__main__":
             "--hidden-import=ttkbootstrap",
         ]
         subprocess.run(command, check=True)
-        if os.path.exists("dist/NX Optimizer"):
-            os.remove("dist/NX Optimizer")
+        if os.path.exists(f"dist/{program_name}"):
+            os.remove(f"dist/{program_name}")
