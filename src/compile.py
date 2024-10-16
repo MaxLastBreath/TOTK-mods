@@ -11,7 +11,7 @@ if __name__ == "__main__":
             "pyinstaller",
             "run.py",
             "--onefile",
-            f"--name=TOTK Optimizer {latest_version}",
+            f"--name=NX Optimizer {latest_version}",
             "--add-data",
             "GUI;GUI",
             "--add-data",
@@ -25,7 +25,7 @@ if __name__ == "__main__":
         command = [
             "pyinstaller",
             "--onefile",
-            f"--name=TOTK Optimizer {latest_version}.AppImage",
+            f"--name=NX Optimizer {latest_version}.AppImage",
             "run.py",
             "--add-data",
             "GUI:GUI",
@@ -43,7 +43,7 @@ if __name__ == "__main__":
             "--onefile",
             "--windowed",
             "--noconfirm",
-            f"--name=TOTK Optimizer",
+            f"--name=NX Optimizer",
             "run.py",
             "--add-data",
             "GUI:GUI",
@@ -56,5 +56,5 @@ if __name__ == "__main__":
             "--hidden-import=ttkbootstrap",
         ]
         subprocess.run(command, check=True)
-        if os.path.exists("dist/TOTK Optimizer"):
-            os.remove("dist/TOTK Optimizer")
+        if os.path.exists("dist/NX Optimizer"):
+            os.remove("dist/NX Optimizer")

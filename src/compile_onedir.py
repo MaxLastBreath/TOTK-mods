@@ -18,7 +18,7 @@ def create_zip(source_dir, dest_file):
             for file in files:
                 file_path = os.path.join(root, file)
                 relative_path = os.path.relpath(file_path, source_dir)
-                zip_path = os.path.join("TOTK Optimizer", relative_path)
+                zip_path = os.path.join("NX Optimizer", relative_path)
                 zipf.write(file_path, zip_path)
 
 
@@ -41,7 +41,7 @@ if __name__ == "__main__":
             "pyinstaller",
             "run.py",
             "--onedir",
-            f"--name=TOTK Optimizer {latest_version}",
+            f"--name=NX Optimizer {latest_version}",
             "--add-data",
             "GUI;GUI",
             "--add-data",
@@ -51,15 +51,15 @@ if __name__ == "__main__":
         ]
         subprocess.run(command, shell=True)
         create_zip(
-            f"dist/TOTK Optimizer {latest_version}",
-            f"dist/TOTK_Optimizer_{latest_version}_Windows.zip",
+            f"dist/NX Optimizer {latest_version}",
+            f"dist/NX_Optimizer_{latest_version}_Windows.zip",
         )
 
     elif platform.system() == "Linux":
         command = [
             "pyinstaller",
             "--onedir",
-            f"--name=TOTK Optimizer {latest_version}",
+            f"--name=NX Optimizer {latest_version}",
             "run.py",
             "--add-data",
             "GUI:GUI",
@@ -72,8 +72,8 @@ if __name__ == "__main__":
         ]
         subprocess.run(command, check=True)
         create_zip(
-            f"dist/TOTK Optimizer {latest_version}",
-            f"dist/TOTK_Optimizer_{latest_version}_Linux.zip",
+            f"dist/NX Optimizer {latest_version}",
+            f"dist/NX_Optimizer_{latest_version}_Linux.zip",
         )
 
     elif platform.system() == "Darwin":
@@ -82,7 +82,7 @@ if __name__ == "__main__":
             "--onefile",
             "--windowed",
             "--noconfirm",
-            f"--name=TOTK Optimizer",
+            f"--name=NX Optimizer",
             "run.py",
             "--add-data",
             "GUI:GUI",
@@ -101,19 +101,19 @@ if __name__ == "__main__":
             processor = "Intel"
 
         os.mkdir("dist/archive")
-        os.rename("dist/TOTK Optimizer.app", "dist/archive/TOTK Optimizer.app")
+        os.rename("dist/NX Optimizer.app", "dist/archive/NX Optimizer.app")
         create_zip(
             "dist/archive",
-            f"dist/TOTK_Optimizer_{latest_version}_MacOS_{processor}.zip",
+            f"dist/NX_Optimizer_{latest_version}_MacOS_{processor}.zip",
         )
 
     # Remove unnecessary files
-    if os.path.exists("dist/TOTK Optimizer"):
-        if os.path.isdir("dist/TOTK Optimizer"):
-            delete_directory("dist/TOTK Optimizer")
+    if os.path.exists("dist/NX Optimizer"):
+        if os.path.isdir("dist/NX Optimizer"):
+            delete_directory("dist/NX Optimizer")
         else:
-            os.remove("dist/TOTK Optimizer")
-    if os.path.exists(f"dist/TOTK Optimizer {latest_version}"):
-        delete_directory(f"dist/TOTK Optimizer {latest_version}")
+            os.remove("dist/NX Optimizer")
+    if os.path.exists(f"dist/NX Optimizer {latest_version}"):
+        delete_directory(f"dist/NX Optimizer {latest_version}")
     if os.path.exists("dist/archive"):
         delete_directory("dist/archive")
