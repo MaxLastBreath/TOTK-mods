@@ -22,6 +22,7 @@ def increase_row(row, cul_sel, cul_tex):
 class Manager:
     patches: list[PatchInfo] = []
     all_canvas: list[ttk.Canvas] = []
+    PageBtns: list[ImageButton] = []
 
     old_cheats: dict = {}
     benchmarks: dict = {}
@@ -74,7 +75,6 @@ class Manager:
 
         # Read the Current Emulator Mode.
         Manager.mode = config.get("Mode", "managermode", fallback="Legacy")
-        Manager.all_pages = ["main", "extra", "randomizer"]
 
         # Force to Ryujinx default
         if platform.system() == "Darwin":
@@ -113,7 +113,7 @@ class Manager:
                 pos_dict = copy.deepcopy(Manager.Back_Pos)
                 Manager.DeletePatches()
                 Manager.LoadPatches(Manager.all_canvas[0], pos_dict)
-                Manager.toggle_page(0, "main")
+                Manager.toggle_pages("main")
                 save_config_game(Manager, Manager.config)  # comes from config.py
                 load_user_choices(Manager, Manager.config)
 
@@ -335,7 +335,7 @@ class Manager:
         Canvas_Create.create_button(
             master=Manager._window,
             canvas=canvas,
-            btn_text="Browse",
+            text="Browse",
             row=row,
             cul=cul_sel,
             width=6,
@@ -353,7 +353,7 @@ class Manager:
         Canvas_Create.create_button(
             master=Manager._window,
             canvas=canvas,
-            btn_text="Use Appdata",
+            text="Use Appdata",
             row=row,
             cul=cul_sel + 68,
             width=9,
@@ -381,7 +381,7 @@ class Manager:
         Canvas_Create.create_button(
             master=Manager._window,
             canvas=canvas,
-            btn_text="Backup",
+            text="Backup",
             row=row,
             cul=backupbutton,
             width=7,
@@ -393,7 +393,7 @@ class Manager:
         Canvas_Create.create_button(
             master=Manager._window,
             canvas=canvas,
-            btn_text="Clear Shaders",
+            text="Clear Shaders",
             row=row,
             cul=backupbutton + 78,
             width=9,
@@ -410,6 +410,7 @@ class Manager:
         Manager.graphics_element_active = Canvas_Create.Photo_Image(
             image_path="graphics_active.png", width=int(70 * 1.6), height=int(48 * 1.6)
         )
+
         Manager.extra_element = Canvas_Create.Photo_Image(
             image_path="extra.png", width=int(70 * 1.6), height=int(48 * 1.6)
         )
@@ -444,23 +445,28 @@ class Manager:
         )
 
         # Graphics & Extra & More - the -20 is extra
-        Canvas_Create.image_Button(
+        page_1 = Canvas_Create.image_Button(
             canvas=canvas,
             row=row - 35,
             cul=cul_tex - 10 - 20,
+            name="main",
             img_1=Manager.graphics_element,
             img_2=Manager.graphics_element_active,
-            command=lambda event: Manager.toggle_page(event, "main"),
+            command=lambda e: Manager.toggle_pages("main"),
         )
 
-        Canvas_Create.image_Button(
+        page_2 = Canvas_Create.image_Button(
             canvas=canvas,
             row=row - 35,
             cul=cul_tex + 190 - 10,
+            name="extra",
             img_1=Manager.extra_element,
             img_2=Manager.extra_element_active,
-            command=lambda event: Manager.toggle_page(event, "extra"),
+            command=lambda e: Manager.toggle_pages("extra"),
         )
+
+        Manager.PageBtns.append(page_1)
+        Manager.PageBtns.append(page_2)
 
         # BIG TEXT.
         Manager.LabelText = Canvas_Create.create_label(
@@ -533,7 +539,7 @@ class Manager:
         )
 
         # Load Saved User Options.
-        Manager.toggle_page(0, "main")
+        Manager.toggle_pages("main")
         load_user_choices(Manager, Manager.config)
         return Manager.maincanvas
 
@@ -657,7 +663,7 @@ class Manager:
         Canvas_Create.create_button(
             master=Manager._window,
             canvas=canvas,
-            btn_text="Apply Cheats",
+            text="Apply Cheats",
             row=520,
             cul=39,
             width=9,
@@ -672,7 +678,7 @@ class Manager:
         Canvas_Create.create_button(
             master=Manager._window,
             canvas=canvas,
-            btn_text="Reset Cheats",
+            text="Reset Cheats",
             row=520,
             cul=277 + 6 + 2,
             width=8,
@@ -687,7 +693,7 @@ class Manager:
         Canvas_Create.create_button(
             master=Manager._window,
             canvas=canvas,
-            btn_text="Read Saved Cheats",
+            text="Read Saved Cheats",
             row=520,
             cul=366 + 2,
             width=11,
@@ -702,7 +708,7 @@ class Manager:
         Canvas_Create.create_button(
             master=Manager._window,
             canvas=canvas,
-            btn_text="Backup",
+            text="Backup",
             row=520,
             cul=479 + 2,
             width=7,
@@ -782,12 +788,17 @@ class Manager:
         Manager.cheatcanvas.pack_forget()
         Manager.maincanvas.pack()
 
-    def toggle_page(Manager, event, show):
-        Manager.maincanvas.itemconfig(show, state="normal")
-        log.debug(show)
-        for state in Manager.all_pages:
-            if state is not show:
-                Manager.maincanvas.itemconfig(state, state="hidden")
+    def toggle_pages(Manager, ShowPage: str):
+        Manager.maincanvas.itemconfig(ShowPage, state="normal")
+
+        for button in Manager.PageBtns:
+            if button.Name != ShowPage:
+                Manager.maincanvas.itemconfig(button.Name, state="hidden")
+                log.info(f"Hiding {button.Name}")
+                button.set(False)
+                button.ToggleImg(WidgetState.Leave)
+            else:
+                button.ToggleImg(WidgetState.Enter)
 
     def show_cheat_canvas(Manager):
         Canvas_Create.is_Ani_Paused = False

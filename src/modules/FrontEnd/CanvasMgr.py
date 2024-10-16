@@ -1,3 +1,4 @@
+from modules.FrontEnd.ImageButton import *
 from PIL import Image, ImageTk, ImageFilter, ImageOps
 from idlelib.tooltip import Hovertip
 from tkinter import *
@@ -68,11 +69,9 @@ class ImageContext:
         cls.object = _object
 
 
-# fmt: off
 class Canvas_Create:
+    """TOTK Optimizer framework for handling images, toolboxes etc..."""
 
-    ''' TOTK Optimizer framework for handling images, toolboxes etc... '''
-    
     LoadedImages: list[ImageContext] = []
     tooltip = None
     tooltip_active = None
@@ -80,90 +79,26 @@ class Canvas_Create:
     is_Ani_Paused = False
 
     @classmethod
-    def create_combobox(cls, canvas: ttk.Canvas,
-                        text: str, master: ttk.Window, description_name: str = None, text_description: str = None, variable: ttk.StringVar = any, values=[],
-                        row: int = 40, cul: int = 40, drop_cul: int = 180, width: int = 150, style: str = "warning",
-                        tags: list[str] =[], tag: str = None, command: None = None, is_active: bool =True):
-        
-        # create text
-        active_color_new = active_color
-        if tag is not None:
-            tags.append(tag)
-        if is_active is False:
-            active_color_new = None
-        elif is_active is True:
-            tags.append("active_text")
+    def create_combobox(
+        cls,
+        canvas: ttk.Canvas,
+        text: str,
+        master: ttk.Window,
+        description_name: str = None,
+        text_description: str = None,
+        variable: ttk.StringVar = any,
+        values=[],
+        row: int = 40,
+        cul: int = 40,
+        drop_cul: int = 180,
+        width: int = 150,
+        style: str = "warning",
+        tags: list[str] = [],
+        tag: str = None,
+        command: any = None,
+        is_active: bool = True,
+    ) -> ttk.StringVar:
 
-        # add outline and user-tag to the outlined text.
-        outline_tag = ["outline", tag]
-
-        for item in tags:
-            outline_tag.append(item)
-
-        # create an outline to the text.
-        canvas.create_text(
-                           scale(cul) + scale(1),
-                           scale(row) + scale(1),
-                           text=text,
-                           anchor="w",
-                           fill=outline_color,
-                           font=textfont,
-                           tags=outline_tag
-                           )
-
-        # create the text and the variable for the dropdown.
-        new_variable = ttk.StringVar(master=master, value=variable)
-        text_line = canvas.create_text(
-                                       scale(cul),
-                                       scale(row),
-                                       text=text,
-                                       anchor="w",
-                                       fill=textcolor,
-                                       font=textfont,
-                                       tags=tags,
-                                       activefil=active_color_new
-                                       )
-
-        # create combobox
-        dropdown = ttk.Combobox(
-                                master=master,
-                                textvariable=new_variable,
-                                values=values,
-                                state="readonly",
-                                bootstyle = style,
-                                )
-        
-        dropdown_window = canvas.create_window(
-                                               scale(drop_cul),
-                                               scale(row),
-                                               anchor="w",
-                                               window=dropdown,
-                                               width=scale(width),
-                                               height=CBHEIGHT,
-                                               tags=tags
-                                               )
-
-        # bind canvas
-        dropdown.bind("<<ComboboxSelected>>", command)
-        # attempt to make a Hovertip
-        cls.read_description(
-                              canvas=canvas,
-                              option=description_name,
-                              text= text_description,
-                              position_list=[dropdown, text_line],
-                              master=master
-                              )
-        canvas.tag_bind(text_line, "<Button-1>", lambda event: next_index(event, new_variable, values, 1, command))
-        canvas.tag_bind(text_line, "<Button-3>", lambda event: next_index(event, new_variable, values, -1, command))
-
-        row += 40
-        return new_variable
-
-    @classmethod
-    def create_scale(cls, canvas,
-                        text, master, description_name=None, text_description= None, variable=any, scale_from= 1, scale_to= 100, increments = 5,
-                        row=40, cul=40, drop_cul=180, width=150, style="warning", type = "s32",
-                        tags=[], tag=None, command=None, is_active=True):
         # create text
         active_color_new = active_color
         if tag is not None:
@@ -187,7 +122,7 @@ class Canvas_Create:
             anchor="w",
             fill=outline_color,
             font=textfont,
-            tags=outline_tag
+            tags=outline_tag,
         )
 
         # create the text and the variable for the dropdown.
@@ -200,9 +135,117 @@ class Canvas_Create:
             fill=textcolor,
             font=textfont,
             tags=tags,
-            activefil=active_color_new
+            activefil=active_color_new,
         )
-        update_text_command = lambda event: update_text(event, canvas, text, new_variable, type=type)
+
+        # create combobox
+        dropdown = ttk.Combobox(
+            master=master,
+            textvariable=new_variable,
+            values=values,
+            state="readonly",
+            bootstyle=style,
+        )
+
+        dropdown_window = canvas.create_window(
+            scale(drop_cul),
+            scale(row),
+            anchor="w",
+            window=dropdown,
+            width=scale(width),
+            height=CBHEIGHT,
+            tags=tags,
+        )
+
+        # bind canvas
+        dropdown.bind("<<ComboboxSelected>>", command)
+        # attempt to make a Hovertip
+        cls.read_description(
+            canvas=canvas,
+            option=description_name,
+            text=text_description,
+            position_list=[dropdown, text_line],
+            master=master,
+        )
+
+        canvas.tag_bind(
+            text_line,
+            "<Button-1>",
+            lambda event: next_index(event, new_variable, values, 1, command),
+        )
+        canvas.tag_bind(
+            text_line,
+            "<Button-3>",
+            lambda event: next_index(event, new_variable, values, -1, command),
+        )
+
+        row += 40
+        return new_variable
+
+    @classmethod
+    def create_scale(
+        cls,
+        canvas: ttk.Canvas,
+        text: str,
+        master: ttk.Window,
+        description_name: str = None,
+        text_description: str = None,
+        variable: ttk.Variable = any,
+        scale_from=1,
+        scale_to=100,
+        increments=5,
+        row: int = 40,
+        cul: int = 40,
+        drop_cul: int = 180,
+        width: int = 150,
+        style: str = "warning",
+        type: str = "s32",
+        tags: list[str] = [],
+        tag: str = None,
+        command: None = None,
+        is_active: bool = True,
+    ) -> ttk.Variable:
+        # create text
+        active_color_new = active_color
+        if tag is not None:
+            tags.append(tag)
+        if is_active is False:
+            active_color_new = None
+        elif is_active is True:
+            tags.append("active_text")
+
+        # add outline and user-tag to the outlined text.
+        outline_tag = ["outline", tag]
+
+        for item in tags:
+            outline_tag.append(item)
+
+        # create an outline to the text.
+        canvas.create_text(
+            scale(cul) + scale(1),
+            scale(row) + scale(1),
+            text=text,
+            anchor="w",
+            fill=outline_color,
+            font=textfont,
+            tags=outline_tag,
+        )
+
+        # create the text and the variable for the dropdown.
+        new_variable = ttk.StringVar(master=master, value=variable)
+        text_line = canvas.create_text(
+            scale(cul),
+            scale(row),
+            text=text,
+            anchor="w",
+            fill=textcolor,
+            font=textfont,
+            tags=tags,
+            activefil=active_color_new,
+        )
+        update_text_command = lambda event: update_text(
+            event, canvas, text, new_variable, type=type
+        )
 
         # create scale box
         scale_box = ttk.Scale(
@@ -232,7 +275,7 @@ class Canvas_Create:
             canvas=canvas,
             option=description_name,
             position_list=[scale_box, text_line],
-            master=master
+            master=master,
         )
 
         tags.append(text)
@@ -246,7 +289,7 @@ class Canvas_Create:
             anchor="w",
             fill=outline_color,
             font=textfont,
-            tags=outline_tag
+            tags=outline_tag,
         )
 
         text_line_value = canvas.create_text(
@@ -257,55 +300,87 @@ class Canvas_Create:
             fill=textcolor,
             font=textfont,
             tags=tags,
-            activefil=active_color_new
+            activefil=active_color_new,
         )
 
         cls.read_description(
             canvas=canvas,
             option=description_name,
-            text= text_description,
+            text=text_description,
             position_list=[scale_box, text_line],
-            master=master
+            master=master,
         )
 
-
-        canvas.tag_bind(text_line, "<Button-1>", lambda event: change_scale(event,
-                                                                            new_variable,
-                                                                            max=scale_from,
-                                                                            min=scale_to,
-                                                                            increments=increments,
-                                                                            command=update_text_command)
-                        )
-        canvas.tag_bind(text_line, "<Button-3>", lambda event: change_scale(event,
-                                                                            new_variable,
-                                                                            max=scale_from,
-                                                                            min=scale_to,
-                                                                            increments=-increments,
-                                                                            command=update_text_command)
-                        )
-        canvas.tag_bind(text_line_value, "<Button-1>", lambda event: change_scale(event,
-                                                                            new_variable,
-                                                                            max=scale_from,
-                                                                            min=scale_to,
-                                                                            increments=increments,
-                                                                            command=update_text_command)
-                        )
-        canvas.tag_bind(text_line_value, "<Button-3>", lambda event: change_scale(event,
-                                                                            new_variable,
-                                                                            max=scale_from,
-                                                                            min=scale_to,
-                                                                            increments=-increments,
-                                                                            command=update_text_command)
-                        )
+        canvas.tag_bind(
+            text_line,
+            "<Button-1>",
+            lambda event: change_scale(
+                event,
+                new_variable,
+                max=scale_from,
+                min=scale_to,
+                increments=increments,
+                command=update_text_command,
+            ),
+        )
+        canvas.tag_bind(
+            text_line,
+            "<Button-3>",
+            lambda event: change_scale(
+                event,
+                new_variable,
+                max=scale_from,
+                min=scale_to,
+                increments=-increments,
+                command=update_text_command,
+            ),
+        )
+        canvas.tag_bind(
+            text_line_value,
+            "<Button-1>",
+            lambda event: change_scale(
+                event,
+                new_variable,
+                max=scale_from,
+                min=scale_to,
+                increments=increments,
+                command=update_text_command,
+            ),
+        )
+        canvas.tag_bind(
+            text_line_value,
+            "<Button-3>",
+            lambda event: change_scale(
+                event,
+                new_variable,
+                max=scale_from,
+                min=scale_to,
+                increments=-increments,
+                command=update_text_command,
+            ),
+        )
 
         return new_variable
 
     @classmethod
     def create_checkbutton(
-            cls, master, canvas,
-            text, description_name=None, text_description = None, variable=any,
-            row=40, cul=40, drop_cul=180,
-            tags=[], tag=None, command=None, is_active=True, style="success"):
+        cls,
+        master: ttk.Window,
+        canvas: ttk.Canvas,
+        text: str,
+        description_name: str = None,
+        text_description: str = None,
+        variable: ttk.Variable = any,
+        row: int = 40,
+        cul: int = 40,
+        drop_cul: int = 180,
+        tags: list[str] = [],
+        tag: str = None,
+        command: any = None,
+        is_active: bool = True,
+        style: str = "success",
+    ) -> ttk.StringVar:
+
         # create text
         active_color_new = active_color
         if tag is not None:
@@ -323,70 +398,86 @@ class Canvas_Create:
 
         # create an outline to the text.
         canvas.create_text(
-                           scale(cul) + scale(1),
-                           scale(row) + scale(1),
-                           text=text,
-                           anchor="w",
-                           fill=outline_color,
-                           font=textfont,
-                           tags=outline_tag
-                           )
+            scale(cul) + scale(1),
+            scale(row) + scale(1),
+            text=text,
+            anchor="w",
+            fill=outline_color,
+            font=textfont,
+            tags=outline_tag,
+        )
+
         # create the text and the variable for the dropdown.
-        new_variable = ttk.StringVar(master=master, value=variable)
+        Variable = ttk.StringVar(master=master, value=variable)
+
         text_line = canvas.create_text(
-                                       scale(cul),
-                                       scale(row),
-                                       text=text,
-                                       anchor="w",
-                                       fill=textcolor,
-                                       font=textfont,
-                                       tags=tags,
-                                       activefil=active_color_new
-                                       )
+            scale(cul),
+            scale(row),
+            text=text,
+            anchor="w",
+            fill=textcolor,
+            font=textfont,
+            tags=tags,
+            activefil=active_color_new,
+        )
 
         # create checkbutton
         try:
             checkbutton = ttk.Checkbutton(
-                                    master=master,
-                                    variable=new_variable,
-                                    onvalue="On",
-                                    offvalue="Off",
-                                    state="readonly",
-                                    command=command,
-                                    bootstyle=style
-                                    )
+                master=master,
+                variable=Variable,
+                onvalue="On",
+                offvalue="Off",
+                state="readonly",
+                command=command,
+                bootstyle=style,
+            )
         except Exception as e:
             log.error(e)
 
         checkbutton_window = canvas.create_window(
-                                               scale(drop_cul),
-                                               scale(row),
-                                               anchor="w",
-                                               window=checkbutton,
-                                               width = scale(11),
-                                               height = scale(11),
-                                               tags=tags
-                                               )
+            scale(drop_cul),
+            scale(row),
+            anchor="w",
+            window=checkbutton,
+            width=scale(11),
+            height=scale(11),
+            tags=tags,
+        )
+
         # attempt to make a Hover tip
-        canvas.tag_bind(text_line, "<Button-1>", lambda event: toggle(event, new_variable))
+        canvas.tag_bind(text_line, "<Button-1>", lambda event: toggle(event, Variable))
+
         cls.read_description(
-                              canvas=canvas,
-                              option=description_name,
-                              position_list=[checkbutton, text_line],
-                              text=text_description,
-                              master=master
-                              )
+            canvas=canvas,
+            option=description_name,
+            position_list=[checkbutton, text_line],
+            text=text_description,
+            master=master,
+        )
+
         row += 40
-        return new_variable
+        return Variable
 
     @classmethod
     def create_button(
-            cls, master, canvas,
-            btn_text, description_name=None, text_description = None, textvariable=None,
-            row=40, cul=40, width=None, padding=None, pos="w",
-            tags=[], tag=None,
-            style="default", command=any,
-                      ):
+        cls,
+        master: ttk.Window,
+        canvas: ttk.Canvas,
+        text: str,
+        description_name: str = None,
+        text_description: str = None,
+        textvariable: ttk.StringVar = None,
+        row: int = 40,
+        cul: int = 40,
+        width: int | None = None,
+        padding: int | None = None,
+        pos: str = "w",
+        tags: list[str] = [],
+        tag: str = None,
+        style: str = "default",
+        command: any = None,
+    ):
 
         # create text
         if tag is not None:
@@ -395,20 +486,20 @@ class Canvas_Create:
 
         button = ttk.Button(
             master=master,
-            text=btn_text,
+            text=text,
             command=command,
             textvariable=textvariable,
             bootstyle=style,
-            padding=padding
+            padding=padding,
         )
 
         canvas.create_window(
             scale(cul),
             scale(row),
-            width=scale(width*10),
+            width=scale(width * 10),
             anchor=pos,
             window=button,
-            tags=tags
+            tags=tags,
         )
 
         cls.read_description(
@@ -416,132 +507,148 @@ class Canvas_Create:
             option=description_name,
             position_list=[button],
             text=text_description,
-            master=master
+            master=master,
         )
         return
 
     @classmethod
-    def create_label(cls, master, canvas,
-                        text, description_name=None, text_description = None, font=textfont, color=textcolor, active_fill=None,
-                        row=40, cul=40, anchor="w", justify="left",
-                        tags=[], tag=None, outline_tag=None, command=None
-                     ):
-        
+    def create_label(
+        cls,
+        master: ttk.Window,
+        canvas: ttk.Canvas,
+        text: str,
+        description_name: str = None,
+        text_description: str = None,
+        font: str = textfont,
+        color: str = textcolor,
+        active_fill: bool = None,
+        row: int = 40,
+        cul: int = 40,
+        anchor: str = "w",
+        justify: str = "left",
+        tags: list[str] = [],
+        tag: str = None,
+        outline_tag: str = None,
+        command: any = None,
+    ):
+
         # create text
         if tag is not None:
             tags.append(tag)
         if command is not None and active_fill is None:
             active_fill = active_color
-        if outline_tag is not None: # add outline and user-tag to the outlined text.
+        if outline_tag is not None:  # add outline and user-tag to the outlined text.
             outline_tag = [outline_tag, tag]
 
         # create an outline to the text.
         text_outline = canvas.create_text(
-                                        scale(cul) + scale(1),
-                                        scale(row) + scale(1),
-                                        text=text,
-                                        anchor=anchor,
-                                        justify=justify,
-                                        fill=outline_color,
-                                        font=font,
-                                        tags=outline_tag,
-                                        )
-        
+            scale(cul) + scale(1),
+            scale(row) + scale(1),
+            text=text,
+            anchor=anchor,
+            justify=justify,
+            fill=outline_color,
+            font=font,
+            tags=outline_tag,
+        )
+
         # create the text and the variable.
         text_line = canvas.create_text(
-                                       scale(cul),
-                                       scale(row),
-                                       text=text,
-                                       anchor=anchor,
-                                       justify=justify,
-                                       fill=color,
-                                       font=font,
-                                       tags=tags,
-                                       activefil=active_fill,
-                                       )
+            scale(cul),
+            scale(row),
+            text=text,
+            anchor=anchor,
+            justify=justify,
+            fill=color,
+            font=font,
+            tags=tags,
+            activefil=active_fill,
+        )
         canvas.tag_bind(text_line, "<Button-1>", command)
         cls.read_description(
-                              canvas=canvas,
-                              option=description_name,
-                              position_list=[text_line],
-                              text=text_description,
-                              master=master
-                              )
-        return text_line, text_outline #return textID
+            canvas=canvas,
+            option=description_name,
+            position_list=[text_line],
+            text=text_description,
+            master=master,
+        )
+        return text_line, text_outline  # return textID
 
     @classmethod
-    def image_Button(cls, canvas,
-                     row, cul, anchor="nw",
-                     img_1=any, img_2=any, effect_folder=None,
-                     tag_1=None, tag_2=None,
-                     command=None
-                     ):
-        
-        # If strings are not defined use random tags.
-        if tag_1 is None:
-            tag_1 = random.choices(string.ascii_uppercase +
-                           string.digits, k=8)
-            tag_1 = ''.join(tag_1)
-        if tag_2 is None:
-            tag_2 = random.choices(string.ascii_uppercase +
-                           string.digits, k=8)
-            tag_2 = ''.join(tag_2)
+    def image_Button(
+        cls,
+        canvas: ttk.Canvas,
+        row: int,
+        cul: int,
+        name: str | None = None,
+        anchor: str = "nw",
+        img_1: ttk.PhotoImage = any,
+        img_2: ttk.PhotoImage = any,
+        isOn: bool = False,
+        command: Callable = None,
+    ) -> ImageButton:
 
-        # Trigger Animation
-        canvas.create_image(scale(cul), scale(row), anchor=anchor, image=img_1, state="normal", tags=tag_1)
-        canvas.create_image(scale(cul), scale(row), anchor=anchor, image=img_2, state="hidden", tags=tag_2)
+        ImageBtn: ImageButton = ImageButton(
+            canvas.master,
+            canvas,
+            name,
+            CreateRandomTag(name),
+            CreateRandomTag(name),
+            isOn,
+        )
 
-        # Bind the actions for the button.
-        canvas.tag_bind(tag_1, "<Enter>", lambda event: cls.toggle_img(
-                                                                        canvas=canvas, mode="Enter",
-                                                                        tag_1=tag_1, tag_2=tag_2,
-                                                                        event=event))
-        canvas.tag_bind(tag_2, "<Leave>", lambda event: cls.toggle_img(
-                                                                        canvas=canvas, mode="Leave",
-                                                                        tag_1=tag_1, tag_2=tag_2,
-                                                                        event=event))
-        canvas.tag_bind(tag_2, "<Button-1>", command)
-        canvas.tag_bind(tag_1, "<Button-1>", command)
-        
-        return tag_1, tag_2
-        new_folder_path = cls.get_UI_path(effect_folder)
-        effect_img_list = os.listdir(new_folder_path)
-        if effect_folder is not None:
-            for item in effect_img_list:
-                print(effect_img_list)
-                new_item_path = os.path.join(new_folder_path, item)
-                effect_img = cls.Photo_Image(
-                                              image_path=new_item_path,
-                                              width=img_1.width(), height=img_1.height(),
-                                             )
-        return tag_1, tag_2
+        ImageBtn.BindImages(scale(cul), scale(row), img_1, img_2, anchor)
+        ImageBtn.BindCommand(command)
+        ImageBtn.MakeDynamic(True)
+
+        return ImageBtn
 
     @classmethod
-    def set_image(cls, canvas,
-                     row, cul, anchor="nw",
-                     img=any,
-                     tag=None,
-                     state="normal"
-                     ):
+    def set_image(
+        cls,
+        canvas: ttk.Canvas,
+        row: int,
+        cul: int,
+        anchor: str = "nw",
+        img: ttk.PhotoImage = any,
+        tag: str | None = None,
+        state: str = "normal",
+    ):
 
         if tag is None:
-            tag = random.choices(string.ascii_uppercase +
-                           string.digits, k=8)
-            tag = ''.join(tag)
+            tag = random.choices(string.ascii_uppercase + string.digits, k=8)
+            tag = "".join(tag)
 
-        canvas.create_image(scale(cul), scale(row), anchor=anchor, image=img, state=state, tags=[tag])
+        canvas.create_image(
+            scale(cul), scale(row), anchor=anchor, image=img, state=state, tags=[tag]
+        )
 
     @classmethod
-    def toggle_img(cls, canvas, mode, tag_1, tag_2, event=None):
+    def toggle_img(
+        cls,
+        canvas: ttk.Canvas,
+        mode: str,
+        tag_1: str,
+        tag_2: str,
+        boolean: ttk.BooleanVar | None = None,
+    ):
         if mode.lower() == "enter":
             canvas.itemconfig(tag_1, state="hidden")
             canvas.itemconfig(tag_2, state="normal")
+
         if mode.lower() == "leave":
             canvas.itemconfig(tag_1, state="normal")
             canvas.itemconfig(tag_2, state="hidden")
 
     @classmethod
-    def read_description(cls, canvas, option, text = None, position_list=list, master=any):
+    def read_description(
+        cls,
+        canvas: ttk.Canvas,
+        option: str,
+        text: str = None,
+        position_list: list = list,
+        master: ttk.Window = any,
+    ):
         if f"{option}" not in description and text is None:
             return
         for position in position_list:
@@ -550,10 +657,10 @@ class Canvas_Create:
                 if canvas_item:
                     if text is not None:
                         hover = text
-                        cls.create_tooltip(canvas, position, hover, master)
+                        cls.create_tooltip(canvas, master, position, hover)
                     else:
                         hover = description[f"{option}"]
-                        cls.create_tooltip(canvas, position, hover, master)
+                        cls.create_tooltip(canvas, master, position, hover)
                     break
             except TclError as e:
                 if text is not None:
@@ -564,55 +671,65 @@ class Canvas_Create:
                     Hovertip(position, f"{hover}", hover_delay=Hoverdelay)
 
     @classmethod
-    def create_tooltip(cls, canvas, position, hover, master):
+    def create_tooltip(cls, canvas: ttk.Canvas, master: ttk.Window, position, hover):
 
-        canvas.tag_bind(position, "<Enter>", lambda event: cls.show_tooltip(
-                                                                             event=event,
-                                                                             item=position,
-                                                                             tool_text=hover,
-                                                                             the_canvas=canvas,
-                                                                             master=master
-                                                                             )
-                        )
+        canvas.tag_bind(
+            position,
+            "<Enter>",
+            lambda e: cls.show_tooltip(
+                canvas=canvas,
+                master=master,
+                item=position,
+                tool_text=hover,
+            ),
+        )
 
-        canvas.tag_bind(position, "<Leave>", lambda event: cls.hide_tooltip(event=event))
-        canvas.tag_bind(position, "<Return>", lambda event: cls.hide_tooltip(event))
+        canvas.tag_bind(position, "<Leave>", lambda e: cls.hide_tooltip())
+        canvas.tag_bind(position, "<Return>", lambda e: cls.hide_tooltip())
 
     @classmethod
-    def show_tooltip(cls, event, item, tool_text, the_canvas, master):
-        bbox = the_canvas.bbox(item)
+    def show_tooltip(
+        cls,
+        canvas: ttk.Canvas,
+        master: ttk.Window,
+        item,
+        tool_text,
+    ):
+        bbox = canvas.bbox(item)
         x, y = bbox[0], bbox[1]
-        x += the_canvas.winfo_rootx()
-        y += the_canvas.winfo_rooty()
+        x += canvas.winfo_rootx()
+        y += canvas.winfo_rooty()
 
         master.after(50)
         cls.tooltip = ttk.Toplevel()
         cls.tooltip.wm_overrideredirect(True)
         cls.tooltip.geometry(f"+{x + scale(20)}+{y + scale(25)}")
+
         tooltip_label = ttk.Label(
-                                    master=cls.tooltip,
-                                    text=tool_text,
-                                    background="gray",
-                                    relief="solid",
-                                    borderwidth=1,
-                                    justify="left"
-                                 )
+            master=cls.tooltip,
+            text=tool_text,
+            background="white",
+            relief="solid",
+            borderwidth=1,
+            justify="left",
+        )
+
         tooltip_label.pack()
 
         cls.tooltip_active = True
 
     @classmethod
-    def hide_tooltip(cls, event):
+    def hide_tooltip(cls):
         cls.tooltip.destroy()
         cls.tooltip_active = False
 
     @classmethod
-    def focus(cls, event):
+    def focus(cls):
         # Handle animations and events during those animations.
         cls.is_Ani_Paused = False
 
-    @classmethod    
-    def un_focus(cls, event):
+    @classmethod
+    def un_focus(cls):
         cls.is_Ani_Paused = True
 
     @classmethod
@@ -623,15 +740,19 @@ class Canvas_Create:
 
     @classmethod
     def canvas_animation(cls, master, canvas):
-        master.bind("<Enter>", cls.focus)
-        master.bind("<Leave>", cls.un_focus)
+
+        master.bind("<Enter>", lambda e: cls.focus())
+        master.bind("<Leave>", lambda e: cls.un_focus())
+
         x = 0
         y = 0
         m = 1
+
         if sf >= 1.5:
             m *= 2
         if FPS == 0.1:
             m *= 2
+
         a = scale(m)
         while True:
             if cls.is_Ani_running is False:
@@ -656,8 +777,8 @@ class Canvas_Create:
                 time.sleep(0.2)
 
     @classmethod
-    def get_UI_path(cls, file_name, folder_name="GUI"):
-        if getattr(sys, 'frozen', False):
+    def get_UI_path(cls, file_name: str, folder_name: str = "GUI"):
+        if getattr(sys, "frozen", False):
             base_path = sys._MEIPASS
             path = os.path.join(base_path, folder_name, file_name)
             if not os.path.exists(path):
@@ -665,17 +786,26 @@ class Canvas_Create:
         else:
             base_path = os.path.dirname(os.path.abspath(__file__))
             base_path = os.path.dirname(base_path)
-            base_path = os.path.dirname(base_path) # run twice, due to changes to file location
+            base_path = os.path.dirname(
+                base_path
+            )  # run twice, due to changes to file location
             path = os.path.join(base_path, folder_name, file_name)
             if not os.path.exists(path):
                 return file_name
         return path
 
     @classmethod
-    def Photo_Image(cls, image_path=str, is_stored=False,
-                    width=None, height=None,
-                    blur=None, mirror=False, flip=False,
-                    auto_contrast=False, img_scale=None):
+    def Photo_Image(
+        cls,
+        image_path=str,
+        width: int | None = None,
+        height: int | None = None,
+        blur: int | None = None,
+        mirror: bool = False,
+        flip: bool = False,
+        auto_contrast: bool = False,
+        img_scale: int = None,
+    ):
 
         UI_path = cls.get_UI_path(image_path)
         image = ttk.Image.open(UI_path)
@@ -696,28 +826,13 @@ class Canvas_Create:
         return new_photo_image
 
     @classmethod
-    def effect(cls, canvas, img_list=list):
-        cls.is_effect_active = True
-        while True:
-            for image in img_list:
-                canvas.withtag("effect", state="hidden")
-                canvas.withtag(image, state="active")
-                time.sleep(0.5)
-            if cls.is_effect_active is False:
-                break
-
-    @classmethod
-    def Change_Background_Image(cls, canvas, _path):
+    def Change_Background_Image(cls, canvas: ttk.Canvas, _path: str):
         for item in cls.LoadedImages:
-            if (item.path == _path):
+            if item.path == _path:
                 canvas.itemconfig("background", image=item.object)
                 return
-            
-        newImage = cls.Photo_Image(
-                                    image_path=_path,
-                                    width=1200, height=600,
-                                    blur = 2
-                                    )
-        
+
+        newImage = cls.Photo_Image(image_path=_path, width=1200, height=600, blur=2)
+
         cls.LoadedImages.append(ImageContext(_path, newImage))
         canvas.itemconfig("background", image=newImage)

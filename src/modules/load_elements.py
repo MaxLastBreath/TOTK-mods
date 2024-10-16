@@ -130,7 +130,6 @@ def load_UI_elements(manager, canvas):
         cul=794,
         img_1=manager.master_sword_element,
         img_2=manager.master_sword_element_active,
-        effect_folder="effect1",
         command=lambda event: manager.open_browser("Kofi"),
     )
 
@@ -176,7 +175,7 @@ def create_tab_buttons(manager, canvas):
         Canvas_Create.create_button(
             master=manager._window,
             canvas=canvas,
-            btn_text="Donate",
+            text="Donate",
             textvariable=manager.switch_text,
             style="success",
             row=1130,
@@ -192,7 +191,7 @@ def create_tab_buttons(manager, canvas):
         Canvas_Create.create_button(
             master=manager._window,
             canvas=canvas,
-            btn_text="Github",
+            text="Github",
             textvariable=manager.switch_text,
             style="success",
             row=1066,
@@ -211,7 +210,7 @@ def create_tab_buttons(manager, canvas):
     Canvas_Create.create_button(
         master=manager._window,
         canvas=canvas,
-        btn_text="Switch",
+        text="Switch",
         textvariable=manager.switch_text,
         style="Danger",
         row=11,
@@ -238,7 +237,7 @@ def create_tab_buttons(manager, canvas):
     Canvas_Create.create_button(
         master=manager._window,
         canvas=canvas,
-        btn_text="Main",
+        text="Main",
         style=button1style,
         row=11,
         cul=26,
@@ -251,7 +250,7 @@ def create_tab_buttons(manager, canvas):
     Canvas_Create.create_button(
         master=manager._window,
         canvas=canvas,
-        btn_text="Cheats",
+        text="Cheats",
         style=button2style,
         row=11,
         cul=77,
@@ -264,7 +263,7 @@ def create_tab_buttons(manager, canvas):
     Canvas_Create.create_button(
         master=manager._window,
         canvas=canvas,
-        btn_text="Settings",
+        text="Settings",
         style=button3style,
         row=11,
         cul=257,
