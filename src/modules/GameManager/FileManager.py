@@ -32,7 +32,7 @@ class FileManager:
     def Initialize(filemgr, Window, Mgr):
         from modules.FrontEnd.FrontEnd import Manager  # avoid Circular Imports.
 
-        filemgr._manager: Manager = Mgr
+        filemgr._manager = Mgr
         filemgr._window = Window
 
     @classmethod
@@ -315,7 +315,7 @@ class FileManager:
         """Transfer mod files to the emulator/switch location(s)..."""
 
         patchinfo = filemgr._manager._patchInfo
-        source = os.path.join(patchinfo.Folder, patchinfo.ModFolder)
+        source = patchinfo.GetModPath()
 
         if filemgr.is_extracting is False:
             destination = os.path.join(filemgr.load_dir, patchinfo.ModName)
@@ -402,7 +402,8 @@ class FileManager:
     def submit(filemgr, mode: str | None = None):
         filemgr.add_list = []
         filemgr.remove_list = []
-        filemgr.checkpath(mode)
+        filemgr.checkpath(filemgr._manager.mode)
+
         # Needs to be run after checkpath.
         if filemgr.mode == "Legacy":
             qtconfig = get_config_parser()

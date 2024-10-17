@@ -1,5 +1,5 @@
 from modules.logger import log, superlog
-import json, os
+import json, os, sys
 
 
 class PatchInfo:
@@ -23,6 +23,16 @@ class PatchInfo:
         self.Config = configloc
         self.ModFolder = modfolder
         self.Cheats = Cheats
+
+    def GetModPath(self) -> str:
+        location = os.path.join(self.Folder, self.ModFolder)
+
+        if os.path.exists(location):
+            return location
+        else:
+            if getattr(sys, "frozen", False):
+                location = os.path.join(sys._MEIPASS, self.Folder, self.ModFolder)
+                return location
 
     def IDtoNum(self):
         return int(self.ID, 16)
