@@ -33,7 +33,10 @@ def copy(manager):
     pyperclip.copy(benchmark_result)
 
 
-def load_UI_elements(manager, canvas):
+def load_UI_elements(manager, canvas: ttk.Canvas):
+    from modules.FrontEnd.FrontEnd import Manager
+
+    manager: Manager = manager
 
     manager.benchmark_dicts = {
         "Korok Forest": TextureMgr.Request("benchmark_korok.png"),
@@ -50,7 +53,10 @@ def load_UI_elements(manager, canvas):
         0, 0, anchor="nw", image=TextureMgr.Request("image.jpg"), tags="background"
     )
     canvas.create_image(
-        0, 0, anchor="nw", image=TextureMgr.Request("Legacy_BG.png"), tags="overlay-1"
+        0, 0, anchor="nw", image=TextureMgr.Request("Legacy_BG.png"), tags="Legacy"
+    )
+    canvas.create_image(
+        0, 0, anchor="nw", image=TextureMgr.Request("Ryujinx_BG.png"), tags="Ryujinx"
     )
     canvas.create_image(
         0, 0, anchor="nw", image=TextureMgr.Request("BG_Left_2.png"), tags="overlay"

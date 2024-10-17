@@ -32,8 +32,10 @@ class ImageButton:
         self.tagOn = tagOn
         self.tagOff = tagOff
         self.Type = Type
-        self.IsOn = ttk.BooleanVar(window, isOn)
+        self.IsOn = ttk.BooleanVar(window, False)
         self.FullTags = tags
+        self.IsOn.set(isOn)
+        # log.info(f"{self.Name}, {self.IsOn.get()} and default : {isOn}")
 
     def get(self):
         return self.IsOn.get()
@@ -83,6 +85,17 @@ class ImageButton:
             self.tagOn, "<Leave>", lambda e: self.ActivateImage(WidgetState.Leave)  # fmt:skip
         )
 
+    def SetImageState(self):
+        image_On_State = "normal"
+        image_Off_State = "hidden"
+
+        if self.get() == True:
+            image_On_State = "hidden"
+            image_Off_State = "normal"
+
+        self._Canvas.itemconfig(self.tagOn, state=image_On_State)
+        self._Canvas.itemconfig(self.tagOff, state=image_Off_State)
+
     def BindImages(
         self,
         cul: int,
@@ -92,6 +105,13 @@ class ImageButton:
         anchor: str = "nw",
     ):
 
+        image_On_State = "normal"
+        image_Off_State = "hidden"
+
+        if self.get() == True:
+            image_On_State = "hidden"
+            image_Off_State = "normal"
+
         tags = self.FullTags.copy()
         tags.append(self.tagOn)
 
@@ -100,7 +120,7 @@ class ImageButton:
             row,
             anchor=anchor,
             image=ImageOn,
-            state="normal",
+            state=image_On_State,
             tags=tags,
         )
 
@@ -112,7 +132,7 @@ class ImageButton:
             row,
             anchor=anchor,
             image=ImageOff,
-            state="hidden",
+            state=image_Off_State,
             tags=tags,
         )
 
@@ -138,6 +158,7 @@ class ImageButton:
                 self._Canvas.itemconfig(self.tagOff, state="hidden")
 
     def ActivateImage(self, State: WidgetState):
+        # log.info(f"{self.IsOn.get()}")
         if self.Type == ButtonToggle.StaticDynamic:
             if self.get() is False:
                 self.ToggleImg(State)

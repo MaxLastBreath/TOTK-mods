@@ -434,6 +434,7 @@ class Manager:
             img_2=TextureMgr.Request("graphics_active.png"),
             command=lambda e: Manager.toggle_pages("main"),
             Type=ButtonToggle.StaticDynamic,
+            isOn=True,
         )
 
         page_2 = Canvas_Create.image_Button(
@@ -523,8 +524,9 @@ class Manager:
 
         Canvas_Create.image_Button(
             canvas=canvas,
-            row=520,
-            cul=850,
+            row=560,
+            cul=1010,
+            anchor="c",
             img_1=TextureMgr.Request("optimizer_logo.png"),
             img_2=TextureMgr.Request("optimizer_logo_active.png"),
             command=lambda event: Manager.open_browser("Kofi"),

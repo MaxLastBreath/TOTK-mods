@@ -596,7 +596,8 @@ class Canvas_Create:
             name,
             CreateRandomTag(name),
             CreateRandomTag(name),
-            isOn,
+            Type=Type,
+            isOn=isOn,
             tags=tags,
         )
 
