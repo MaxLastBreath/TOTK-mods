@@ -6,6 +6,7 @@ from modules.GameManager.PatchInfo import PatchInfo
 from modules.GameManager.FileManager import FileManager
 from modules.GameManager.LaunchManager import LaunchManager
 from modules.FrontEnd.TextureMgr import TextureMgr
+from modules.FrontEnd.Localization import Localization
 from modules.load_elements import create_tab_buttons, load_UI_elements
 import threading, webbrowser, os, copy
 import ttkbootstrap as ttk
@@ -69,6 +70,10 @@ class Manager:
 
         # Load Patch Info for current game.
         Manager.ultracam_beyond = Manager._patchInfo.LoadJson()
+        Manager.cheat_options = Manager._patchInfo.LoadCheatsJson()
+
+        # Load Localization
+        Manager.description = Localization.GetJson()
 
         Manager._window = window
         Manager.constyle = Style(theme=theme.lower())
@@ -84,13 +89,6 @@ class Manager:
         # Force to Ryujinx default
         if platform.system() == "Darwin":
             Manager.mode = "Ryujinx"
-
-        # Initialize Json Files.
-        Manager.description = load_json("Description.json", descurl)
-        Manager.presets = load_json("beyond_presets.json", presetsurl)
-        Manager.version_options = load_json("Version.json", versionurl)
-        Manager.cheat_options = load_json("Cheats.json", cheatsurl)
-        Manager.Legacy_settings = load_json("Legacy_presets.json", Legacy_presets_url)
 
         # Local text variable
         Manager.cheat_version = ttk.StringVar(value="Version - 1.2.1")
@@ -117,11 +115,25 @@ class Manager:
                 Manager._patchInfo = item
                 Manager.ultracam_beyond = Manager._patchInfo.LoadJson()
                 pos_dict = copy.deepcopy(Manager.Back_Pos)
+
+                # DeletePatches and Load New Patches.
                 Manager.DeletePatches()
                 Manager.LoadPatches(Manager.all_canvas[0], pos_dict)
                 Manager.toggle_pages("main")
-                save_config_game(Manager, Manager.config)  # comes from config.py
+
+                # Save the selected game in the config file and load options for that game.
+                save_config_game(Manager, Manager.config)
                 load_user_choices(Manager, Manager.config)
+
+                # Manager Cheats for each Game.
+                Manager.cheat_options = Manager._patchInfo.LoadCheatsJson()
+                Manager.cheatcanvas.delete()
+                Manager.create_cheat_canvas()
+
+                if Manager._patchInfo.Cheats is False:
+                    Manager.maincanvas.itemconfig("Cheats", state="hidden")
+                else:
+                    Manager.maincanvas.itemconfig("Cheats", state="Normal")
 
     def ChangeName(Manager):
         Manager.all_canvas[0].itemconfig(
@@ -247,6 +259,7 @@ class Manager:
         Manager.maincanvas = ttk.Canvas(
             Manager._window, width=scale(1200), height=scale(600)
         )
+
         canvas = Manager.maincanvas
         Manager.maincanvas.pack()
         Manager.all_canvas.append(Manager.maincanvas)
@@ -279,7 +292,7 @@ class Manager:
         # Start of CANVAS options.
 
         # Create preset menu.
-        presets = {"Saved": {}} | load_json("beyond_presets.json", presetsurl)
+        presets = {"Saved": {}}
         values = list(presets.keys())
         Manager.selected_preset = Canvas_Create.create_combobox(
             master=Manager._window,
@@ -326,28 +339,16 @@ class Manager:
             tags=["text"],
             tag="GameSelect",
             description_name="GameSelect",
-            command=lambda event: Manager.LoadNewGameInfo(),
+            command=lambda e: Manager.LoadNewGameInfo(),
         )
 
         row += 40
         # Create a label for Legacy.exe selection
         backupbutton = cul_sel
-        command = lambda event: Manager.select_Legacy_exe()
+        command = lambda e: Manager.select_Legacy_exe()
 
         def browse():
             Manager.select_Legacy_exe()
-
-        # Canvas_Create.create_button(
-        #     master=Manager._window,
-        #     canvas=canvas,
-        #     text="Browse",
-        #     row=row,
-        #     cul=cul_sel,
-        #     width=6,
-        #     tags=["Button"],
-        #     description_name="Browse",
-        #     command=lambda: browse(),
-        # )
 
         text = "SELECT EXECUTABLE"
         Canvas_Create.create_label(
@@ -541,6 +542,7 @@ class Manager:
         Manager.fps_var.set(Manager.fps_var_new.get())
 
     def create_cheat_canvas(Manager):
+
         # Create Cheat Canvas
         Manager.cheatcanvas = ttk.Canvas(
             Manager._window, width=scale(1200), height=scale(600)
@@ -549,6 +551,9 @@ class Manager:
         Manager.cheatcanvas.pack(expand=1, fill=BOTH)
         canvas = Manager.cheatcanvas
         Manager.all_canvas.append(Manager.cheatcanvas)
+
+        if Manager._patchInfo.Cheats is False:
+            return
 
         # Create UI elements.
         Manager.Cheat_UI_elements(Manager.cheatcanvas)
@@ -566,7 +571,7 @@ class Manager:
             canvas=canvas,
             text="",
             values=versionvalues,
-            variable=versionvalues[1],
+            variable=versionvalues[0],
             row=520,
             cul=130 + 2,
             drop_cul=130 + 2,
@@ -796,6 +801,9 @@ class Manager:
 
     def show_cheat_canvas(Manager):
         Canvas_Create.is_Ani_Paused = False
+        if Manager._patchInfo.Cheats is False:
+            return
+
         Manager.cheatcanvas.pack()
         Manager.maincanvas.pack_forget()
 

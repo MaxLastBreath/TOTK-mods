@@ -3,6 +3,7 @@ from modules.scaling import *
 from modules.json import *
 from modules.download import *
 from modules.logger import log, superlog
+from modules.FrontEnd.Localization import Localization
 import configparser
 
 Version = "manager-3.0.0"
@@ -108,7 +109,6 @@ style = "danger"
 
 # URLS
 cheatsurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/Cheats.json"
-presetsurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/beyond_presets.json"
 versionurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/VersionNew.json"
 descurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/Description.json"
 Legacy_presets_url = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/Legacy_presets.json"
@@ -122,4 +122,4 @@ New_UCBeyond_Download = (
 # FP download:
 FP_Mod = f"{repo_url_raw}/raw/main/scripts/Mods/FP%20Mods/First%20Person.zip"
 
-description = load_json("Description.json", descurl)
+description = Localization.GetJson()

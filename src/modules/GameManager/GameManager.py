@@ -1,13 +1,12 @@
 from modules.GameManager.PatchInfo import PatchInfo
 from modules.logger import log, superlog
-import json
-import os
+import json, os, sys
 
 
 class Game_Manager:
     GamePatches: list[PatchInfo] = []
     DefaultID: str = "0100F2C0115B6001"
-    Directory: str = "Patches"
+    Directory: str = "PatchInfo"
     PatchFile: str = "PatchInfo.json"
 
     def __init__(self):
@@ -19,9 +18,17 @@ class Game_Manager:
         patch_directory = os.path.join(current_directory, cls.Directory)
 
         if not os.path.exists(patch_directory):
-            raise "NO PATCHES FOUND, Please confirm your installation is correct."
+            if getattr(sys, "frozen", False):
+                patch_directory = os.path.join(sys._MEIPASS, cls.Directory)
+                superlog.warning("No Patch Folder, using stored patches.")
 
         superlog.info("Looking for supported games...")
+        cls.CreatePatches(patch_directory)
+
+    @classmethod
+    def CreatePatches(cls, patch_directory) -> None:
+
+        "Loads patch info for each game detected in Patch Folder"
 
         for folder in os.listdir(patch_directory):
             patchfolder = os.path.join(patch_directory, folder)
@@ -45,6 +52,7 @@ class Game_Manager:
                             jsonfile["ModName"],
                             jsonfile["ModConfig"],
                             jsonfile["ModFolder"],
+                            jsonfile["Cheats"],
                         )
                     )
 

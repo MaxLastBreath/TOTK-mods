@@ -5,5 +5,6 @@
     "ModConfig" : "romfs/UltraCam/maxlastbreath.ini",
     "Config" : "Options.json",
     "ModFolder" : "UltraCam",
-    "Versions" : ["1.6.0"]
+    "Versions" : ["1.6.0"],
+    "Cheats" : true
 }
