@@ -133,6 +133,7 @@ class Manager:
                 load_user_choices(Manager, Manager.config)
 
                 Cheats.loadCheats()  # load the new cheats.
+                Cheats.LoadCheatsConfig()
 
                 if Manager._patchInfo.Cheats is False:
                     Manager.maincanvas.itemconfig("CheatButton", state="hidden")

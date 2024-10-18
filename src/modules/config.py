@@ -125,21 +125,7 @@ def loadGameConfig(Manager, config):
         except KeyError:
             pass
 
-def save_cheats(cheatmgr, config_file):
-    from modules.GameManager.CheatManager import Cheats
-
-    cheatmgr:Cheats = cheatmgr
-
-    config["Cheats"] = {}
-    for option_name, option_var in cheatmgr.CheatsInfo.items():
-        config['Cheats'][option_name] = option_var.get()
-    with open(config_file, 'w', encoding="utf-8") as file:
-        config["Manager"] = {}
-        config["Manager"]["Cheat_Version"] = cheatmgr.CheatVersion.get()
-        config.write(file)
-    return
-
-def save_user_choices(Manager, config_file, Legacy_path=None, mode=None):
+def save_user_choices(Manager, config_file, Legacy_path=None):
     log.info(f"Saving user choices in {localconfig}")
     config = configparser.ConfigParser()
     if os.path.exists(config_file):
@@ -180,14 +166,6 @@ def save_user_choices(Manager, config_file, Legacy_path=None, mode=None):
 def load_user_choices(Manager, config_file, mode=None):
     config = configparser.ConfigParser()
     config.read(config_file, encoding="utf-8")
-    if mode == "Cheats":
-        Manager.cheat_version.set(config.get("Manager", "Cheat_Version", fallback="Version - 1.2.1"))
-        try:
-            for option_name, option_var in Manager.selected_cheats.items():
-                option_value = config.get('Cheats', option_name, fallback="Off")
-                option_var.set(option_value)
-        except AttributeError:
-            pass
 
     loadGameConfig(Manager, config)
 
@@ -195,15 +173,6 @@ def load_user_choices(Manager, config_file, mode=None):
     for option_name, option_var in Manager.selected_options.items():
         option_value = config.get('Options', option_name, fallback="Off")
         option_var.set(option_value)
-
-    # Load the enable/disabled cheats
-    try:
-        for option_name, option_var in Manager.selected_cheats.items():
-            option_value = config.get('Cheats', option_name, fallback="Off")
-            option_var.set(option_value)
-    except AttributeError as e:
-        # continue, not important.
-        handle = e
 
 def apply_selected_preset(Manager, event=None):
     try:

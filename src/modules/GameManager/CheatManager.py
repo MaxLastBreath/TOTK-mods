@@ -4,7 +4,7 @@ from modules.FrontEnd.TextureMgr import TextureMgr
 from modules.GameManager.FileManager import FileManager
 from modules.GameManager.PatchInfo import PatchInfo
 from modules.load_elements import create_tab_buttons
-from modules.config import load_user_choices, save_cheats, save_user_choices
+from modules.config import load_user_choices
 from modules.logger import log, superlog
 from modules.scaling import *
 
@@ -31,6 +31,9 @@ class Cheats:
             Cheats.CheatVersion = ttk.StringVar(manager._window, "None")
 
         Cheats.LoadCheatVersions()
+        Cheats.LoadCheatsConfig()
+
+        log.warning("Loading New Cheats.")
 
     @classmethod
     def Hide(cls):
@@ -102,7 +105,7 @@ class Cheats:
             tags=["Button"],
             style="default",
             description_name="Read Cheats",
-            command=lambda: load_user_choices(manager, manager.config, "Cheats"),
+            command=lambda e: Cheats.LoadCheatsConfig(),
         )
 
         # Backup
@@ -117,7 +120,7 @@ class Cheats:
             tags=["Button"],
             style="default",
             description_name="Backup",
-            command=lambda: FileManager.backup(),
+            command=lambda e: FileManager.backup(),
         )
 
         Cheats.LoadCheatVersions()
@@ -128,7 +131,7 @@ class Cheats:
             return
 
         Cheats.loadCheats()
-        load_user_choices(manager, manager.config)
+        Cheats.LoadCheatsConfig()
 
     @classmethod
     def loadCheats(cls):
@@ -249,8 +252,12 @@ class Cheats:
                 if key == "Aversion":
                     Cheats.versionvalues.append("Version - " + value)
 
-        # We should run config fetch here. (TO-DO)
-        Cheats.CheatVersion.set(Cheats.versionvalues[-1])
+        cls.LoadCheatVersionFromConfig()
+
+        try:
+            Cheats.versionvalues.index(Cheats.CheatVersion.get())
+        except ValueError:
+            Cheats.CheatVersion.set(Cheats.versionvalues[-1])
 
         if Cheats.Canvas is None:
             return  # return if we don't have a canvas.
@@ -277,7 +284,8 @@ class Cheats:
         """This function creates a cheat manager patcher, primarily used only for TOTK right now."""
 
         superlog.info("Starting Cheat patcher.")
-        save_cheats(FileManager._manager._Cheats, FileManager._manager.config)
+
+        Cheats.SaveCheatsConfig()
         selected_cheats = {}
 
         for option_name, option_var in Cheats.CheatsInfo.items():
@@ -308,3 +316,46 @@ class Cheats:
                 log.debug(f"FAILED TO CREATE CHEAT PATCH. {e}")
 
         superlog.info("Applied cheats successfully.")
+
+    @classmethod
+    def LoadCheatsConfig(cls):
+        log.warning("Loading Cheats info.")
+
+        config = configparser.ConfigParser()
+        config.read(cls._manager.config, encoding="utf-8")
+
+        try:
+            for option_name, option_var in cls.CheatsInfo.items():
+                option_value = config.get(
+                    f"Cheats {Cheats._patchInfo.ID}", option_name, fallback="Off"
+                )
+                option_var.set(option_value)
+                log.info(f"{option_name}, {option_value}")
+        except AttributeError:
+            pass
+
+    @classmethod
+    def SaveCheatsConfig(cls):
+
+        config[f"Cheats {Cheats._patchInfo.ID}"] = {}
+
+        for option_name, option_var in Cheats.CheatsInfo.items():
+            config[f"Cheats {Cheats._patchInfo.ID}"][option_name] = option_var.get()
+
+        config[f"Cheats {Cheats._patchInfo.ID}"][
+            "Cheat_Version"
+        ] = Cheats.CheatVersion.get()
+
+        with open(Cheats._manager.config, "w", encoding="utf-8") as file:
+            config.write(file)
+
+    @classmethod
+    def LoadCheatVersionFromConfig(cls):
+        config = configparser.ConfigParser()
+        config.read(cls._manager.config, encoding="utf-8")
+
+        Cheats.CheatVersion.set(
+            config.get(
+                f"Cheats {Cheats._patchInfo.ID}", "Cheat_Version", fallback="None"
+            )
+        )
