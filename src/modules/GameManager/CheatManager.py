@@ -46,6 +46,8 @@ class Cheats:
     @classmethod
     def CreateCanvas(cls, manager) -> ttk.Canvas:
 
+        "Create Cheat Canvas, should be only ran a single time."
+
         if Cheats.isInit is True:
             raise "Cheat Canvas is Already Created"
 
@@ -105,7 +107,7 @@ class Cheats:
             tags=["Button"],
             style="default",
             description_name="Read Cheats",
-            command=lambda e: Cheats.LoadCheatsConfig(),
+            command=Cheats.LoadCheatsConfig,
         )
 
         # Backup
@@ -120,7 +122,7 @@ class Cheats:
             tags=["Button"],
             style="default",
             description_name="Backup",
-            command=lambda e: FileManager.backup(),
+            command=FileManager.backup,
         )
 
         Cheats.LoadCheatVersions()
@@ -135,6 +137,8 @@ class Cheats:
 
     @classmethod
     def loadCheats(cls):
+
+        "Load Cheats on the canvas."
 
         row = 40
         cul_tex = 40
@@ -221,13 +225,17 @@ class Cheats:
 
     @classmethod
     def Cheat_UI_elements(cls, canvas):
+
+        "Create UI Elements, Backgrounds etc."
+
         canvas.create_image(
             0,
-            -scale(300),
-            anchor="nw",
+            0,
+            anchor="c",
             image=TextureMgr.Request("image.jpg"),
             tags="background",
         )
+
         canvas.create_image(
             0,
             0,
@@ -235,6 +243,7 @@ class Cheats:
             image=TextureMgr.Request("Legacy_BG.png"),
             tags="overlay-1",
         )
+
         canvas.create_image(
             0,
             0,
@@ -245,6 +254,8 @@ class Cheats:
 
     @classmethod
     def LoadCheatVersions(cls):
+        """Create a Cheat Version Combobox and load all cheats into a single array."""
+
         # Push every version in combobox
         Cheats.versionvalues = []
         for each in Cheats._patchInfo.LoadCheatsJson():
@@ -281,7 +292,7 @@ class Cheats:
 
     @classmethod
     def CreateCheats(cls):
-        """This function creates a cheat manager patcher, primarily used only for TOTK right now."""
+        """Create Cheats, works with all games that support Cheats.."""
 
         superlog.info("Starting Cheat patcher.")
 
@@ -319,7 +330,7 @@ class Cheats:
 
     @classmethod
     def LoadCheatsConfig(cls):
-        log.warning("Loading Cheats info.")
+        """Load Config information for cheats."""
 
         config = configparser.ConfigParser()
         config.read(cls._manager.config, encoding="utf-8")
@@ -330,12 +341,12 @@ class Cheats:
                     f"Cheats {Cheats._patchInfo.ID}", option_name, fallback="Off"
                 )
                 option_var.set(option_value)
-                log.info(f"{option_name}, {option_value}")
         except AttributeError:
             pass
 
     @classmethod
     def SaveCheatsConfig(cls):
+        """Save Current Cheats config"""
 
         config[f"Cheats {Cheats._patchInfo.ID}"] = {}
 
@@ -351,6 +362,8 @@ class Cheats:
 
     @classmethod
     def LoadCheatVersionFromConfig(cls):
+        """Set Cheats Version to Cheats.CheatVersion() from config file and TitleID"""
+
         config = configparser.ConfigParser()
         config.read(cls._manager.config, encoding="utf-8")
 
