@@ -58,10 +58,6 @@ def _get_gpu_name(log) -> str:
                 .lstrip()
                 .replace("Device: ", "")
             )
-
-            if "symbol lookup error" in GPU:
-                GPU = "Steamdeck"  # this primarily happens on steamdeck.
-
             return GPU
     except Exception as e:
         log.warning(f"The GPU was not detected, nothing to be concerned about. {e}")

@@ -139,11 +139,6 @@ class TextureMgr:
             height=int(40 * 2.5),
         )
         TextureMgr.CreateTexture(
-            image_path="benchmark_border.png",
-            width=int(1272 / 3.3),
-            height=int(130 / 3.3),
-        )
-        TextureMgr.CreateTexture(
             image_path="benchmark_loading.png",
             width=int(115),
             height=int(43),
