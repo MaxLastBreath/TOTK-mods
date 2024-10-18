@@ -1,6 +1,6 @@
 from modules.GameManager.PatchInfo import PatchInfo
 from modules.logger import log, superlog
-import json, os, sys
+import json, os, sys, platform
 
 
 class Game_Manager:
@@ -21,6 +21,11 @@ class Game_Manager:
             if getattr(sys, "frozen", False):
                 patch_directory = os.path.join(sys._MEIPASS, cls.Directory)
                 superlog.warning("No Patch Folder, using stored patches.")
+
+            if platform.system() == "Linux":
+                appdir = os.getenv("APPDIR")
+                if appdir:
+                    patch_directory = os.path.join(appdir, cls.Directory)
 
         superlog.info("Looking for supported games...")
         cls.CreatePatches(patch_directory)
