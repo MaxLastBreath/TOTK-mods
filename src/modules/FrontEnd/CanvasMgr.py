@@ -683,13 +683,15 @@ class Canvas_Create:
         item,
         tool_text,
     ):
+        import tkinter as Tk
+
         bbox = canvas.bbox(item)
         x, y = bbox[0], bbox[1]
         x += canvas.winfo_rootx()
         y += canvas.winfo_rooty()
 
         master.after(50)
-        cls.tooltip = ttk.Toplevel(master=master)
+        cls.tooltip = Tk.Toplevel(master=master)
         cls.tooltip.wm_overrideredirect(True)
         cls.tooltip.geometry(f"+{x + scale(20)}+{y + scale(25)}")
 
@@ -700,7 +702,6 @@ class Canvas_Create:
             relief="solid",
             borderwidth=1,
             justify="left",
-            font=("Helvetica", 10, "normal"),
         )
 
         tooltip_label.pack()
