@@ -194,4 +194,4 @@
 - [Waikuteru](https://www.patreon.com/c/waikuteru/posts)
 - [DT](https://github.com/dt-12345)
 
-# Everyone that supported the Project on Kofi/Patreon :).
+# Also Thanks to Everyone that supported the Project on Kofi/Patreon :).
