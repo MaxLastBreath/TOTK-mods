@@ -186,7 +186,7 @@
 - [TheBoy181](https://github.com/theboy181)
 - [MasaGratoR](https://github.com/masagrator)
 - [KeatonTheBot](https://linktr.ee/keatonthebot)
-- [Fruithapje21]([https://github.com/fayaz12g](https://github.com/Fruithapje21))
+- [Fruithapje21](https://github.com/Fruithapje21)
 - [the5thtear](https://github.com/The5thTear)
 - [LordBubbles](https://github.com/MasterBubbles)
 - [ArchLeaders](https://github.com/ArchLeaders)
