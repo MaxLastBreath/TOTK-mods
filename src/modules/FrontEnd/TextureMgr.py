@@ -90,6 +90,14 @@ class TextureMgr:
             width=int(3316 / 10),
             height=int(823 / 10),
         )
+
+        for i in range(1, 6):
+            TextureMgr.CreateTexture(
+                image_path=f"LogoAnimation/Logo_Active_{i}.png",
+                width=int(3316 / 10),
+                height=int(823 / 10),
+            )
+
         TextureMgr.CreateTexture(
             image_path="benchmark_korok.png",
             width=int(100 * 2.5),

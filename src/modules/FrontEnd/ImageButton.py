@@ -6,6 +6,9 @@ from modules.logger import *
 
 class ImageButton:
 
+    __IsHovering: bool = False
+    __AniIndex: int = 1
+
     _Window: ttk.Window
     _Canvas: ttk.Canvas
     _Images: list[ttk.PhotoImage]
@@ -37,6 +40,26 @@ class ImageButton:
         self.IsOn.set(isOn)
         self._Images = imagelist
         # log.info(f"{self.Name}, {self.IsOn.get()} and default : {isOn}")
+
+    def AddAnimationToQueue(self):
+        from modules.FrontEnd.AnimationMgr import AnimationQueue
+
+        AnimationQueue.AddToQueue(self.Animation)
+
+    def Animation(self):
+        try:
+
+            if self.__IsHovering is False:
+                return
+
+            if self.__AniIndex + 1 > len(self._Images):
+                self.__AniIndex = 1
+
+            self._Canvas.itemconfig(self.Tag, image=self._Images[self.__AniIndex])
+
+            self.__AniIndex += 1
+        except Exception:
+            pass
 
     def get(self):
         return self.IsOn.get()
@@ -71,6 +94,7 @@ class ImageButton:
         self._Canvas.tag_bind(
             self.Tag, "<Enter>", lambda e: self.ActivateImage(WidgetState.Enter)  # fmt:skip
         )
+
         self._Canvas.tag_bind(
             self.Tag, "<Leave>", lambda e: self.ActivateImage(WidgetState.Leave)  # fmt:skip
         )
@@ -104,15 +128,19 @@ class ImageButton:
     ):
         if self.get() is True and self.Type is ButtonToggle.Dynamic:
             if State == WidgetState.Enter:
+                self.__IsHovering = True
                 self._Canvas.itemconfig(self.Tag, image=self._Images[1])
 
             if State == WidgetState.Leave:
+                self.__IsHovering = False
                 self._Canvas.itemconfig(self.Tag, image=self._Images[0])
         else:
             if State == WidgetState.Enter:
+                self.__IsHovering = True
                 self._Canvas.itemconfig(self.Tag, image=self._Images[1])
 
             if State == WidgetState.Leave:
+                self.__IsHovering = False
                 self._Canvas.itemconfig(self.Tag, image=self._Images[0])
 
     def ActivateImage(self, State: WidgetState):

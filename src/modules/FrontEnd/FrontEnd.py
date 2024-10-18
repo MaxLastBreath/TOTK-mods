@@ -49,6 +49,9 @@ class Manager:
     ModeType: ImageButton
 
     def __init__(Manager, window):
+
+        from modules.FrontEnd.AnimationMgr import AnimationQueue
+
         """
         Initializes the frontend canvas UI.\n
         This also Initializes Game_Manager, FileManager, Canvas_Create and Settings.\n
@@ -63,6 +66,7 @@ class Manager:
         Game_Manager.LoadPatches()
         FileManager.Initialize(window, Manager)
         TextureMgr.Initialize()  # load all images.
+        AnimationQueue.Initialize()
         Manager.patches = Game_Manager.GetPatches()
 
         # Save the config string in class variable config
@@ -523,7 +527,7 @@ class Manager:
             command=lambda event: Manager.extract_patches(),
         )
 
-        Canvas_Create.image_Button(
+        Logo = Canvas_Create.image_Button(
             canvas=canvas,
             row=560,
             cul=1010,
@@ -532,6 +536,13 @@ class Manager:
             img_2=TextureMgr.Request("optimizer_logo_active.png"),
             command=lambda event: Manager.open_browser("Kofi"),
         )
+
+        Logo._Images.pop()
+
+        for i in range(1, 6):
+            Logo._Images.append(
+                TextureMgr.Request(f"LogoAnimation/Logo_Active_{i}.png")
+            )
 
         # Load Saved User Options.
         Manager.toggle_pages("main")
@@ -629,17 +640,6 @@ class Manager:
                 canvas.pack_forget()
 
         Cheats.Show()
-
-        Manager.ani = threading.Thread(
-            name="cheatbackground",
-            target=lambda: Canvas_Create.canvas_animation(
-                Manager._window, Cheats.Canvas
-            ),
-        )
-
-        if not Manager.is_Ani_running == True:
-            Manager.is_Ani_running = True
-            Manager.ani.start()
 
     def open_browser(Manager, web, event=None):
         url = "https://ko-fi.com/maxlastbreath#"

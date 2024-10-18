@@ -604,6 +604,7 @@ class Canvas_Create:
         ImageBtn.BindImages(scale(cul), scale(row), anchor)
         ImageBtn.BindCommand(command)
         ImageBtn.MakeDynamic(Type)
+        ImageBtn.AddAnimationToQueue()
 
         return ImageBtn
 
@@ -741,44 +742,6 @@ class Canvas_Create:
         superlog.critical("User Exit Application.")
         cls.is_Ani_running = False
         master.destroy()
-
-    @classmethod
-    def canvas_animation(cls, master, canvas):
-
-        master.bind("<Enter>", lambda e: cls.focus())
-        master.bind("<Leave>", lambda e: cls.un_focus())
-
-        x = 0
-        y = 0
-        m = 1
-
-        if sf >= 1.5:
-            m *= 2
-        if FPS == 0.1:
-            m *= 2
-
-        a = scale(m)
-        while True:
-            if cls.is_Ani_running is False:
-                return
-            if cls.is_Ani_Paused is False or get_setting("ani") in ["Off", "Disabled"]:
-                if x < 1000:
-                    x += m
-                    canvas.move("background", -a, 0)
-                    time.sleep(FPS)
-                if x >= 1000:
-                    if y == 0:
-                        canvas.move("background", scale(200), scale(300))
-                    if y < 300:
-                        y += m
-                        canvas.move("background", 0, -a)
-                        time.sleep(FPS)
-                    if y >= 300:
-                        x = 0
-                        y = 0
-                        canvas.move("background", scale(800), 0)
-            else:
-                time.sleep(0.2)
 
     @classmethod
     def get_UI_path(cls, file_name: str, folder_name: str = "GUI"):
