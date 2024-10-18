@@ -52,14 +52,13 @@ def _get_gpu_name(log) -> str:
                 .lstrip()
             )
         elif platform.system() == "Linux":
-
-            command = "glxinfo | grep 'Device' | cut -f 2 -d ':' | awk '{$1=$1}1'"
-            process = subprocess.run(
-                command, capture_output=True, text=True, shell=True
+            GPU = (
+                subprocess.getoutput("bash -c \"glxinfo | grep 'Device'\"")
+                .split("(")[0]
+                .lstrip()
+                .replace("Device: ", "")
             )
 
-            gpu = process.stdout.strip()
-
-            return gpu
+            return GPU
     except Exception as e:
         log.warning(f"The GPU was not detected, nothing to be concerned about. {e}")
