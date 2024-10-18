@@ -141,9 +141,9 @@ def delete_old_exe():
 
     try:
         os.rename(exe_to_rename, name)
-        subprocess.Popen([name])
+        subprocess.Popen([os.path.abspath(name)])
     except Exception as e:
-        log.warning(e)
+        log.error(e)
     try:
         matching_files = glob.glob(os.path.join(executable_directory, "*.exe.tmp"))
         matching_files += glob.glob(os.path.join(executable_directory, "*appimage.tmp"))
