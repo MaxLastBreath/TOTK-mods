@@ -158,6 +158,7 @@ class Canvas_Create:
 
         # bind canvas
         dropdown.bind("<<ComboboxSelected>>", command)
+
         # attempt to make a Hovertip
         cls.read_description(
             canvas=canvas,

@@ -24,14 +24,16 @@ if __name__ == "__main__":
         window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
         window.resizable(False, False)
 
-        ttk.Style().configure('TButton', foreground='white', font=('Comic Sans MS', 10, 'bold'))
+        ttk.Style().configure(
+            "TButton", foreground="white", font=("Comic Sans MS", 10, "bold")
+        )
 
         # Delete any old executables
         # Disabled for MacOS (For now)
         if platform.system() != "Darwin":
             delete_old_exe()
             check_for_updates()
-        
+
         window.mainloop()
     except Exception as e:
         log.critical("ERROR AT MAIN: " + e)

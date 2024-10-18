@@ -1,7 +1,7 @@
 from configuration.settings import *
 from tkinter import filedialog
 import ttkbootstrap as ttk
-import os
+import os, subprocess
 
 
 class LaunchManager:
@@ -25,7 +25,7 @@ class LaunchManager:
 
         # Open a file dialog to browse and select Legacy.exe
         game_path = filedialog.askopenfilename(
-            title=f"Please select Tears of {manager._patchInfo.Name}.",
+            title=f"Please select {manager._patchInfo.Name}.",
             filetypes=[
                 ("Nintendo Gamefile", ["*.nsp", "*.xci", "*.NSP", "*.XCI"]),
                 ("All Files", "*.*"),
@@ -38,7 +38,7 @@ class LaunchManager:
             if not config.has_section("Paths"):
                 config.add_section("Paths")
 
-            config.set("Paths", f"{manager._patchInfo.Name}", game_path)
+            config.set("Paths", f"{manager._patchInfo.ID}", game_path)
         else:
             return
         with open(localconfig, "w", encoding="utf-8") as configfile:
@@ -55,7 +55,7 @@ class LaunchManager:
 
         config = configparser.ConfigParser()
         config.read(localconfig, encoding="utf-8")
-        Game_PATH = config.get("Paths", f"{manager._patchInfo.Name}", fallback="None")
+        Game_PATH = config.get("Paths", f"{manager._patchInfo.ID}", fallback="None")
 
         if not os.path.exists(Game_PATH):
             log.warning(

@@ -4,6 +4,7 @@ import math
 
 GITHUB = "TOTK-mods"
 OWNER = "MaxLastBreath"
+
 url = f"https://api.github.com/repos/MaxLastBreath/TOTK-mods/releases"
 search_tag = "manager"
 
