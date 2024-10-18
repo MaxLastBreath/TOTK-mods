@@ -168,7 +168,7 @@
 - zqpvr01 for helping test out steamdeck
 
 # ArtWork Credits:
-[Nautilus, Absolutely the best Screenshots I've seen](https://www.artstation.com/artwork/xDBoQO)
+- [Nautilus, Absolutely the best Screenshots I've seen](https://www.artstation.com/artwork/xDBoQO)
 
 # Cheat Credits:
 - [TOTK bad1dea](https://github.com/bad1dea/NXCheats/tree/main/The%20Legend%20of%20Zelda%20Tears%20of%20the%20Kingdom)
