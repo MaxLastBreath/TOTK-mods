@@ -1,0 +1,10 @@
+{
+    "Name" : "Pokemon Scarlet",
+    "ID" : "0100A3D008C5C000",
+    "ModName" : "!!!Pokemon Optimizer",
+    "ModConfig" : "romfs/MaxFl4shBreath.ini",
+    "Config" : "Options.json",
+    "ModFolder" : "DynamicFPS",
+    "Versions" : ["3.0.1"],
+    "Cheats": false
+}
