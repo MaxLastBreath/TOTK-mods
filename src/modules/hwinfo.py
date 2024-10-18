@@ -1,5 +1,4 @@
 import platform
-import re
 import subprocess
 import GPUtil
 
@@ -54,19 +53,13 @@ def _get_gpu_name(log) -> str:
             )
         elif platform.system() == "Linux":
 
-            GPU = subprocess.run(
-                ["glxinfo", "|", "grep", "Device"],
-                capture_output=True,
-                text=True,
-                shell=True,
+            command = "glxinfo | grep 'Device' | cut -f 2 -d ':' | awk '{$1=$1}1'"
+            process = subprocess.run(
+                command, capture_output=True, text=True, shell=True
             )
 
-            match = re.search(r"Device:\s*(.*)\s*\(", GPU.stdout)
-            if match:
-                device_info = match.group(1)
-            else:
-                device_info = None
+            gpu = process.stdout.strip()
 
-            return device_info
+            return gpu
     except Exception as e:
         log.warning(f"The GPU was not detected, nothing to be concerned about. {e}")
