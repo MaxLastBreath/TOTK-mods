@@ -255,7 +255,7 @@ class Cheats:
         canvas.create_image(
             0,
             0,
-            anchor="c",
+            anchor="nw",
             image=TextureMgr.Request("image.jpg"),
             tags="background",
         )

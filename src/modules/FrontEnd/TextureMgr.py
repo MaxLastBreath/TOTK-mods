@@ -49,7 +49,7 @@ class TextureMgr:
     @classmethod
     def Initialize(cls):
         TextureMgr.CreateTexture(
-            image_path="image.jpg", width=int(70 * 1.6), height=int(48 * 1.6)
+            image_path="image.jpg", width=int(1200), height=int(600)
         )
         TextureMgr.CreateTexture(
             image_path="graphics.png", width=int(70 * 1.6), height=int(48 * 1.6)

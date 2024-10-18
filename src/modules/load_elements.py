@@ -52,6 +52,7 @@ def load_UI_elements(manager, canvas: ttk.Canvas):
     canvas.create_image(
         0, 0, anchor="nw", image=TextureMgr.Request("image.jpg"), tags="background"
     )
+
     canvas.create_image(
         0,
         0,
@@ -59,6 +60,7 @@ def load_UI_elements(manager, canvas: ttk.Canvas):
         image=TextureMgr.Request("Legacy_BG.png"),
         tags="SWITCHOVERLAY",
     )
+
     canvas.create_image(
         0, 0, anchor="nw", image=TextureMgr.Request("BG_Left_2.png"), tags="overlay"
     )

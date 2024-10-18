@@ -105,10 +105,11 @@ class Manager:
 
         # Load Canvas
         # Load_ImagePath(Manager)
-        Manager.load_canvas()
+        Manager.Create_Canvases()
 
         log.warning(f"Emulator {Manager.mode}")
         Manager.switchmode()
+        Manager.ForceGameBG()
 
         # Window protocols
         Manager._window.protocol(
@@ -117,6 +118,16 @@ class Manager:
 
     def warning(Manager, e):
         messagebox.showwarning(f"{e}")
+
+    def ForceGameBG(Manager):
+        # Change Name and Load Image.
+        Manager.ChangeName()
+
+        for canvas in Manager.all_canvas:
+            Canvas_Create.Change_Background_Image(
+                canvas,
+                os.path.join(Manager._patchInfo.Folder, "image.jpg"),
+            )
 
     def LoadNewGameInfo(Manager):
         """Loads new Game info from the combobox (dropdown Menu)."""
@@ -131,6 +142,7 @@ class Manager:
                 Manager.DeletePatches()
                 Manager.LoadPatches(Manager.all_canvas[0], pos_dict)
                 Manager.toggle_pages("main")
+                Manager.ForceGameBG()
 
                 # Save the selected game in the config file and load options for that game.
                 save_config_game(Manager, Manager.config)
@@ -242,13 +254,6 @@ class Manager:
             if patch_var is None:
                 continue
             Manager.UserChoices[name] = patch_var
-
-            # Change Name and Load Image.
-            Manager.ChangeName()
-            Canvas_Create.Change_Background_Image(
-                Manager.all_canvas[0],
-                os.path.join(Manager._patchInfo.Folder, "image.jpg"),
-            )
 
     def DeletePatches(Manager):
         Manager.UserChoices.clear()
@@ -549,9 +554,6 @@ class Manager:
         load_user_choices(Manager, Manager.config)
         return Manager.maincanvas
 
-    def update_scaling_variable(Manager, something=None):
-        Manager.fps_var.set(Manager.fps_var_new.get())
-
     def select_Legacy_exe(Manager):
         if Manager.os_platform == "Windows":
             Legacy_path = filedialog.askopenfilename(
@@ -613,10 +615,28 @@ class Manager:
             save_user_choices(Manager, Manager.config, Legacy_path)
         return Legacy_path
 
+    def Create_Canvases(Manager):
+        # Main
+        Manager.create_canvas()
+        Cheats.CreateCanvas(Manager)
+        Cheats.Hide()
+        load_benchmark(Manager)
+
     def show_main_canvas(Manager):
         Canvas_Create.is_Ani_Paused = True
-        Manager.cheatcanvas.pack_forget()
+        Cheats.Hide()
         Manager.maincanvas.pack()
+
+    def show_cheat_canvas(Manager):
+        Canvas_Create.is_Ani_Paused = False
+        if Manager._patchInfo.Cheats is False:
+            return
+
+        for canvas in Manager.all_canvas:
+            if canvas is not Cheats.Canvas:
+                canvas.pack_forget()
+
+        Cheats.Show()
 
     def toggle_pages(Manager, ShowPage: str):
         Manager.maincanvas.itemconfig(ShowPage, state="normal")
@@ -630,17 +650,6 @@ class Manager:
             else:
                 button.ToggleImg(WidgetState.Enter)
 
-    def show_cheat_canvas(Manager):
-        Canvas_Create.is_Ani_Paused = False
-        if Manager._patchInfo.Cheats is False:
-            return
-
-        for canvas in Manager.all_canvas:
-            if canvas is not Cheats.Canvas:
-                canvas.pack_forget()
-
-        Cheats.Show()
-
     def open_browser(Manager, web, event=None):
         url = "https://ko-fi.com/maxlastbreath#"
         if web == "Kofi":
@@ -650,13 +659,6 @@ class Manager:
         elif web == "Discord":
             url = "https://discord.gg/7MMv4yGfhM"
         webbrowser.open(url)
-
-    def load_canvas(Manager):
-        # Main
-        Manager.create_canvas()
-        Cheats.CreateCanvas(Manager)
-        Cheats.Hide()
-        load_benchmark(Manager)
 
     def ShowRyujinx(Manager):
         Manager.mode = "Ryujinx"
@@ -700,10 +702,6 @@ class Manager:
 
         superlog.info(f"Switched to {Manager.mode}")
         FileManager.checkpath(Manager.mode)
-
-    def fetch_var(Manager, var, dict, option):
-        if not dict.get(option, "") == "":
-            var.set(dict.get(option, ""))
 
     def extract_patches(Manager):
         FileManager.is_extracting = True
