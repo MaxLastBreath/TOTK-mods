@@ -154,22 +154,42 @@
 - [UltraCam/DFPS/TOTK Optimizer (me)](https://linktr.ee/maxlastbreath)
 - [Triple Buffering - MasaGratoR](https://github.com/masagrator)
 - [Help With Internal Res](https://linktr.ee/keatonthebot)
-- [Controller UI mods](https://gamebanana.com/members/1944248)
-- [Cheats bad1dea](https://github.com/bad1dea/NXCheats/tree/main/The%20Legend%20of%20Zelda%20Tears%20of%20the%20Kingdom)
 
 # Special Thanks to
-- [Jake for testing the Mod Manager on Linux and reformatting and cleaning readme.](https://github.com/JakeDystopia/)
-- [u/Pixelkiri for Workflow and testing!](https://github.com/alexkiri/)
-- [Fruithapje21 For helping with UI Aspect Ratios](https://github.com/Fruithapje21)
-- [Hoverbike for testing Mods!](https://github.com/hoverbike1/)
+- [Jake for testing](https://github.com/JakeDystopia/)
+- [u/Pixelkiri for Github Workflow](https://github.com/alexkiri/)
+- [Hoverbike for testing Mods and distribution](https://github.com/hoverbike1/)
 - [MaxAnimatior for some insight and testing](https://github.com/D-Maxwell)
-- LotP, great friend and teacher :) also lots of help with UltraCam.
+- [Fl4sh, Development Help](https://github.com/Fl4sh9174)
+- Nebroc, Great Moderator on my Discord.
+- Godzilla, lots of help with testing :).
+- LotP, great friend and help with UltraCam.
 - Meeko on my Discord Server for testing Steamdeck.
+- zqpvr01 for helping test out steamdeck
+
+# ArtWork Credits:
+[Nautilus, Absolutely the best Screenshots I've seen](https://www.artstation.com/artwork/xDBoQO)
+
+# Cheat Credits:
+- [TOTK bad1dea](https://github.com/bad1dea/NXCheats/tree/main/The%20Legend%20of%20Zelda%20Tears%20of%20the%20Kingdom)
+- [EOW heydo6](https://gamebanana.com/mods/544143)
+- optantic
+- WeWolv
+- Grattler
+- WilHiteWarrior
+- Testerr
 
 # Switch modders, I'm thankful to.
 - [StevensND](https://linktr.ee/stevensmods)
+- [Fl4sh](https://github.com/Fl4sh9174)
+- [OldManKain](https://github.com/OldManKain)
+- [TheBoy181](https://github.com/theboy181)
 - [MasaGratoR](https://github.com/masagrator)
 - [KeatonTheBot](https://linktr.ee/keatonthebot)
-- [Fl4sh](https://github.com/Fl4sh9174)
-- [fayaz12g](https://github.com/fayaz12g)
+- [Fruithapje21]([https://github.com/fayaz12g](https://github.com/Fruithapje21))
 - [the5thtear](https://github.com/The5thTear)
+- [LordBubbles](https://github.com/MasterBubbles)
+- [ArchLeaders](https://github.com/ArchLeaders)
+- [Echocolat](https://github.com/Echocolat)
+- [Waikuteru](https://www.patreon.com/c/waikuteru/posts)
+- [DT](https://github.com/dt-12345)
