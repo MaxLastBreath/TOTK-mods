@@ -400,6 +400,9 @@ class FileManager:
 
     @classmethod
     def submit(filemgr, mode: str | None = None):
+
+        superlog.info(f"STARTING {mode}")
+
         filemgr.add_list = []
         filemgr.remove_list = []
         filemgr.checkpath(filemgr._manager.mode)
@@ -423,14 +426,17 @@ class FileManager:
             if mode == "Cheats":
                 superlog.info("Starting TASKs for Cheat Patch..")
                 tasklist = [Create_Mod_Patch("Cheats")]
+
                 if get_setting("cheat-backup") in ["On"]:
                     tasklist.append(filemgr.backup())
+
                 com = 100 // len(tasklist)
                 for task in tasklist:
                     timer(com)
                     com += com
                     task
                     time.sleep(0.05)
+
                 ProgressBar.Destroy()
                 superlog.info(
                     "Tasks have been COMPLETED. Feel free to Launch the game."
@@ -473,7 +479,7 @@ class FileManager:
 
             if mode == "Cheats":
                 ProgressBar.string.set("Creating Cheat Patches.")
-                ModCreator.CreateCheats(filemgr)
+                ModCreator.CreateCheats()
                 return
 
             elif mode == None:

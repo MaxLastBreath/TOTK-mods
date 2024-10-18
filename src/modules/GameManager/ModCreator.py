@@ -54,39 +54,12 @@ class ResolutionVector:
 class ModCreator:
 
     @classmethod
-    def CreateCheats(cls, filemgr):
+    def CreateCheats(cls):
         """This function creates a cheat manager patcher, primarily used only for TOTK right now."""
 
-        superlog.info("Starting Cheat patcher.")
-        save_user_choices(filemgr, filemgr.config, None, "Cheats")
-        selected_cheats = {}
-        for option_name, option_var in filemgr._manager.selected_cheats.items():
-            selected_cheats[option_name] = option_var.get()
-        # Logic for Updating Visual Improvements/Patch Manager Mod. This new code ensures the mod works for Ryujinx and Legacy together.
-        for version_option in filemgr._manager.cheat_options:
-            version = version_option.get("Version", "")
-            mod_path = os.path.join(filemgr.load_dir, "Cheat Manager Patch", "cheats")
+        from modules.GameManager.CheatManager import Cheats
 
-            # Create the directory if it doesn't exist
-            os.makedirs(mod_path, exist_ok=True)
-
-            filename = os.path.join(mod_path, f"{version}.txt")
-            all_values = []
-
-            try:
-                with open(filename, "w", encoding="utf-8") as file:
-                    file.flush()
-                    # file.write(version_option.get("Source", "") + "\n") - makes cheats not work
-                    for key, value in version_option.items():
-                        if key not in ["Source", "Aversion", "Version"] and selected_cheats[key] == "Off":  # fmt: skip
-                            continue
-                        if key in selected_cheats:
-                            file.write(value + "\n")
-            except Exception as e:
-                log.debug(f"FAILED TO CREATE CHEAT PATCH. {e}")
-
-        filemgr._manager.remove_list.append("Cheat Manager Patch")
-        superlog.info("Applied cheats successfully.")
+        Cheats.CreateCheats()
 
     @classmethod
     # This no longer works, it's currently disabled and unused, the logic may be refractored in the future.

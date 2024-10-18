@@ -125,21 +125,25 @@ def loadGameConfig(Manager, config):
         except KeyError:
             pass
 
+def save_cheats(cheatmgr, config_file):
+    from modules.GameManager.CheatManager import Cheats
+
+    cheatmgr:Cheats = cheatmgr
+
+    config["Cheats"] = {}
+    for option_name, option_var in cheatmgr.CheatsInfo.items():
+        config['Cheats'][option_name] = option_var.get()
+    with open(config_file, 'w', encoding="utf-8") as file:
+        config["Manager"] = {}
+        config["Manager"]["Cheat_Version"] = cheatmgr.CheatVersion.get()
+        config.write(file)
+    return
+
 def save_user_choices(Manager, config_file, Legacy_path=None, mode=None):
     log.info(f"Saving user choices in {localconfig}")
     config = configparser.ConfigParser()
     if os.path.exists(config_file):
         config.read(config_file)
-
-    if mode == "Cheats":
-        config["Cheats"] = {}
-        for option_name, option_var in Manager.selected_cheats.items():
-            config['Cheats'][option_name] = option_var.get()
-        with open(config_file, 'w', encoding="utf-8") as file:
-            config["Manager"] = {}
-            config["Manager"]["Cheat_Version"] = Manager.cheat_version.get()
-            config.write(file)
-        return
 
     # This is only required for the UI and FP mods.
     if not config.has_section("Options"):

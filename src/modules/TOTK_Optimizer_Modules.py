@@ -3,7 +3,6 @@ from modules.qt_config import *
 from modules.logger import *
 from modules.config import *
 from modules.patches import *
-from modules.image_paths import *
 from modules.load_elements import *
 from modules.benchmarks import *
 

@@ -5,6 +5,7 @@ from modules.GameManager.GameManager import Game_Manager
 from modules.GameManager.PatchInfo import PatchInfo
 from modules.GameManager.FileManager import FileManager
 from modules.GameManager.LaunchManager import LaunchManager
+from modules.GameManager.CheatManager import Cheats
 from modules.FrontEnd.TextureMgr import TextureMgr
 from modules.FrontEnd.Localization import Localization
 from modules.load_elements import create_tab_buttons, load_UI_elements
@@ -22,6 +23,11 @@ def increase_row(row, cul_sel, cul_tex):
 
 
 class Manager:
+
+    _patchInfo: PatchInfo = None
+    _window: ttk.Window
+    _Cheats: Cheats = None
+
     patches: list[PatchInfo] = []
     all_canvas: list[ttk.Canvas] = []
     PageBtns: list[ImageButton] = []
@@ -29,8 +35,6 @@ class Manager:
     old_cheats: dict = {}
     benchmarks: dict = {}
 
-    _patchInfo: PatchInfo = None
-    _window: ttk.Window
     constyle: ttk.Style
     os_platform: str = platform.system()
 
@@ -54,6 +58,8 @@ class Manager:
         Handles the entire UI framework, all the canvas, images and ETC.
         """
 
+        Manager._window = window
+
         Game_Manager.LoadPatches()
         FileManager.Initialize(window, Manager)
         TextureMgr.Initialize()  # load all images.
@@ -68,14 +74,14 @@ class Manager:
             load_config_game(Manager, Manager.config)
         )
 
+        Cheats.Initialize(Manager, Manager._patchInfo)
+        Manager._Cheats = Cheats  # Store class because circular bs
+
         # Load Patch Info for current game.
         Manager.ultracam_beyond = Manager._patchInfo.LoadJson()
-        Manager.cheat_options = Manager._patchInfo.LoadCheatsJson()
 
         # Load Localization
         Manager.description = Localization.GetJson()
-
-        Manager._window = window
         Manager.constyle = Style(theme=theme.lower())
         Manager.constyle.configure("TButton", font=btnfont)
 
@@ -113,6 +119,7 @@ class Manager:
         for item in Manager.patches:
             if Manager.PatchName.get() == item.Name:
                 Manager._patchInfo = item
+                Cheats.Initialize(Manager, item)
                 Manager.ultracam_beyond = Manager._patchInfo.LoadJson()
                 pos_dict = copy.deepcopy(Manager.Back_Pos)
 
@@ -125,15 +132,12 @@ class Manager:
                 save_config_game(Manager, Manager.config)
                 load_user_choices(Manager, Manager.config)
 
-                # Manager Cheats for each Game.
-                Manager.cheat_options = Manager._patchInfo.LoadCheatsJson()
-                Manager.cheatcanvas.delete()
-                Manager.create_cheat_canvas()
+                Cheats.loadCheats()  # load the new cheats.
 
                 if Manager._patchInfo.Cheats is False:
-                    Manager.maincanvas.itemconfig("Cheats", state="hidden")
+                    Manager.maincanvas.itemconfig("CheatButton", state="hidden")
                 else:
-                    Manager.maincanvas.itemconfig("Cheats", state="Normal")
+                    Manager.maincanvas.itemconfig("CheatButton", state="Normal")
 
     def ChangeName(Manager):
         Manager.all_canvas[0].itemconfig(
@@ -541,186 +545,6 @@ class Manager:
     def update_scaling_variable(Manager, something=None):
         Manager.fps_var.set(Manager.fps_var_new.get())
 
-    def create_cheat_canvas(Manager):
-
-        # Create Cheat Canvas
-        Manager.cheatcanvas = ttk.Canvas(
-            Manager._window, width=scale(1200), height=scale(600)
-        )
-
-        Manager.cheatcanvas.pack(expand=1, fill=BOTH)
-        canvas = Manager.cheatcanvas
-        Manager.all_canvas.append(Manager.cheatcanvas)
-
-        if Manager._patchInfo.Cheats is False:
-            return
-
-        # Create UI elements.
-        Manager.Cheat_UI_elements(Manager.cheatcanvas)
-        create_tab_buttons(Manager, Manager.cheatcanvas)
-
-        # Push every version in combobox
-        versionvalues = []
-        for each in Manager.cheat_options:
-            for key, value in each.items():
-                if key == "Aversion":
-                    versionvalues.append("Version - " + value)
-
-        Manager.cheat_version = Canvas_Create.create_combobox(
-            master=Manager._window,
-            canvas=canvas,
-            text="",
-            values=versionvalues,
-            variable=versionvalues[0],
-            row=520,
-            cul=130 + 2,
-            drop_cul=130 + 2,
-            tags=["text"],
-            tag=None,
-            description_name="CheatVersion",
-            command=lambda event: loadCheats(),
-        )
-
-        load_user_choices(Manager, Manager.config)
-
-        def loadCheats():
-            row = 40
-            cul_tex = 40
-            cul_sel = 200
-
-            corrent_cheats = Manager.cheat_options[
-                versionvalues.index(Manager.cheat_version.get())
-            ].items()
-            corrent_cheats_dict = dict(corrent_cheats)
-            sorted_cheats = dict(
-                sorted(corrent_cheats_dict.items(), key=lambda item: item[0])
-            )
-            try:
-                for key_var, value in Manager.selected_cheats.items():
-                    value = value.get()
-                    Manager.old_cheats[key_var] = value
-            except AttributeError as e:
-                Manager.old_cheats = {}
-
-            Manager.selected_cheats = {}
-
-            Manager.cheatcanvas.delete("cheats")
-
-            for version_option_name, version_option_value in sorted_cheats.items():
-                # Exclude specific keys from being displayed
-                if version_option_name in ["Source", "nsobid", "offset", "version"]:
-                    continue
-
-                # Create label
-                if version_option_name not in [
-                    "Source",
-                    "Version",
-                    "Aversion",
-                    "Cheat Example",
-                ]:
-
-                    version_option_var = Canvas_Create.create_checkbutton(
-                        master=Manager._window,
-                        canvas=canvas,
-                        text=version_option_name,
-                        variable="Off",
-                        row=row,
-                        cul=cul_tex,
-                        drop_cul=cul_sel,
-                        tags=["text"],
-                        tag="cheats",
-                        description_name=version_option_name,
-                    )
-
-                    # Create enable/disable dropdown menu
-                    try:
-                        if Manager.old_cheats.get(version_option_name) == "On":
-                            version_option_var.set("On")
-                    except AttributeError as e:
-                        Manager.old_cheats = {}
-                    Manager.selected_cheats[version_option_name] = version_option_var
-                else:
-                    continue
-
-                row += 40
-
-                if row > 480:
-                    row = 40
-                    cul_tex += 200
-                    cul_sel += 200
-
-        def ResetCheats():
-            try:
-                for key, value in Manager.selected_cheats.items():
-                    value.set("Off")
-            except AttributeError as e:
-                log.error(
-                    f"Error found from ResetCheats, the script will continue. {e}"
-                )
-
-        # Create a submit button
-        Canvas_Create.create_button(
-            master=Manager._window,
-            canvas=canvas,
-            text="Apply Cheats",
-            row=520,
-            cul=39,
-            width=9,
-            padding=5,
-            tags=["Button"],
-            style="success",
-            description_name="Apply Cheats",
-            command=lambda: FileManager.submit(),
-        )
-
-        # Create a submit button
-        Canvas_Create.create_button(
-            master=Manager._window,
-            canvas=canvas,
-            text="Reset Cheats",
-            row=520,
-            cul=277 + 6 + 2,
-            width=8,
-            padding=5,
-            tags=["Button"],
-            style="default",
-            description_name="Reset Cheats",
-            command=ResetCheats,
-        )
-
-        # Read Cheats
-        Canvas_Create.create_button(
-            master=Manager._window,
-            canvas=canvas,
-            text="Read Saved Cheats",
-            row=520,
-            cul=366 + 2,
-            width=11,
-            padding=5,
-            tags=["Button"],
-            style="default",
-            description_name="Read Cheats",
-            command=lambda: load_user_choices(Manager, Manager.config, "Cheats"),
-        )
-
-        # Backup
-        Canvas_Create.create_button(
-            master=Manager._window,
-            canvas=canvas,
-            text="Backup",
-            row=520,
-            cul=479 + 2,
-            width=7,
-            padding=5,
-            tags=["Button"],
-            style="default",
-            description_name="Backup",
-            command=lambda: FileManager.backup(),
-        )
-
-        loadCheats()
-        load_user_choices(Manager, Manager.config)
-
     def select_Legacy_exe(Manager):
         if Manager.os_platform == "Windows":
             Legacy_path = filedialog.askopenfilename(
@@ -804,13 +628,16 @@ class Manager:
         if Manager._patchInfo.Cheats is False:
             return
 
-        Manager.cheatcanvas.pack()
-        Manager.maincanvas.pack_forget()
+        for canvas in Manager.all_canvas:
+            if canvas is not Cheats.Canvas:
+                canvas.pack_forget()
+
+        Cheats.Show()
 
         Manager.ani = threading.Thread(
             name="cheatbackground",
             target=lambda: Canvas_Create.canvas_animation(
-                Manager._window, Manager.cheatcanvas
+                Manager._window, Cheats.Canvas
             ),
         )
 
@@ -831,32 +658,9 @@ class Manager:
     def load_canvas(Manager):
         # Main
         Manager.create_canvas()
-        Manager.create_cheat_canvas()
-        Manager.cheatcanvas.pack_forget()
+        Cheats.CreateCanvas(Manager)
+        Cheats.Hide()
         load_benchmark(Manager)
-
-    def Cheat_UI_elements(Manager, canvas):
-        Manager.cheatbg = canvas.create_image(
-            0,
-            -scale(300),
-            anchor="nw",
-            image=TextureMgr.Request("image.jpg"),
-            tags="background",
-        )
-        canvas.create_image(
-            0,
-            0,
-            anchor="nw",
-            image=TextureMgr.Request("Legacy_BG.png"),
-            tags="overlay-1",
-        )
-        canvas.create_image(
-            0,
-            0,
-            anchor="nw",
-            image=TextureMgr.Request("BG_Left_Cheats.png"),
-            tags="overlay",
-        )
 
     def switchmode(Manager, Force=False):
         if Force is True:

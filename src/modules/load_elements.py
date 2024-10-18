@@ -261,7 +261,7 @@ def create_tab_buttons(manager, canvas):
         canvas=canvas,
         row=15,
         cul=65 + 80,
-        name="Main",
+        name="CheatButton",
         anchor="c",
         img_1=TextureMgr.Request("cheats.png"),
         img_2=TextureMgr.Request("cheats_a.png"),
