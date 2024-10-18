@@ -160,7 +160,7 @@
 - [u/Pixelkiri for Github Workflow](https://github.com/alexkiri/)
 - [Hoverbike for testing Mods and distribution](https://github.com/hoverbike1/)
 - [MaxAnimatior for some insight and testing](https://github.com/D-Maxwell)
-- [Fl4sh, Development Help](https://github.com/Fl4sh9174)
+- [Fl4sh for Development Help](https://github.com/Fl4sh9174)
 - Nebroc, Great Moderator on my Discord.
 - Godzilla, lots of help with testing :).
 - LotP, great friend and help with UltraCam.
