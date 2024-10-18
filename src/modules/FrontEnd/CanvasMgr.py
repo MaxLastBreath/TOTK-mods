@@ -595,13 +595,13 @@ class Canvas_Create:
             canvas,
             name,
             CreateRandomTag(name),
-            CreateRandomTag(name),
+            [img_1, img_2],
             Type=Type,
             isOn=isOn,
             tags=tags,
         )
 
-        ImageBtn.BindImages(scale(cul), scale(row), img_1, img_2, anchor)
+        ImageBtn.BindImages(scale(cul), scale(row), anchor)
         ImageBtn.BindCommand(command)
         ImageBtn.MakeDynamic(Type)
 

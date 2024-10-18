@@ -15,6 +15,7 @@ def method_call_decorator(func):
 
         cls: Cheats = args[0]
 
+        # decide if cheats button should be removed or not.
         if cls._patchInfo.Cheats is False:
             for canvas in cls._manager.all_canvas:
                 canvas.itemconfig("CheatButton", state="hidden")
