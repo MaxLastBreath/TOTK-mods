@@ -153,7 +153,7 @@
 # Copyright Source & Credits
 - [UltraCam/DFPS/TOTK Optimizer (me)](https://linktr.ee/maxlastbreath)
 - [Triple Buffering - MasaGratoR](https://github.com/masagrator)
-- [Help With Internal Res](https://linktr.ee/keatonthebot)
+- [KeatonTheBot Help With Internal Res](https://linktr.ee/keatonthebot)
 
 # Special Thanks to
 - [Jake for testing](https://github.com/JakeDystopia/)
