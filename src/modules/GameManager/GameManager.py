@@ -22,11 +22,6 @@ class Game_Manager:
                 patch_directory = os.path.join(sys._MEIPASS, cls.Directory)
                 superlog.warning("No Patch Folder, using stored patches.")
 
-            if platform.system() == "Linux":
-                appdir = os.getenv("APPDIR")
-                if appdir:
-                    patch_directory = os.path.join(appdir, cls.Directory)
-
         superlog.info("Looking for supported games...")
         cls.CreatePatches(patch_directory)
 
