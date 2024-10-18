@@ -73,7 +73,7 @@ class Manager:
         Manager.config = localconfig
 
         # Game from config should be chosen here.
-        Manager._patchInfo = Manager.patches[2]
+        Manager._patchInfo = Manager.patches[-1]
         Manager._patchInfo = Game_Manager.GetJsonByID(
             load_config_game(Manager, Manager.config)
         )

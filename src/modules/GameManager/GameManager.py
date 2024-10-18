@@ -5,7 +5,7 @@ import json, os, sys, platform
 
 class Game_Manager:
     GamePatches: list[PatchInfo] = []
-    DefaultID: str = "0100F2C0115B6001"
+    DefaultID: str = "0100F2C0115B6000"
     Directory: str = "PatchInfo"
     PatchFile: str = "PatchInfo.json"
 

@@ -5,7 +5,6 @@ from tkinter import *
 from configuration.settings import *
 import ttkbootstrap as ttk
 import sys
-import time
 import string
 import random
 
@@ -629,29 +628,12 @@ class Canvas_Create:
         )
 
     @classmethod
-    def toggle_img(
-        cls,
-        canvas: ttk.Canvas,
-        mode: str,
-        tag_1: str,
-        tag_2: str,
-        boolean: ttk.BooleanVar | None = None,
-    ):
-        if mode.lower() == "enter":
-            canvas.itemconfig(tag_1, state="hidden")
-            canvas.itemconfig(tag_2, state="normal")
-
-        if mode.lower() == "leave":
-            canvas.itemconfig(tag_1, state="normal")
-            canvas.itemconfig(tag_2, state="hidden")
-
-    @classmethod
     def read_description(
         cls,
         canvas: ttk.Canvas,
         option: str,
-        text: str = None,
-        position_list: list = list,
+        text: str | None = None,
+        position_list=[],
         master: ttk.Window = any,
     ):
         if f"{option}" not in description and text is None:
