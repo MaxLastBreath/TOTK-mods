@@ -1,4 +1,3 @@
-import copy
 import threading
 from time import sleep
 from modules.logger import log
@@ -33,7 +32,6 @@ class AnimationQueue:
     @classmethod
     def UpdateQueue(cls):
         while cls.__running:
-            log.info("WEE")
             with cls.__lock:
                 if len(cls.queue) > 0:
                     queue = cls.queue.copy()

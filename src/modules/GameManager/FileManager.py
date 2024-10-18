@@ -337,19 +337,31 @@ class FileManager:
             target_folder = filemgr._manager._patchInfo.ID
             GameName = filemgr._manager._patchInfo.Name
 
-            # checks each individual folder ID for each user and finds the ones with saves for the selected game. Then backups the saves!
-            for root, dirs, files in os.walk(testforuserdir):
-                if target_folder in dirs:
-                    folder_to_backup = os.path.join(root, target_folder)
-            print(f"Attemping to backup {folder_to_backup}")
+            try:
+                # checks each individual folder ID for each user and finds the ones with saves for the selected game. Then backups the saves!
+                for root, dirs, files in os.walk(testforuserdir):
+                    if target_folder in dirs:
+                        folder_to_backup = os.path.join(root, target_folder)
+                print(f"Attemping to backup {folder_to_backup}")
+            except UnboundLocalError as e:
+                log.error("No Folder to backup Found.")
+                return
 
         # Create the 'backup' folder inside the mod manager directory if it doesn't exist
         elif filemgr.mode == "Ryujinx":
             folder_to_backup = filemgr.nand_dir
 
-        script_dir = os.path.dirname(os.path.abspath(sys.executable))
-        backup_folder_path = os.path.join(script_dir, "backup")
-        os.makedirs(backup_folder_path, exist_ok=True)
+        local_dir = os.path.dirname(os.path.abspath(sys.executable))
+        backup_folder_path = os.path.join(local_dir, "backup")
+
+        try:
+            os.makedirs(backup_folder_path, exist_ok=True)
+        except PermissionError as e:
+            log.error(
+                f"The Optimizer doesn't have permission to create or copy folders, please move it to a different location then {os.getcwd()}"
+            )
+            return
+
         backup_file = f"Backup {GameName}_.rar"
         file_number = 1
         while os.path.exists(os.path.join(backup_folder_path, backup_file)):

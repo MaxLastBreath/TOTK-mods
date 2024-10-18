@@ -656,6 +656,7 @@ class Canvas_Create:
     ):
         if f"{option}" not in description and text is None:
             return
+
         for position in position_list:
             try:
                 canvas_item = canvas.find_withtag(position)

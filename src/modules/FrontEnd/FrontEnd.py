@@ -108,7 +108,7 @@ class Manager:
         Manager.load_canvas()
 
         log.warning(f"Emulator {Manager.mode}")
-        Manager.switchmode(True)
+        Manager.switchmode()
 
         # Window protocols
         Manager._window.protocol(
@@ -423,7 +423,7 @@ class Manager:
             anchor="c",
             img_1=TextureMgr.Request("shaders.png"),
             img_2=TextureMgr.Request("shaders_a.png"),
-            command=lambda e: FileManager.clean_shaders,
+            command=lambda e: FileManager.clean_shaders(),
             tags=["Button"],
         )
 
@@ -658,28 +658,45 @@ class Manager:
         Cheats.Hide()
         load_benchmark(Manager)
 
+    def ShowRyujinx(Manager):
+        Manager.mode = "Ryujinx"
+        for canvas in Manager.all_canvas:
+            canvas.itemconfig("Legacy", state="hidden")
+            canvas.itemconfig("Ryujinx", state="normal")
+            canvas.itemconfig(
+                "SWITCHOVERLAY", image=TextureMgr.Request("Ryujinx_BG.png")
+            )
+
+        log.warning("Show Ryujinx")
+
+    def ShowLegacy(Manager):
+        Manager.mode = "Legacy"
+        for canvas in Manager.all_canvas:
+            canvas.itemconfig("Legacy", state="normal")
+            canvas.itemconfig("Ryujinx", state="hidden")
+            canvas.itemconfig(
+                "SWITCHOVERLAY", image=TextureMgr.Request("Legacy_BG.png")
+            )
+        log.warning("Show Legacy")
+
     def switchmode(Manager, Force=False):
         if Force is True:
             if Manager.mode == "Ryujinx":
-                Manager.ModeType.set(False)
-            else:
                 Manager.ModeType.set(True)
-            Manager.ModeType.ToggleImg(WidgetState.Leave)
-            superlog.info(f"Switched to {Manager.mode}")
+                Manager.ShowLegacy()
+            else:
+                Manager.ModeType.set(False)
+                Manager.ShowRyujinx()
+
+            superlog.info(f"Force Switched to {Manager.mode}")
             FileManager.checkpath(Manager.mode)
             return
 
-        if Manager.ModeType.get() is True:
-            Manager.mode = "Ryujinx"
-            for canvas in Manager.all_canvas:
-                canvas.itemconfig("Legacy", state="hidden")
-                canvas.itemconfig("Ryujinx", state="normal")
+        if Manager.ModeType.get() is False:
+            Manager.ShowRyujinx()
 
         elif Manager.os_platform != "Darwin":
-            Manager.mode = "Legacy"
-            for canvas in Manager.all_canvas:
-                canvas.itemconfig("Legacy", state="normal")
-                canvas.itemconfig("Ryujinx", state="hidden")
+            Manager.ShowLegacy()
 
         superlog.info(f"Switched to {Manager.mode}")
         FileManager.checkpath(Manager.mode)
