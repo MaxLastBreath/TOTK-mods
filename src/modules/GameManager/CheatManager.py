@@ -9,6 +9,26 @@ from modules.logger import log, superlog
 from modules.scaling import *
 
 
+def method_call_decorator(func):
+
+    def wrapper(*args, **kwargs):
+
+        cls: Cheats = args[0]
+
+        if cls._patchInfo.Cheats is False:
+            for canvas in cls._manager.all_canvas:
+                canvas.itemconfig("CheatButton", state="hidden")
+            return
+        else:
+            for canvas in cls._manager.all_canvas:
+                canvas.itemconfig("CheatButton", state="normal")
+
+        result = func(*args, **kwargs)
+        return result
+
+    return wrapper
+
+
 class Cheats:
 
     Canvas: ttk.Canvas | None = None
@@ -30,10 +50,11 @@ class Cheats:
         if Cheats.CheatVersion is None:
             Cheats.CheatVersion = ttk.StringVar(manager._window, "None")
 
+        if Cheats._patchInfo.Cheats is False:
+            return
+
         Cheats.LoadCheatVersions()
         Cheats.LoadCheatsConfig()
-
-        log.warning("Loading New Cheats.")
 
     @classmethod
     def Hide(cls):
@@ -136,6 +157,7 @@ class Cheats:
         Cheats.LoadCheatsConfig()
 
     @classmethod
+    @method_call_decorator
     def loadCheats(cls):
 
         "Load Cheats on the canvas."
@@ -216,6 +238,7 @@ class Cheats:
                 cul_sel += 200
 
     @classmethod
+    @method_call_decorator
     def ResetCheats(cls):
         try:
             for key, value in Cheats.CheatsInfo.items():
@@ -253,6 +276,7 @@ class Cheats:
         )
 
     @classmethod
+    @method_call_decorator
     def LoadCheatVersions(cls):
         """Create a Cheat Version Combobox and load all cheats into a single array."""
 
@@ -291,6 +315,7 @@ class Cheats:
         )
 
     @classmethod
+    @method_call_decorator
     def CreateCheats(cls):
         """Create Cheats, works with all games that support Cheats.."""
 
@@ -329,6 +354,7 @@ class Cheats:
         superlog.info("Applied cheats successfully.")
 
     @classmethod
+    @method_call_decorator
     def LoadCheatsConfig(cls):
         """Load Config information for cheats."""
 
@@ -345,6 +371,7 @@ class Cheats:
             pass
 
     @classmethod
+    @method_call_decorator
     def SaveCheatsConfig(cls):
         """Save Current Cheats config"""
 
@@ -361,6 +388,7 @@ class Cheats:
             config.write(file)
 
     @classmethod
+    @method_call_decorator
     def LoadCheatVersionFromConfig(cls):
         """Set Cheats Version to Cheats.CheatVersion() from config file and TitleID"""
 

@@ -135,11 +135,6 @@ class Manager:
                 Cheats.loadCheats()  # load the new cheats.
                 Cheats.LoadCheatsConfig()
 
-                if Manager._patchInfo.Cheats is False:
-                    Manager.maincanvas.itemconfig("CheatButton", state="hidden")
-                else:
-                    Manager.maincanvas.itemconfig("CheatButton", state="Normal")
-
     def ChangeName(Manager):
         Manager.all_canvas[0].itemconfig(
             Manager.LabelText[0], text=Manager._patchInfo.Name
