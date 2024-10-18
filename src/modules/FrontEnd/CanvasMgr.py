@@ -689,7 +689,7 @@ class Canvas_Create:
         y += canvas.winfo_rooty()
 
         master.after(50)
-        cls.tooltip = ttk.Toplevel()
+        cls.tooltip = ttk.Toplevel(master=master)
         cls.tooltip.wm_overrideredirect(True)
         cls.tooltip.geometry(f"+{x + scale(20)}+{y + scale(25)}")
 
@@ -700,6 +700,7 @@ class Canvas_Create:
             relief="solid",
             borderwidth=1,
             justify="left",
+            font=("Helvetica", 10, "normal"),
         )
 
         tooltip_label.pack()
