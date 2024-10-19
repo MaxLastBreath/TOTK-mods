@@ -232,7 +232,7 @@ def load_config_game(Manager, config_file):
         config["Options"] = {}
         return "0"
     
-    return config.get("Options", "Game")
+    return config.get("Options", "Game", fallback=Manager._patchInfo.ID)
 
 def save_config_game(Manager, config_file):
     ''' Saves the current selected Configuration game. '''

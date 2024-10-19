@@ -1,4 +1,5 @@
 from __future__ import annotations
+import time
 from modules.FrontEnd.ProgressBar import ProgressBar
 from modules.GameManager.LaunchManager import LaunchManager
 from modules.GameManager.ModCreator import ModCreator
@@ -421,10 +422,10 @@ class FileManager:
 
         # Needs to be run after checkpath.
         if filemgr.mode == "Legacy":
-            qtconfig = get_config_parser()
+            qtconfig = get_configparser()
             qtconfig.optionxform = lambda option: option
             try:
-                qtconfig.read(filemgr.configdir)
+                qtconfig.read(filemgr.configdir, encoding="utf-8")
             except Exception as e:
                 log.warning(f"Couldn't' find QT-config {e}")
         else:
@@ -522,7 +523,7 @@ class FileManager:
                 config = configparser.ConfigParser()
                 config.optionxform = lambda option: option
                 if os.path.exists(ini_file_path):
-                    config.read(ini_file_path)
+                    config.read(ini_file_path, encoding="utf-8")
 
                 ## TOTK UC BEYOND AUTO PATCHER
                 ModCreator.UCAutoPatcher(filemgr._manager, config)
