@@ -26,13 +26,7 @@ class PatchInfo:
 
     def GetModPath(self) -> str:
         location = os.path.join(self.Folder, self.ModFolder)
-
-        if os.path.exists(location):
-            return location
-        else:
-            if getattr(sys, "frozen", False):
-                location = os.path.join(sys._MEIPASS, self.Folder, self.ModFolder)
-                return location
+        return location
 
     def IDtoNum(self):
         return int(self.ID, 16)
@@ -41,6 +35,15 @@ class PatchInfo:
         Location = os.path.join(self.Folder, "Options.json")
         with open(Location, "r", encoding="utf-8") as file:
             return json.load(file)
+
+    def LoadPresetsJson(self):
+        Location = os.path.join(self.Folder, "Presets.json")
+
+        if not os.path.exists(Location):
+            return {"Saved": {}}
+
+        with open(Location, "r", encoding="utf-8") as file:
+            return {"Saved": {}} | json.load(file)
 
     def LoadCheatsJson(self):
         if self.Cheats is False:

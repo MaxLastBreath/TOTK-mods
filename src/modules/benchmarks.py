@@ -7,8 +7,10 @@ import re
 def load_last_benchmark(self, name):
     self.maincanvas.itemconfig(name, state="normal")
     self.Curr_Benchmark = name
+
     if name is None:
         return
+
     for item in self.benchmark_dicts:
         if name is item:
             continue
@@ -21,6 +23,7 @@ def load_last_benchmark(self, name):
             f"1% Lowest FPS - {self.benchmarks[name]['1% Low FPS']} FPS\n"
             f"0.1% Lowest FPS - {self.benchmarks[name]['0.1% Lowest FPS']} FPS\n",
         )
+
         self.maincanvas.itemconfig("no_benchmark", state="hidden")
     except Exception as e:
         log.error(f"Benchmark failed. {e}")
@@ -33,6 +36,7 @@ def load_benchmark(self):
     benchmark_file = os.path.join(FileManager.sdmc_dir, "TOTKBenchmark.txt")
     print(benchmark_file)
     Last_Found = None
+
     try:
         with open(benchmark_file, "r") as benchmarks:
             for line in benchmarks:

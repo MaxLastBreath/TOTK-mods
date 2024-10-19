@@ -9,7 +9,5 @@ from modules.benchmarks import *
 from tkinter import filedialog, Toplevel
 from ttkbootstrap.constants import *
 from ttkbootstrap import Style
-import tkinter
-import ttkbootstrap as ttk
 
 # custom imports

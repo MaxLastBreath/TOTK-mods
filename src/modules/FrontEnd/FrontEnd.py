@@ -143,6 +143,7 @@ class Manager:
                 Manager.LoadPatches(Manager.all_canvas[0], pos_dict)
                 Manager.toggle_pages("main")
                 Manager.ForceGameBG()
+                Manager.CreatePresets()
 
                 # Save the selected game in the config file and load options for that game.
                 save_config_game(Manager, Manager.config)
@@ -259,6 +260,27 @@ class Manager:
         Manager.UserChoices.clear()
         Manager.all_canvas[0].delete("patchinfo")
 
+    def CreatePresets(Manager, row=40, cul_tex=60, cul_sel=220):
+
+        Manager.maincanvas.delete("OptimizerPresets")
+
+        # Create preset menu.
+        presets = Manager._patchInfo.LoadPresetsJson()
+        values = list(presets.keys())
+        Manager.selected_preset = Canvas_Create.create_combobox(
+            master=Manager._window,
+            canvas=Manager.maincanvas,
+            text="OPTIMIZER PRESETS:",
+            variable=values[0],
+            values=values,
+            row=row,
+            cul=cul_tex - 20,
+            tags=["text"],
+            tag="OptimizerPresets",
+            description_name="Presets",
+            command=lambda event: apply_selected_preset(Manager),
+        )
+
     def create_canvas(Manager):
 
         # clear list.
@@ -289,6 +311,8 @@ class Manager:
         cul_tex_2 = 400
         cul_sel_2 = 550
 
+        Manager.CreatePresets()
+
         # Run Scripts for checking OS and finding location
         FileManager.checkpath(Manager.mode)
         FileManager.DetectOS(Manager.mode)
@@ -299,23 +323,6 @@ class Manager:
 
         Manager.maincanvas.bind("<Button-3>", onCanvasClick)
         # Start of CANVAS options.
-
-        # Create preset menu.
-        presets = {"Saved": {}}
-        values = list(presets.keys())
-        Manager.selected_preset = Canvas_Create.create_combobox(
-            master=Manager._window,
-            canvas=canvas,
-            text="OPTIMIZER PRESETS:",
-            variable=values[0],
-            values=values,
-            row=row,
-            cul=cul_tex - 20,
-            tags=["text"],
-            tag="Optimizer",
-            description_name="Presets",
-            command=lambda event: apply_selected_preset(Manager),
-        )
 
         # Setting Preset - returns variable.
 

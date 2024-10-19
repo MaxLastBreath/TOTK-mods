@@ -1,6 +1,5 @@
 from modules.colors import Color
 from modules.scaling import *
-from modules.json import *
 from modules.download import *
 from modules.logger import log, superlog
 from modules.FrontEnd.Localization import Localization
