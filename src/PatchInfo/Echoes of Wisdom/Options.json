@@ -219,6 +219,24 @@
                 "UltraCam",
                 "AnimationFadeout"
             ]
+        },
+        "UCdof": {
+            "Name": "Depth of Field",
+            "Class": "scale",
+            "Section": "main",
+            "Auto": false,
+            "Values": [
+                0.0,
+                2
+            ],
+            "Type": "f32",
+            "Default": 0.0,
+            "Increments": 0.1,
+            "Description": "Depth of Field, default is 1.0, to turn off 0.0 and 0.5 to reduce etc While in FreeCam.",
+            "Config_Class": [
+                "UltraCam",
+                "DepthOfField"
+            ]
         }
     }
 }
