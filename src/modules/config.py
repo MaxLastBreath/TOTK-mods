@@ -174,17 +174,22 @@ def load_user_choices(Manager, config_file, mode=None):
         option_value = config.get('Options', option_name, fallback="Off")
         option_var.set(option_value)
 
-def apply_selected_preset(Manager, event=None):
+def apply_selected_preset(manager, event=None):
+    from modules.FrontEnd.FrontEnd import Manager
+    manager: Manager = manager
+
     try:
-        selected_preset = Manager.selected_preset.get()
+        selected_preset = manager.selected_preset.get()
     except AttributeError as e:
         selected_preset = "Saved"
         log.error(f"Failed to apply selected preset: {e}")
 
+    presets = manager._patchInfo.LoadPresetsJson()
+
     if selected_preset.lower() == "saved":
-        load_user_choices(Manager, Manager.config)
-    elif selected_preset in Manager.presets:
-        preset_to_apply = Manager.presets[selected_preset]
+        load_user_choices(manager, manager.config)
+    elif selected_preset in presets:
+        preset_to_apply = presets[selected_preset]
         for key, value in preset_to_apply.items():
             if value is True:
                 preset_to_apply[key] = "On"
@@ -195,7 +200,7 @@ def apply_selected_preset(Manager, event=None):
             elif not isinstance(value, int) and not isinstance(value, float) and value.lower() in ["disable", "disabled", "off"]:
                 preset_to_apply[key] = "Off"
         # Apply the selected preset from the online presets
-        apply_preset(Manager, Manager.presets[selected_preset])
+        apply_preset(manager, presets[selected_preset])
 
 def write_Legacy_config(Manager, config_file, title_id, section, setting, selection):
     os.makedirs(config_file, exist_ok=True)
