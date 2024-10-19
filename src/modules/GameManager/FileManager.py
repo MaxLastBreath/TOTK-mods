@@ -17,7 +17,6 @@ class FileManager:
     _manager: any
 
     is_extracting = False
-    mode = "Legacy"
 
     configdir = str
     TOTKconfig = str
@@ -39,12 +38,12 @@ class FileManager:
     @classmethod
     # fmt: off
     def load_Legacy_path(filemgr, config_file: str):
-        if filemgr.mode == "Legacy":
+        if filemgr._manager.mode == "Legacy":
             config = configparser.ConfigParser()
             config.read(config_file, encoding="utf-8")
             Legacy_path = config.get('Paths', 'Legacypath', fallback="Appdata")
             return Legacy_path
-        if filemgr.mode == "Ryujinx":
+        if filemgr._manager.mode == "Ryujinx":
             config = configparser.ConfigParser()
             config.read(config_file, encoding="utf-8")
             ryujinx_path = config.get('Paths', 'ryujinxpath', fallback="Appdata")
@@ -147,6 +146,8 @@ class FileManager:
         Legacypath = filemgr.load_Legacy_path(localconfig)
         userfolder = os.path.normpath(os.path.join(Legacypath, "../user/"))
         portablefolder = os.path.normpath(os.path.join(Legacypath, "../portable/"))
+
+        log.warning(f"PORTABLE PATHS : {portablefolder}")
         
         # Check for user folder
         if mode == "Legacy":
@@ -234,7 +235,7 @@ class FileManager:
                 filemgr.load_dir = os.path.join(f"{portablefolder}", "mods", "contents", filemgr._manager._patchInfo.ID)
                 filemgr.sdmc_dir = os.path.join(f"{portablefolder}", "sdcard")
                 filemgr.Legacydir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", filemgr._manager._patchInfo.ID)
-                superlog.info(f"Checking Ryujinx {filemgr.ryujinx_config}, {filemgr.nand_dir}, {filemgr.load_dir}, {filemgr.sdmc_dir}, {filemgr.Legacydir}")
+                # superlog.info(f"Checking Ryujinx {filemgr.ryujinx_config}, {filemgr.nand_dir}, {filemgr.load_dir}, {filemgr.sdmc_dir}, {filemgr.Legacydir}")
                 return
             else:
                 filemgr.Globaldir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx")
@@ -289,8 +290,8 @@ class FileManager:
             os.makedirs(filemgr.load_dir, exist_ok=True)
             os.makedirs(filemgr.Legacydir, exist_ok=True)
         except PermissionError as e:
-            log.warrning(f"Unable to create directories, please run {filemgr.mode}, {e}")
-            filemgr.warning(f"Unable to create directories, please run {filemgr.mode}, {e}")
+            log.warrning(f"Unable to create directories, please run {filemgr._manager.mode}, {e}")
+            filemgr.warning(f"Unable to create directories, please run {filemgr._manager.mode}, {e}")
 
     @classmethod
     def DetectOS(filemgr, mode: str):
@@ -331,7 +332,7 @@ class FileManager:
     def backup(filemgr):
         """Backup save files for a specific game, for Ryujinx it fetches all games."""
 
-        if filemgr.mode == "Legacy":
+        if filemgr._manager.mode == "Legacy":
             testforuserdir = os.path.join(
                 filemgr.nand_dir, "user", "save", "0000000000000000"
             )
@@ -349,7 +350,7 @@ class FileManager:
                 return
 
         # Create the 'backup' folder inside the mod manager directory if it doesn't exist
-        elif filemgr.mode == "Ryujinx":
+        elif filemgr._manager.mode == "Ryujinx":
             folder_to_backup = filemgr.nand_dir
 
         local_dir = os.path.dirname(os.path.abspath(sys.executable))
@@ -421,7 +422,7 @@ class FileManager:
         filemgr.checkpath(filemgr._manager.mode)
 
         # Needs to be run after checkpath.
-        if filemgr.mode == "Legacy":
+        if filemgr._manager.mode == "Legacy":
             qtconfig = get_config_parser()
             qtconfig.optionxform = lambda option: option
             try:
@@ -541,7 +542,7 @@ class FileManager:
             if filemgr._manager.selected_settings.get() == "No Change":
                 ProgressBar.string.set("No Settings Required..")
                 return
-            if filemgr.mode == "Legacy":
+            if filemgr._manager.mode == "Legacy":
                 setting_preset = filemgr.Legacy_settings[
                     filemgr.selected_settings.get()
                 ]
@@ -598,9 +599,9 @@ class FileManager:
             )
 
             message = (
-                f"{filemgr.mode}.exe is Running, \n"
-                f"The Optimizer Requires {filemgr.mode}.exe to be closed."
-                f"\nDo you wish to close {filemgr.mode}.exe?"
+                f"{filemgr._manager.mode}.exe is Running, \n"
+                f"The Optimizer Requires {filemgr._manager.mode}.exe to be closed."
+                f"\nDo you wish to close {filemgr._manager.mode}.exe?"
             )
             if is_Program_Opened is True:
                 response = messagebox.askyesno(
@@ -608,10 +609,11 @@ class FileManager:
                 )
                 if response is True:
                     subprocess.run(
-                        ["taskkill", "/F", "/IM", f"{filemgr.mode}.exe"], check=True
+                        ["taskkill", "/F", "/IM", f"{filemgr._manager.mode}.exe"],
+                        check=True,
                     )
             if is_Program_Opened is False:
-                log.info(f"{filemgr.mode}.exe is closed, working as expected.")
+                log.info(f"{filemgr._manager.mode}.exe is closed, working as expected.")
 
         def Disable_Mods():
             ProgressBar.string.set(f"Disabling old mods.")
@@ -619,7 +621,7 @@ class FileManager:
             filemgr.add_list = set(filemgr.add_list)
             filemgr.remove_list = set(filemgr.remove_list)
             # Run the Main code to Enable and Disable necessary Mods, the remove ensures the mods are enabled.
-            if filemgr.mode == "Legacy":
+            if filemgr._manager.mode == "Legacy":
 
                 for item in filemgr.add_list:
                     modify_disabled_key(
@@ -642,7 +644,7 @@ class FileManager:
                     )
 
             # fmt: off
-            if (filemgr.mode == "Ryujinx" or platform.system() == "Linux" and not filemgr.is_extracting):
+            if (filemgr._manager.mode == "Ryujinx" or platform.system() == "Linux" and not filemgr.is_extracting):
                 for item in filemgr.add_list:
                     item_dir = os.path.join(filemgr.load_dir, item)
                     if os.path.exists(item_dir):
