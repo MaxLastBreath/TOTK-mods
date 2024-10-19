@@ -1,9 +1,6 @@
-import platform
-import subprocess
-import zipfile
-import os
+import zipfile, subprocess, platform
+import os, shutil, argparse
 from configuration.settings import *
-import argparse
 
 latest_version = Version.strip("manager-")
 program_name = "NX Optimizer"
