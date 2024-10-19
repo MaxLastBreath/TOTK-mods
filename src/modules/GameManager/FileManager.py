@@ -422,7 +422,7 @@ class FileManager:
 
         # Needs to be run after checkpath.
         if filemgr.mode == "Legacy":
-            qtconfig = get_configparser()
+            qtconfig = get_config_parser()
             qtconfig.optionxform = lambda option: option
             try:
                 qtconfig.read(filemgr.configdir, encoding="utf-8")
