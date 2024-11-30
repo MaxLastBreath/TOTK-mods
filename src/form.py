@@ -993,8 +993,10 @@ class Manager:
                     write_ryujinx_config(self, self.ryujinx_config, "res_scale", 1)
                     if (layout > 0):
                         write_ryujinx_config(self, self.ryujinx_config, "expand_ram", True)
+                        write_ryujinx_config(self, self.ryujinx_config, "dram_size", layout)
                     else:
                         write_ryujinx_config(self, self.ryujinx_config, "expand_ram", False)
+                        write_ryujinx_config(self, self.ryujinx_config, "dram_size", layout)
 
                 config["Resolution"]["Width"] = str(New_Resolution[0])
                 config["Resolution"]["Height"] = str(New_Resolution[1])
