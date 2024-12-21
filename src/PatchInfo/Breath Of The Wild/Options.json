@@ -44,8 +44,8 @@
             "Increments": 5,
             "Description": "UltraCam Beyond NEW MENU FPS CAP. Set to your desire.",
             "Config_Class": [
-                "Features",
-                "MenuFPSLock"
+                "Resolution",
+                "MenuFPS"
             ]
         },
         "fov": {
