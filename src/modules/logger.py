@@ -75,7 +75,7 @@ gpu_name = hwinfo.get_gpu_name(log)
 # Print Memory
 try:
     memory_info = psutil.virtual_memory()
-    total_memory = memory_info.total // 1048576000
+    total_memory = round(memory_info.total / (1024 * 1024 * 1024))
     memory_used = memory_info.percent
 except Exception as e:
     log.warning(

@@ -30,9 +30,9 @@ if __name__ == "__main__":
 
         # Delete any old executables
         # Disabled for MacOS (For now)
-        if platform.system() != "Darwin":
-            delete_old_exe()
-            check_for_updates()
+        # if platform.system() != "Darwin":
+        #     delete_old_exe()
+        #     check_for_updates()
 
         window.mainloop()
     except Exception as e:
