@@ -37,6 +37,9 @@ jobs:
         - name: Linux_dir
           os: ubuntu-20.04
           artifactsPath: ./src/dist/*.zip
+        - name: Linux ARM64
+          os: ubuntu-24.04-arm
+          artifactsPath: ./src/dist/*.AppImage
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
