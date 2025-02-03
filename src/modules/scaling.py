@@ -52,8 +52,12 @@ def Auto_SF():
 # Use First Monitor to determine SF, this bypasses scaling from windows.
 sf = Auto_SF()
 
-
 def scale(scale):
-    if sf == 1.0:
-        return scale
+    from run import OptimizerWindowSize
+
+
+    WindowSize: float  = (OptimizerWindowSize[0] + OptimizerWindowSize[1]) / (1200 + 600) - 1 # 0.125
+    return int(float(scale * sf) * (1.0 + (WindowSize)))
+
+def scaleWindow(scale):
     return int(float(scale * sf))
