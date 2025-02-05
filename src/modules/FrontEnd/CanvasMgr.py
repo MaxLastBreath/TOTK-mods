@@ -786,7 +786,7 @@ class Canvas_Create:
                 canvas.itemconfig("background", image=item.object)
                 return
 
-        newImage = cls.Photo_Image(image_path=_path, width=1200, height=600, blur=2)
+        newImage = cls.Photo_Image(image_path=_path, width=1260, height=680, blur=2)
 
         cls.LoadedImages.append(ImageContext(_path, newImage))
         canvas.itemconfig("background", image=newImage)
