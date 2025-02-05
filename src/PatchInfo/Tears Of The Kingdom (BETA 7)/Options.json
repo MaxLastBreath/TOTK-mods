@@ -316,7 +316,7 @@
             ]
         },
         "handheldheight": {
-            "Name": "Handheld Width",
+            "Name": "Handheld Height",
             "Class": "dropdown",
             "Section": "main",
             "Auto": true,
