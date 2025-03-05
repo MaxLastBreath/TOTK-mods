@@ -1,10 +1,11 @@
 {
-    "Name" : "Breath of The Wild (EA 6.0.4)",
+    "Name" : "Breath of The Wild (EA 9.0)",
     "ID" : "01007EF00011E000",
     "ModName" : "!!!BOTW Optimizer",
     "ModConfig" : "romfs/UltraCam/maxlastbreath.ini",
     "Config" : "Options.json",
     "ModFolder" : "UltraCam",
     "Versions" : ["1.6.0"],
-    "Cheats" : true
+    "Cheats" : true,
+    "SDCardConfig" : false
 }

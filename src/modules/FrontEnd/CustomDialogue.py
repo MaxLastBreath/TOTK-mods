@@ -64,7 +64,7 @@ class CustomDialog(ttk.Toplevel):
             Canvas_Create.image_Button(
                 canvas=canvas,
                 row=height - 60,
-                cul=scale(width - (20 + scale(no_img_1.width()))),
+                cul=width - 110,
                 img_1=no_img_1,
                 img_2=no_img_2,
                 command=self.on_no,

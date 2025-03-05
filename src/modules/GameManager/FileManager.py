@@ -13,8 +13,8 @@ import shutil
 
 class FileManager:
 
-    _window: ttk.Window
-    _manager: any
+    _window: ttk.Window = None
+    _manager: any = None
 
     is_extracting = False
 
@@ -32,7 +32,7 @@ class FileManager:
     def Initialize(filemgr, Window, Mgr):
         from modules.FrontEnd.FrontEnd import Manager  # avoid Circular Imports.
 
-        filemgr._manager = Mgr
+        filemgr._manager : Manager = Mgr
         filemgr._window = Window
 
     @classmethod
@@ -413,6 +413,22 @@ class FileManager:
             log.info("Shaders deletion declined.")
 
     @classmethod
+    def UltraCam_ConfigPath(filemgr) -> str:
+        PatchInfo = filemgr._manager._patchInfo
+        ModDir = filemgr.load_dir
+        SdCard = filemgr.sdmc_dir
+
+        log.error(SdCard)
+
+        if filemgr.is_extracting is True:
+            return os.path.join(os.getcwd, PatchInfo.ModName, PatchInfo.Config)
+        
+        if PatchInfo.SDCardConfig is True:
+            return os.path.join(SdCard, PatchInfo.Config)
+        else:
+            return os.path.join(ModDir, PatchInfo.ModName, PatchInfo.Config)
+
+    @classmethod
     def submit(filemgr, mode: str | None = None):
 
         superlog.info(f"STARTING {mode}")
@@ -510,13 +526,9 @@ class FileManager:
                 filemgr.add_list.append("Mod Manager Patch")
                 filemgr.add_list.append("UltraCam")
 
-                ini_file_path = os.path.join(
-                    modDir, patchInfo.ModName, patchInfo.Config
-                )
-                if filemgr.is_extracting:  # do this if we are extracting the mod.
-                    ini_file_path = os.path.join(
-                        os.getcwd(), patchInfo.ModName, patchInfo.Config
-                    )
+                ini_file_path = filemgr.UltraCam_ConfigPath()
+
+                log.warning(f"Creating {filemgr._manager._patchInfo.ModName} config File Path... {ini_file_path}\n")
 
                 ini_file_directory = os.path.dirname(ini_file_path)
                 os.makedirs(ini_file_directory, exist_ok=True)

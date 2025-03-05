@@ -117,12 +117,12 @@ def loadGameConfig(Manager, config):
                 Manager.UserChoices[patch].set(float(config.get(GameID, patch)))
             else:
                 Manager.UserChoices[patch].set(config.get(GameID, patch))
-        except KeyError:
+        except (configparser.NoOptionError, KeyError):
             pass
         try:
             if patch_class.lower() == "bool":
                 Manager.UserChoices[patch].set(config.get(GameID, patch))
-        except KeyError:
+        except (configparser.NoOptionError, KeyError):
             pass
 
 def save_user_choices(Manager, config_file, Legacy_path=None):
@@ -216,6 +216,11 @@ def write_Legacy_config(Manager, config_file, title_id, section, setting, select
         Legacyconfig.write(config_file, space_around_delimiters=False)
 
 def write_ryujinx_config(Manager, config_file, setting, selection):
+
+    if not os.path.exists(config_file):
+        log.error(f"RYUJINX CONFIG DOESN'T EXIST! {config_file}")
+        return
+
     with open(config_file, "r", encoding="utf-8") as file:
         data = json.load(file)
         data[setting] = selection

@@ -5,7 +5,7 @@ from modules.update import textver, check_for_updates, delete_old_exe
 from modules.scaling import sf, scale
 from ctypes import *
 
-OptimizerWindowSize = (1280, 640)
+OptimizerWindowSize = (1200, 600) # everything is scaled with 1200x600 in mind. 2:1 aspect ratio
 
 if __name__ == "__main__":
     try:

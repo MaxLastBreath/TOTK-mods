@@ -55,8 +55,7 @@ sf = Auto_SF()
 def scale(scale):
     from run import OptimizerWindowSize
 
-
-    WindowSize: float  = (OptimizerWindowSize[0] + OptimizerWindowSize[1]) / (1200 + 600) - 1 # 0.125
+    WindowSize: float  = (OptimizerWindowSize[0] + OptimizerWindowSize[1]) / (1200 + 600) - 1
     return int(float(scale * sf) * (1.0 + (WindowSize)))
 
 def scaleWindow(scale):

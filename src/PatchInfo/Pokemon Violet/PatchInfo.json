@@ -6,5 +6,6 @@
     "Config" : "Options.json",
     "ModFolder" : "DynamicFPS",
     "Versions" : ["3.0.1"],
-    "Cheats": false
+    "Cheats": false,
+    "SDCardConfig" : false
 }
