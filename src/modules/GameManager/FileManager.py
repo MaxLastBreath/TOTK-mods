@@ -421,7 +421,9 @@ class FileManager:
         log.error(SdCard)
 
         if filemgr.is_extracting is True:
-            return os.path.join(os.getcwd, PatchInfo.ModName, PatchInfo.Config)
+            Folder = os.path.join(os.getcwd(), "Extracted Files")
+            os.makedirs(Folder, exist_ok=True)
+            return os.path.join(Folder, PatchInfo.ModName, PatchInfo.Config)
         
         if PatchInfo.SDCardConfig is True:
             return os.path.join(SdCard, PatchInfo.Config)
