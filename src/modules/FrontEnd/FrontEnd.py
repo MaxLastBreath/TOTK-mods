@@ -167,11 +167,13 @@ class Manager:
 
     def UpdateEmuScale(Manager, canvas: ttk.Canvas, variable: ttk.Variable, name: str):
         keys = Manager.ultracam_beyond.get("Keys", [""])
-
-        if (Manager.UserChoices["resolution"] is not None):
-            Resolution = Manager.UserChoices["resolution"].get()
-            Resolution = re.findall(r"\d+", Resolution)
-            canvas.itemconfig(name, text=str(int(int(Resolution[0]) * float(variable.get()))) + "p")
+        try:
+            if (Manager.UserChoices["resolution"] is not None):
+                Resolution = Manager.UserChoices["resolution"].get()
+                Resolution = re.findall(r"\d+", Resolution)
+                canvas.itemconfig(name, text=str(int(int(Resolution[0]) * float(variable.get()))) + "p")
+        except Exception:
+            canvas.itemconfig(name, text=str(int(900 * float(variable.get()))) + "p")
 
     def LoadPatches(Manager, canvas, pos_dict):
         ResolutionScaleName = "Resolution Scale"
@@ -293,6 +295,7 @@ class Manager:
                 text_description="ResScale",
                 command=lambda e: Manager.UpdateEmuScale(canvas, Manager._EmulatorScale, ResolutionScaleName)
             )
+            Manager._EmulatorScale.set(1)
         
     def DeletePatches(Manager):
         Manager.UserChoices.clear()
