@@ -541,8 +541,10 @@ class Canvas_Create:
             tags.append(tag)
         if command is not None and active_fill is None:
             active_fill = active_color
-        if outline_tag is not None:  # add outline and user-tag to the outlined text.
-            outline_tag = [outline_tag, tag]
+            
+        outline_tag = [outline_tag]
+        for _tag in tags:
+            outline_tag.append(_tag)
 
         # create an outline to the text.
         text_outline = canvas.create_text(
@@ -568,6 +570,7 @@ class Canvas_Create:
             tags=tags,
             activefil=active_fill,
         )
+
         canvas.tag_bind(text_line, "<Button-1>", command)
         cls.read_description(
             canvas=canvas,

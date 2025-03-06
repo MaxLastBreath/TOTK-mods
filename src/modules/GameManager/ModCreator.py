@@ -148,22 +148,22 @@ class ModCreator:
     def UCRyujinxRamPatcher(cls, manager, filemgr, layout):
         """Patches Ryujinx specific Settings, such as RAM from 4 or 8GB."""
         
-        if not os.path.exists(filemgr.ryujinx_config):
-            log.error(f"Ryujinx config doesn't exist {filemgr.ryujinx_config} Please Run Ryujinx or press Browse to direct the app to Ryujinx.exe")
+        if not os.path.exists(filemgr.emuconfig):
+            log.error(f"Ryujinx config doesn't exist {filemgr.emuconfig} Please Run Ryujinx or press Browse to direct the app to Ryujinx.exe")
             return
 
-        if (read_ryujinx_version(filemgr.ryujinx_config) >= 54):
+        if (read_ryujinx_version(filemgr.emuconfig) >= 54):
             # GreemDev Ryujinx
-            write_ryujinx_config(filemgr, filemgr.ryujinx_config,  "dram_size", layout)
+            write_ryujinx_config(filemgr, filemgr.emuconfig,  "dram_size", layout)
             log.warning(f"Expanding Ram Size to Type {layout}")
         else:
             # Original Ryujinx
             if layout > 0:
                 log.warning(f"Expanding Ryujinx RAM mode to 8GB, {layout}")
-                write_ryujinx_config(filemgr, filemgr.ryujinx_config,  "expand_ram", True)
+                write_ryujinx_config(filemgr, filemgr.emuconfig,  "expand_ram", True)
             else:
                 log.warning(f"Reverting Ryujinx RAM mode to 4GB, {layout}")
-                write_ryujinx_config(filemgr, filemgr.ryujinx_config,  "expand_ram", False)
+                write_ryujinx_config(filemgr, filemgr.emuconfig,  "expand_ram", False)
 
     @classmethod
     def UCLegacyRamPatcher(cls, manager, filemgr, layout):
@@ -227,7 +227,7 @@ class ModCreator:
             if (manager._patchInfo.ResolutionScale):
                 new_scale = int(manager._EmulatorScale.get())
 
-            write_ryujinx_config(filemgr, filemgr.ryujinx_config, "res_scale", new_scale)  # fmt: skip
+            write_ryujinx_config(filemgr, filemgr.emuconfig, "res_scale", new_scale)  # fmt: skip
             cls.UCRyujinxRamPatcher(manager, filemgr, Resolution.getRamLayout())
 
         Section = patch_info["resolution"]["Config_Class"][0]

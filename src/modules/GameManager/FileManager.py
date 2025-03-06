@@ -24,10 +24,9 @@ class FileManager:
 
     is_extracting = False
 
-    configdir: str = None
+    emuconfig: str = None
     TOTKconfig: str = None
     nand_dir: str = None
-    ryujinx_config: str = None
     sdmc: str = None
     load_dir: str = None
     Legacydir: str = None
@@ -133,9 +132,8 @@ class FileManager:
             base_directory = portablefolder
 
         filemgr.Globaldir = base_directory
-        filemgr.configdir = None
+        filemgr.emuconfig = os.path.join(base_directory, "Config.json")
         filemgr.TOTKconfig = None
-        filemgr.ryujinx_config = os.path.join(base_directory, "Config.json")
         filemgr.nand_dir = os.path.join(base_directory, "bis", "user", "save")
         filemgr.load_dir = os.path.join(base_directory, "mods", "contents", filemgr._manager._patchInfo.ID)
         filemgr.sdmc_dir = os.path.join(base_directory, "sdcard")
@@ -156,20 +154,19 @@ class FileManager:
 
         # Config FIle BS
         if (filemgr.os_platform == "Linux"):
-            filemgr.configdir = filemgr.LoopSearchLinuxConfig()
+            filemgr.emuconfig = filemgr.LoopSearchLinuxConfig()
         else:
-            filemgr.configdir = os.path.join(base_directory, "config/qt-config.ini")
+            filemgr.emuconfig = os.path.join(base_directory, "config/qt-config.ini")
 
         filemgr.Globaldir = base_directory
-        filemgr.TOTKconfig = os.path.join(filemgr.configdir, "../custom")
-        filemgr.ryujinx_config = None
+        filemgr.TOTKconfig = os.path.join(filemgr.emuconfig, "../custom")
         filemgr.nand_dir = os.path.join(base_directory, "nand")
         filemgr.load_dir = os.path.join(base_directory, "load")
         filemgr.sdmc_dir = os.path.join(base_directory, "sdmc")
 
-        if (os.path.exists(filemgr.configdir)):
+        if (os.path.exists(filemgr.emuconfig)):
             config_parser = configparser.ConfigParser()
-            config_parser.read(filemgr.configdir, encoding="utf-8")
+            config_parser.read(filemgr.emuconfig, encoding="utf-8")
         
             NEW_nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=filemgr.nand_dir)).replace('"', "")
             filemgr.load_dir = os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=filemgr.load_dir)).replace('"', "")
@@ -211,7 +208,7 @@ class FileManager:
         elif filemgr.os_platform == "Windows":
             superlog.info("Detected a Windows based SYSTEM!")
             if mode == "Legacy":
-                if os.path.exists(filemgr.configdir):
+                if os.path.exists(filemgr.emuconfig):
                     log.info("a qt-config.ini file found!")
                 else:
                     log.warning(
@@ -531,12 +528,16 @@ class FileManager:
             filemgr.remove_list = set(filemgr.remove_list)
             # Run the Main code to Enable and Disable necessary Mods, the remove ensures the mods are enabled.
             if filemgr._manager.mode == "Legacy":
+                
+                # read config to pass into disabled keys h
+                emuconfig = configparser.ConfigParser()
+                emuconfig.read(filemgr.emuconfig, encoding="utf-8")
 
                 for item in filemgr.add_list:
                     modify_disabled_key(
-                        filemgr.configdir,
+                        filemgr.emuconfig,
                         filemgr.load_dir,
-                        filemgr.configdir,
+                        emuconfig,
                         filemgr._manager._patchInfo.IDtoNum(),
                         item,
                         action="add",
@@ -544,9 +545,9 @@ class FileManager:
 
                 for item in filemgr.remove_list:
                     modify_disabled_key(
-                        filemgr.configdir,
+                        filemgr.emuconfig,
                         filemgr.load_dir,
-                        filemgr.configdir,
+                        emuconfig,
                         filemgr._manager._patchInfo.IDtoNum(),
                         item,
                         action="remove",

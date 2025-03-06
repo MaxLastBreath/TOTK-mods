@@ -44,18 +44,7 @@ class Game_Manager:
                     )
 
                     cls.GamePatches.append(
-                        PatchInfo(
-                            patchfolder,
-                            jsonfile["ID"],
-                            jsonfile["Name"],
-                            jsonfile["Versions"],
-                            jsonfile["ModName"],
-                            jsonfile["ModConfig"],
-                            jsonfile["ModFolder"],
-                            jsonfile["Cheats"],
-                            jsonfile["SDCardConfig"],
-                            jsonfile["EmulationScale"]
-                        )
+                        PatchInfo(patchfolder, jsonfile)
                     )
 
     @classmethod

@@ -155,6 +155,7 @@ class Manager:
 
                 Cheats.loadCheats()  # load the new cheats.
                 Cheats.LoadCheatsConfig()
+                FileManager.checkpath(Manager.mode)
 
     def ChangeName(Manager):
         Manager.all_canvas[0].itemconfig(

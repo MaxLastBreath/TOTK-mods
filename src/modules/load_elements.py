@@ -4,49 +4,10 @@ from configuration.settings import *
 from modules.benchmarks import *
 import pyperclip
 
-
-def copy(manager):
-    if manager.Curr_Benchmark is None:
-        return
-    patch_info = manager.ultracam_beyond.get("Keys", [""])
-    resolution = manager.UserChoices["resolution"].get()
-    shadows = int(manager.UserChoices["shadow resolution"].get().split("x")[0])
-
-    system_os = "MacOS" if platform.system() == "Darwin" else platform.system()
-    benchmark_result = (
-        f"## **{manager.Curr_Benchmark}** Tears Of The Kingdom on {system_os}\n"
-    )
-
-    if platform.system() != "Darwin":
-        benchmark_result += f"- **{gpu_name}**\n"
-    benchmark_result += (
-        f"- **{CPU}**\n"
-        f"- **{total_memory}** GB RAM at **{FREQUENCY}** MHz\n"
-        f"- **{resolution}** and Shadows: **{shadows}**, FPS CAP: **{manager.UserChoices['fps'].get()}**\n"
-        f"## Results:\n"
-        f"- Total Frames **{manager.benchmarks[manager.Curr_Benchmark]['Total Frames']}**\n"
-        f"- Average FPS **{manager.benchmarks[manager.Curr_Benchmark]['Average FPS']}**\n"
-        f"- 1% Lows **{manager.benchmarks[manager.Curr_Benchmark]['1% Low FPS']}** FPS\n"
-        f"- 0.1% Lows **{manager.benchmarks[manager.Curr_Benchmark]['0.1% Lowest FPS']}** FPS\n"
-    )
-
-    pyperclip.copy(benchmark_result)
-
-
 def load_UI_elements(manager, canvas: ttk.Canvas):
     from modules.FrontEnd.FrontEnd import Manager
 
     manager: Manager = manager
-
-    manager.benchmark_dicts = {
-        "Korok Forest": TextureMgr.Request("benchmark_korok.png"),
-        "Lookout Landing": TextureMgr.Request("benchmark_lookout.png"),
-        "Kakariko": TextureMgr.Request("benchmark_kakariko.png"),
-        "Great Sky Island": TextureMgr.Request("benchmark_great_sky_island.png"),
-        "Goron City": TextureMgr.Request("benchmark_goron.png"),
-        "Depths": TextureMgr.Request("benchmark_depths.png"),
-        "Zora Domain": TextureMgr.Request("benchmark_zora.png"),
-    }
 
     # Images and Effects
     canvas.create_image(
@@ -76,25 +37,16 @@ def load_UI_elements(manager, canvas: ttk.Canvas):
 
     Offset = 255
 
-    # Benchmark Images..?
-    for location, image in manager.benchmark_dicts.items():
-        Canvas_Create.set_image(
-            canvas=canvas,
-            row=285 - Offset,
-            cul=980,
-            anchor="c",
-            img=image,
-            tag=location,
-            state="hidden",
-        )
-
-    Canvas_Create.set_image(
+    Canvas_Create.create_label(
+        master=canvas.master,
         canvas=canvas,
+        text="Benchmark",
+        font=("Triforce", 25),
         row=285 - Offset,
         cul=980,
         anchor="c",
-        img=TextureMgr.Request("benchmarks_first.png"),
-        tag="no_benchmark",
+        justify="c",
+        tags=["benchmark-label"],
     )
 
     # Canvas_Create.set_image(
