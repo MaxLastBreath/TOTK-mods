@@ -39,6 +39,28 @@ class FileManager:
         filemgr._window = Window
 
     @classmethod
+    def Warn_LegacySaves(filemgr, OldPath, NewPath):
+        message = (
+            f"WARNING: Your QT Config Save Directory may not be correct!\n"
+            f"Your saves could be in danger.\n"
+            f"Your current Legacy directory: {NewPath}\n"
+            f"Your QT Config Save Directory: {OldPath}\n"
+            f"Do you want to create a backup of your save file?"
+        )
+        response = messagebox.askyesno("Warning", message, icon=messagebox.WARNING)
+        if response:
+            filemgr.backup()
+            filemgr.warn_again = "no"
+            log.info("Sucessfully backed up save files, in backup folder. "
+                    "Please delete qt-config in USER folder! "
+                    "Or correct the user folder paths, then use the backup file to recover your saves!")
+            pass
+        else:
+            filemgr.warn_again = "no"
+            log.info("Warning has been declined, "
+                    "no saves have been moved!")
+    
+    @classmethod
     # fmt: off
     def load_Legacy_path(filemgr, config_file: str):
         if filemgr._manager.mode == "Legacy":
@@ -114,6 +136,7 @@ class FileManager:
 
         if mode == "Ryujinx":
             filemgr.PopulateRyujinx()
+    
     @classmethod
     def PopulateRyujinx(filemgr):
         portablefolder = os.path.normpath(os.path.join(filemgr.load_Legacy_path(localconfig), "../portable/"))
@@ -139,97 +162,61 @@ class FileManager:
         filemgr.load_dir = os.path.join(base_directory, "mods", "contents", filemgr._manager._patchInfo.ID)
         filemgr.sdmc_dir = os.path.join(base_directory, "sdcard")
         filemgr.Legacydir = os.path.join(base_directory, "mods", "contents", filemgr._manager._patchInfo.ID)
+    
+    @classmethod
+    # fmt: off
+    def PopulateLegacy(filemgr):
+        portablefolder = os.path.normpath(os.path.join(filemgr.load_Legacy_path(localconfig), "../user/"))
+
+        base_directory = filemgr.home_directory
+        GameID = filemgr._manager._patchInfo.ID
+
+        if (filemgr.os_platform == "Windows"):
+            appdata = os.path.join(filemgr.home_directory, "AppData", "Roaming")
+            for folder in os.listdir(appdata):
+                base_directory = os.path.join(appdata, folder)
+                if os.path.exists(os.path.join(base_directory, "load", GameID)):
+                    superlog.info(f"Found Legacy Emu folder at: {base_directory}")
+                    break
+                else: # Fallback to Citron
+                    base_directory = os.path.join(filemgr.home_directory, "AppData", "Roaming", "Citron")
+        elif filemgr.os_platform == "Linux":
+            log.info("Linux.")
+        if (os.path.exists(portablefolder)):
+            base_directory = portablefolder
+
+        filemgr.Globaldir = base_directory
+        filemgr.configdir = os.path.join(base_directory, "config/qt-config.ini")
+        filemgr.TOTKconfig = os.path.join(filemgr.configdir, "../custom")
+        filemgr.ryujinx_config = None
+        filemgr.nand_dir = os.path.join(base_directory, "nand")
+        filemgr.load_dir = os.path.join(base_directory, "load")
+        filemgr.sdmc_dir = os.path.join(base_directory, "sdmc")
+
+        if (os.path.exists(filemgr.configdir)):
+            config_parser = configparser.ConfigParser()
+            config_parser.read(filemgr.configdir, encoding="utf-8")
         
+            NEW_nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=filemgr.nand_dir)).replace('"', "")
+            filemgr.load_dir = os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=filemgr.load_dir)).replace('"', "")
+            filemgr.sdmc_dir = os.path.normpath(config_parser.get('Data%20Storage', 'sdmc_directory', fallback=filemgr.sdmc)).replace('"', "")
+
+            if (os.path.exists(portablefolder) and NEW_nand_dir is not filemgr.nand_dir and filemgr.warn_again == "yes"):
+                filemgr.Warn_LegacySaves()
+            filemgr.nand_dir = NEW_nand_dir
+
+        filemgr.Legacydir = os.path.join(filemgr.load_dir, GameID)
+
+
     @classmethod
     # fmt: off
     def WindowsPaths(filemgr, mode:str):
 
         '''Check for Windows Specific Directories...'''
-
-        Legacypath = filemgr.load_Legacy_path(localconfig)
-
-        userfolder = os.path.normpath(os.path.join(Legacypath, "../user/"))
-        portablefolder = os.path.normpath(os.path.join(Legacypath, "../portable/"))
-
-        log.warning(f"PORTABLE PATHS : {portablefolder}")
         
         # Check for user folder
         if mode == "Legacy":
-            # Find any "Legacy Emulators"...
-            appdata = os.path.join(filemgr.home_directory, "AppData", "Roaming")
-            for folder in os.listdir(appdata):
-                filemgr.Globaldir = os.path.join(appdata, folder)
-                if os.path.exists(os.path.join(filemgr.Globaldir, "load", filemgr._manager._patchInfo.ID)):
-                    superlog.info(f"Found Legacy Emu folder at: {filemgr.Globaldir}")
-                    break
-                else:
-                    filemgr.Globaldir = os.path.join(filemgr.home_directory, "AppData", "Roaming", "yuzu")
-
-            if os.path.exists(userfolder):
-                filemgr.configdir = os.path.join(Legacypath, "../user/config/qt-config.ini")
-                filemgr.TOTKconfig = os.path.join(filemgr.configdir, "../custom")
-                config_parser = configparser.ConfigParser()
-                config_parser.read(filemgr.configdir, encoding="utf-8")
-
-                filemgr.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{os.path.join(Legacypath, "../user/nand")}')).replace('"', "")
-                filemgr.sdmc_dir = os.path.normpath(config_parser.get('Data%20Storage', 'sdmc_directory', fallback=f'{os.path.join(Legacypath, "../user/sdmc")}')).replace('"', "")
-                
-                if filemgr.nand_dir.startswith('"'):
-                    filemgr.nand_dir = filemgr.nand_dir.strip('"')[0]
-
-                filemgr.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{os.path.join(Legacypath, "../user/nand")}')), filemgr._manager._patchInfo.ID).replace('"', "")
-                
-                if filemgr.load_dir.startswith('"'):
-                    filemgr.load_dir = filemgr.load_dir.strip('"')[0]
-
-                filemgr.Legacydir = os.path.join(filemgr.Globaldir, "load", filemgr._manager._patchInfo.ID).replace('"', "")
-                
-                NEWLegacy_path = os.path.normpath(os.path.join(userfolder, "../"))
-                filemgr.Globaldir = os.path.join(NEWLegacy_path, "user")
-                qt_config_save_dir = os.path.normpath(os.path.join(filemgr.nand_dir, "../../"))
-
-                # Warn user that their QT-Config path is INCORRECT!
-                if qt_config_save_dir != NEWLegacy_path and filemgr.warn_again == "yes":
-                    message = (
-                        f"WARNING: Your QT Config Save Directory may not be correct!\n"
-                        f"Your saves could be in danger.\n"
-                        f"Your current Legacy directory: {NEWLegacy_path}\n"
-                        f"Your QT Config Save Directory: {qt_config_save_dir}\n"
-                        f"Do you want to create a backup of your save file?"
-                    )
-                    response = messagebox.askyesno("Warning", message, icon=messagebox.WARNING)
-                    if response:
-                        filemgr.backup()
-                        filemgr.warn_again = "no"
-                        log.info("Sucessfully backed up save files, in backup folder. "
-                                "Please delete qt-config in USER folder! "
-                                "Or correct the user folder paths, then use the backup file to recover your saves!")
-                        pass
-                    else:
-                        filemgr.warn_again = "no"
-                        log.info("Warning has been declined, "
-                                "no saves have been moved!")
-                return
-            else: # Default to Appdata
-                filemgr.configdir = os.path.join(filemgr.Globaldir, "config", "qt-config.ini")
-                filemgr.TOTKconfig = os.path.join(filemgr.configdir, "../custom")
-                config_parser = configparser.ConfigParser()
-                config_parser.read(filemgr.configdir, encoding="utf-8")
-                
-                filemgr.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{filemgr.Globaldir}/nand')).replace('"', "").replace('"', "")
-                filemgr.sdmc_dir = os.path.normpath(config_parser.get('Data%20Storage', 'sdmc_directory', fallback=f'{filemgr.Globaldir}/sdmc')).replace('"', "").replace('"', "")
-                
-                if filemgr.nand_dir.startswith('"'):
-                    filemgr.nand_dir = filemgr.nand_dir.strip('"')[0]
-
-                filemgr.load_dir = os.path.join(os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{filemgr.Globaldir}/load')), filemgr._manager._patchInfo.ID).replace('"', "")
-                
-                if filemgr.load_dir.startswith('"'):
-                    filemgr.load_dir = filemgr.load_dir.strip('"')[0]
-
-                filemgr.Legacydir = os.path.join(filemgr.Globaldir, "load", filemgr._manager._patchInfo.ID)
-                return
-            
+            filemgr.PopulateLegacy()
         if mode == "Ryujinx":
             filemgr.PopulateRyujinx()
 
