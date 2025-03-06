@@ -39,6 +39,7 @@ def change_scale(event:None, var: ttk.Variable, max:float, min:float, increments
     log.info(f"{new_value}, {old_value}, {increments}")
 
     var.set(str(new_value))
+    
     if command is not None:
         command(event)
 
@@ -205,6 +206,7 @@ class Canvas_Create:
         command: None = None,
         is_active: bool = True,
     ) -> ttk.Variable:
+        
         # create text
         active_color_new = active_color
         if tag is not None:
@@ -243,16 +245,21 @@ class Canvas_Create:
             tags=tags,
             activefil=active_color_new,
         )
-        update_text_command = lambda event: update_text(
-            event, canvas, text, new_variable, type=type
-        )
+
+        def custom_command():
+            update_text(None, canvas, text, new_variable, type=type)
+            if command:
+                command(None)
+
+        new_variable.trace_add("write", lambda *args: custom_command())
+
 
         # create scale box
         scale_box = ttk.Scale(
             master=master,
             from_=scale_from,
             to=scale_to,
-            command=update_text_command,
+            command=lambda e: custom_command(),
             length=width,
             style=style,
             variable=new_variable,
@@ -268,8 +275,6 @@ class Canvas_Create:
             tags=tags,
         )
 
-        # bind canvas
-        scale_box.bind("<<ComboboxSelected>>", command)
         # attempt to make a Hovertip
         cls.read_description(
             canvas=canvas,
@@ -283,7 +288,7 @@ class Canvas_Create:
 
         # Shows the value from the scale.
         canvas.create_text(
-            scale(cul + width + 30) + scale(1),
+            scale(cul + width + 25) + scale(1),
             scale(row) + scale(1),
             text="NOT SET",
             anchor="w",
@@ -293,7 +298,7 @@ class Canvas_Create:
         )
 
         text_line_value = canvas.create_text(
-            scale(cul + width + 30),
+            scale(cul + width + 25),
             scale(row),
             text="NOT SET",
             anchor="w",
@@ -320,9 +325,9 @@ class Canvas_Create:
                 max=scale_from,
                 min=scale_to,
                 increments=increments,
-                command=update_text_command,
             ),
         )
+
         canvas.tag_bind(
             text_line,
             "<Button-3>",
@@ -332,9 +337,9 @@ class Canvas_Create:
                 max=scale_from,
                 min=scale_to,
                 increments=-increments,
-                command=update_text_command,
             ),
         )
+
         canvas.tag_bind(
             text_line_value,
             "<Button-1>",
@@ -344,9 +349,9 @@ class Canvas_Create:
                 max=scale_from,
                 min=scale_to,
                 increments=increments,
-                command=update_text_command,
             ),
         )
+
         canvas.tag_bind(
             text_line_value,
             "<Button-3>",
@@ -356,7 +361,6 @@ class Canvas_Create:
                 max=scale_from,
                 min=scale_to,
                 increments=-increments,
-                command=update_text_command,
             ),
         )
 

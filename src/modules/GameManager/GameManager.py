@@ -53,7 +53,8 @@ class Game_Manager:
                             jsonfile["ModConfig"],
                             jsonfile["ModFolder"],
                             jsonfile["Cheats"],
-                            jsonfile["SDCardConfig"]
+                            jsonfile["SDCardConfig"],
+                            jsonfile["EmulationScale"]
                         )
                     )
 

@@ -204,11 +204,20 @@ class ModCreator:
         Resolution.addShadows(shadows)
 
         if manager.mode == "Legacy":
-            write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "Renderer", "resolution_setup", "2")  # fmt: skip
+            # for emulator scale
+            new_scale = 1
+            if (manager._patchInfo.ResolutionScale):
+                new_scale += manager._EmulatorScale.get()
+
+            write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "Renderer", "resolution_setup", f"{new_scale}")  # fmt: skip
             cls.UCLegacyRamPatcher(manager, filemgr, Resolution.getRamLayout())
 
         if manager.mode == "Ryujinx":
-            write_ryujinx_config(manager, filemgr.ryujinx_config, "res_scale", 1)  # fmt: skip
+            new_scale = 1
+            if (manager._patchInfo.ResolutionScale):
+                new_scale = manager._EmulatorScale.get()
+
+            write_ryujinx_config(manager, filemgr.ryujinx_config, "res_scale", new_scale)  # fmt: skip
             cls.UCRyujinxRamPatcher(manager, filemgr, Resolution.getRamLayout())
 
         Section = patch_info["resolution"]["Config_Class"][0]

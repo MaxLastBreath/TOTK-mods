@@ -6,6 +6,7 @@
     "Config" : "Options.json",
     "ModFolder" : "UltraCam",
     "Versions" : ["1.0.1"],
+    "EmulationScale" : true,
     "Cheats": true,
     "SDCardConfig" : false
 }

@@ -11,8 +11,9 @@ class PatchInfo:
     ModFolder: str = ""
     Versions: list[str] = []
     Cheats: bool = False
+    ResolutionScale: bool = True
 
-    def __init__(self, folder: str, _id: str, name: str, versions: list[str] | None, modName: str, configloc: str, modfolder: str, Cheats: bool, SDCard: bool):  # fmt: skip
+    def __init__(self, folder: str, _id: str, name: str, versions: list[str] | None, modName: str, configloc: str, modfolder: str, Cheats: bool, SDCard: bool, Resolution_Scale : bool):  # fmt: skip
         if versions is None:
             versions = []
         self.Folder = folder
@@ -24,6 +25,7 @@ class PatchInfo:
         self.ModFolder = modfolder
         self.Cheats = Cheats
         self.SDCardConfig = SDCard
+        self.ResolutionScale = Resolution_Scale
 
     def GetModPath(self) -> str:
         location = os.path.join(self.Folder, self.ModFolder)

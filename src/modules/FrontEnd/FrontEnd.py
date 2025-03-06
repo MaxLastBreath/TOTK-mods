@@ -32,6 +32,7 @@ class Manager:
     all_canvas: list[ttk.Canvas] = []
     PageBtns: list[ImageButton] = []
 
+    _EmulatorScale: ttk.Variable = None
     old_cheats: dict = {}
     benchmarks: dict = {}
 
@@ -160,9 +161,18 @@ class Manager:
             Manager.LabelText[1], text=Manager._patchInfo.Name
         )
 
-    def LoadPatches(Manager, canvas, pos_dict):
+    def UpdateEmuScale(Manager, canvas: ttk.Canvas, variable: ttk.Variable, name: str):
         keys = Manager.ultracam_beyond.get("Keys", [""])
 
+        if (Manager.UserChoices["resolution"] is not None):
+            Resolution = Manager.UserChoices["resolution"].get()
+            Resolution = re.findall(r"\d+", Resolution)
+            canvas.itemconfig(name, text=str(int(int(Resolution[0]) * float(variable.get()))) + "p")
+
+    def LoadPatches(Manager, canvas, pos_dict):
+        ResolutionScaleName = "Resolution Scale"
+
+        keys = Manager.ultracam_beyond.get("Keys", [""])
         for name in keys:
             dicts = keys[name]
 
@@ -195,6 +205,7 @@ class Manager:
                     tags=["dropdown", "patchinfo"],
                     tag=section_auto,
                     text_description=patch_description,
+                    command=(lambda e: Manager.UpdateEmuScale(canvas, Manager._EmulatorScale, ResolutionScaleName)) if name == "resolution" else None
                 )
                 new_pos = increase_row(pos[0], pos[1], pos[2])
                 pos[0] = new_pos[0]
@@ -202,6 +213,7 @@ class Manager:
                 pos[2] = new_pos[2]
 
             if dicts["Class"].lower() == "scale":
+
                 patch_type = dicts.get("Type")
                 patch_increments = dicts.get("Increments")
                 patch_var = Canvas_Create.create_scale(
@@ -256,6 +268,28 @@ class Manager:
                 continue
             Manager.UserChoices[name] = patch_var
 
+        section_auto = dicts.get("Section")
+        pos = pos_dict[section_auto]
+
+        if (Manager._patchInfo.ResolutionScale is True):
+            Manager._EmulatorScale = Canvas_Create.create_scale(
+                master=Manager._window,
+                canvas=canvas,
+                text=ResolutionScaleName,
+                scale_from=int(1),
+                scale_to=int(4),
+                type="s32",
+                row=pos[0],
+                cul=pos[1],
+                drop_cul=pos[2],
+                width=100,
+                increments=int(1),
+                tags=["scale", "patchinfo"],
+                tag="Main",
+                text_description="ResScale",
+                command=lambda e: Manager.UpdateEmuScale(canvas, Manager._EmulatorScale, ResolutionScaleName)
+            )
+        
     def DeletePatches(Manager):
         Manager.UserChoices.clear()
         Manager.all_canvas[0].delete("patchinfo")
@@ -658,13 +692,13 @@ class Manager:
                 button.ToggleImg(WidgetState.Enter)
 
     def open_browser(Manager, web, event=None):
-        url = "https://ko-fi.com/maxlastbreath#"
+        url = "https://www.nxoptimizer.com/"
         if web == "Kofi":
-            url = "https://ko-fi.com/maxlastbreath#"
+            url = "https://www.nxoptimizer.com/ko-fi/"
         elif web == "Github":
-            url = "https://github.com/MaxLastBreath/TOTK-mods"
+            url = "https://www.nxoptimizer.com/"
         elif web == "Discord":
-            url = "https://discord.gg/7MMv4yGfhM"
+            url = "https://www.nxoptimizer.com/discord/"
         webbrowser.open(url)
 
     def ShowRyujinx(Manager):

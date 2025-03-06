@@ -124,6 +124,8 @@ def loadGameConfig(Manager, config):
                 Manager.UserChoices[patch].set(config.get(GameID, patch))
         except (configparser.NoOptionError, KeyError):
             pass
+    
+    Manager._EmulatorScale.set(config.get(GameID, "emuscale", fallback=1))
 
 def save_user_choices(Manager, config_file, Legacy_path=None):
     log.info(f"Saving user choices in {localconfig}")
@@ -158,6 +160,10 @@ def save_user_choices(Manager, config_file, Legacy_path=None):
 
     log.info("User choices saved in Memory,"
              "Attempting to write into file.")
+    
+    if (Manager._patchInfo.ResolutionScale):
+        config.set(Manager._patchInfo.ID, "emuscale", Manager._EmulatorScale.get())
+    
     # Write the updated configuration back to the file
     with open(config_file, 'w', encoding="utf-8") as file:
         config.write(file)
@@ -173,6 +179,10 @@ def load_user_choices(Manager, config_file, mode=None):
     for option_name, option_var in Manager.selected_options.items():
         option_value = config.get('Options', option_name, fallback="Off")
         option_var.set(option_value)
+        log.info("Options")
+    
+
+
 
 def apply_selected_preset(manager, event=None):
     from modules.FrontEnd.FrontEnd import Manager
