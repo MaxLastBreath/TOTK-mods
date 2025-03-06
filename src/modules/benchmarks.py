@@ -1,5 +1,6 @@
 from modules.GameManager.FileManager import *
 from modules.logger import *
+import pyperclip
 import os
 import re
 

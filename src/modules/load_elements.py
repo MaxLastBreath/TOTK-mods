@@ -3,7 +3,6 @@ from modules.FrontEnd.TextureMgr import TextureMgr
 from configuration.settings import *
 from modules.benchmarks import load_benchmark, copy
 import ttkbootstrap as ttk
-import pyperclip
 
 def load_UI_elements(manager, canvas: ttk.Canvas):
     from modules.FrontEnd.FrontEnd import Manager
