@@ -9,7 +9,10 @@ from modules.config import *
 import ttkbootstrap as ttk
 import subprocess
 import shutil
+from tkinter import simpledialog
 
+import tkinter as tk
+from tkinter import messagebox
 
 class FileManager:
 
@@ -39,6 +42,7 @@ class FileManager:
         filemgr._window = Window
 
     @classmethod
+    # fmt: off
     def Warn_LegacySaves(filemgr, OldPath, NewPath):
         message = (
             f"WARNING: Your QT Config Save Directory may not be correct!\n"
@@ -76,68 +80,30 @@ class FileManager:
 
     @classmethod
     # fmt: off
-    def LinuxPaths(filemgr, mode: str):
+    def LoopSearch(filemgr) -> str:
+        GameID = filemgr._manager._patchInfo.ID
 
-        '''Check for Linux Specific Directories...'''
+        EmuList = []
 
-        if mode == "Legacy":
-            flatpak = os.path.join(filemgr.home_directory, ".var", "app", "org.yuzu_emu.yuzu", "config", "yuzu")
-            steamdeckdir = os.path.join(filemgr.home_directory, ".config", "yuzu", "qt-config.ini")
+        if (filemgr.os_platform == "Windows"):
+            SpecialDir = "AppData/Roaming"
+        elif filemgr.os_platform == "Linux":
+            SpecialDir = ".local/share"
 
-            filemgr.Globaldir = os.path.join(filemgr.home_directory, ".local", "share", "yuzu")
-            filemgr.configdir = os.path.join(filemgr.Globaldir, "config", "qt-config.ini")
-            filemgr.TOTKconfig = os.path.join(filemgr.Globaldir, "config", "custom")
+        userDir = os.path.join(filemgr.home_directory, SpecialDir)
+        for folder in os.listdir(userDir):
+            base_directory = os.path.join(userDir, folder)
+            if os.path.exists(os.path.join(base_directory, "load", GameID)):
+                EmuList.append(base_directory)
+                superlog.info(f"Found Legacy Emu folder at: {base_directory}")
+                continue
+            if len(EmuList) < 1: # Fallback to citron
+                base_directory = os.path.join(filemgr.home_directory, SpecialDir, "citron")
 
-            # Assume it's a steamdeck
-            if os.path.exists(steamdeckdir):
-                log.info("Detected a steamdeck!")
-                filemgr.configdir = steamdeckdir
-                filemgr.TOTKconfig = os.path.join(filemgr.home_directory, ".config", "yuzu", "custom")
-
-            # Find any "Legacy Emulators"...
-            local_dir = os.path.join(filemgr.home_directory, ".local", "share")
-            for folder in os.listdir(local_dir):
-                filemgr.Globaldir = os.path.join(local_dir, folder)
-                if os.path.exists(os.path.join(filemgr.Globaldir, "load", filemgr._manager._patchInfo.ID)):
-                    superlog.info(f"Found Legacy Emu folder at: {filemgr.Globaldir}")
-                    filemgr.configdir = os.path.join(filemgr.Globaldir, "qt-config.ini")
-                    filemgr.TOTKconfig = os.path.join(filemgr.Globaldir, "custom")
-                    new_path = os.path.dirname(os.path.dirname(filemgr.Globaldir))
-                    filemgr.Globaldir = os.path.join(new_path, "data", "yuzu")
-                    break
-                else:
-                    filemgr.Globaldir = os.path.join(filemgr.home_directory, ".local", "share", "yuzu")
-
-            for folder in os.listdir(local_dir):
-                filemgr.Globaldir = os.path.join(local_dir, folder, "config", "yuzu")
-                if os.path.exists(os.path.join(filemgr.Globaldir, "load", filemgr._manager._patchInfo.ID)):
-                    superlog.info(f"Found Legacy Emu folder at: {filemgr.Globaldir}")
-                    filemgr.configdir = os.path.join(filemgr.Globaldir, "qt-config.ini")
-                    filemgr.TOTKconfig = os.path.join(filemgr.Globaldir, "custom")
-                    new_path = os.path.dirname(os.path.dirname(filemgr.Globaldir))
-                    filemgr.Globaldir = os.path.join(new_path, "data", "yuzu")
-                    break
-                else:
-                    filemgr.Globaldir = os.path.join(filemgr.home_directory, ".local", "share", "yuzu")
-
-            config_parser = configparser.ConfigParser()
-            config_parser.read(filemgr.configdir, encoding="utf-8")
-            filemgr.nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=f'{filemgr.Globaldir}/nand')).replace('"', "")
-            filemgr.sdmc_dir = os.path.normpath(config_parser.get('Data%20Storage', 'sdmc_directory', fallback=f'{filemgr.Globaldir}/sdmc')).replace('"', "")
-            if filemgr.nand_dir.startswith('"'):
-                filemgr.nand_dir = filemgr.nand_dir.strip('"')[0]
-            filemgr.load_dir = os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=f'{filemgr.Globaldir}/load')).replace('"', "")
-            if filemgr.nand_dir.startswith('"'):
-                filemgr.nand_dir = filemgr.nand_dir.strip('"')[0]
-            filemgr.load_dir = os.path.join(filemgr.load_dir, filemgr._manager._patchInfo.ID)
-
-            filemgr.Legacydir = os.path.normpath(os.path.join(filemgr.home_directory, ".local", "share", "yuzu", "load", filemgr._manager._patchInfo.ID))
-            return
-
-        if mode == "Ryujinx":
-            filemgr.PopulateRyujinx()
-    
+        return base_directory
+        
     @classmethod
+    # fmt: off
     def PopulateRyujinx(filemgr):
         portablefolder = os.path.normpath(os.path.join(filemgr.load_Legacy_path(localconfig), "../portable/"))
 
@@ -171,17 +137,8 @@ class FileManager:
         base_directory = filemgr.home_directory
         GameID = filemgr._manager._patchInfo.ID
 
-        if (filemgr.os_platform == "Windows"):
-            appdata = os.path.join(filemgr.home_directory, "AppData", "Roaming")
-            for folder in os.listdir(appdata):
-                base_directory = os.path.join(appdata, folder)
-                if os.path.exists(os.path.join(base_directory, "load", GameID)):
-                    superlog.info(f"Found Legacy Emu folder at: {base_directory}")
-                    break
-                else: # Fallback to Citron
-                    base_directory = os.path.join(filemgr.home_directory, "AppData", "Roaming", "Citron")
-        elif filemgr.os_platform == "Linux":
-            log.info("Linux.")
+        base_directory = filemgr.LoopSearch()
+
         if (os.path.exists(portablefolder)):
             base_directory = portablefolder
 
@@ -207,32 +164,16 @@ class FileManager:
 
         filemgr.Legacydir = os.path.join(filemgr.load_dir, GameID)
 
-
-    @classmethod
-    # fmt: off
-    def WindowsPaths(filemgr, mode:str):
-
-        '''Check for Windows Specific Directories...'''
-        
-        # Check for user folder
-        if mode == "Legacy":
-            filemgr.PopulateLegacy()
-        if mode == "Ryujinx":
-            filemgr.PopulateRyujinx()
-
     @classmethod
     # fmt: off
     def checkpath(filemgr, mode:str):
 
         '''The Primary Logic the TOTK Optimizer uses to find each emulator.'''
 
-        if filemgr.os_platform == "Linux":
-            filemgr.LinuxPaths(mode)
-        
-        elif filemgr.os_platform == "Windows":
-            filemgr.WindowsPaths(mode)
-            
-        elif filemgr.os_platform == "Darwin":
+        # Populate Paths for Emulators
+        if mode == "Legacy":
+            filemgr.PopulateLegacy()
+        if mode == "Ryujinx":
             filemgr.PopulateRyujinx()
 
         try: # Ensure the path exists.

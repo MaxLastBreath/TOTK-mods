@@ -69,6 +69,9 @@ class Manager:
         TextureMgr.Initialize()  # load all images.
         AnimationQueue.Initialize()
         Manager.patches = Game_Manager.GetPatches()
+        
+        # Emulator Scaling
+        Manager._EmulatorScale = ttk.Variable(master=window, value=1)
 
         # Save the config string in class variable config
         Manager.config = localconfig
