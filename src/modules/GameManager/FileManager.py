@@ -164,7 +164,7 @@ class FileManager:
         filemgr.load_dir = os.path.join(base_directory, "load")
         filemgr.sdmc_dir = os.path.join(base_directory, "sdmc")
 
-        if (os.path.exists(filemgr.emuconfig)):
+        if (os.path.exists(filemgr.emuconfig) and filemgr.os_platform == "Windows"):
             config_parser = configparser.ConfigParser()
             config_parser.read(filemgr.emuconfig, encoding="utf-8")
         
