@@ -225,6 +225,10 @@ def write_Legacy_config(Manager, config_file, title_id, section, setting, select
     with open(Custom_Config, "w", encoding="utf-8") as config_file:
         Legacyconfig.write(config_file, space_around_delimiters=False)
 
+def read_ryujinx_version(ryujinx_config)-> int:
+    with open(ryujinx_config, "r", encoding="utf-8") as file:
+        configData = json.load(file)
+    return int(configData["version"])
 def write_ryujinx_config(Manager, config_file, setting, selection):
 
     if not os.path.exists(config_file):

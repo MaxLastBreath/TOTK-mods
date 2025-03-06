@@ -151,12 +151,11 @@ class ModCreator:
         if not os.path.exists(filemgr.ryujinx_config):
             log.error(f"Ryujinx config doesn't exist {filemgr.ryujinx_config} Please Run Ryujinx or press Browse to direct the app to Ryujinx.exe")
             return
-        
-        with open(filemgr.ryujinx_config, "r", encoding="utf-8") as file:
-            configData = json.load(file)
 
-        if (configData["version"] > 60):
+        if (read_ryujinx_version(filemgr.ryujinx_config) > 60):
+            
             # GreemDev Ryujinx
+            write_ryujinx_config(manager, filemgr.ryujinx_config, "dram_size", layout)
             if (layout == 1):
                 log.warning(f"Expanding Ram Size to 4 GB")
             if (layout == 2):
@@ -164,7 +163,6 @@ class ModCreator:
             else:
                 log.warning(f"Expanding Ram Size to 8+ GB")
 
-            write_ryujinx_config(manager, filemgr.ryujinx_config, "dram_size", layout)
         else:
             # Original Ryujinx
             if layout > 0:
