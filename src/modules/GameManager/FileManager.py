@@ -105,13 +105,17 @@ class FileManager:
     # fmt: off
     def LoopSearchLinuxConfig(filemgr) -> str:
         SpecialDir = ".config"
-
         userDir = os.path.join(filemgr.home_directory, SpecialDir)
+
         for folder in os.listdir(userDir):
             base_directory = os.path.join(userDir, folder)
-            if os.path.exists(os.path.join(base_directory, "qt-config.ini")):
-                return base_directory
-        return base_directory
+            lookupfile = os.path.join(base_directory, "qt-config.ini")
+
+            if os.path.exists(lookupfile):
+                log.info(f"Found Config File {lookupfile}")
+                return lookupfile
+            
+        return None
         
     @classmethod
     # fmt: off
@@ -164,7 +168,7 @@ class FileManager:
         filemgr.load_dir = os.path.join(base_directory, "load")
         filemgr.sdmc_dir = os.path.join(base_directory, "sdmc")
 
-        if (os.path.exists(filemgr.emuconfig) and filemgr.os_platform == "Windows"):
+        if os.path.exists(filemgr.emuconfig):
             config_parser = configparser.ConfigParser()
             config_parser.read(filemgr.emuconfig, encoding="utf-8")
         
