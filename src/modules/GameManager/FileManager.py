@@ -24,14 +24,14 @@ class FileManager:
 
     is_extracting = False
 
-    configdir = str
-    TOTKconfig = str
-    nand_dir = str
-    ryujinx_config = str
-    sdmc = str
-    load_dir = str
-    Legacydir = str
-    Globaldir = str
+    configdir: str = None
+    TOTKconfig: str = None
+    nand_dir: str = None
+    ryujinx_config: str = None
+    sdmc: str = None
+    load_dir: str = None
+    Legacydir: str = None
+    Globaldir: str = None
 
     @classmethod
     # Initialize our Window here.
@@ -101,6 +101,18 @@ class FileManager:
                 base_directory = os.path.join(filemgr.home_directory, SpecialDir, "citron")
 
         return base_directory
+    
+    @classmethod
+    # fmt: off
+    def LoopSearchLinuxConfig(filemgr) -> str:
+        SpecialDir = ".config"
+
+        userDir = os.path.join(filemgr.home_directory, SpecialDir)
+        for folder in os.listdir(userDir):
+            base_directory = os.path.join(userDir, folder)
+            if os.path.exists(os.path.join(base_directory, "qt-config.ini")):
+                return base_directory
+        return base_directory
         
     @classmethod
     # fmt: off
@@ -142,8 +154,13 @@ class FileManager:
         if (os.path.exists(portablefolder)):
             base_directory = portablefolder
 
+        # Config FIle BS
+        if (filemgr.os_platform == "Linux"):
+            filemgr.configdir = filemgr.LoopSearchLinuxConfig()
+        else:
+            filemgr.configdir = os.path.join(base_directory, "config/qt-config.ini")
+
         filemgr.Globaldir = base_directory
-        filemgr.configdir = os.path.join(base_directory, "config/qt-config.ini")
         filemgr.TOTKconfig = os.path.join(filemgr.configdir, "../custom")
         filemgr.ryujinx_config = None
         filemgr.nand_dir = os.path.join(base_directory, "nand")
@@ -310,8 +327,6 @@ class FileManager:
         ModDir = filemgr.load_dir
         SdCard = filemgr.sdmc_dir
 
-        log.error(SdCard)
-
         if filemgr.is_extracting is True:
             Folder = os.path.join(os.getcwd(), "Extracted Files")
             os.makedirs(Folder, exist_ok=True)
@@ -329,18 +344,6 @@ class FileManager:
 
         filemgr.add_list = []
         filemgr.remove_list = []
-        filemgr.checkpath(filemgr._manager.mode)
-
-        # Needs to be run after checkpath.
-        if filemgr._manager.mode == "Legacy":
-            qtconfig = get_config_parser()
-            qtconfig.optionxform = lambda option: option
-            try:
-                qtconfig.read(filemgr.configdir, encoding="utf-8")
-            except Exception as e:
-                log.warning(f"Couldn't' find QT-config {e}")
-        else:
-            qtconfig = None
 
         def timer(value):
             ProgressBar.progress_bar["value"] = value
@@ -533,7 +536,7 @@ class FileManager:
                     modify_disabled_key(
                         filemgr.configdir,
                         filemgr.load_dir,
-                        qtconfig,
+                        filemgr.configdir,
                         filemgr._manager._patchInfo.IDtoNum(),
                         item,
                         action="add",
@@ -543,7 +546,7 @@ class FileManager:
                     modify_disabled_key(
                         filemgr.configdir,
                         filemgr.load_dir,
-                        qtconfig,
+                        filemgr.configdir,
                         filemgr._manager._patchInfo.IDtoNum(),
                         item,
                         action="remove",
