@@ -18,6 +18,7 @@ class FileManager:
 
     _window: ttk.Window = None
     _manager: any = None
+    _emu_blacklist = ["citra-emu", "lime3ds-emu"]
 
     home_directory = os.path.expanduser("~")
     os_platform = platform.system()
@@ -108,6 +109,10 @@ class FileManager:
         userDir = os.path.join(filemgr.home_directory, SpecialDir)
 
         for folder in os.listdir(userDir):
+
+            if folder in filemgr._emu_blacklist:
+                continue
+
             base_directory = os.path.join(userDir, folder)
             lookupfile = os.path.join(base_directory, "qt-config.ini")
 
