@@ -17,6 +17,7 @@ class FileManager:
     _manager: any = None
 
     home_directory = os.path.expanduser("~")
+    os_platform = platform.system()
 
     is_extracting = False
 
@@ -112,53 +113,32 @@ class FileManager:
             return
 
         if mode == "Ryujinx":
-            filemgr.Globaldir = os.path.join(filemgr.home_directory, ".config", "Ryujinx")
-            flatpak = os.path.join(filemgr.home_directory, ".var", "app", "org.ryujinx.Ryujinx", "config", "Ryujinx")
-
-            if os.path.exists(flatpak):
-                log.info("Detected a Ryujinx flatpak!")
-                filemgr.Globaldir = flatpak
-                filemgr.nand_dir = os.path.join(f"{filemgr.Globaldir}", "bis", "user", "save")
-                filemgr.sdmc_dir = os.path.join(f"{filemgr.Globaldir}", "sdcard")
-                filemgr.load_dir = os.path.join(f"{filemgr.Globaldir}", "mods", "contents", filemgr._manager._patchInfo.ID)
-                filemgr.Legacydir = os.path.join(filemgr.home_directory, ".config", "Ryujinx", "mods", "contents",
-                                            filemgr._manager._patchInfo.ID)
-                filemgr.ryujinx_config = os.path.join(filemgr.Globaldir, "Config.json")
-                return
-
-            filemgr.configdir = None
-            filemgr.TOTKconfig = None
-            filemgr.nand_dir = os.path.join(f"{filemgr.Globaldir}", "bis", "user", "save")
-            filemgr.sdmc_dir = os.path.join(f"{filemgr.Globaldir}", "sdcard")
-            filemgr.load_dir = os.path.join(f"{filemgr.Globaldir}", "mods", "contents", filemgr._manager._patchInfo.ID)
-            filemgr.Legacydir = os.path.join(filemgr.home_directory, ".config", "Ryujinx", "mods", "contents", filemgr._manager._patchInfo.ID)
-            filemgr.ryujinx_config = os.path.join(filemgr.Globaldir, "Config.json")
-            return
-
+            filemgr.PopulateRyujinx()
     @classmethod
     def PopulateRyujinx(filemgr):
-
         portablefolder = os.path.normpath(os.path.join(filemgr.load_Legacy_path(localconfig), "../portable/"))
 
-        if os.path.exists(portablefolder):
-            filemgr.Globaldir = portablefolder
-            filemgr.configdir = None
-            filemgr.TOTKconfig = None
-            filemgr.ryujinx_config = os.path.join(portablefolder, "Config.json")
-            filemgr.nand_dir = os.path.join(f"{portablefolder}", "bis", "user", "save")
-            filemgr.load_dir = os.path.join(f"{portablefolder}", "mods", "contents", filemgr._manager._patchInfo.ID)
-            filemgr.sdmc_dir = os.path.join(f"{portablefolder}", "sdcard")
-            filemgr.Legacydir = os.path.join(filemgr.home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", filemgr._manager._patchInfo.ID)
-        else:
-            filemgr.Globaldir = os.path.join(filemgr.home_directory, "AppData", "Roaming", "Ryujinx")
-            filemgr.configdir = None
-            filemgr.TOTKconfig = None
-            filemgr.ryujinx_config = os.path.join(filemgr.Globaldir, "Config.json")
-            filemgr.nand_dir = os.path.join(f"{filemgr.Globaldir}", "bis", "user", "save")
-            filemgr.load_dir = os.path.join(f"{filemgr.Globaldir}", "mods", "contents", filemgr._manager._patchInfo.ID)
-            filemgr.sdmc_dir = os.path.join(f"{filemgr.Globaldir}", "sdcard")
-            filemgr.Legacydir = filemgr.load_dir
+        base_directory = filemgr.home_directory
+        if (filemgr.os_platform == "Windows"):
+            base_directory = os.path.join(filemgr.home_directory, "AppData", "Roaming", "Ryujinx")
+        elif filemgr.os_platform == "Darwin":
+            base_directory = os.path.join(filemgr.home_directory, "Library", "Application Support", "Ryujinx")
+        if filemgr.os_platform == "Linux":
+            base_directory = os.path.join(filemgr.home_directory, ".config", "Ryujinx")
+            flatpak = os.path.join(filemgr.home_directory, ".var", "app", "org.ryujinx.Ryujinx", "config", "Ryujinx")
+            if(os.path.exists(flatpak)):
+                base_directory = flatpak
+        if (portablefolder):
+            base_directory = portablefolder
 
+        filemgr.Globaldir = base_directory
+        filemgr.configdir = None
+        filemgr.TOTKconfig = None
+        filemgr.ryujinx_config = os.path.join(base_directory, "Config.json")
+        filemgr.nand_dir = os.path.join(base_directory, "bis", "user", "save")
+        filemgr.load_dir = os.path.join(base_directory, "mods", "contents", filemgr._manager._patchInfo.ID)
+        filemgr.sdmc_dir = os.path.join(base_directory, "sdcard")
+        filemgr.Legacydir = os.path.join(base_directory, "mods", "contents", filemgr._manager._patchInfo.ID)
         
     @classmethod
     # fmt: off
@@ -255,28 +235,9 @@ class FileManager:
 
     @classmethod
     # fmt: off
-    def MacOSPaths(filemgr, mode:str):
-
-        '''Check for MacOS Specific Directories...'''
-
-        if mode == "Ryujinx":
-            filemgr.Globaldir = os.path.join(home_directory, "Library", "Application Support", "Ryujinx")
-            filemgr.configdir = None
-            filemgr.TOTKconfig = None
-            filemgr.ryujinx_config = os.path.join(filemgr.Globaldir, "Config.json")
-            filemgr.nand_dir = os.path.join(f"{filemgr.Globaldir}", "bis", "user", "save")
-            filemgr.sdmc_dir = os.path.join(f"{filemgr.Globaldir}", "sdcard")
-            filemgr.load_dir = os.path.join(f"{filemgr.Globaldir}", "mods", "contents", filemgr._manager._patchInfo.ID)
-            filemgr.Legacydir = filemgr.load_dir
-            return
-
-    @classmethod
-    # fmt: off
     def checkpath(filemgr, mode:str):
 
         '''The Primary Logic the TOTK Optimizer uses to find each emulator.'''
-
-        filemgr.os_platform = platform.system()
 
         if filemgr.os_platform == "Linux":
             filemgr.LinuxPaths(mode)
@@ -285,7 +246,7 @@ class FileManager:
             filemgr.WindowsPaths(mode)
             
         elif filemgr.os_platform == "Darwin":
-            filemgr.MacOSPaths(mode)
+            filemgr.PopulateRyujinx()
 
         try: # Ensure the path exists.
             # attempt to create qt-config.ini directories in case they don't exist. Give error to warn user
