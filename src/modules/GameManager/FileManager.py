@@ -126,7 +126,7 @@ class FileManager:
     # fmt: off
     def PopulateRyujinx(filemgr):
         patchinfo = filemgr._manager._patchInfo
-        portablefolder = os.path.normpath(os.path.dirname(os.path.join(filemgr.load_Legacy_path(localconfig)), "portable/"))
+        portablefolder = os.path.normpath(os.path.join(os.path.dirname(filemgr.load_Legacy_path(localconfig)), "portable/"))
 
         base_directory = filemgr.home_directory
         if (filemgr.os_platform == "Windows"):
@@ -152,7 +152,7 @@ class FileManager:
     @classmethod
     # fmt: off
     def PopulateLegacy(filemgr):
-        portablefolder = os.path.normpath(os.path.dirname(os.path.join(filemgr.load_Legacy_path(localconfig)), "user/"))
+        portablefolder = os.path.normpath(os.path.join(os.path.dirname(filemgr.load_Legacy_path(localconfig)), "user/"))
 
         base_directory = filemgr.home_directory
         patchinfo = filemgr._manager._patchInfo
