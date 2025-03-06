@@ -125,6 +125,7 @@ class FileManager:
     @classmethod
     # fmt: off
     def PopulateRyujinx(filemgr):
+        patchinfo = filemgr._manager._patchInfo.ID
         portablefolder = os.path.normpath(os.path.join(filemgr.load_Legacy_path(localconfig), "../portable/"))
 
         base_directory = filemgr.home_directory
@@ -137,7 +138,7 @@ class FileManager:
             flatpak = os.path.join(filemgr.home_directory, ".var", "app", "org.ryujinx.Ryujinx", "config", "Ryujinx")
             if(os.path.exists(flatpak)):
                 base_directory = flatpak
-        if (portablefolder):
+        if (os.path.exists(portablefolder)):
             base_directory = portablefolder
 
         filemgr._emuglobal = base_directory
@@ -145,7 +146,8 @@ class FileManager:
         filemgr.nand = os.path.join(base_directory, "bis", "user", "save")
         filemgr.load = os.path.join(base_directory, "mods", "contents")
         filemgr.sdmc_dir = os.path.join(base_directory, "sdcard")
-        filemgr.contentID = os.path.join(base_directory, "mods", "contents", filemgr._manager._patchInfo.ID)
+        filemgr.contentID = os.path.join(base_directory, "mods", "contents", patchinfo.ID)
+        filemgr._gameconfig = os.path.join(base_directory, "games", f"{patchinfo.ID}", "Config.json")
     
     @classmethod
     # fmt: off
@@ -153,7 +155,7 @@ class FileManager:
         portablefolder = os.path.normpath(os.path.join(filemgr.load_Legacy_path(localconfig), "../user/"))
 
         base_directory = filemgr.home_directory
-        GameID = filemgr._manager._patchInfo.ID
+        patchinfo = filemgr._manager._patchInfo
 
         base_directory = filemgr.LoopSearch()
 
@@ -183,7 +185,7 @@ class FileManager:
                 filemgr.Warn_LegacySaves()
             filemgr.nand = NEW_nand_dir
 
-        filemgr.contentID = os.path.join(filemgr.load, GameID)
+        filemgr.contentID = os.path.join(filemgr.load, patchinfo.ID)
         filemgr._gameconfig = os.path.join(filemgr._emuconfig, "../custom")
 
     @classmethod
