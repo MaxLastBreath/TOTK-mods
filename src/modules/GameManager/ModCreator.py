@@ -148,34 +148,34 @@ class ModCreator:
     def UCRyujinxRamPatcher(cls, manager, filemgr, layout):
         """Patches Ryujinx specific Settings, such as RAM from 4 or 8GB."""
         
-        if not os.path.exists(filemgr.emuconfig):
-            log.error(f"Ryujinx config doesn't exist {filemgr.emuconfig} Please Run Ryujinx or press Browse to direct the app to Ryujinx.exe")
+        if not os.path.exists(filemgr._emuconfig):
+            log.error(f"Ryujinx config doesn't exist {filemgr._emuconfig} Please Run Ryujinx or press Browse to direct the app to Ryujinx.exe")
             return
 
-        if (read_ryujinx_version(filemgr.emuconfig) >= 54):
+        if (read_ryujinx_version(filemgr._emuconfig) >= 54):
             # GreemDev Ryujinx
-            write_ryujinx_config(filemgr, filemgr.emuconfig,  "dram_size", layout)
+            write_ryujinx_config(filemgr, filemgr._emuconfig,  "dram_size", layout)
             log.warning(f"Expanding Ram Size to Type {layout}")
         else:
             # Original Ryujinx
             if layout > 0:
                 log.warning(f"Expanding Ryujinx RAM mode to 8GB, {layout}")
-                write_ryujinx_config(filemgr, filemgr.emuconfig,  "expand_ram", True)
+                write_ryujinx_config(filemgr, filemgr._emuconfig,  "expand_ram", True)
             else:
                 log.warning(f"Reverting Ryujinx RAM mode to 4GB, {layout}")
-                write_ryujinx_config(filemgr, filemgr.emuconfig,  "expand_ram", False)
+                write_ryujinx_config(filemgr, filemgr._emuconfig,  "expand_ram", False)
 
     @classmethod
     def UCLegacyRamPatcher(cls, manager, filemgr, layout):
         """Patches bunch of settings in Legacy Emulators, VRAM, RAM etc. Based on Resolution and shadow resolution outputs mostly."""
 
-        write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "Core", "memory_layout_mode", str(layout))  # fmt: skip
-        write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "System", "use_docked_mode", "true")  # fmt: skip
+        write_Legacy_config(manager, filemgr._gameconfig, manager._patchInfo.ID, "Core", "memory_layout_mode", str(layout))  # fmt: skip
+        write_Legacy_config(manager, filemgr._gameconfig, manager._patchInfo.ID, "System", "use_docked_mode", "true")  # fmt: skip
 
         if layout > 0:
-            write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "Renderer", "vram_usage_mode", "1")  # fmt: skip
+            write_Legacy_config(manager, filemgr._gameconfig, manager._patchInfo.ID, "Renderer", "vram_usage_mode", "1")  # fmt: skip
         else:
-            write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "Renderer", "vram_usage_mode", "0")  # fmt: skip
+            write_Legacy_config(manager, filemgr._gameconfig, manager._patchInfo.ID, "Renderer", "vram_usage_mode", "0")  # fmt: skip
 
     @classmethod
     def UCResolutionPatcher(cls, filemgr, manager, config):
@@ -219,7 +219,7 @@ class ModCreator:
             if (manager._patchInfo.ResolutionScale):
                 new_scale += int(manager._EmulatorScale.get())
 
-            write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "Renderer", "resolution_setup", f"{new_scale}")  # fmt: skip
+            write_Legacy_config(manager, filemgr._gameconfig, manager._patchInfo.ID, "Renderer", "resolution_setup", f"{new_scale}")  # fmt: skip
             cls.UCLegacyRamPatcher(manager, filemgr, Resolution.getRamLayout())
 
         if manager.mode == "Ryujinx":
@@ -227,7 +227,7 @@ class ModCreator:
             if (manager._patchInfo.ResolutionScale):
                 new_scale = int(manager._EmulatorScale.get())
 
-            write_ryujinx_config(filemgr, filemgr.emuconfig, "res_scale", new_scale)  # fmt: skip
+            write_ryujinx_config(filemgr, filemgr._emuconfig, "res_scale", new_scale)  # fmt: skip
             cls.UCRyujinxRamPatcher(manager, filemgr, Resolution.getRamLayout())
 
         Section = patch_info["resolution"]["Config_Class"][0]

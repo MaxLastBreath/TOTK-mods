@@ -259,7 +259,7 @@ def write_ryujinx_config(filemgr, config_file, setting, selection):
     
     if (read_ryujinx_version(config_file) >= 68):
         patchinfo = filemgr._manager._patchInfo
-        game_config = os.path.join(filemgr.Globaldir, "games", f"{patchinfo.ID}", "Config.json")
+        game_config = os.path.join(filemgr._emuglobal, "games", f"{patchinfo.ID}", "Config.json")
         write_ryubing_config(config_file, game_config, setting, selection)
         return
     

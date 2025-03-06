@@ -332,7 +332,7 @@ class Cheats:
             version = version_option.get("Version", "")
 
             mod_path = os.path.join(
-                FileManager.load_dir, "Cheat Manager Patch", "cheats"
+                FileManager.load, "Cheat Manager Patch", "cheats"
             )
 
             # Create the directory if it doesn't exist

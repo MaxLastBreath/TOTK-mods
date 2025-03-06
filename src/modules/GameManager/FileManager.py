@@ -25,13 +25,13 @@ class FileManager:
 
     is_extracting = False
 
-    emuconfig: str = None
-    TOTKconfig: str = None
-    nand_dir: str = None
+    _emuglobal: str = None
+    _emuconfig: str = None
+    _gameconfig: str = None
+    nand: str = None
     sdmc: str = None
-    load_dir: str = None
-    Legacydir: str = None
-    Globaldir: str = None
+    load: str = None
+    contentID: str = None
 
     @classmethod
     # Initialize our Window here.
@@ -140,13 +140,12 @@ class FileManager:
         if (portablefolder):
             base_directory = portablefolder
 
-        filemgr.Globaldir = base_directory
-        filemgr.emuconfig = os.path.join(base_directory, "Config.json")
-        filemgr.TOTKconfig = None
-        filemgr.nand_dir = os.path.join(base_directory, "bis", "user", "save")
-        filemgr.load_dir = os.path.join(base_directory, "mods", "contents", filemgr._manager._patchInfo.ID)
+        filemgr._emuglobal = base_directory
+        filemgr._emuconfig = os.path.join(base_directory, "Config.json")
+        filemgr.nand = os.path.join(base_directory, "bis", "user", "save")
+        filemgr.load = os.path.join(base_directory, "mods", "contents")
         filemgr.sdmc_dir = os.path.join(base_directory, "sdcard")
-        filemgr.Legacydir = os.path.join(base_directory, "mods", "contents", filemgr._manager._patchInfo.ID)
+        filemgr.contentID = os.path.join(base_directory, "mods", "contents", filemgr._manager._patchInfo.ID)
     
     @classmethod
     # fmt: off
@@ -163,29 +162,29 @@ class FileManager:
 
         # Config FIle BS
         if (filemgr.os_platform == "Linux"):
-            filemgr.emuconfig = filemgr.LoopSearchLinuxConfig()
+            filemgr._emuconfig = filemgr.LoopSearchLinuxConfig()
         else:
-            filemgr.emuconfig = os.path.join(base_directory, "config/qt-config.ini")
+            filemgr._emuconfig = os.path.join(base_directory, "config/qt-config.ini")
 
-        filemgr.Globaldir = base_directory
-        filemgr.TOTKconfig = os.path.join(filemgr.emuconfig, "../custom")
-        filemgr.nand_dir = os.path.join(base_directory, "nand")
-        filemgr.load_dir = os.path.join(base_directory, "load")
+        filemgr._emuglobal = base_directory
+        filemgr.nand = os.path.join(base_directory, "nand")
+        filemgr.load = os.path.join(base_directory, "load")
         filemgr.sdmc_dir = os.path.join(base_directory, "sdmc")
 
-        if os.path.exists(filemgr.emuconfig):
+        if os.path.exists(filemgr._emuconfig):
             config_parser = configparser.ConfigParser()
-            config_parser.read(filemgr.emuconfig, encoding="utf-8")
+            config_parser.read(filemgr._emuconfig, encoding="utf-8")
         
-            NEW_nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=filemgr.nand_dir)).replace('"', "")
-            filemgr.load_dir = os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=filemgr.load_dir)).replace('"', "")
+            NEW_nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=filemgr.nand)).replace('"', "")
+            filemgr.load = os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=filemgr.load)).replace('"', "")
             filemgr.sdmc_dir = os.path.normpath(config_parser.get('Data%20Storage', 'sdmc_directory', fallback=filemgr.sdmc)).replace('"', "")
 
-            if (os.path.exists(portablefolder) and NEW_nand_dir is not filemgr.nand_dir and filemgr.warn_again == "yes"):
+            if (os.path.exists(portablefolder) and NEW_nand_dir is not filemgr.nand and filemgr.warn_again == "yes"):
                 filemgr.Warn_LegacySaves()
-            filemgr.nand_dir = NEW_nand_dir
+            filemgr.nand = NEW_nand_dir
 
-        filemgr.Legacydir = os.path.join(filemgr.load_dir, GameID)
+        filemgr.contentID = os.path.join(filemgr.load, GameID)
+        filemgr._gameconfig = os.path.join(filemgr._emuconfig, "../custom")
 
     @classmethod
     # fmt: off
@@ -201,9 +200,9 @@ class FileManager:
 
         try: # Ensure the path exists.
             # attempt to create qt-config.ini directories in case they don't exist. Give error to warn user
-            os.makedirs(filemgr.nand_dir, exist_ok=True)
-            os.makedirs(filemgr.load_dir, exist_ok=True)
-            os.makedirs(filemgr.Legacydir, exist_ok=True)
+            os.makedirs(filemgr.nand, exist_ok=True)
+            os.makedirs(filemgr.load, exist_ok=True)
+            os.makedirs(filemgr.contentID, exist_ok=True)
         except PermissionError as e:
             log.warrning(f"Unable to create directories, please run {filemgr._manager.mode}, {e}")
             filemgr.warning(f"Unable to create directories, please run {filemgr._manager.mode}, {e}")
@@ -217,7 +216,7 @@ class FileManager:
         elif filemgr.os_platform == "Windows":
             superlog.info("Detected a Windows based SYSTEM!")
             if mode == "Legacy":
-                if os.path.exists(filemgr.emuconfig):
+                if os.path.exists(filemgr._emuconfig):
                     log.info("a qt-config.ini file found!")
                 else:
                     log.warning(
@@ -235,7 +234,7 @@ class FileManager:
         source = patchinfo.GetModPath()
 
         if filemgr.is_extracting is False:
-            destination = os.path.join(filemgr.load_dir, patchinfo.ModName)
+            destination = os.path.join(filemgr.contentID, patchinfo.ModName)
             os.makedirs(destination, exist_ok=True)
             shutil.copytree(source, destination, dirs_exist_ok=True)
         else:
@@ -249,7 +248,7 @@ class FileManager:
 
         if filemgr._manager.mode == "Legacy":
             testforuserdir = os.path.join(
-                filemgr.nand_dir, "user", "save", "0000000000000000"
+                filemgr.nand, "user", "save", "0000000000000000"
             )
             target_folder = filemgr._manager._patchInfo.ID
             GameName = filemgr._manager._patchInfo.Name
@@ -266,7 +265,7 @@ class FileManager:
 
         # Create the 'backup' folder inside the mod manager directory if it doesn't exist
         elif filemgr._manager.mode == "Ryujinx":
-            folder_to_backup = filemgr.nand_dir
+            folder_to_backup = filemgr.nand
 
         local_dir = os.path.dirname(os.path.abspath(sys.executable))
         backup_folder_path = os.path.join(local_dir, "backup")
@@ -310,7 +309,7 @@ class FileManager:
             message="Are you sure you want to delete your shaders?\n"
             "This could Improve performance.",
         )
-        emu_dir = filemgr.Globaldir
+        emu_dir = filemgr._emuglobal
         if filemgr._manager.mode == "Legacy":
             shaders = os.path.join(emu_dir, f"shader/{filemgr._manager._patchInfo.ID}")
         if filemgr._manager.mode == "Ryujinx":
@@ -330,7 +329,6 @@ class FileManager:
     @classmethod
     def UltraCam_ConfigPath(filemgr) -> str:
         PatchInfo = filemgr._manager._patchInfo
-        ModDir = filemgr.load_dir
         SdCard = filemgr.sdmc_dir
 
         if filemgr.is_extracting is True:
@@ -341,7 +339,7 @@ class FileManager:
         if PatchInfo.SDCardConfig is True:
             return os.path.join(SdCard, PatchInfo.Config)
         else:
-            return os.path.join(ModDir, PatchInfo.ModName, PatchInfo.Config)
+            return os.path.join(filemgr.contentID, PatchInfo.ModName, PatchInfo.Config)
 
     @classmethod
     def submit(filemgr, mode: str | None = None):
@@ -384,7 +382,6 @@ class FileManager:
                 tasklist = [
                     Exe_Running(),
                     filemgr.TransferMods(),
-                    UpdateSettings(),
                     Create_Mod_Patch(),
                     Disable_Mods(),
                     stop_extracting(),
@@ -408,7 +405,7 @@ class FileManager:
             save_user_choices(filemgr._manager, filemgr._manager.config)
 
             patchInfo = filemgr._manager._patchInfo
-            modDir = filemgr.load_dir
+            modDir = filemgr.contentID
 
             if mode == "Cheats":
                 ProgressBar.string.set("Creating Cheat Patches.")
@@ -418,10 +415,10 @@ class FileManager:
             elif mode == None:
                 superlog.info("Starting Mod Creator.")
                 log.info(f"Generating mod at {modDir}")
-                os.makedirs(modDir, exist_ok=True)
+                os.makedirs(filemgr.contentID, exist_ok=True)
 
                 # Update progress bar
-                ProgressBar.string.set("TOTK Optimizer Patch.")
+                ProgressBar.string.set("NX-Optimizer Patching...")
 
                 # Ensures that the patches are active and ensure that old versions of the mod folder is disabled.
                 filemgr.remove_list.append(patchInfo.ModName)
@@ -449,64 +446,6 @@ class FileManager:
                 ## WRITE IN CONFIG FILE FOR UC 2.0
                 with open(ini_file_path, "w+", encoding="utf-8") as configfile:
                     config.write(configfile)
-
-        def UpdateSettings():
-            return  # return early, this is no longer used but want to keep order of execution.
-            log.info("Checking for Settings...")
-            ProgressBar.string.set("Creating Settings..")
-            if filemgr._manager.selected_settings.get() == "No Change":
-                ProgressBar.string.set("No Settings Required..")
-                return
-            if filemgr._manager.mode == "Legacy":
-                setting_preset = filemgr.Legacy_settings[
-                    filemgr.selected_settings.get()
-                ]
-                for section in setting_preset:
-                    for option in setting_preset[section]:
-                        write_Legacy_config(
-                            filemgr,
-                            filemgr.TOTKconfig,
-                            filemgr._manager.title_id,
-                            section,
-                            option,
-                            str(setting_preset[section][option]),
-                        )
-            ProgressBar.string.set("Finished Creating Settings..")
-
-        # Unused Function, used for downloading UltraCam beyond, but no longer needed as we store it locally.
-        def DownloadBEYOND():
-            try:
-                filemgr.add_list.append("UltraCam")
-                filemgr.add_list.append("Max DFPS++")
-                filemgr.add_list.append("DFPS")
-                link = New_UCBeyond_Download
-
-                Mod_directory = os.path.join(filemgr.load_dir, "!!!TOTK Optimizer")
-                if link is None:
-                    log.critical("Couldn't find a link to DFPS/UltraCam")
-                    return
-                set_setting(args="dfps", value="UltraCam")
-
-                # Apply UltraCam from local folder.
-                if os.path.exists("TOTKOptimizer/exefs"):
-                    log.info(
-                        "Found a local UltraCam Folder. COPYING to !!!TOTK Optimizer."
-                    )
-                    if os.path.exists(os.path.join(Mod_directory, "exefs")):
-                        shutil.rmtree(os.path.join(Mod_directory, "exefs"))
-                    shutil.copytree(
-                        os.path.join("TOTKOptimizer/exefs"),
-                        os.path.join(Mod_directory, "exefs"),
-                    )
-                    log.info("\n\nEARLY ACCESS ULTRACAM APPLIED\n\n.")
-                    return
-
-                ProgressBar.string.set(f"Downloading UltraCam BEYOND")
-                log.info(f"Downloading: UltraCam")
-                os.makedirs(Mod_directory, exist_ok=True)
-                download_unzip(link, Mod_directory)
-            except Exception as e:
-                log.warning(f"FAILED TO DOWNLOAD ULTRACAM BEYOND! {e}")
 
         def Exe_Running():
             is_Program_Opened = LaunchManager.is_process_running(
@@ -540,12 +479,12 @@ class FileManager:
                 
                 # read config to pass into disabled keys h
                 emuconfig = configparser.ConfigParser()
-                emuconfig.read(filemgr.emuconfig, encoding="utf-8")
+                emuconfig.read(filemgr._emuconfig, encoding="utf-8")
 
                 for item in filemgr.add_list:
                     modify_disabled_key(
-                        filemgr.emuconfig,
-                        filemgr.load_dir,
+                        filemgr._emuconfig,
+                        filemgr.contentID,
                         emuconfig,
                         filemgr._manager._patchInfo.IDtoNum(),
                         item,
@@ -554,8 +493,8 @@ class FileManager:
 
                 for item in filemgr.remove_list:
                     modify_disabled_key(
-                        filemgr.emuconfig,
-                        filemgr.load_dir,
+                        filemgr._emuconfig,
+                        filemgr.contentID,
                         emuconfig,
                         filemgr._manager._patchInfo.IDtoNum(),
                         item,
@@ -565,9 +504,7 @@ class FileManager:
             # fmt: off
             if (filemgr._manager.mode == "Ryujinx" or platform.system() == "Linux" and not filemgr.is_extracting):
                 for item in filemgr.add_list:
-                    item_dir = os.path.join(filemgr.load_dir, item)
-                    if os.path.exists(item_dir):
-                        shutil.rmtree(item_dir)
+                    log.error(f"NOT IMPLEMENTED RYUJINX LOOP {item}")
             filemgr.add_list.clear()
             filemgr.remove_list.clear()
 
