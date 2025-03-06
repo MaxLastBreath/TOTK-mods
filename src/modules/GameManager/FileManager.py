@@ -125,7 +125,7 @@ class FileManager:
     @classmethod
     # fmt: off
     def PopulateRyujinx(filemgr):
-        patchinfo = filemgr._manager._patchInfo.ID
+        patchinfo = filemgr._manager._patchInfo
         portablefolder = os.path.normpath(os.path.join(filemgr.load_Legacy_path(localconfig), "../portable/"))
 
         base_directory = filemgr.home_directory
@@ -244,6 +244,8 @@ class FileManager:
             os.makedirs(destination, exist_ok=True)
             shutil.copytree(source, destination, dirs_exist_ok=True)
 
+        log.info(f"Copying Mod Folder. {source} to {destination}")
+
     @classmethod
     def backup(filemgr):
         """Backup save files for a specific game, for Ryujinx it fetches all games."""
@@ -355,6 +357,16 @@ class FileManager:
             ProgressBar.progress_bar["value"] = value
             filemgr._window.update_idletasks()
 
+        def run_tasklists(tasklist):
+            com = 100 // len(tasklist)
+            for task in tasklist:
+                timer(com)
+                com += com
+                task
+                time.sleep(0.05)
+
+            ProgressBar.End(filemgr._manager)
+
         def run_tasks():
             if mode == "Cheats":
                 superlog.info("Starting TASKs for Cheat Patch..")
@@ -363,14 +375,8 @@ class FileManager:
                 if get_setting("cheat-backup") in ["On"]:
                     tasklist.append(filemgr.backup())
 
-                com = 100 // len(tasklist)
-                for task in tasklist:
-                    timer(com)
-                    com += com
-                    task
-                    time.sleep(0.05)
+                run_tasklists(tasklist)
 
-                ProgressBar.Destroy()
                 superlog.info(
                     "Tasks have been COMPLETED. Feel free to Launch the game."
                 )
@@ -388,14 +394,11 @@ class FileManager:
                     Disable_Mods(),
                     stop_extracting(),
                 ]
+
                 if get_setting("auto-backup") in ["On"]:
                     tasklist.append(filemgr.backup())
-                com = 100 // len(tasklist)
-                for task in tasklist:
-                    timer(com)
-                    com += com
-                    task
-                    time.sleep(0.05)
+                
+                run_tasklists(tasklist)
 
                 ProgressBar.End(filemgr._manager)
                 superlog.info(
@@ -408,6 +411,7 @@ class FileManager:
 
             patchInfo = filemgr._manager._patchInfo
             modDir = filemgr.contentID
+            modName = filemgr._manager._patchInfo.ModName
 
             if mode == "Cheats":
                 ProgressBar.string.set("Creating Cheat Patches.")
@@ -415,41 +419,51 @@ class FileManager:
                 return
 
             elif mode == None:
-                superlog.info("Starting Mod Creator.")
                 log.info(f"Generating mod at {modDir}")
-                os.makedirs(filemgr.contentID, exist_ok=True)
+                os.makedirs(modDir, exist_ok=True)
 
                 # Update progress bar
                 ProgressBar.string.set("NX-Optimizer Patching...")
 
                 # Ensures that the patches are active and ensure that old versions of the mod folder is disabled.
-                filemgr.remove_list.append(patchInfo.ModName)
+                filemgr.remove_list.append(modName)
                 filemgr.add_list.append("Visual Improvements")
                 filemgr.add_list.append("Mod Manager Patch")
                 filemgr.add_list.append("UltraCam")
 
                 ini_file_path = filemgr.UltraCam_ConfigPath()
 
-                log.warning(f"Creating {filemgr._manager._patchInfo.ModName} config File Path... {ini_file_path}\n")
+                log.warning(f"Creating {modName} config File Path... {ini_file_path}\n")
 
                 ini_file_directory = os.path.dirname(ini_file_path)
                 os.makedirs(ini_file_directory, exist_ok=True)
+
+                log.info(f"Opening {modName} config file...")
 
                 config = configparser.ConfigParser()
                 config.optionxform = lambda option: option
                 if os.path.exists(ini_file_path):
                     config.read(ini_file_path, encoding="utf-8")
 
+                log.info(f"Starting {modName} Patcher...")
+
                 ## TOTK UC BEYOND AUTO PATCHER
                 ModCreator.UCAutoPatcher(filemgr._manager, config)
                 ModCreator.UCResolutionPatcher(filemgr, filemgr._manager, config)
                 ModCreator.UCAspectRatioPatcher(filemgr._manager, config)
+
+                log.info(f"Starting {modName} Patcher has finished running...")
 
                 ## WRITE IN CONFIG FILE FOR UC 2.0
                 with open(ini_file_path, "w+", encoding="utf-8") as configfile:
                     config.write(configfile)
 
         def Exe_Running():
+
+            if (filemgr.os_platform != "Windows"):
+                log.info("Platform is not Windows, No need to check for Executable running.")
+                return
+            
             is_Program_Opened = LaunchManager.is_process_running(
                 filemgr._manager.mode + ".exe"
             )
@@ -472,7 +486,8 @@ class FileManager:
                 log.info(f"{filemgr._manager.mode}.exe is closed, working as expected.")
 
         def Disable_Mods():
-            ProgressBar.string.set(f"Disabling old mods.")
+            ProgressBar.string.set(f"Disabling old mods...")
+            log.info("Disabling Outdated Mods...")
             # Convert the lists to sets, removing any duplicates.
             filemgr.add_list = set(filemgr.add_list)
             filemgr.remove_list = set(filemgr.remove_list)

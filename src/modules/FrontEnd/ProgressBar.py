@@ -27,6 +27,7 @@ class ProgressBar:
         total_iterations = 100
         cls.string = ttk.StringVar()
         cls.string.set("Applying the changes.")
+        log.info("ProgressBar Start.")
         label = ttk.Label(cls.progress_window, textvariable=cls.string)
         label.pack(pady=10)
         cls.progress_bar = ttk.Progressbar(cls.progress_window, mode="determinate", maximum=total_iterations)
@@ -40,6 +41,7 @@ class ProgressBar:
 
     @classmethod
     def End(cls, manager):
+        log.warning("ProgressBar Ended.")
 
         cls.Destroy()
 

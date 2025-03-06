@@ -183,8 +183,6 @@ def load_user_choices(Manager, config_file, mode=None):
         log.info("Options")
     
 
-
-
 def apply_selected_preset(manager, event=None):
     from modules.FrontEnd.FrontEnd import Manager
     manager: Manager = manager
@@ -213,7 +211,7 @@ def apply_selected_preset(manager, event=None):
         # Apply the selected preset from the online presets
         apply_preset(manager, presets[selected_preset])
 
-def write_Legacy_config(Manager, config_file, title_id, section, setting, selection):
+def write_Legacy_config(Manager, config_file: str, title_id: str, section: str, setting: str, selection):
     os.makedirs(config_file, exist_ok=True)
     Custom_Config = os.path.join(config_file, f"{title_id}.ini")
     Legacyconfig = configparser.ConfigParser()
@@ -226,14 +224,14 @@ def write_Legacy_config(Manager, config_file, title_id, section, setting, select
     with open(Custom_Config, "w", encoding="utf-8") as config_file:
         Legacyconfig.write(config_file, space_around_delimiters=False)
 
-def read_ryujinx_version(config_file)-> int:
+def read_ryujinx_version(config_file: str)-> int:
     with open(config_file, "r", encoding="utf-8") as file:
         configData = json.load(file)
     version = int(configData["version"])
     log.info(f"Ryujinx Config {version}")
     return version
 
-def write_ryubing_config(config_file, game_config, setting, selection):
+def write_ryubing_config(config_file: str, game_config: str, setting, selection):
     if not os.path.exists(game_config):
         game_config_dir = os.path.dirname(game_config)
         os.makedirs(game_config_dir, exist_ok=True)
@@ -258,9 +256,7 @@ def write_ryujinx_config(filemgr, config_file, setting, selection):
         return
     
     if (read_ryujinx_version(config_file) >= 68):
-        patchinfo = filemgr._manager._patchInfo
-        game_config = os.path.join(filemgr._emuglobal, "games", f"{patchinfo.ID}", "Config.json")
-        write_ryubing_config(config_file, game_config, setting, selection)
+        write_ryubing_config(config_file, filemgr._gameconfig, setting, selection)
         return
     
     with open(config_file, "r", encoding="utf-8") as file:
