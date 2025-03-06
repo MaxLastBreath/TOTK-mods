@@ -446,11 +446,13 @@ class FileManager:
                     config.read(ini_file_path, encoding="utf-8")
 
                 log.info(f"Starting {modName} Patcher...")
-
-                ## TOTK UC BEYOND AUTO PATCHER
-                ModCreator.UCAutoPatcher(filemgr._manager, config)
-                ModCreator.UCResolutionPatcher(filemgr, filemgr._manager, config)
-                ModCreator.UCAspectRatioPatcher(filemgr._manager, config)
+                try:
+                    ## TOTK UC BEYOND AUTO PATCHER
+                    ModCreator.UCAutoPatcher(filemgr._manager, config)
+                    ModCreator.UCResolutionPatcher(filemgr, filemgr._manager, config)
+                    ModCreator.UCAspectRatioPatcher(filemgr._manager, config)
+                except Exception as e:
+                    log.error(f"Failed to patch {modName} config with Error : {e}")
 
                 log.info(f"Starting {modName} Patcher has finished running...")
 
