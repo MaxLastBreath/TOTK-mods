@@ -147,13 +147,32 @@ class ModCreator:
     @classmethod
     def UCRyujinxRamPatcher(cls, manager, filemgr, layout):
         """Patches Ryujinx specific Settings, such as RAM from 4 or 8GB."""
+        
+        if not os.path.exists(filemgr.ryujinx_config):
+            log.error(f"Ryujinx config doesn't exist {filemgr.ryujinx_config} Please Run Ryujinx or press Browse to direct the app to Ryujinx.exe")
+            return
+        
+        with open(filemgr.ryujinx_config, "r", encoding="utf-8") as file:
+            configData = json.load(file)
 
-        if layout > 0:
-            log.warning(f"Expanding Ryujinx RAM mode to 8GB, {layout}")
-            write_ryujinx_config(manager, filemgr.ryujinx_config, "expand_ram", True)
+        if (configData["version"] > 60):
+            # GreemDev Ryujinx
+            if (layout == 1):
+                log.warning(f"Expanding Ram Size to 4 GB")
+            if (layout == 2):
+                log.warning(f"Expanding Ram Size to 6 GB")
+            else:
+                log.warning(f"Expanding Ram Size to 8+ GB")
+
+            write_ryujinx_config(manager, filemgr.ryujinx_config, "dram_size", layout)
         else:
-            log.warning(f"Reverting Ryujinx RAM mode to 4GB, {layout}")
-            write_ryujinx_config(manager, filemgr.ryujinx_config, "expand_ram", False)
+            # Original Ryujinx
+            if layout > 0:
+                log.warning(f"Expanding Ryujinx RAM mode to 8GB, {layout}")
+                write_ryujinx_config(manager, filemgr.ryujinx_config, "expand_ram", True)
+            else:
+                log.warning(f"Reverting Ryujinx RAM mode to 4GB, {layout}")
+                write_ryujinx_config(manager, filemgr.ryujinx_config, "expand_ram", False)
 
     @classmethod
     def UCLegacyRamPatcher(cls, manager, filemgr, layout):
