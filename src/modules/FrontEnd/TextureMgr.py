@@ -99,46 +99,6 @@ class TextureMgr:
             )
 
         TextureMgr.CreateTexture(
-            image_path="benchmark_korok.png",
-            width=int(100 * 2.5),
-            height=int(40 * 2.5),
-        )
-        TextureMgr.CreateTexture(
-            image_path="benchmark_lookout.png",
-            width=int(100 * 2.5),
-            height=int(40 * 2.5),
-        )
-        TextureMgr.CreateTexture(
-            image_path="benchmark_kakariko.png",
-            width=int(100 * 2.5),
-            height=int(40 * 2.5),
-        )
-        TextureMgr.CreateTexture(
-            image_path="benchmark_great_sky_island.png",
-            width=int(100 * 2.5),
-            height=int(40 * 2.5),
-        )
-        TextureMgr.CreateTexture(
-            image_path="benchmark_goron.png",
-            width=int(100 * 2.5),
-            height=int(40 * 2.5),
-        )
-        TextureMgr.CreateTexture(
-            image_path="benchmark_zora.png",
-            width=int(100 * 2.5),
-            height=int(40 * 2.5),
-        )
-        TextureMgr.CreateTexture(
-            image_path="benchmark_depths.png",
-            width=int(100 * 2.5),
-            height=int(40 * 2.5),
-        )
-        TextureMgr.CreateTexture(
-            image_path="benchmarks_first.png",
-            width=int(100 * 2.5),
-            height=int(40 * 2.5),
-        )
-        TextureMgr.CreateTexture(
             image_path="benchmark_loading.png",
             width=int(115),
             height=int(43),
