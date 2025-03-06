@@ -152,25 +152,18 @@ class ModCreator:
             log.error(f"Ryujinx config doesn't exist {filemgr.ryujinx_config} Please Run Ryujinx or press Browse to direct the app to Ryujinx.exe")
             return
 
-        if (read_ryujinx_version(filemgr.ryujinx_config) > 60):
-            
+        if (read_ryujinx_version(filemgr.ryujinx_config) >= 54):
             # GreemDev Ryujinx
-            write_ryujinx_config(manager, filemgr.ryujinx_config, "dram_size", layout)
-            if (layout == 1):
-                log.warning(f"Expanding Ram Size to 4 GB")
-            if (layout == 2):
-                log.warning(f"Expanding Ram Size to 6 GB")
-            else:
-                log.warning(f"Expanding Ram Size to 8+ GB")
-
+            write_ryujinx_config(filemgr, filemgr.ryujinx_config,  "dram_size", layout)
+            log.warning(f"Expanding Ram Size to Type {layout}")
         else:
             # Original Ryujinx
             if layout > 0:
                 log.warning(f"Expanding Ryujinx RAM mode to 8GB, {layout}")
-                write_ryujinx_config(manager, filemgr.ryujinx_config, "expand_ram", True)
+                write_ryujinx_config(filemgr, filemgr.ryujinx_config,  "expand_ram", True)
             else:
                 log.warning(f"Reverting Ryujinx RAM mode to 4GB, {layout}")
-                write_ryujinx_config(manager, filemgr.ryujinx_config, "expand_ram", False)
+                write_ryujinx_config(filemgr, filemgr.ryujinx_config,  "expand_ram", False)
 
     @classmethod
     def UCLegacyRamPatcher(cls, manager, filemgr, layout):
@@ -224,7 +217,7 @@ class ModCreator:
             # for emulator scale
             new_scale = 1
             if (manager._patchInfo.ResolutionScale):
-                new_scale += manager._EmulatorScale.get()
+                new_scale += int(manager._EmulatorScale.get())
 
             write_Legacy_config(manager, filemgr.TOTKconfig, manager._patchInfo.ID, "Renderer", "resolution_setup", f"{new_scale}")  # fmt: skip
             cls.UCLegacyRamPatcher(manager, filemgr, Resolution.getRamLayout())
@@ -232,9 +225,9 @@ class ModCreator:
         if manager.mode == "Ryujinx":
             new_scale = 1
             if (manager._patchInfo.ResolutionScale):
-                new_scale = manager._EmulatorScale.get()
+                new_scale = int(manager._EmulatorScale.get())
 
-            write_ryujinx_config(manager, filemgr.ryujinx_config, "res_scale", new_scale)  # fmt: skip
+            write_ryujinx_config(filemgr, filemgr.ryujinx_config, "res_scale", new_scale)  # fmt: skip
             cls.UCRyujinxRamPatcher(manager, filemgr, Resolution.getRamLayout())
 
         Section = patch_info["resolution"]["Config_Class"][0]

@@ -1,3 +1,4 @@
+import shutil
 from configuration.settings import *
 import os, json
 
@@ -225,16 +226,43 @@ def write_Legacy_config(Manager, config_file, title_id, section, setting, select
     with open(Custom_Config, "w", encoding="utf-8") as config_file:
         Legacyconfig.write(config_file, space_around_delimiters=False)
 
-def read_ryujinx_version(ryujinx_config)-> int:
-    with open(ryujinx_config, "r", encoding="utf-8") as file:
+def read_ryujinx_version(config_file)-> int:
+    with open(config_file, "r", encoding="utf-8") as file:
         configData = json.load(file)
-    return int(configData["version"])
-def write_ryujinx_config(Manager, config_file, setting, selection):
+    version = int(configData["version"])
+    log.info(f"Ryujinx Config {version}")
+    return version
+
+def write_ryubing_config(config_file, game_config, setting, selection):
+    if not os.path.exists(game_config):
+        game_config_dir = os.path.dirname(game_config)
+        os.makedirs(game_config_dir, exist_ok=True)
+        shutil.copy(config_file, game_config)
+        log.warning(f"Creating a new Game Config {game_config}")
+    
+    with open(game_config, "r", encoding="utf-8") as file:
+        data = json.load(file)
+        data[setting] = selection
+
+    os.remove(game_config)
+    with open(game_config, 'w', encoding="utf-8") as file:
+        json.dump(data, file, indent=2)
+
+def write_ryujinx_config(filemgr, config_file, setting, selection):
+    from modules.GameManager.FileManager import FileManager
+
+    filemgr: FileManager = filemgr
 
     if not os.path.exists(config_file):
-        log.error(f"RYUJINX CONFIG DOESN'T EXIST! {config_file}")
+        log.error(f"RYUJINX GLOBAL CONFIG FILE DOESN'T EXIST! {config_file}")
         return
-
+    
+    if (read_ryujinx_version(config_file) >= 68):
+        patchinfo = filemgr._manager._patchInfo
+        game_config = os.path.join(filemgr.Globaldir, "games", f"{patchinfo.ID}", "Config.json")
+        write_ryubing_config(config_file, game_config, setting, selection)
+        return
+    
     with open(config_file, "r", encoding="utf-8") as file:
         data = json.load(file)
         data[setting] = selection

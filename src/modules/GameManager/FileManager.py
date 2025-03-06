@@ -16,6 +16,8 @@ class FileManager:
     _window: ttk.Window = None
     _manager: any = None
 
+    home_directory = os.path.expanduser("~")
+
     is_extracting = False
 
     configdir = str
@@ -55,13 +57,11 @@ class FileManager:
 
         '''Check for Linux Specific Directories...'''
 
-        home_directory = os.path.expanduser("~")
-
         if mode == "Legacy":
-            flatpak = os.path.join(home_directory, ".var", "app", "org.yuzu_emu.yuzu", "config", "yuzu")
-            steamdeckdir = os.path.join(home_directory, ".config", "yuzu", "qt-config.ini")
+            flatpak = os.path.join(filemgr.home_directory, ".var", "app", "org.yuzu_emu.yuzu", "config", "yuzu")
+            steamdeckdir = os.path.join(filemgr.home_directory, ".config", "yuzu", "qt-config.ini")
 
-            filemgr.Globaldir = os.path.join(home_directory, ".local", "share", "yuzu")
+            filemgr.Globaldir = os.path.join(filemgr.home_directory, ".local", "share", "yuzu")
             filemgr.configdir = os.path.join(filemgr.Globaldir, "config", "qt-config.ini")
             filemgr.TOTKconfig = os.path.join(filemgr.Globaldir, "config", "custom")
 
@@ -69,10 +69,10 @@ class FileManager:
             if os.path.exists(steamdeckdir):
                 log.info("Detected a steamdeck!")
                 filemgr.configdir = steamdeckdir
-                filemgr.TOTKconfig = os.path.join(home_directory, ".config", "yuzu", "custom")
+                filemgr.TOTKconfig = os.path.join(filemgr.home_directory, ".config", "yuzu", "custom")
 
             # Find any "Legacy Emulators"...
-            local_dir = os.path.join(home_directory, ".local", "share")
+            local_dir = os.path.join(filemgr.home_directory, ".local", "share")
             for folder in os.listdir(local_dir):
                 filemgr.Globaldir = os.path.join(local_dir, folder)
                 if os.path.exists(os.path.join(filemgr.Globaldir, "load", filemgr._manager._patchInfo.ID)):
@@ -83,7 +83,7 @@ class FileManager:
                     filemgr.Globaldir = os.path.join(new_path, "data", "yuzu")
                     break
                 else:
-                    filemgr.Globaldir = os.path.join(home_directory, ".local", "share", "yuzu")
+                    filemgr.Globaldir = os.path.join(filemgr.home_directory, ".local", "share", "yuzu")
 
             for folder in os.listdir(local_dir):
                 filemgr.Globaldir = os.path.join(local_dir, folder, "config", "yuzu")
@@ -95,7 +95,7 @@ class FileManager:
                     filemgr.Globaldir = os.path.join(new_path, "data", "yuzu")
                     break
                 else:
-                    filemgr.Globaldir = os.path.join(home_directory, ".local", "share", "yuzu")
+                    filemgr.Globaldir = os.path.join(filemgr.home_directory, ".local", "share", "yuzu")
 
             config_parser = configparser.ConfigParser()
             config_parser.read(filemgr.configdir, encoding="utf-8")
@@ -108,12 +108,12 @@ class FileManager:
                 filemgr.nand_dir = filemgr.nand_dir.strip('"')[0]
             filemgr.load_dir = os.path.join(filemgr.load_dir, filemgr._manager._patchInfo.ID)
 
-            filemgr.Legacydir = os.path.normpath(os.path.join(home_directory, ".local", "share", "yuzu", "load", filemgr._manager._patchInfo.ID))
+            filemgr.Legacydir = os.path.normpath(os.path.join(filemgr.home_directory, ".local", "share", "yuzu", "load", filemgr._manager._patchInfo.ID))
             return
 
         if mode == "Ryujinx":
-            filemgr.Globaldir = os.path.join(home_directory, ".config", "Ryujinx")
-            flatpak = os.path.join(home_directory, ".var", "app", "org.ryujinx.Ryujinx", "config", "Ryujinx")
+            filemgr.Globaldir = os.path.join(filemgr.home_directory, ".config", "Ryujinx")
+            flatpak = os.path.join(filemgr.home_directory, ".var", "app", "org.ryujinx.Ryujinx", "config", "Ryujinx")
 
             if os.path.exists(flatpak):
                 log.info("Detected a Ryujinx flatpak!")
@@ -121,7 +121,7 @@ class FileManager:
                 filemgr.nand_dir = os.path.join(f"{filemgr.Globaldir}", "bis", "user", "save")
                 filemgr.sdmc_dir = os.path.join(f"{filemgr.Globaldir}", "sdcard")
                 filemgr.load_dir = os.path.join(f"{filemgr.Globaldir}", "mods", "contents", filemgr._manager._patchInfo.ID)
-                filemgr.Legacydir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents",
+                filemgr.Legacydir = os.path.join(filemgr.home_directory, ".config", "Ryujinx", "mods", "contents",
                                             filemgr._manager._patchInfo.ID)
                 filemgr.ryujinx_config = os.path.join(filemgr.Globaldir, "Config.json")
                 return
@@ -131,19 +131,43 @@ class FileManager:
             filemgr.nand_dir = os.path.join(f"{filemgr.Globaldir}", "bis", "user", "save")
             filemgr.sdmc_dir = os.path.join(f"{filemgr.Globaldir}", "sdcard")
             filemgr.load_dir = os.path.join(f"{filemgr.Globaldir}", "mods", "contents", filemgr._manager._patchInfo.ID)
-            filemgr.Legacydir = os.path.join(home_directory, ".config", "Ryujinx", "mods", "contents", filemgr._manager._patchInfo.ID)
+            filemgr.Legacydir = os.path.join(filemgr.home_directory, ".config", "Ryujinx", "mods", "contents", filemgr._manager._patchInfo.ID)
             filemgr.ryujinx_config = os.path.join(filemgr.Globaldir, "Config.json")
             return
 
+    @classmethod
+    def PopulateRyujinx(filemgr):
+
+        portablefolder = os.path.normpath(os.path.join(filemgr.load_Legacy_path(localconfig), "../portable/"))
+
+        if os.path.exists(portablefolder):
+            filemgr.Globaldir = portablefolder
+            filemgr.configdir = None
+            filemgr.TOTKconfig = None
+            filemgr.ryujinx_config = os.path.join(portablefolder, "Config.json")
+            filemgr.nand_dir = os.path.join(f"{portablefolder}", "bis", "user", "save")
+            filemgr.load_dir = os.path.join(f"{portablefolder}", "mods", "contents", filemgr._manager._patchInfo.ID)
+            filemgr.sdmc_dir = os.path.join(f"{portablefolder}", "sdcard")
+            filemgr.Legacydir = os.path.join(filemgr.home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", filemgr._manager._patchInfo.ID)
+        else:
+            filemgr.Globaldir = os.path.join(filemgr.home_directory, "AppData", "Roaming", "Ryujinx")
+            filemgr.configdir = None
+            filemgr.TOTKconfig = None
+            filemgr.ryujinx_config = os.path.join(filemgr.Globaldir, "Config.json")
+            filemgr.nand_dir = os.path.join(f"{filemgr.Globaldir}", "bis", "user", "save")
+            filemgr.load_dir = os.path.join(f"{filemgr.Globaldir}", "mods", "contents", filemgr._manager._patchInfo.ID)
+            filemgr.sdmc_dir = os.path.join(f"{filemgr.Globaldir}", "sdcard")
+            filemgr.Legacydir = filemgr.load_dir
+
+        
     @classmethod
     # fmt: off
     def WindowsPaths(filemgr, mode:str):
 
         '''Check for Windows Specific Directories...'''
 
-        home_directory = os.path.expanduser("~")
-
         Legacypath = filemgr.load_Legacy_path(localconfig)
+
         userfolder = os.path.normpath(os.path.join(Legacypath, "../user/"))
         portablefolder = os.path.normpath(os.path.join(Legacypath, "../portable/"))
 
@@ -152,14 +176,14 @@ class FileManager:
         # Check for user folder
         if mode == "Legacy":
             # Find any "Legacy Emulators"...
-            appdata = os.path.join(home_directory, "AppData", "Roaming")
+            appdata = os.path.join(filemgr.home_directory, "AppData", "Roaming")
             for folder in os.listdir(appdata):
                 filemgr.Globaldir = os.path.join(appdata, folder)
                 if os.path.exists(os.path.join(filemgr.Globaldir, "load", filemgr._manager._patchInfo.ID)):
                     superlog.info(f"Found Legacy Emu folder at: {filemgr.Globaldir}")
                     break
                 else:
-                    filemgr.Globaldir = os.path.join(home_directory, "AppData", "Roaming", "yuzu")
+                    filemgr.Globaldir = os.path.join(filemgr.home_directory, "AppData", "Roaming", "yuzu")
 
             if os.path.exists(userfolder):
                 filemgr.configdir = os.path.join(Legacypath, "../user/config/qt-config.ini")
@@ -227,34 +251,13 @@ class FileManager:
                 return
             
         if mode == "Ryujinx":
-            if os.path.exists(portablefolder):
-                filemgr.configdir = None
-                filemgr.TOTKconfig = None
-                filemgr.ryujinx_config = os.path.join(portablefolder, "Config.json")
-                filemgr.nand_dir = os.path.join(f"{portablefolder}", "bis", "user", "save")
-                filemgr.load_dir = os.path.join(f"{portablefolder}", "mods", "contents", filemgr._manager._patchInfo.ID)
-                filemgr.sdmc_dir = os.path.join(f"{portablefolder}", "sdcard")
-                filemgr.Legacydir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx", "mods", "contents", filemgr._manager._patchInfo.ID)
-                # superlog.info(f"Checking Ryujinx {filemgr.ryujinx_config}, {filemgr.nand_dir}, {filemgr.load_dir}, {filemgr.sdmc_dir}, {filemgr.Legacydir}")
-                return
-            else:
-                filemgr.Globaldir = os.path.join(home_directory, "AppData", "Roaming", "Ryujinx")
-                filemgr.configdir = None
-                filemgr.TOTKconfig = None
-                filemgr.ryujinx_config = os.path.join(filemgr.Globaldir, "Config.json")
-                filemgr.nand_dir = os.path.join(f"{filemgr.Globaldir}", "bis", "user", "save")
-                filemgr.load_dir = os.path.join(f"{filemgr.Globaldir}", "mods", "contents", filemgr._manager._patchInfo.ID)
-                filemgr.sdmc_dir = os.path.join(f"{filemgr.Globaldir}", "sdcard")
-                filemgr.Legacydir = filemgr.load_dir
-                return
+            filemgr.PopulateRyujinx()
 
     @classmethod
     # fmt: off
     def MacOSPaths(filemgr, mode:str):
 
         '''Check for MacOS Specific Directories...'''
-
-        home_directory = os.path.expanduser("~")
 
         if mode == "Ryujinx":
             filemgr.Globaldir = os.path.join(home_directory, "Library", "Application Support", "Ryujinx")
