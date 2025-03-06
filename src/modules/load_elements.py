@@ -1,7 +1,8 @@
 from modules.FrontEnd.CanvasMgr import Canvas_Create, ButtonToggle
 from modules.FrontEnd.TextureMgr import TextureMgr
 from configuration.settings import *
-from modules.benchmarks import *
+from modules.benchmarks import load_benchmark, copy
+import ttkbootstrap as ttk
 import pyperclip
 
 def load_UI_elements(manager, canvas: ttk.Canvas):
