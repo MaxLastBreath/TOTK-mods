@@ -152,7 +152,7 @@ class Benchmark:
         Settings = "## Settings Info:\n"   
         Result = f"## Results:\n"
         benchmark_result = (
-            f"## **{cls._selected_benchmark}** {cls._manager._patchInfo.Name} UltraCam {cls._manager._patchInfo.ModVersion} on {system_os} OS\n"
+            f"## **{cls._selected_benchmark}** {cls._manager._patchInfo.Name} {cls._manager._patchInfo.ModName.replace('!', '')} {cls._manager._patchInfo.ModVersion} on {system_os} OS\n"
         )
 
         if platform.system() != "Darwin":
@@ -173,7 +173,7 @@ class Benchmark:
 
         if ("fps" in UserChoices):
             fps = cls._manager.UserChoices['fps'].get()
-            Settings+= f"- FPS CAP: **{fps}**"
+            Settings+= f"- FPS CAP: **{fps}**\n"
 
         Result += (
             f"- Total Frames **{cls._benchmarks[cls._selected_benchmark]['Total Frames']}**\n"
