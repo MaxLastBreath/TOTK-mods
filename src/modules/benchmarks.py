@@ -138,7 +138,7 @@ class Benchmark:
 
         for file in os.listdir(cls.__benchmark_path):
             JsonFile = cls.__LoadJsonFile(os.path.join(cls.__benchmark_path, file))
-            Name = cls.Json(JsonFile, "Name", None)
+            Name = file.replace(".json", "")
 
             if not Name:
                 continue

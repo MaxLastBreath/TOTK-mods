@@ -400,7 +400,6 @@ class FileManager:
                 
                 run_tasklists(tasklist)
 
-                ProgressBar.End(filemgr._manager)
                 superlog.info(
                     "Tasks have been COMPLETED. Feel free to Launch the game."
                 )
