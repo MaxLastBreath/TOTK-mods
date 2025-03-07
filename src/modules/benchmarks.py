@@ -15,7 +15,7 @@ class Benchmark:
 
     __benchmark_version = None
     __benchmark_support = None
-    __benchmark_file = None
+    __benchmark_path = None
 
     _benchmark_info_tag: str = "benchmark-info"
     _benchmark_label_tag: str = "benchmark-label"
@@ -56,10 +56,10 @@ class Benchmark:
 
         cls._manager.maincanvas.itemconfig(cls._benchmark_label_tag, text=BenchmarkName)
 
-        text = (f"TOTAL Frames - {cls._benchmarks[BenchmarkName]['Total Frames']} Frames\n"
-                f"Average - {cls._benchmarks[BenchmarkName]['Average FPS']} FPS\n"
-                f"1% Lowest FPS - {cls._benchmarks[BenchmarkName]['1% Low FPS']} FPS\n"
-                f"0.1% Lowest FPS - {cls._benchmarks[BenchmarkName]['0.1% Lowest FPS']} FPS\n")
+        text = (f"Frames - {cls._benchmarks[BenchmarkName]['Frames']} Frames\n"
+                f"Average - {cls._benchmarks[BenchmarkName]['Average']} FPS\n"
+                f"1% Lowest FPS - {cls._benchmarks[BenchmarkName]['Low']} FPS\n"
+                f"0.1% Lowest FPS - {cls._benchmarks[BenchmarkName]['Lowest']} FPS\n")
 
         return text
 
@@ -70,8 +70,8 @@ class Benchmark:
         cls._patchInfo = cls._manager._patchInfo
         cls.__benchmark_version = cls._patchInfo.Benchmark_Version
         cls.__benchmark_support = cls._patchInfo.Support_Benchmark
-        cls.__benchmark_file = os.path.join(FileManager.sdmc_dir, cls._patchInfo.Benchmarks_File)
-        cls.load_benchmark()
+        cls.__benchmark_path = os.path.join(FileManager.sdmc_dir, cls._patchInfo.Benchmarks_File)
+        cls.__load_benchmark()
 
     @classmethod
     def load_last_benchmark(cls, BenchmarkName):
@@ -83,11 +83,12 @@ class Benchmark:
         )
 
     @classmethod
-    def read_benchmark_file_v0(cls):
+    def __read_benchmark_file_v1(cls):
         "Benchmark UltraCam Version 0 read and load structures."
+        "Expects a passed .txt file."
 
         Last_Found = None
-        with open(cls.__benchmark_file, "r") as benchmarks:
+        with open(cls.__benchmark_path, "r") as benchmarks:
             for line in benchmarks:
                 match = re.search(r"BENCHMARK FOR (\w+) COMPLETED", line)
 
@@ -108,33 +109,64 @@ class Benchmark:
                 if numbers[3] == 0.1:
                     numbers.pop(3)
                 cls._benchmarks[BenchmarkName] = {
-                    "Total Frames": numbers[0],
-                    "Average FPS": numbers[1],
-                    "1% Low FPS": numbers[2],
-                    "0.1% Lowest FPS": numbers[3],
+                    "Frames": numbers[0],
+                    "Average": numbers[1],
+                    "Low": numbers[2],
+                    "Lowest": numbers[3],
                 }
                 Last_Found = BenchmarkName
         
         cls._selected_benchmark = Last_Found
 
+    @classmethod 
+    def __LoadJsonFile(cls, location):
+        with open(file, "r", encoding="utf-8") as file:
+            return  json.load(file)
+
     @classmethod
-    def read_benchmark_file_v1(cls):
-        return None # not implemented.
+    def Json(cls, JsonFile, Entry, fallback=None):
+        try:
+            ReturnValue = JsonFile[Entry]
+        except KeyError:
+            log.error(f"Couldn't fetch Json Entry : {Entry}")
+            return fallback
+        return ReturnValue
+
+    @classmethod
+    def __read_benchmark_file_v2(cls):
+        Name = None
+
+        for file in os.listdir(cls.__benchmark_path):
+            JsonFile = cls.__LoadJsonFile(os.path.join(cls.__benchmark_path, file))
+            Name = cls.Json(JsonFile, "Name", None)
+
+            if not Name:
+                continue
+
+            cls._benchmarks[Name]["Frames"] = cls.Json(JsonFile, "Total", 0.0)
+            cls._benchmarks[Name]["Lowest"] = cls.Json(JsonFile, "Lowest", 0.0)
+            cls._benchmarks[Name]["Low"] = cls.Json(JsonFile, "Low", 0.0)
+            cls._benchmarks[Name]["Average"] = cls.Json(JsonFile, "Average", 0.0)
+            cls._benchmarks[Name]["Max"] = cls.Json(JsonFile, "Max", 0.0)
+            cls._benchmarks[Name]["Time"] = cls.Json(JsonFile, "Time", 0.0)
+            cls._benchmarks[Name]["Type"] = cls.Json(JsonFile, "Type", 0.0)
+
+        cls._selected_benchmark = Name
     
     @classmethod
-    def load_benchmark(cls):
+    def __load_benchmark(cls):
         log.info("Loading Benchmark Reader")
 
         # return early
-        if (not os.path.exists(cls.__benchmark_file)):
+        if (not os.path.exists(cls.__benchmark_path)):
             cls.load_last_benchmark(None)
-            log.warning(f"Benchmark File Not Found. {cls.__benchmark_file}")
+            log.warning(f"Benchmark File Not Found. {cls.__benchmark_path}")
             return
         
         if (cls.__benchmark_version == 0):
-            cls.read_benchmark_file_v0()
+            cls.__read_benchmark_file_v1()
         else :
-            cls.read_benchmark_file_v1()
+            cls.__read_benchmark_file_v2()
         
         cls.load_last_benchmark(cls._selected_benchmark)
 
@@ -176,10 +208,10 @@ class Benchmark:
             Settings+= f"- FPS CAP: **{fps}**\n"
 
         Result += (
-            f"- Total Frames **{cls._benchmarks[cls._selected_benchmark]['Total Frames']}**\n"
-            f"- Average FPS **{cls._benchmarks[cls._selected_benchmark]['Average FPS']}**\n"
-            f"- 1% Lows **{cls._benchmarks[cls._selected_benchmark]['1% Low FPS']}** FPS\n"
-            f"- 0.1% Lows **{cls._benchmarks[cls._selected_benchmark]['0.1% Lowest FPS']}** FPS\n"
+            f"- Frames **{cls._benchmarks[cls._selected_benchmark]['Frames']}**\n"
+            f"- Average **{cls._benchmarks[cls._selected_benchmark]['Average']}**\n"
+            f"- 1% Lows **{cls._benchmarks[cls._selected_benchmark]['Low']}** FPS\n"
+            f"- 0.1% Lows **{cls._benchmarks[cls._selected_benchmark]['Lowest']}** FPS\n"
         )
 
         # Combine Texts
@@ -191,4 +223,3 @@ class Benchmark:
             
         pyperclip.copy(benchmark_result)
         
-
