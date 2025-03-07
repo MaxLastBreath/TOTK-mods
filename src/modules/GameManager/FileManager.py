@@ -43,7 +43,7 @@ class FileManager:
 
     @classmethod
     # fmt: off
-    def Warn_LegacySaves(filemgr, OldPath, NewPath):
+    def __Warn_LegacySaves(filemgr, OldPath, NewPath):
         message = (
             f"WARNING: Your QT Config Save Directory may not be correct!\n"
             f"Your saves could be in danger.\n"
@@ -66,7 +66,7 @@ class FileManager:
     
     @classmethod
     # fmt: off
-    def load_Legacy_path(filemgr, config_file: str):
+    def __load_Legacy_path(filemgr, config_file: str):
         if filemgr._manager.mode == "Legacy":
             config = configparser.ConfigParser()
             config.read(config_file, encoding="utf-8")
@@ -80,7 +80,7 @@ class FileManager:
 
     @classmethod
     # fmt: off
-    def LoopSearch(filemgr) -> str:
+    def __LoopSearch(filemgr) -> str:
         GameID = filemgr._manager._patchInfo.ID
 
         EmuList = []
@@ -104,7 +104,7 @@ class FileManager:
     
     @classmethod
     # fmt: off
-    def LoopSearchLinuxConfig(filemgr) -> str:
+    def __LoopSearchLinuxConfig(filemgr) -> str:
         SpecialDir = ".config"
         userDir = os.path.join(filemgr.home_directory, SpecialDir)
 
@@ -124,9 +124,9 @@ class FileManager:
         
     @classmethod
     # fmt: off
-    def PopulateRyujinx(filemgr):
+    def __PopulateRyujinx(filemgr):
         patchinfo = filemgr._manager._patchInfo
-        portablefolder = os.path.normpath(os.path.join(os.path.dirname(filemgr.load_Legacy_path(localconfig)), "portable/"))
+        portablefolder = os.path.normpath(os.path.join(os.path.dirname(filemgr.__load_Legacy_path(localconfig)), "portable/"))
 
         base_directory = filemgr.home_directory
         if (filemgr.os_platform == "Windows"):
@@ -151,20 +151,20 @@ class FileManager:
     
     @classmethod
     # fmt: off
-    def PopulateLegacy(filemgr):
-        portablefolder = os.path.normpath(os.path.join(os.path.dirname(filemgr.load_Legacy_path(localconfig)), "user/"))
+    def __PopulateLegacy(filemgr):
+        portablefolder = os.path.normpath(os.path.join(os.path.dirname(filemgr.__load_Legacy_path(localconfig)), "user/"))
 
         base_directory = filemgr.home_directory
         patchinfo = filemgr._manager._patchInfo
 
-        base_directory = filemgr.LoopSearch()
+        base_directory = filemgr.__LoopSearch()
 
         if (os.path.exists(portablefolder)):
             base_directory = portablefolder
 
         # Config FIle BS
         if (filemgr.os_platform == "Linux"):
-            filemgr._emuconfig = filemgr.LoopSearchLinuxConfig()
+            filemgr._emuconfig = filemgr.__LoopSearchLinuxConfig()
         else:
             filemgr._emuconfig = os.path.join(base_directory, "config/qt-config.ini")
 
@@ -182,35 +182,32 @@ class FileManager:
             filemgr.sdmc_dir = os.path.normpath(config_parser.get('Data%20Storage', 'sdmc_directory', fallback=filemgr.sdmc)).replace('"', "")
 
             if (os.path.exists(portablefolder) and NEW_nand_dir is not filemgr.nand and filemgr.warn_again == "yes"):
-                filemgr.Warn_LegacySaves()
+                filemgr.__Warn_LegacySaves()
             filemgr.nand = NEW_nand_dir
 
         filemgr.contentID = os.path.join(filemgr.load, patchinfo.ID)
         filemgr._gameconfig = os.path.join(os.path.dirname(filemgr._emuconfig), "custom")
 
     @classmethod
-    # fmt: off
-    def checkpath(filemgr, mode:str):
+    def __TransferMods(filemgr):
+        """Transfer mod files to the emulator/switch location(s)..."""
 
-        '''The Primary Logic the TOTK Optimizer uses to find each emulator.'''
+        patchinfo = filemgr._manager._patchInfo
+        source = patchinfo.GetModPath()
 
-        # Populate Paths for Emulators
-        if mode == "Legacy":
-            filemgr.PopulateLegacy()
-        if mode == "Ryujinx":
-            filemgr.PopulateRyujinx()
+        if filemgr.is_extracting is False:
+            destination = os.path.join(filemgr.contentID, patchinfo.ModName)
+            os.makedirs(destination, exist_ok=True)
+            shutil.copytree(source, destination, dirs_exist_ok=True)
+        else:
+            destination = os.path.join(os.getcwd(), patchinfo.ModName)
+            os.makedirs(destination, exist_ok=True)
+            shutil.copytree(source, destination, dirs_exist_ok=True)
 
-        try: # Ensure the path exists.
-            # attempt to create qt-config.ini directories in case they don't exist. Give error to warn user
-            os.makedirs(filemgr.nand, exist_ok=True)
-            os.makedirs(filemgr.load, exist_ok=True)
-            os.makedirs(filemgr.contentID, exist_ok=True)
-        except PermissionError as e:
-            log.warrning(f"Unable to create directories, please run {filemgr._manager.mode}, {e}")
-            filemgr.warning(f"Unable to create directories, please run {filemgr._manager.mode}, {e}")
+        log.info(f"Copying Mod Folder. {source} to {destination}")
 
     @classmethod
-    def DetectOS(filemgr, mode: str):
+    def _DetectOS(filemgr, mode: str):
         """Detects the current OS... Used only for Debugging."""
 
         if filemgr.os_platform == "Linux":
@@ -229,22 +226,25 @@ class FileManager:
             log.info("Detected a MacOS based SYSTEM!")
 
     @classmethod
-    def TransferMods(filemgr):
-        """Transfer mod files to the emulator/switch location(s)..."""
+    # fmt: off
+    def checkpath(filemgr, mode:str):
 
-        patchinfo = filemgr._manager._patchInfo
-        source = patchinfo.GetModPath()
+        '''The Primary Logic the TOTK Optimizer uses to find each emulator.'''
 
-        if filemgr.is_extracting is False:
-            destination = os.path.join(filemgr.contentID, patchinfo.ModName)
-            os.makedirs(destination, exist_ok=True)
-            shutil.copytree(source, destination, dirs_exist_ok=True)
-        else:
-            destination = os.path.join(os.getcwd(), patchinfo.ModName)
-            os.makedirs(destination, exist_ok=True)
-            shutil.copytree(source, destination, dirs_exist_ok=True)
+        # Populate Paths for Emulators
+        if mode == "Legacy":
+            filemgr.__PopulateLegacy()
+        if mode == "Ryujinx":
+            filemgr.__PopulateRyujinx()
 
-        log.info(f"Copying Mod Folder. {source} to {destination}")
+        try: # Ensure the path exists.
+            # attempt to create qt-config.ini directories in case they don't exist. Give error to warn user
+            os.makedirs(filemgr.nand, exist_ok=True)
+            os.makedirs(filemgr.load, exist_ok=True)
+            os.makedirs(filemgr.contentID, exist_ok=True)
+        except PermissionError as e:
+            log.warrning(f"Unable to create directories, please run {filemgr._manager.mode}, {e}")
+            filemgr.warning(f"Unable to create directories, please run {filemgr._manager.mode}, {e}")
 
     @classmethod
     def backup(filemgr):
@@ -389,7 +389,7 @@ class FileManager:
 
                 tasklist = [
                     Exe_Running(),
-                    filemgr.TransferMods(),
+                    filemgr.__TransferMods(),
                     Create_Mod_Patch(),
                     Disable_Mods(),
                     stop_extracting(),

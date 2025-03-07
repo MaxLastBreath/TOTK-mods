@@ -71,7 +71,7 @@ class LaunchManager:
                 log.warning("Legacy is already running in the background.")
                 return
 
-            Legacypath = filemgr.load_Legacy_path(localconfig)
+            Legacypath = filemgr.__load_Legacy_path(localconfig)
             if os.path.exists(Legacypath):
                 Legacy_PATH = Legacypath
             else:
@@ -86,7 +86,7 @@ class LaunchManager:
                 log.warning("Ryujinx is already running in the background.")
                 return
 
-            ryujinx_path = filemgr.load_Legacy_path(localconfig)
+            ryujinx_path = filemgr.__load_Legacy_path(localconfig)
             if os.path.exists(ryujinx_path):
                 Ryujinx_PATH = ryujinx_path
             else:

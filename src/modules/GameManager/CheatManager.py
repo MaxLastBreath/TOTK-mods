@@ -82,7 +82,7 @@ class Cheats:
         manager.all_canvas.append(canvas)
 
         # Create UI elements.
-        Cheats.Cheat_UI_elements(canvas)
+        Cheats.__Cheat_UI_elements(canvas)
         create_tab_buttons(manager, canvas)
 
         load_user_choices(manager, manager.config)
@@ -248,7 +248,7 @@ class Cheats:
             log.error(f"Error found from ResetCheats, the script will continue. {e}")
 
     @classmethod
-    def Cheat_UI_elements(cls, canvas):
+    def __Cheat_UI_elements(cls, canvas):
 
         "Create UI Elements, Backgrounds etc."
 

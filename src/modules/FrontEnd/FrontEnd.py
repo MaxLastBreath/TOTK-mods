@@ -360,7 +360,7 @@ class Manager:
 
         # Run Scripts for checking OS and finding location
         FileManager.checkpath(Manager.mode)
-        FileManager.DetectOS(Manager.mode)
+        FileManager._DetectOS(Manager.mode)
 
         # FOR DEBUGGING PURPOSES
         def onCanvasClick(event):
