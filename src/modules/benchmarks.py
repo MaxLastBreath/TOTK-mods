@@ -143,28 +143,51 @@ class Benchmark:
         if cls._selected_benchmark is None:
             return
         
-        resolution = cls._manager.UserChoices["resolution"].get()
-        shadows = int(cls._manager.UserChoices["shadow resolution"].get().split("x")[0])
-        
+        UserChoices = cls._manager.UserChoices
+
         system_os = "MacOS" if platform.system() == "Darwin" else platform.system()
 
+        # Initial Text.    
+        Systeminfo = ""
+        Settings = "## Settings Info:\n"   
+        Result = f"## Results:\n"
         benchmark_result = (
-            f"## **{cls._selected_benchmark}** Tears Of The Kingdom on {system_os}\n"
+            f"## **{cls._selected_benchmark}** {cls._manager._patchInfo.Name} UltraCam {cls._manager._patchInfo.ModVersion} on {system_os} OS\n"
         )
 
         if platform.system() != "Darwin":
-            benchmark_result += f"- **{gpu_name}**\n"
-
-        benchmark_result += (
+            Systeminfo = f"- **{gpu_name}**\n"
+        
+        Systeminfo += (
             f"- **{CPU}**\n"
             f"- **{total_memory}** GB RAM at **{FREQUENCY}** MHz\n"
-            f"- **{resolution}** and Shadows: **{shadows}**, FPS CAP: **{cls._manager.UserChoices['fps'].get()}**\n"
-            f"## Results:\n"
+        )
+
+        if ("resolution" in UserChoices):
+            resolution = UserChoices["resolution"].get()
+            Settings += f"- Resolution : **{resolution}**\n"
+
+        if ("shadow resolution" in UserChoices):
+            shadows = int(UserChoices["shadow resolution"].get().split("x")[0])
+            Settings += f"- Shadow Resolution: **{shadows}**\n"
+
+        if ("fps" in UserChoices):
+            fps = cls._manager.UserChoices['fps'].get()
+            Settings+= f"- FPS CAP: **{fps}**"
+
+        Result += (
             f"- Total Frames **{cls._benchmarks[cls._selected_benchmark]['Total Frames']}**\n"
             f"- Average FPS **{cls._benchmarks[cls._selected_benchmark]['Average FPS']}**\n"
             f"- 1% Lows **{cls._benchmarks[cls._selected_benchmark]['1% Low FPS']}** FPS\n"
             f"- 0.1% Lows **{cls._benchmarks[cls._selected_benchmark]['0.1% Lowest FPS']}** FPS\n"
         )
+
+        # Combine Texts
+        benchmark_result += Systeminfo
+        benchmark_result += Settings
+        benchmark_result += Result
+
+        log.info("Copied Benchmark Result")
             
         pyperclip.copy(benchmark_result)
         

@@ -46,7 +46,7 @@ def load_UI_elements(manager, canvas: ttk.Canvas):
         cul=980,
         anchor="c",
         justify="c",
-        tags=["benchmark-label"],
+        tags=[Benchmark._benchmark_label_tag],
     )
 
     # Canvas_Create.set_image(
@@ -95,8 +95,7 @@ def load_UI_elements(manager, canvas: ttk.Canvas):
         cul=820,
         font=biggyfont,
         active_fill="cyan",
-        tags=["benchmark-info"],
-        outline_tag="benchmark-info",
+        tags=[Benchmark._benchmark_info_tag]
     )
 
     LogoOffset = 100
