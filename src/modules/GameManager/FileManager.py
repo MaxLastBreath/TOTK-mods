@@ -92,13 +92,16 @@ class FileManager:
 
         userDir = os.path.join(filemgr.home_directory, SpecialDir)
         for folder in os.listdir(userDir):
-            base_directory = os.path.join(userDir, folder)
-            if os.path.exists(os.path.join(base_directory, "load", GameID)):
-                EmuList.append(base_directory)
-                superlog.info(f"Found Legacy Emu folder at: {base_directory}")
+            FolderPath = os.path.join(userDir, folder)
+            if os.path.exists(os.path.join(FolderPath, "load", GameID)):
+                EmuList.append(FolderPath)
+                superlog.info(f"Found Legacy Emu folder at: {FolderPath}")
                 continue
-            if len(EmuList) < 1: # Fallback to citron
-                base_directory = os.path.join(filemgr.home_directory, SpecialDir, "citron")
+        
+        if len(EmuList) < 1: # Fallback to citron
+            base_directory = os.path.join(filemgr.home_directory, SpecialDir, "citron")
+        else:
+            base_directory = EmuList[0]
 
         return base_directory
     
