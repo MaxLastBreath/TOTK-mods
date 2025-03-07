@@ -1,5 +1,6 @@
 {
     "Name" : "Pokemon Scarlet",
+    "Version": "1.0",
     "ID" : "0100A3D008C5C000",
     "ModName" : "!!!Pokemon Optimizer",
     "ModConfig" : "romfs/MaxFl4shBreath.ini",

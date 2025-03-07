@@ -1,7 +1,7 @@
 from modules.FrontEnd.CanvasMgr import Canvas_Create, ButtonToggle
 from modules.FrontEnd.TextureMgr import TextureMgr
 from configuration.settings import *
-from modules.benchmarks import load_benchmark, copy
+from modules.benchmarks import Benchmark
 import ttkbootstrap as ttk
 
 def load_UI_elements(manager, canvas: ttk.Canvas):
@@ -65,7 +65,7 @@ def load_UI_elements(manager, canvas: ttk.Canvas):
         anchor="c",
         img_1=TextureMgr.Request("benchmark_loading.png"),
         img_2=TextureMgr.Request("benchmark_loading_active.png"),
-        command=lambda e: load_benchmark(manager),
+        command=lambda e: Benchmark.ReloadBenchmarkInfo(),
     )
 
     Canvas_Create.create_label(
@@ -74,7 +74,7 @@ def load_UI_elements(manager, canvas: ttk.Canvas):
         text=f"{gpu_name}\n" f"{CPU}\n" f"Memory: {total_memory}GB {FREQUENCY} MHz",
         description_name="Benchmarks",
         anchor="nw",
-        command=lambda e: copy(manager),
+        command=lambda e: Benchmark.copy(),
         row=310 - Offset,
         cul=820,
         font=biggyfont,
@@ -87,20 +87,16 @@ def load_UI_elements(manager, canvas: ttk.Canvas):
     Canvas_Create.create_label(
         master=manager._window,
         canvas=canvas,
-        text=f"Turn on Direct Keyboard.\n"
-        f"Press G after loading in game.\n"
-        f"Select your Benchmark in Advanced Settings.\n"
-        f"Clicking this text copies your results.\n",
+        text=Benchmark._benchmark_text,
         description_name="Benchmarks",
         anchor="nw",
-        command=lambda e: copy(manager),
+        command=lambda e: Benchmark.copy(),
         row=400 - Offset,
         cul=820,
         font=biggyfont,
         active_fill="cyan",
-        tags=["benchmark_info"],
-        tag=["benchmark_info"],
-        outline_tag="benchmark_info",
+        tags=["benchmark-info"],
+        outline_tag="benchmark-info",
     )
 
     LogoOffset = 100

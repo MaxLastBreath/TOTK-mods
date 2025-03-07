@@ -111,6 +111,9 @@ class Manager:
         # Load_ImagePath(Manager)
         Manager.Create_Canvases()
 
+        # Load Benchmark at the very end
+        Benchmark.Initialize(Manager, FileManager)
+
         log.warning(f"Emulator {Manager.mode}")
         Manager.switchmode()
         Manager.ForceGameBG()
@@ -156,6 +159,7 @@ class Manager:
                 Cheats.loadCheats()  # load the new cheats.
                 Cheats.LoadCheatsConfig()
                 FileManager.checkpath(Manager.mode)
+                Benchmark.ReloadBenchmarkInfo()
 
     def ChangeName(Manager):
         Manager.all_canvas[0].itemconfig(
@@ -668,7 +672,6 @@ class Manager:
         Manager.create_canvas()
         Cheats.CreateCanvas(Manager)
         Cheats.Hide()
-        load_benchmark(Manager)
 
     def show_main_canvas(Manager):
         Canvas_Create.is_Ani_Paused = True
@@ -740,6 +743,7 @@ class Manager:
 
             superlog.info(f"Force Switched to {Manager.mode}")
             FileManager.checkpath(Manager.mode)
+            Benchmark.ReloadBenchmarkInfo()
             return
 
         if Manager.ModeType.get() is False:
@@ -750,6 +754,7 @@ class Manager:
 
         superlog.info(f"Switched to {Manager.mode}")
         FileManager.checkpath(Manager.mode)
+        Benchmark.ReloadBenchmarkInfo()
 
     def extract_patches(Manager):
         FileManager.is_extracting = True

@@ -13,6 +13,10 @@ class PatchInfo:
     Cheats: bool = False
     ResolutionScale: bool = True
 
+    Support_Benchmark: bool = False
+    Benchmark_Version: int = 0
+    Benchmarks_File: str = "TOTKBenchmark.txt" # This is a file Path... Always load from SDcard. so sd:/FilePath
+
     def __init__(self, folder: str, JsonFile: json):  # fmt: skip
         
         self.Folder = folder
@@ -25,6 +29,10 @@ class PatchInfo:
         self.Cheats = self.Json(JsonFile, "Cheats", False)
         self.SDCardConfig = self.Json(JsonFile, "SDCardConfig", False)
         self.ResolutionScale = self.Json(JsonFile, "EmulationScale", True)
+
+        self.Support_Benchmark = self.Json(JsonFile, "benchmarks", False)
+        self.Benchmark_Version = self.Json(JsonFile, "benchmarks_version", 0)
+        self.Benchmarks_File = self.Json(JsonFile, "benchmarks_file", self.Benchmarks_File)
 
     def Json(self, JsonFile, Entry, fallback=None):
         try:
