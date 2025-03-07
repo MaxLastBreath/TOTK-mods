@@ -58,14 +58,26 @@ def load_UI_elements(manager, canvas: ttk.Canvas):
     #     tag="benchmark_border",
     # )
 
+    Image = TextureMgr.Request("benchmark_cycle.png")
+
     Canvas_Create.image_Button(
         canvas=canvas,
         row=505 - Offset,
-        cul=980,
+        cul=980 + Image.width() / 2,
         anchor="c",
         img_1=TextureMgr.Request("benchmark_loading.png"),
         img_2=TextureMgr.Request("benchmark_loading_active.png"),
         command=lambda e: Benchmark.ReloadBenchmarkInfo(),
+    )
+
+    Canvas_Create.image_Button(
+        canvas=canvas,
+        row=505 - Offset ,
+        cul=980 - Image.width() / 2,
+        anchor="c",
+        img_1=TextureMgr.Request("benchmark_cycle.png"),
+        img_2=TextureMgr.Request("benchmark_cycle_active.png"),
+        command=lambda e: Benchmark.cycle(),
     )
 
     Canvas_Create.create_label(

@@ -51,8 +51,6 @@ class Manager:
 
     def __init__(Manager, window):
 
-        from modules.FrontEnd.AnimationMgr import AnimationQueue
-
         """
         Initializes the frontend canvas UI.\n
         This also Initializes Game_Manager, FileManager, Canvas_Create and Settings.\n
@@ -61,6 +59,8 @@ class Manager:
         Load's the current game's Information.\n
         Handles the entire UI framework, all the canvas, images and ETC.
         """
+
+        from modules.FrontEnd.AnimationMgr import AnimationQueue
 
         Manager._window = window
 
@@ -609,7 +609,7 @@ class Manager:
     def select_Legacy_exe(Manager):
         if Manager.os_platform == "Windows":
             Legacy_path = filedialog.askopenfilename(
-                title=f"Please select {Manager.mode}.exe",
+                title=f"Please select the Emulator Executable File (.exe)",
                 filetypes=[("Executable files", "*.exe"), ("All Files", "*.*")],
             )
 
@@ -641,7 +641,6 @@ class Manager:
                     FileManager.checkpath(Manager.mode)
                     return Legacy_path
             else:
-                FileManager.checkpath(Manager.mode)
                 return None
 
         if Manager.os_platform == "Linux":

@@ -62,7 +62,26 @@ class Benchmark:
                 f"0.1% Lowest FPS - {cls._benchmarks[BenchmarkName]['Lowest']} FPS\n")
 
         return text
+    
+    @classmethod
+    def cycle(cls):
+        benchmark_list = list(cls._benchmarks)
 
+        if (len(benchmark_list) == 0 or cls._selected_benchmark is None):
+            return
+
+        indexOfname = benchmark_list.index(cls._selected_benchmark)
+        indexOfname+=1
+
+        if (indexOfname > len(benchmark_list) - 1):
+            indexOfname = 0
+        
+        if (indexOfname < 0):
+            indexOfname = len(benchmark_list) - 1
+        
+        cls._selected_benchmark = benchmark_list[indexOfname]
+        cls.load_benchmark(cls._selected_benchmark)
+        
     @classmethod
     def ReloadBenchmarkInfo(cls):
         cls._benchmarks = {}
@@ -74,7 +93,7 @@ class Benchmark:
         cls.__load_benchmark()
 
     @classmethod
-    def load_last_benchmark(cls, BenchmarkName):
+    def load_benchmark(cls, BenchmarkName):
         cls._selected_benchmark = BenchmarkName
 
         cls._manager.maincanvas.itemconfig(
@@ -164,7 +183,7 @@ class Benchmark:
 
         # return early
         if (not os.path.exists(cls.__benchmark_path)):
-            cls.load_last_benchmark(None)
+            cls.load_benchmark(None)
             log.warning(f"Benchmark File Not Found. {cls.__benchmark_path}")
             return
         
@@ -173,7 +192,7 @@ class Benchmark:
         else :
             cls.__read_benchmark_file_v2()
         
-        cls.load_last_benchmark(cls._selected_benchmark)
+        cls.load_benchmark(cls._selected_benchmark)
 
     @classmethod
     def copy(cls):

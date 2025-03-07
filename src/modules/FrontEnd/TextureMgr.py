@@ -109,6 +109,16 @@ class TextureMgr:
             height=int(43 * 1.2),
         )
         TextureMgr.CreateTexture(
+            image_path="benchmark_cycle.png",
+            width=int(115),
+            height=int(43),
+        )
+        TextureMgr.CreateTexture(
+            image_path="benchmark_cycle_active.png",
+            width=int(115 * 1.2),
+            height=int(43 * 1.2),
+        )
+        TextureMgr.CreateTexture(
             image_path="Switch_Button.png",
             width=int(115 * 1.2),
             height=int(43 * 1.2),
