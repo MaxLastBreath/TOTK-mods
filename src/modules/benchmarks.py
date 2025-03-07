@@ -120,7 +120,8 @@ class Benchmark:
 
     @classmethod 
     def __LoadJsonFile(cls, location):
-        with open(file, "r", encoding="utf-8") as file:
+        log.info(f"Reading File : {location}")
+        with open(location, "r", encoding="utf-8") as file:
             return  json.load(file)
 
     @classmethod
@@ -137,11 +138,15 @@ class Benchmark:
         Name = None
 
         for file in os.listdir(cls.__benchmark_path):
-            JsonFile = cls.__LoadJsonFile(os.path.join(cls.__benchmark_path, file))
+            Path = os.path.join(cls.__benchmark_path, file)
+
+            JsonFile = cls.__LoadJsonFile(Path)
             Name = file.replace(".json", "")
 
             if not Name:
                 continue
+
+            cls._benchmarks[Name] = {}
 
             cls._benchmarks[Name]["Frames"] = cls.Json(JsonFile, "Total", 0.0)
             cls._benchmarks[Name]["Lowest"] = cls.Json(JsonFile, "Lowest", 0.0)
@@ -184,15 +189,17 @@ class Benchmark:
         Settings = "## Settings Info:\n"   
         Result = f"## Results:\n"
         benchmark_result = (
-            f"## **{cls._selected_benchmark}** {cls._manager._patchInfo.Name} {cls._manager._patchInfo.ModName.replace('!', '')} {cls._manager._patchInfo.ModVersion} on {system_os} OS\n"
+            f"## *{cls._selected_benchmark} Benchmark*\n" 
+            f"- **Game :** {cls._manager._patchInfo.Name} [{cls._manager._patchInfo.ID}] {cls._manager._patchInfo.ModName.replace('!', '')} {cls._manager._patchInfo.ModVersion}\n"
+            f"- **OS :** {system_os}\n"
         )
 
         if platform.system() != "Darwin":
-            Systeminfo = f"- **{gpu_name}**\n"
+            Systeminfo = f"- GPU: **{gpu_name}**\n"
         
         Systeminfo += (
-            f"- **{CPU}**\n"
-            f"- **{total_memory}** GB RAM at **{FREQUENCY}** MHz\n"
+            f"- CPU : **{CPU}**\n"
+            f"- RAM : **{total_memory}** GB RAM at **{FREQUENCY}** MHz\n"
         )
 
         if ("resolution" in UserChoices):
@@ -213,6 +220,12 @@ class Benchmark:
             f"- 1% Lows **{cls._benchmarks[cls._selected_benchmark]['Low']}** FPS\n"
             f"- 0.1% Lows **{cls._benchmarks[cls._selected_benchmark]['Lowest']}** FPS\n"
         )
+
+        if (cls.__benchmark_version > 1):
+            Result += f"- 1% Max **{cls._benchmarks[cls._selected_benchmark]['Max']}** FPS\n"
+            TimeSpan = cls._benchmarks[cls._selected_benchmark]['Time']
+            Result += f"- Duration : **{(int)(TimeSpan / 3600)}h:{(int)(TimeSpan / 60)}m:{(int)(TimeSpan % 60)}s:{(int)(TimeSpan * 100 - (int)(TimeSpan) * 100)}ms**\n"
+            Result += f"- Benchmark Type: **{cls._benchmarks[cls._selected_benchmark]['Type']}**\n"
 
         # Combine Texts
         benchmark_result += Systeminfo

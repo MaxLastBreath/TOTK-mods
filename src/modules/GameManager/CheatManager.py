@@ -35,7 +35,7 @@ class Cheats:
     Canvas: ttk.Canvas | None = None
     _manager = None
     _patchInfo: PatchInfo = None
-    isInit: bool = False
+    _isInit: bool = False
     CheatVersion: ttk.StringVar | None = None
     CheatCombo: ttk.Combobox = None
     CheatsInfo: dict[str, ttk.StringVar] = {}
@@ -70,7 +70,7 @@ class Cheats:
 
         "Create Cheat Canvas, should be only ran a single time."
 
-        if Cheats.isInit is True:
+        if Cheats._isInit is True:
             raise "Cheat Canvas is Already Created"
 
         # Create Canvas
@@ -149,7 +149,7 @@ class Cheats:
 
         Cheats.LoadCheatVersions()
 
-        Cheats.isInit = True
+        Cheats._isInit = True
 
         if manager._patchInfo.Cheats is False:
             return
