@@ -17,6 +17,7 @@ def create_zip(source_dir, dest_file):
                 relative_path = os.path.relpath(file_path, source_dir)
                 zip_path = os.path.join(program_name, relative_path)
                 zipf.write(file_path, zip_path)
+                print(f"Copying {file_path} to {zip_path}")
 
 if __name__ == "__main__":
     if platform.system() == "Windows":
@@ -25,7 +26,7 @@ if __name__ == "__main__":
             "--standalone",
             "--lto=yes",
             f"--jobs={num_cores}",
-            f"--output-filename='{program_name}'",
+            f"--output-filename={program_name}",
             "--include-data-dir=GUI=GUI",
             "--include-data-dir=Localization=Localization",
             "--include-data-dir=PatchInfo=PatchInfo",
@@ -33,17 +34,14 @@ if __name__ == "__main__":
             "--windows-icon-from-ico=GUI/LOGO.png",
             "run.py",
         ]
-
+        
+        if os.path.exists("dist"):
+            os.remove("dist")
+        
         subprocess.run(command, shell=True)
 
-        if (os.path.exists("dist")):
-            os.remove("dist")
-
-        os.rename("run.dist", "dist")
+        os.makedirs("dist", exist_ok=True)
         create_zip(
-            f"dist/",
+            f"run.dist/",
             f"dist/{program_name.replace(' ', '_')}_{latest_version}_Windows.zip",
         )
-
-        if os.path.exists(f"dist/{program_name}"):
-            os.remove(f"dist/{program_name}")
