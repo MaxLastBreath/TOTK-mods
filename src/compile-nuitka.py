@@ -6,6 +6,9 @@ from configuration.settings import *
 latest_version = Version.strip("manager-")
 program_name = "NX Optimizer"
 
+num_cores = os.cpu_count()
+print(num_cores)
+
 def create_zip(source_dir, dest_file):
     with zipfile.ZipFile(dest_file, "w", zipfile.ZIP_DEFLATED) as zipf:
         for root, dirs, files in os.walk(source_dir):
@@ -21,7 +24,7 @@ if __name__ == "__main__":
             "nuitka",
             "--standalone",
             "--lto=yes",
-            "--jobs=4",
+            f"--jobs={num_cores}",
             f"--output-filename='{program_name}'",
             "--include-data-dir=GUI=GUI",
             "--include-data-dir=Localization=Localization",
