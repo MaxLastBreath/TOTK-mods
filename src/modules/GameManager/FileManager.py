@@ -343,7 +343,7 @@ class FileManager:
             os.makedirs(Folder, exist_ok=True)
             return os.path.join(Folder, PatchInfo.ModName, PatchInfo.Config)
         
-        if PatchInfo.SDCardConfig is True:
+        if PatchInfo.isSDconfig is True:
             return os.path.join(SdCard, PatchInfo.Config)
         else:
             return os.path.join(filemgr.contentID, PatchInfo.ModName, PatchInfo.Config)

@@ -9,5 +9,5 @@
     "Versions" : ["3.0.1"],
     "EmulationScale" : true,
     "Cheats": false,
-    "SDCardConfig" : false
+    "SD" : false
 }

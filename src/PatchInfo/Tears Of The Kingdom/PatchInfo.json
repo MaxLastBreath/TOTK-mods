@@ -12,5 +12,5 @@
     "benchmarks_file" : "TOTKBenchmark.txt",
     "EmulationScale" : false,
     "Cheats" : true,
-    "SDCardConfig" : false
+    "SD" : false
 }

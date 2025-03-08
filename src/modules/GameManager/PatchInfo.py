@@ -13,6 +13,7 @@ class PatchInfo:
     Versions: list[str] = []
     Cheats: bool = False
     ResolutionScale: bool = True
+    isSDconfig: bool = False
 
     Support_Benchmark: bool = False
     Benchmark_Version: int = 0
@@ -27,7 +28,7 @@ class PatchInfo:
         self.Config = self.Json(JsonFile, "ModConfig")
         self.ModFolder = self.Json(JsonFile, "ModFolder")
         self.Cheats = self.Json(JsonFile, "Cheats", False)
-        self.SDCardConfig = self.Json(JsonFile, "SDCardConfig", False)
+        self.isSDconfig = self.Json(JsonFile, "SD", False)
         self.ResolutionScale = self.Json(JsonFile, "EmulationScale", True)
         self.ModVersion = self.Json(JsonFile, "Mod_Version", "1.0")
 
