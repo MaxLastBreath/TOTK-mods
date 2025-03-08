@@ -7,21 +7,22 @@ import re
 
 class Benchmark:
     _manager = None
+    _canvas: ttk.Canvas = None
     _filemgr = None
     _patchInfo: PatchInfo = None
 
     _selected_benchmark = None
     _benchmarks: dict = {}
 
-    __benchmark_version = None
-    __benchmark_support = None
-    __benchmark_path = None
+    __version = None
+    __support = None
+    __path = None
 
-    _benchmark_info_tag: str = "benchmark-info"
-    _benchmark_label_tag: str = "benchmark-label"
+    _info_tag: str = "benchmark-info"
+    _label_tag: str = "benchmark-label"
 
-    __benchmark_name_none: str = "No Benchmark Detected"
-    __benchmark_name_nosupport: str = "Benchmarks Not Supported"
+    __info_none: str = "No Benchmark Detected"
+    __info_nosupport: str = "Benchmarks Not Supported"
 
     _benchmark_text :str = (f"Turn on Direct Keyboard.\n"
                             f"Press G after loading in game.\n"
@@ -34,27 +35,44 @@ class Benchmark:
     @classmethod
     def Initialize(cls, manager, filemanager):
         from modules.FrontEnd.FrontEnd import Manager, FileManager
-        
         cls._manager: Manager = manager
+        cls._canvas = cls._manager.maincanvas
         cls._filemgr: FileManager = filemanager
         cls._patchInfo: PatchInfo = manager._patchInfo
         cls.ReloadBenchmarkInfo()
+        cls.__showButtons()
+
+    @classmethod
+    def __showButtons(cls):
+        if (cls.__support is False):
+            cls._canvas.itemconfig("benchmark-button", state="hidden")
+            return
+        
+        if (len(cls._benchmarks) == 0):
+            cls._canvas.itemconfig("benchmark-button", state="hidden")
+            cls._canvas.itemconfig("benchmark-reload", state="normal")
+            return
+        else:
+            cls._canvas.itemconfig("benchmark-button", state="normal")
+
 
     @classmethod
     def __benchmarkInfo(cls, BenchmarkName = None):
         
-        if cls.__benchmark_support is False:
-            BenchmarkName = cls.__benchmark_name_nosupport
-            cls._manager.maincanvas.itemconfig(cls._benchmark_label_tag, text=cls.__benchmark_name_nosupport)
+        if cls.__support is False:
+            BenchmarkName = cls.__info_nosupport
+            cls._canvas.itemconfig(cls._label_tag, text=cls.__info_nosupport)
             return cls._benchmark_none
 
         # set to None
         if BenchmarkName is None:
-            BenchmarkName = cls.__benchmark_name_none
-            cls._manager.maincanvas.itemconfig(cls._benchmark_label_tag, text=cls.__benchmark_name_none)
+            BenchmarkName = cls.__info_none
+            cls._canvas.itemconfig(cls._label_tag, text=cls.__info_none)
             return cls._benchmark_text
+        
+        benchmark_list = list(cls._benchmarks)
 
-        cls._manager.maincanvas.itemconfig(cls._benchmark_label_tag, text=BenchmarkName)
+        cls._canvas.itemconfig(cls._label_tag, text=f"{BenchmarkName} Benchmark {benchmark_list.index(BenchmarkName) + 1}/{len(cls._benchmarks)}")
 
         text = (f"Frames - {cls._benchmarks[BenchmarkName]['Frames']} Frames\n"
                 f"Average - {cls._benchmarks[BenchmarkName]['Average']} FPS\n"
@@ -81,23 +99,25 @@ class Benchmark:
         
         cls._selected_benchmark = benchmark_list[indexOfname]
         cls.load_benchmark(cls._selected_benchmark)
+        cls.__showButtons()
         
     @classmethod
     def ReloadBenchmarkInfo(cls):
         cls._benchmarks = {}
         cls._selected_benchmark = None
         cls._patchInfo = cls._manager._patchInfo
-        cls.__benchmark_version = cls._patchInfo.Benchmark_Version
-        cls.__benchmark_support = cls._patchInfo.Support_Benchmark
-        cls.__benchmark_path = os.path.join(FileManager.sdmc_dir, cls._patchInfo.Benchmarks_File)
+        cls.__version = cls._patchInfo.Benchmark_Version
+        cls.__support = cls._patchInfo.Support_Benchmark
+        cls.__path = os.path.join(FileManager.sdmc_dir, cls._patchInfo.Benchmarks_File)
         cls.__load_benchmark()
+        cls.__showButtons()
 
     @classmethod
     def load_benchmark(cls, BenchmarkName):
         cls._selected_benchmark = BenchmarkName
 
-        cls._manager.maincanvas.itemconfig(
-            cls._benchmark_info_tag,
+        cls._canvas.itemconfig(
+            cls._info_tag,
             text=cls.__benchmarkInfo(BenchmarkName)
         )
 
@@ -107,7 +127,7 @@ class Benchmark:
         "Expects a passed .txt file."
 
         Last_Found = None
-        with open(cls.__benchmark_path, "r") as benchmarks:
+        with open(cls.__path, "r") as benchmarks:
             for line in benchmarks:
                 match = re.search(r"BENCHMARK FOR (\w+) COMPLETED", line)
 
@@ -156,8 +176,8 @@ class Benchmark:
     def __read_benchmark_file_v2(cls):
         Name = None
 
-        for file in os.listdir(cls.__benchmark_path):
-            Path = os.path.join(cls.__benchmark_path, file)
+        for file in os.listdir(cls.__path):
+            Path = os.path.join(cls.__path, file)
 
             JsonFile = cls.__LoadJsonFile(Path)
             Name = file.replace(".json", "")
@@ -182,12 +202,12 @@ class Benchmark:
         log.info("Loading Benchmark Reader")
 
         # return early
-        if (not os.path.exists(cls.__benchmark_path)):
+        if (not os.path.exists(cls.__path)):
             cls.load_benchmark(None)
-            log.warning(f"Benchmark File Not Found. {cls.__benchmark_path}")
+            log.warning(f"Benchmark File Not Found. {cls.__path}")
             return
         
-        if (cls.__benchmark_version == 0):
+        if (cls.__version == 0):
             cls.__read_benchmark_file_v1()
         else :
             cls.__read_benchmark_file_v2()
@@ -240,7 +260,7 @@ class Benchmark:
             f"- 0.1% Lows **{cls._benchmarks[cls._selected_benchmark]['Lowest']}** FPS\n"
         )
 
-        if (cls.__benchmark_version > 1):
+        if (cls.__version > 1):
             Result += f"- 1% Max **{cls._benchmarks[cls._selected_benchmark]['Max']}** FPS\n"
             TimeSpan = cls._benchmarks[cls._selected_benchmark]['Time']
             Result += f"- Duration : **{(int)(TimeSpan / 3600)}h:{(int)(TimeSpan / 60)}m:{(int)(TimeSpan % 60)}s:{(int)(TimeSpan * 100 - (int)(TimeSpan) * 100)}ms**\n"

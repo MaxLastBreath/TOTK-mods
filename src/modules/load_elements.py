@@ -46,7 +46,7 @@ def load_UI_elements(manager, canvas: ttk.Canvas):
         cul=980,
         anchor="c",
         justify="c",
-        tags=[Benchmark._benchmark_label_tag],
+        tags=[Benchmark._label_tag],
     )
 
     # Canvas_Create.set_image(
@@ -58,26 +58,39 @@ def load_UI_elements(manager, canvas: ttk.Canvas):
     #     tag="benchmark_border",
     # )
 
-    Image = TextureMgr.Request("benchmark_cycle.png")
+    ButonWidth = TextureMgr.Request("benchmark_cycle.png").width() - 30
 
     Canvas_Create.image_Button(
         canvas=canvas,
-        row=505 - Offset,
-        cul=980 + Image.width() / 2,
+        row=500 - Offset,
+        cul=980 - ButonWidth,
         anchor="c",
-        img_1=TextureMgr.Request("benchmark_loading.png"),
-        img_2=TextureMgr.Request("benchmark_loading_active.png"),
-        command=lambda e: Benchmark.ReloadBenchmarkInfo(),
+        img_1=TextureMgr.Request("benchmark_copy.png"),
+        img_2=TextureMgr.Request("benchmark_copy_active.png"),
+        command=lambda e: Benchmark.copy(),
+        tags=["benchmark-button"]
     )
 
     Canvas_Create.image_Button(
         canvas=canvas,
-        row=505 - Offset ,
-        cul=980 - Image.width() / 2,
+        row=500 - Offset,
+        cul=980,
+        anchor="c",
+        img_1=TextureMgr.Request("benchmark_loading.png"),
+        img_2=TextureMgr.Request("benchmark_loading_active.png"),
+        command=lambda e: Benchmark.ReloadBenchmarkInfo(),
+        tags=["benchmark-button", "benchmark-reload"]
+    )
+
+    Canvas_Create.image_Button(
+        canvas=canvas,
+        row=500 - Offset ,
+        cul=980 + ButonWidth,
         anchor="c",
         img_1=TextureMgr.Request("benchmark_cycle.png"),
         img_2=TextureMgr.Request("benchmark_cycle_active.png"),
         command=lambda e: Benchmark.cycle(),
+        tags=["benchmark-button"]
     )
 
     Canvas_Create.create_label(
@@ -107,7 +120,7 @@ def load_UI_elements(manager, canvas: ttk.Canvas):
         cul=820,
         font=biggyfont,
         active_fill="cyan",
-        tags=[Benchmark._benchmark_info_tag]
+        tags=[Benchmark._info_tag]
     )
 
     LogoOffset = 100

@@ -591,7 +591,7 @@ class Canvas_Create:
         anchor: str = "nw",
         img_1: ttk.PhotoImage = any,
         img_2: ttk.PhotoImage = any,
-        tags=[],
+        tags: list =[],
         isOn: bool = False,
         command: Callable = None,
         Type: ButtonToggle = ButtonToggle.Static,

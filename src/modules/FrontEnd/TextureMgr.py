@@ -98,6 +98,17 @@ class TextureMgr:
                 height=int(823 / 10),
             )
 
+        # Benchmark Buttons
+        TextureMgr.CreateTexture(
+            image_path="benchmark_copy.png",
+            width=int(115),
+            height=int(43),
+        )
+        TextureMgr.CreateTexture(
+            image_path="benchmark_copy_active.png",
+            width=int(115 * 1.2),
+            height=int(43 * 1.2),
+        )
         TextureMgr.CreateTexture(
             image_path="benchmark_loading.png",
             width=int(115),
