@@ -3,8 +3,8 @@ from PIL import Image, ImageTk, ImageFilter, ImageOps
 from idlelib.tooltip import Hovertip
 from tkinter import *
 from configuration.settings import *
+from run_config import __ROOT__
 import ttkbootstrap as ttk
-import sys
 import string
 import random
 
@@ -738,20 +738,15 @@ class Canvas_Create:
 
     @classmethod
     def get_UI_path(cls, file_name: str, folder_name: str = "GUI"):
-        if getattr(sys, "frozen", False):
-            base_path = sys._MEIPASS
-            path = os.path.join(base_path, folder_name, file_name)
-            if not os.path.exists(path):
-                return file_name
-        else:
-            base_path = os.path.dirname(os.path.abspath(__file__))
-            base_path = os.path.dirname(base_path)
-            base_path = os.path.dirname(
-                base_path
-            )  # run twice, due to changes to file location
-            path = os.path.join(base_path, folder_name, file_name)
-            if not os.path.exists(path):
-                return file_name
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        base_path = os.path.dirname(base_path)
+        base_path = os.path.dirname(
+            base_path
+        )  # run twice, due to changes to file location
+        path = os.path.join(base_path, folder_name, file_name)
+        
+        if not os.path.exists(path):
+            path = os.path.join(__ROOT__, folder_name, file_name)
         return path
 
     @classmethod

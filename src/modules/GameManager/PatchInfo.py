@@ -1,5 +1,5 @@
 from modules.logger import log, superlog
-import json, os, sys
+import json, os
 
 
 class PatchInfo:
