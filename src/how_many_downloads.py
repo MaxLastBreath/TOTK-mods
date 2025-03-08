@@ -13,7 +13,6 @@ def write_print(args):
     file.write(args)
     print(args)
 
-
 # fmt: off
 if __name__ == "__main__":
     response = requests.get(url)
