@@ -1,24 +1,26 @@
-import subprocess, platform
+import subprocess
+import platform
 
 command = [
     "pip", 
     "install", 
     "requests", 
-    "patool",
+    "patool", 
     "screeninfo", 
     "packaging", 
-    "GPUtil",
+    "GPUtil", 
     "colorlog", 
-    "psutil",
+    "psutil", 
     "pyperclip", 
-    "pyinstaller",
-    "nuitka",
-    "numpy",
-    "zstandard",
+    "pyinstaller", 
+    "nuitka", 
+    "numpy", 
+    "zstandard", 
     "https://github.com/MaxLastBreath/ttkbootstrapFIX/zipball/master"
 ]
 
 if platform.system() == "Windows":
-    command += "wmi"
+    command.append("wmi")
 
-subprocess.run(" ".join(command), shell=True)
+# Execute the pip install command
+subprocess.run(command)
