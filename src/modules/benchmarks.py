@@ -21,15 +21,15 @@ class Benchmark:
     _info_tag: str = "benchmark-info"
     _label_tag: str = "benchmark-label"
 
-    __info_none: str = "No Benchmark Detected"
-    __info_nosupport: str = "Benchmarks Not Supported"
+    __label_none: str = "No Benchmark Detected"
+    __label_nosupport: str = "Benchmarks Not Supported"
 
-    _benchmark_text :str = (f"Turn on Direct Keyboard.\n"
-                            f"Press G after loading in game.\n"
-                            f"Select your Benchmark in Advanced Settings.\n"
-                            f"Clicking this text copies your results.\n")
+    _info_text :str = (f"Turn on Direct Keyboard.\n"
+                        f"Press G after loading in game.\n"
+                        f"Select your Benchmark in Advanced Settings.\n"
+                        f"Clicking this text copies your results.\n")
     
-    _benchmark_none :str = (f"This game doesn't support\n"
+    _info_text_none :str = (f"This game doesn't support\n"
                             f"UltraCam Benchmark Features\n")
 
     @classmethod
@@ -60,15 +60,15 @@ class Benchmark:
     def __benchmarkInfo(cls, BenchmarkName = None):
         
         if cls.__support is False:
-            BenchmarkName = cls.__info_nosupport
-            cls._canvas.itemconfig(cls._label_tag, text=cls.__info_nosupport)
-            return cls._benchmark_none
+            BenchmarkName = cls.__label_nosupport
+            cls._canvas.itemconfig(cls._label_tag, text=cls.__label_nosupport)
+            return cls._info_text_none
 
         # set to None
         if BenchmarkName is None:
-            BenchmarkName = cls.__info_none
-            cls._canvas.itemconfig(cls._label_tag, text=cls.__info_none)
-            return cls._benchmark_text
+            BenchmarkName = cls.__label_none
+            cls._canvas.itemconfig(cls._label_tag, text=cls.__label_none)
+            return cls._info_text
         
         benchmark_list = list(cls._benchmarks)
 
@@ -270,6 +270,9 @@ class Benchmark:
         benchmark_result += Systeminfo
         benchmark_result += Settings
         benchmark_result += Result
+
+        if (cls.__version > 2):
+            benchmark_result += "\n\n**BETA BENCHMARK RESULT LIKELY TO BE LOWER**"
 
         log.info("Copied Benchmark Result")
             

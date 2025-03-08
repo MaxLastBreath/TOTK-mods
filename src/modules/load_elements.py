@@ -112,7 +112,7 @@ def load_UI_elements(manager, canvas: ttk.Canvas):
     Canvas_Create.create_label(
         master=manager._window,
         canvas=canvas,
-        text=Benchmark._benchmark_text,
+        text=Benchmark._info_text,
         description_name="Benchmarks",
         anchor="nw",
         command=lambda e: Benchmark.copy(),
