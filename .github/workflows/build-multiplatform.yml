@@ -31,12 +31,6 @@ jobs:
         - name: MacOS Silicon
           os: macos-latest
           artifactsPath: ./src/dist/*.zip
-        - name: Windows_nuitka
-          os: windows-latest
-          artifactsPath: ./src/dist/*.zip
-        - name: Linux_dir
-          os: ubuntu-20.04
-          artifactsPath: ./src/dist/*.zip
         - name: Linux ARM64
           os: ubuntu-22.04-arm
           artifactsPath: ./src/dist/*.AppImage
@@ -72,6 +66,7 @@ jobs:
       with:
         name: artifacts-${{ matrix.name }}
         path: ./src/dist
+        retention-days: 7
     - name: Publish release
       if: ${{ github.event_name == 'workflow_dispatch' }}
       uses: ncipollo/release-action@v1
