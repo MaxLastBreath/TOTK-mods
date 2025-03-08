@@ -31,8 +31,8 @@ if __name__ == "__main__":
             "run.py",
         ]
 
-        os.rename("run.dist", "dist")
         subprocess.run(command, shell=True)
+        os.rename("run.dist", "dist")
         create_zip(
             f"dist/",
             f"dist/{program_name.replace(' ', '_')}_{latest_version}_Windows.zip",
