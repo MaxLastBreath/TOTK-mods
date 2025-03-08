@@ -746,7 +746,12 @@ class Canvas_Create:
         path = os.path.join(base_path, folder_name, file_name)
         
         if not os.path.exists(path):
-            path = os.path.join(__ROOT__, folder_name, file_name)
+            path2 = os.path.join(base_path, file_name)
+            if os.path.exists(path2):
+                path = path2
+            else:
+                path = os.path.join(__ROOT__, folder_name, file_name)
+        
         return path
 
     @classmethod
