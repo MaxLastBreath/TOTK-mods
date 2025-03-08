@@ -39,6 +39,8 @@ if __name__ == "__main__":
             "pyinstaller",
             "run.py",
             "--onedir",
+            "--clean",
+            "--log-level=WARN",
             f"--name={program_name} {latest_version}",
             "--add-data",
             "Localization;Localization",
