@@ -27,7 +27,7 @@ if __name__ == "__main__":
             "--include-data-dir=Localization=Localization",
             "--include-data-dir=PatchInfo=PatchInfo",
             "--enable-plugin=tk-inter",
-            "--icon=GUI/LOGO.ico"
+            "--windows-icon=GUI/LOGO.ico"
             "run.py",
         ]
 
