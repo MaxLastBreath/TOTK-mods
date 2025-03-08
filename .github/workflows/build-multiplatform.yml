@@ -55,7 +55,7 @@ jobs:
     - name: Build ${{ matrix.name }}
       run: |
         cd ./src/
-        python ./compile_onedir.py
+        python ./compile-nuitka.py
       if: ${{ endsWith(matrix.name, 'nuitka')}}
     - name: Build ${{ matrix.name }}
       run: |
