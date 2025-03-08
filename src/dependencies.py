@@ -1,4 +1,4 @@
-import subprocess
+import subprocess, platform
 
 command = [
     "pip", 
@@ -7,7 +7,6 @@ command = [
     "patool",
     "screeninfo", 
     "packaging", 
-    "wmi",
     "GPUtil",
     "colorlog", 
     "psutil",
@@ -19,4 +18,7 @@ command = [
     "https://github.com/MaxLastBreath/ttkbootstrapFIX/zipball/master"
 ]
 
-subprocess.run(command, shell=True)
+if platform.system() == "Windows":
+    command += "wmi"
+
+subprocess.run(" ".join(command), shell=True)
