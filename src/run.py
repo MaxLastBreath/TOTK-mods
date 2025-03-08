@@ -5,6 +5,7 @@ from modules.update import textver, check_for_updates, delete_old_exe
 from modules.scaling import sf, scale
 from ctypes import *
 
+
 if __name__ == "__main__":
     try:
         if platform.system() == "Windows":
