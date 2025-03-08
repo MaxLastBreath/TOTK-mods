@@ -15,7 +15,8 @@ command = [
     "pyinstaller", 
     "nuitka", 
     "numpy", 
-    "zstandard", 
+    "zstandard",
+    "imageio",
     "https://github.com/MaxLastBreath/ttkbootstrapFIX/zipball/master"
 ]
 

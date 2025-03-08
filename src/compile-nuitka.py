@@ -30,11 +30,15 @@ if __name__ == "__main__":
             "--include-data-dir=Localization=Localization",
             "--include-data-dir=PatchInfo=PatchInfo",
             "--enable-plugin=tk-inter",
-            "--windows-icon-from-ico=GUI/LOGO.ico",
+            "--windows-icon-from-ico=GUI/LOGO.png",
             "run.py",
         ]
 
         subprocess.run(command, shell=True)
+
+        if (os.path.exists("dist")):
+            os.remove("dist")
+
         os.rename("run.dist", "dist")
         create_zip(
             f"dist/",
