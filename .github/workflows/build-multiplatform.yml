@@ -20,7 +20,7 @@ jobs:
       matrix:
         include:
         - name: Windows
-          os: windows-latest
+          os: windows-2023
           artifactsPath: ./src/dist/*.exe
         - name: Linux
           os: ubuntu-20.04
