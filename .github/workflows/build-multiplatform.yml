@@ -37,20 +37,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python 3.13
+    - name: Set up Python 3.11.3
       uses: actions/setup-python@v3
       with:
-        python-version: "3.13.0"
+        python-version: "3.11.3"
     - name: Install dependencies
       run: |
         cd ./src/
         python -m pip install --upgrade pip
         python dependencies.py
-    - name: Build ${{ matrix.name }}
-      run: |
-        cd ./src/
-        python ./compile-nuitka.py
-      if: ${{ endsWith(matrix.name, 'nuitka')}}
     - name: Build ${{ matrix.name }}
       run: |
         cd ./src/
