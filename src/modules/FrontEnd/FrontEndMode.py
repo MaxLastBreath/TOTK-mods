@@ -8,7 +8,6 @@ import ttkbootstrap as ttk
 class NxType(Enum):
     LEGACY = "Legacy"
     RYUJINX = "Ryujinx"
-    # SWITCH = "Switch"
 
 class NxMode:
     __mode: NxType = NxType.LEGACY

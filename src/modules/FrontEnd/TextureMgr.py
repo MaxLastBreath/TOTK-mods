@@ -135,9 +135,19 @@ class TextureMgr:
             height=int(43 * 1.2),
         )
         TextureMgr.CreateTexture(
+            image_path="Switch_Button_active.png",
+            width=int(115 * 1.4),
+            height=int(43 * 1.4),
+        )
+        TextureMgr.CreateTexture(
             image_path="Switch_Button_2.png",
             width=int(115 * 1.2),
             height=int(43 * 1.2),
+        )
+        TextureMgr.CreateTexture(
+            image_path="Switch_Button_2_active.png",
+            width=int(115 * 1.4),
+            height=int(43 * 1.4),
         )
         TextureMgr.CreateTexture(
             image_path="Legacy_BG.png",

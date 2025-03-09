@@ -426,12 +426,7 @@ class FileManager:
                 # Update progress bar
                 ProgressBar.string.set("NX-Optimizer Patching...")
 
-                # Ensures that the patches are active and ensure that old versions of the mod folder is disabled.
                 filemgr.mod_whitelist.append(modName)
-                filemgr.mod_blacklist.append("Visual Improvements")
-                filemgr.mod_blacklist.append("Mod Manager Patch")
-                filemgr.mod_blacklist.append("UltraCam")
-
                 ini_file_path = filemgr.UltraCam_ConfigPath()
 
                 log.warning(f"Creating {modName} config File Path... {ini_file_path}\n")

@@ -547,10 +547,11 @@ class Manager:
 
         Manager.ModeType = Canvas_Create.image_Button(
             canvas=canvas,
-            row=20,
-            cul=620,
+            row=50,
+            cul=620 + 60,
+            anchor="c",
             img_1=TextureMgr.Request("Switch_Button.png"),
-            img_2=TextureMgr.Request("Switch_Button.png"),
+            img_2=TextureMgr.Request("Switch_Button_active.png"),
             command=lambda event: NxMode.switch(),
             Type=ButtonToggle.Static,
             tags=["Ryujinx"]
@@ -558,12 +559,13 @@ class Manager:
 
         Manager.ModeType = Canvas_Create.image_Button(
             canvas=canvas,
-            row=20,
-            cul=620,
+            row=50,
+            cul=620 + 60,
+            anchor="c",
             img_1=TextureMgr.Request("Switch_Button_2.png"),
-            img_2=TextureMgr.Request("Switch_Button_2.png"),
+            img_2=TextureMgr.Request("Switch_Button_2_active.png"),
             command=lambda event: NxMode.switch(),
-            Type=ButtonToggle.Static,
+            Type=ButtonToggle.StaticDynamic,
             tags=["Legacy"]
         )
 
