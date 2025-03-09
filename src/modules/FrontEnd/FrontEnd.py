@@ -396,7 +396,6 @@ class Manager:
 
         row += 40
         # Create a label for Legacy.exe selection
-        backupbutton = cul_sel
         command = lambda e: Manager.select_Legacy_exe()
 
         def browse():
@@ -418,7 +417,7 @@ class Manager:
 
         Offset = 170
 
-        btn = Canvas_Create.image_Button(
+        Canvas_Create.image_Button(
             canvas=canvas,
             row=row - 5,
             cul=cul_tex + Offset,
@@ -436,7 +435,7 @@ class Manager:
             superlog.info("Successfully Defaulted to Appdata!")
             FileManager.checkpath()
 
-        btn = Canvas_Create.image_Button(
+        Canvas_Create.image_Button(
             canvas=canvas,
             row=row - 5,
             cul=cul_tex + Offset + 92,
@@ -451,7 +450,7 @@ class Manager:
         backupbutton = cul_sel + 165
 
         # Create a Backup button
-        btn = Canvas_Create.image_Button(
+        Canvas_Create.image_Button(
             canvas=canvas,
             row=row - 5,
             cul=cul_tex + Offset + 92 * 2,
@@ -463,7 +462,7 @@ class Manager:
             tags=["Button"],
         )
 
-        btn = Canvas_Create.image_Button(
+        Canvas_Create.image_Button(
             canvas=canvas,
             row=row - 5,
             cul=cul_tex + Offset + 92 * 3,
