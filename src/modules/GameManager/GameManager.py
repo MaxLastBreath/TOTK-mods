@@ -16,19 +16,20 @@ class Game_Manager:
     @classmethod
     def LoadPatches(cls) -> None:
         current_directory = os.path.curdir
+        patch_directory_root = os.path.join(__ROOT__, cls._Directory)
         patch_directory = os.path.join(current_directory, cls._Directory)
 
-        if not os.path.exists(patch_directory):
-            patch_directory = os.path.join(__ROOT__, cls._Directory)
-            superlog.warning("No Patch Folder, using stored patches.")
+        if os.path.exists(patch_directory):
+            cls.CreatePatches(patch_directory)
 
         superlog.info("Looking for supported games...")
-        cls.CreatePatches(patch_directory)
+        cls.CreatePatches(patch_directory_root)
 
     @classmethod
     def CreatePatches(cls, patch_directory) -> None:
-
         "Loads patch info for each game detected in Patch Folder"
+
+        exists = False
 
         for folder in os.listdir(patch_directory):
             patchfolder = os.path.join(patch_directory, folder)
@@ -39,6 +40,15 @@ class Game_Manager:
                 if filename == cls._PatchFile:
                     with open(filepath, "r", encoding="utf-8") as file:
                         jsonfile = json.load(file)
+
+                    # check if a game already exists inside of our loop
+                    for item in cls.GamePatches:
+                        if item.Name == jsonfile['Name']:
+                            exists = True
+                            break
+
+                    if (exists) : continue
+
                     log.info(
                         f"{jsonfile['Name']} [{jsonfile['ID']}] : {jsonfile['Versions']}"
                     )
