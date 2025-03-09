@@ -6,9 +6,9 @@ import json, os
 
 class Game_Manager:
     GamePatches: list[PatchInfo] = []
-    DefaultID: str = "0100F2C0115B6000"
-    Directory: str = "PatchInfo"
-    PatchFile: str = "PatchInfo.json"
+    _DefaultID: str = "0100F2C0115B6000"
+    _Directory: str = "PatchInfo"
+    _PatchFile: str = "PatchInfo.json"
 
     def __init__(self):
         self.LoadPatches()
@@ -16,10 +16,10 @@ class Game_Manager:
     @classmethod
     def LoadPatches(cls) -> None:
         current_directory = os.path.curdir
-        patch_directory = os.path.join(current_directory, cls.Directory)
+        patch_directory = os.path.join(current_directory, cls._Directory)
 
         if not os.path.exists(patch_directory):
-            patch_directory = os.path.join(__ROOT__, cls.Directory)
+            patch_directory = os.path.join(__ROOT__, cls._Directory)
             superlog.warning("No Patch Folder, using stored patches.")
 
         superlog.info("Looking for supported games...")
@@ -36,7 +36,7 @@ class Game_Manager:
             for filename in os.listdir(patchfolder):
                 filepath = os.path.join(patchfolder, filename)
 
-                if filename == cls.PatchFile:
+                if filename == cls._PatchFile:
                     with open(filepath, "r", encoding="utf-8") as file:
                         jsonfile = json.load(file)
                     log.info(
@@ -57,7 +57,7 @@ class Game_Manager:
 
         # if we don't find anything return TOTK patch.
         for item in cls.GamePatches:
-            if item.ID.lower() == cls.DefaultID.lower():
+            if item.ID.lower() == cls._DefaultID.lower():
                 return item
 
     @classmethod

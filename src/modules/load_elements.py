@@ -1,7 +1,7 @@
 from modules.FrontEnd.CanvasMgr import Canvas_Create, ButtonToggle
 from modules.FrontEnd.TextureMgr import TextureMgr
 from configuration.settings import *
-from modules.benchmarks import Benchmark
+from modules.GameManager.Benchmarks import Benchmark
 import ttkbootstrap as ttk
 
 def load_UI_elements(manager, canvas: ttk.Canvas):

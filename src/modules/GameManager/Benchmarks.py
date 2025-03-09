@@ -18,11 +18,11 @@ class Benchmark:
     __support = None
     __path = None
 
-    _info_tag: str = "benchmark-info"
-    _label_tag: str = "benchmark-label"
-
     __label_none: str = "No Benchmark Detected"
     __label_nosupport: str = "Benchmarks Not Supported"
+
+    _info_tag: str = "benchmark-info"
+    _label_tag: str = "benchmark-label"
 
     _info_text :str = (f"Turn on Direct Keyboard.\n"
                         f"Press G after loading in game.\n"
@@ -31,6 +31,10 @@ class Benchmark:
     
     _info_text_none :str = (f"This game doesn't support\n"
                             f"UltraCam Benchmark Features\n")
+    
+    @classmethod
+    def __str__(cls):
+        return cls._selected_benchmark
 
     @classmethod
     def Initialize(cls, manager, filemanager):
@@ -271,7 +275,7 @@ class Benchmark:
         benchmark_result += Settings
         benchmark_result += Result
 
-        if (cls.__version > 2):
+        if (cls.__version > 1):
             benchmark_result += "\n\n**BETA BENCHMARK RESULT LIKELY TO BE LOWER**"
 
         log.info("Copied Benchmark Result")

@@ -104,8 +104,10 @@ class Manager:
         # Load_ImagePath(Manager)
         Manager.Create_Canvases()
 
-        # Load Switch Mode.
-        NxMode.Initialize(Manager.all_canvas)
+        # Load NX-Mode, CheckPaths and Print User OS.
+        NxMode.Initialize(Manager.all_canvas, FileManager)
+        FileManager.checkpath()
+        FileManager.DetectOS()
 
         # Load Benchmark at the very end
         Benchmark.Initialize(Manager, FileManager)
@@ -151,7 +153,7 @@ class Manager:
 
                 Cheats.loadCheats()  # load the new cheats.
                 Cheats.LoadCheatsConfig()
-                FileManager.checkpath(NxMode.get())
+                FileManager.checkpath()
                 Benchmark.ReloadBenchmarkInfo()
 
     def ChangeName(Manager):
@@ -351,10 +353,6 @@ class Manager:
 
         Manager.CreatePresets()
 
-        # Run Scripts for checking OS and finding location
-        FileManager.checkpath(NxMode.get())
-        FileManager._DetectOS(NxMode.get())
-
         # FOR DEBUGGING PURPOSES
         def onCanvasClick(event):
             print(f"CRODS = X={event.x} + Y={event.y} + {event.widget}")
@@ -434,7 +432,7 @@ class Manager:
 
         # Reset to Appdata
         def appdata():
-            FileManager.checkpath(NxMode.get())
+            FileManager.checkpath()
             superlog.info("Successfully Defaulted to Appdata!")
             save_user_choices(Manager, Manager.config, "appdata", None)
 
@@ -619,9 +617,7 @@ class Manager:
             )
 
             executable_name = Legacy_path
-            if executable_name.endswith("Ryujinx.exe") or executable_name.endswith(
-                "Ava.exe"
-            ):
+            if executable_name.endswith("Ryujinx.exe") or executable_name.endswith("Ava.exe"):
                 NxMode.set("Ryujinx")
             else:
                 NxMode.set("Legacy")
@@ -635,13 +631,13 @@ class Manager:
                     superlog.info(
                         f"Successfully selected {NxMode.get()}.exe! And a portable folder was found at {home_directory}!"
                     )
-                    FileManager.checkpath(NxMode.get())
+                    FileManager.checkpath()
                     return Legacy_path
                 else:
                     superlog.info(
                         f"Portable folder for {NxMode.get()} not found defaulting to appdata directory!"
                     )
-                    FileManager.checkpath(NxMode.get())
+                    FileManager.checkpath()
                     return Legacy_path
             else:
                 return None

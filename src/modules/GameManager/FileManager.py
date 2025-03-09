@@ -17,7 +17,7 @@ class FileManager:
 
     _window: ttk.Window = None
     _manager: any = None
-    _emu_blacklist = ["citra-emu", "lime3ds-emu"]
+    _emu_blacklist = ["citra-emu", "lime3ds-emu", "steam"]
 
     home_directory = os.path.expanduser("~")
     os_platform = platform.system()
@@ -65,15 +65,15 @@ class FileManager:
     
     @classmethod
     # fmt: off
-    def __load_Legacy_path(filemgr, config_file: str):
+    def read_configpath(filemgr):
         if NxMode.isLegacy():
             config = configparser.ConfigParser()
-            config.read(config_file, encoding="utf-8")
+            config.read(CONFIG_FILE_LOCAL_OPTIMIZER, encoding="utf-8")
             Legacy_path = config.get('Paths', 'Legacypath', fallback="Appdata")
             return Legacy_path
         if NxMode.isRyujinx():
             config = configparser.ConfigParser()
-            config.read(config_file, encoding="utf-8")
+            config.read(CONFIG_FILE_LOCAL_OPTIMIZER, encoding="utf-8")
             ryujinx_path = config.get('Paths', 'ryujinxpath', fallback="Appdata")
             return ryujinx_path
 
@@ -128,7 +128,7 @@ class FileManager:
     # fmt: off
     def __PopulateRyujinx(filemgr):
         patchinfo = filemgr._manager._patchInfo
-        portablefolder = os.path.normpath(os.path.join(os.path.dirname(filemgr.__load_Legacy_path(localconfig)), "portable/"))
+        portablefolder = os.path.normpath(os.path.join(os.path.dirname(filemgr.read_configpath()), "portable/"))
 
         base_directory = filemgr.home_directory
         if (filemgr.os_platform == "Windows"):
@@ -154,7 +154,7 @@ class FileManager:
     @classmethod
     # fmt: off
     def __PopulateLegacy(filemgr):
-        portablefolder = os.path.normpath(os.path.join(os.path.dirname(filemgr.__load_Legacy_path(localconfig)), "user/"))
+        portablefolder = os.path.normpath(os.path.join(os.path.dirname(filemgr.read_configpath()), "user/"))
 
         base_directory = filemgr.home_directory
         patchinfo = filemgr._manager._patchInfo
@@ -209,14 +209,14 @@ class FileManager:
         log.info(f"Copying Mod Folder. {source} to {destination}")
 
     @classmethod
-    def _DetectOS(filemgr, mode: str):
+    def DetectOS(filemgr):
         """Detects the current OS... Used only for Debugging."""
 
         if filemgr.os_platform == "Linux":
             superlog.info("Detected a Linux based SYSTEM!")
         elif filemgr.os_platform == "Windows":
             superlog.info("Detected a Windows based SYSTEM!")
-            if mode == "Legacy":
+            if NxMode.isLegacy():
                 if os.path.exists(filemgr._emuconfig):
                     log.info("a qt-config.ini file found!")
                 else:
@@ -229,14 +229,14 @@ class FileManager:
 
     @classmethod
     # fmt: off
-    def checkpath(filemgr, mode:str):
+    def checkpath(filemgr):
 
         '''The Primary Logic the TOTK Optimizer uses to find each emulator.'''
 
         # Populate Paths for Emulators
-        if mode == "Legacy":
+        if NxMode.isLegacy():
             filemgr.__PopulateLegacy()
-        if mode == "Ryujinx":
+        if NxMode.isRyujinx():
             filemgr.__PopulateRyujinx()
 
         try: # Ensure the path exists.
@@ -246,7 +246,7 @@ class FileManager:
             os.makedirs(filemgr.contentID, exist_ok=True)
         except PermissionError as e:
             log.warrning(f"Unable to create directories, please run {NxMode.get()}, {e}")
-            filemgr.warning(f"Unable to create directories, please run {NxMode.get()}, {e}")
+            filemgr._manager.warning(f"Unable to create directories, please run {NxMode.get()}, {e}")
 
     @classmethod
     def backup(filemgr):
@@ -352,8 +352,8 @@ class FileManager:
 
         superlog.info(f"STARTING {mode}")
 
-        filemgr.add_list = []
-        filemgr.remove_list = []
+        filemgr.mod_blacklist = []
+        filemgr.mod_whitelist = []
 
         def timer(value):
             ProgressBar.progress_bar["value"] = value
@@ -427,10 +427,10 @@ class FileManager:
                 ProgressBar.string.set("NX-Optimizer Patching...")
 
                 # Ensures that the patches are active and ensure that old versions of the mod folder is disabled.
-                filemgr.remove_list.append(modName)
-                filemgr.add_list.append("Visual Improvements")
-                filemgr.add_list.append("Mod Manager Patch")
-                filemgr.add_list.append("UltraCam")
+                filemgr.mod_whitelist.append(modName)
+                filemgr.mod_blacklist.append("Visual Improvements")
+                filemgr.mod_blacklist.append("Mod Manager Patch")
+                filemgr.mod_blacklist.append("UltraCam")
 
                 ini_file_path = filemgr.UltraCam_ConfigPath()
 
@@ -493,8 +493,8 @@ class FileManager:
             ProgressBar.string.set(f"Disabling old mods...")
             log.info("Disabling Outdated Mods...")
             # Convert the lists to sets, removing any duplicates.
-            filemgr.add_list = set(filemgr.add_list)
-            filemgr.remove_list = set(filemgr.remove_list)
+            filemgr.mod_blacklist = set(filemgr.mod_blacklist)
+            filemgr.mod_whitelist = set(filemgr.mod_whitelist)
             # Run the Main code to Enable and Disable necessary Mods, the remove ensures the mods are enabled.
             if NxMode.isLegacy():
                 
@@ -502,7 +502,7 @@ class FileManager:
                 emuconfig = configparser.ConfigParser()
                 emuconfig.read(filemgr._emuconfig, encoding="utf-8")
 
-                for item in filemgr.add_list:
+                for item in filemgr.mod_blacklist:
                     modify_disabled_key(
                         filemgr._emuconfig,
                         filemgr.contentID,
@@ -512,7 +512,7 @@ class FileManager:
                         action="add",
                     )
 
-                for item in filemgr.remove_list:
+                for item in filemgr.mod_whitelist:
                     modify_disabled_key(
                         filemgr._emuconfig,
                         filemgr.contentID,
@@ -523,10 +523,7 @@ class FileManager:
                     )
 
             # fmt: off
-            if (NxMode.isRyujinx() or platform.system() == "Linux" and not filemgr.is_extracting):
-                for item in filemgr.add_list:
-                    log.error(f"NOT IMPLEMENTED RYUJINX LOOP {item}")
-            filemgr.add_list.clear()
-            filemgr.remove_list.clear()
+            if (NxMode.isRyujinx() and not filemgr.is_extracting):
+                enable_ryujinx_mods(filemgr.mod_blacklist, filemgr.mod_whitelist)
 
         ProgressBar.Run(filemgr._window, run_tasks)

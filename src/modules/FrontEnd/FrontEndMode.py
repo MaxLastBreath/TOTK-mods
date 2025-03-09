@@ -56,10 +56,13 @@ class NxMode:
             canvas.itemconfigure(cls.get(), state="normal")
 
         log.info(f"NX-Mode Changed to {new_value} from {old_value}")
+        cls._filemgr.checkpath()
 
     @classmethod
-    def Initialize(cls, Canvases: list):
+    def Initialize(cls, Canvases: list, filemgr):
+        from modules.GameManager.FileManager import FileManager
         cls.__Canvases = Canvases
+        cls._filemgr: FileManager = filemgr
 
         if platform.system() == "Darwin":
             cls.set(NxType.RYUJINX)

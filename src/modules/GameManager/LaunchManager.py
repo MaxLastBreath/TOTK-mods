@@ -1,7 +1,7 @@
 from modules.FrontEnd.FrontEndMode import NxMode
 from configuration.settings import *
+from modules.config import *
 from tkinter import filedialog
-import ttkbootstrap as ttk
 import os, subprocess
 
 
@@ -32,6 +32,7 @@ class LaunchManager:
                 ("All Files", "*.*"),
             ],
         )
+
         if game_path:
             config = configparser.ConfigParser()
             config.read(localconfig, encoding="utf-8")
@@ -67,12 +68,11 @@ class LaunchManager:
         superlog.info(f"Launching game {Game_PATH}")
 
         if NxMode.isLegacy():
-            mode = "yuzu.exe"
             if cls.is_process_running("yuzu.exe"):
                 log.warning("Legacy is already running in the background.")
                 return
 
-            Legacypath = filemgr.__load_Legacy_path(localconfig)
+            Legacypath = filemgr.read_configpath()
             if os.path.exists(Legacypath):
                 Legacy_PATH = Legacypath
             else:
@@ -81,20 +81,21 @@ class LaunchManager:
             cmd = [f"{Legacy_PATH}", "-u", "1", "-f", "-g", f"{Game_PATH}"]
 
         if NxMode.isRyujinx():
-            mode = "Ryujinx.exe"
-
             if cls.is_process_running("Ryujinx.exe"):
                 log.warning("Ryujinx is already running in the background.")
                 return
 
-            ryujinx_path = filemgr.__load_Legacy_path(localconfig)
+            ryujinx_path = filemgr.read_configpath()
             if os.path.exists(ryujinx_path):
                 Ryujinx_PATH = ryujinx_path
             else:
                 Ryujinx_PATH = manager.select_Legacy_exe()
                 if Ryujinx_PATH is None:
                     log.warning("Ryujinx wasn't found.")
-
-            cmd = [f"{Ryujinx_PATH}", "-f", f"{Game_PATH}"]
-
-        process = subprocess.Popen(cmd, shell=False)
+            
+            if (read_ryujinx_version(FileManager._emuconfig) >= 60):
+                cmd = [f'{Ryujinx_PATH}', "--no-gui", "--fullscreen", f'{Game_PATH}']
+            else:
+                cmd = [f"{Ryujinx_PATH}", "-f", f"{Game_PATH}"]
+        log.info(f"Launching : {cmd}")
+        subprocess.Popen(cmd, shell=True)

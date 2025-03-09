@@ -251,14 +251,12 @@ def write_ryubing_config(config_file: str, game_config: str, setting, selection)
 def write_ryujinx_config(filemgr, config_file, setting, selection):
     from modules.GameManager.FileManager import FileManager
 
-    filemgr: FileManager = filemgr
-
     if not os.path.exists(config_file):
         log.error(f"RYUJINX GLOBAL CONFIG FILE DOESN'T EXIST! {config_file}")
         return
     
     if (read_ryujinx_version(config_file) >= 68):
-        write_ryubing_config(config_file, filemgr._gameconfig, setting, selection)
+        write_ryubing_config(config_file, FileManager._gameconfig, setting, selection)
         return
     
     with open(config_file, "r", encoding="utf-8") as file:
@@ -267,6 +265,34 @@ def write_ryujinx_config(filemgr, config_file, setting, selection):
 
     os.remove(config_file)
     with open(config_file, 'w', encoding="utf-8") as file:
+        json.dump(data, file, indent=2)
+
+def enable_ryujinx_mods(blacklist: list, whitelist: list):
+    from modules.GameManager.FileManager import FileManager
+
+    mod_config = os.path.join(os.path.dirname(FileManager._gameconfig), "mods.json")
+
+    if (not os.path.exists(mod_config)):
+        log.warning("No mod config for game.")
+        return
+
+    with open(mod_config, "r", encoding="utf-8") as file:
+        data = json.load(file)
+
+    for item in blacklist:
+        for mod in data["mods"]:
+            if mod["name"] == item:
+                mod["enabled"] = False
+                log.warning(f"Disabling Mod {item}")
+
+    for item in whitelist:
+        for mod in data["mods"]:
+            if mod["name"] == item:
+                mod["enabled"] = True
+                log.warning(f"Enabling Mod {item}")
+
+    os.remove(mod_config)
+    with open(mod_config, 'w', encoding="utf-8") as file:
         json.dump(data, file, indent=2)
 
 def load_config_game(Manager, config_file):

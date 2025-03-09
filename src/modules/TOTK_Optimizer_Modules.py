@@ -4,7 +4,6 @@ from modules.logger import *
 from modules.config import *
 from modules.patches import *
 from modules.load_elements import *
-from modules.benchmarks import *
 
 from tkinter import filedialog, Toplevel
 from ttkbootstrap.constants import *
