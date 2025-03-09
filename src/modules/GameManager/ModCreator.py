@@ -1,3 +1,4 @@
+from modules.FrontEnd.FrontEndMode import NxMode
 from modules.logger import log, superlog
 from modules.config import *
 import re, os
@@ -213,7 +214,7 @@ class ModCreator:
         Resolution = ResolutionVector(ResInfo[0], ResInfo[1])
         Resolution.addShadows(shadows)
 
-        if manager.mode == "Legacy":
+        if NxMode.isLegacy():
             # for emulator scale
             new_scale = 1
             if (manager._patchInfo.ResolutionScale):
@@ -222,7 +223,7 @@ class ModCreator:
             write_Legacy_config(manager, filemgr._gameconfig, manager._patchInfo.ID, "Renderer", "resolution_setup", f"{new_scale}")  # fmt: skip
             cls.UCLegacyRamPatcher(manager, filemgr, Resolution.getRamLayout())
 
-        if manager.mode == "Ryujinx":
+        if NxMode.isRyujinx():
             new_scale = 1
             if (manager._patchInfo.ResolutionScale):
                 new_scale = int(manager._EmulatorScale.get())

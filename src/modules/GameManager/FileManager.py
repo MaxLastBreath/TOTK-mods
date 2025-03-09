@@ -1,18 +1,17 @@
 from __future__ import annotations
-import time
+from modules.FrontEnd.FrontEndMode import NxMode
 from modules.FrontEnd.ProgressBar import ProgressBar
 from modules.GameManager.LaunchManager import LaunchManager
 from modules.GameManager.ModCreator import ModCreator
 from modules.TOTK_Optimizer_Modules import *
 from configuration.settings import *
+from tkinter import messagebox
 from modules.config import *
 import ttkbootstrap as ttk
 import subprocess
 import shutil
-from tkinter import simpledialog
+import time
 
-import tkinter as tk
-from tkinter import messagebox
 
 class FileManager:
 
@@ -67,12 +66,12 @@ class FileManager:
     @classmethod
     # fmt: off
     def __load_Legacy_path(filemgr, config_file: str):
-        if filemgr._manager.mode == "Legacy":
+        if NxMode.isLegacy():
             config = configparser.ConfigParser()
             config.read(config_file, encoding="utf-8")
             Legacy_path = config.get('Paths', 'Legacypath', fallback="Appdata")
             return Legacy_path
-        if filemgr._manager.mode == "Ryujinx":
+        if NxMode.isRyujinx():
             config = configparser.ConfigParser()
             config.read(config_file, encoding="utf-8")
             ryujinx_path = config.get('Paths', 'ryujinxpath', fallback="Appdata")
@@ -246,14 +245,14 @@ class FileManager:
             os.makedirs(filemgr.load, exist_ok=True)
             os.makedirs(filemgr.contentID, exist_ok=True)
         except PermissionError as e:
-            log.warrning(f"Unable to create directories, please run {filemgr._manager.mode}, {e}")
-            filemgr.warning(f"Unable to create directories, please run {filemgr._manager.mode}, {e}")
+            log.warrning(f"Unable to create directories, please run {NxMode.get()}, {e}")
+            filemgr.warning(f"Unable to create directories, please run {NxMode.get()}, {e}")
 
     @classmethod
     def backup(filemgr):
         """Backup save files for a specific game, for Ryujinx it fetches all games."""
 
-        if filemgr._manager.mode == "Legacy":
+        if NxMode.isLegacy():
             testforuserdir = os.path.join(
                 filemgr.nand, "user", "save", "0000000000000000"
             )
@@ -271,7 +270,7 @@ class FileManager:
                 return
 
         # Create the 'backup' folder inside the mod manager directory if it doesn't exist
-        elif filemgr._manager.mode == "Ryujinx":
+        elif NxMode.isRyujinx():
             folder_to_backup = filemgr.nand
 
         local_dir = os.path.dirname(os.path.abspath(sys.executable))
@@ -317,9 +316,9 @@ class FileManager:
             "This could Improve performance.",
         )
         emu_dir = filemgr._emuglobal
-        if filemgr._manager.mode == "Legacy":
+        if NxMode.isLegacy():
             shaders = os.path.join(emu_dir, f"shader/{filemgr._manager._patchInfo.ID}")
-        if filemgr._manager.mode == "Ryujinx":
+        if NxMode.isRyujinx():
             shaders = os.path.join(
                 emu_dir, f"games/{filemgr._manager._patchInfo.ID}/cache/shader"
             )
@@ -470,13 +469,13 @@ class FileManager:
                 return
             
             is_Program_Opened = LaunchManager.is_process_running(
-                filemgr._manager.mode + ".exe"
+                NxMode.get() + ".exe"
             )
 
             message = (
-                f"{filemgr._manager.mode}.exe is Running, \n"
-                f"The Optimizer Requires {filemgr._manager.mode}.exe to be closed."
-                f"\nDo you wish to close {filemgr._manager.mode}.exe?"
+                f"{NxMode.get()}.exe is Running, \n"
+                f"The Optimizer Requires {NxMode.get()}.exe to be closed."
+                f"\nDo you wish to close {NxMode.get()}.exe?"
             )
             if is_Program_Opened is True:
                 response = messagebox.askyesno(
@@ -484,11 +483,11 @@ class FileManager:
                 )
                 if response is True:
                     subprocess.run(
-                        ["taskkill", "/F", "/IM", f"{filemgr._manager.mode}.exe"],
+                        ["taskkill", "/F", "/IM", f"{NxMode.get()}.exe"],
                         check=True,
                     )
             if is_Program_Opened is False:
-                log.info(f"{filemgr._manager.mode}.exe is closed, working as expected.")
+                log.info(f"{NxMode.get()}.exe is closed, working as expected.")
 
         def Disable_Mods():
             ProgressBar.string.set(f"Disabling old mods...")
@@ -497,7 +496,7 @@ class FileManager:
             filemgr.add_list = set(filemgr.add_list)
             filemgr.remove_list = set(filemgr.remove_list)
             # Run the Main code to Enable and Disable necessary Mods, the remove ensures the mods are enabled.
-            if filemgr._manager.mode == "Legacy":
+            if NxMode.isLegacy():
                 
                 # read config to pass into disabled keys h
                 emuconfig = configparser.ConfigParser()
@@ -524,7 +523,7 @@ class FileManager:
                     )
 
             # fmt: off
-            if (filemgr._manager.mode == "Ryujinx" or platform.system() == "Linux" and not filemgr.is_extracting):
+            if (NxMode.isRyujinx() or platform.system() == "Linux" and not filemgr.is_extracting):
                 for item in filemgr.add_list:
                     log.error(f"NOT IMPLEMENTED RYUJINX LOOP {item}")
             filemgr.add_list.clear()

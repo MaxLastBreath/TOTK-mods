@@ -9,6 +9,7 @@ from modules.GameManager.CheatManager import Cheats
 from modules.FrontEnd.TextureMgr import TextureMgr
 from modules.FrontEnd.Localization import Localization
 from modules.load_elements import create_tab_buttons, load_UI_elements
+from modules.FrontEnd.FrontEndMode import NxMode
 import threading, webbrowser, os, copy
 import ttkbootstrap as ttk
 
@@ -46,7 +47,6 @@ class Manager:
     LabelText: None
     warn_again: str = "yes"
 
-    mode = "Ryujinx"
     ModeType: ImageButton
 
     def __init__(Manager, window):
@@ -97,13 +97,6 @@ class Manager:
         Manager.UserChoices = {}
         Manager.setting = Setting(Manager)
 
-        # Read the Current Emulator Mode.
-        Manager.mode = config.get("Mode", "managermode", fallback="Legacy")
-
-        # Force to Ryujinx default
-        if platform.system() == "Darwin":
-            Manager.mode = "Ryujinx"
-
         # Local text variable
         Manager.cheat_version = ttk.StringVar(value="Version - 1.2.1")
 
@@ -111,11 +104,11 @@ class Manager:
         # Load_ImagePath(Manager)
         Manager.Create_Canvases()
 
+        # Load Switch Mode.
+        NxMode.Initialize(Manager.all_canvas)
+
         # Load Benchmark at the very end
         Benchmark.Initialize(Manager, FileManager)
-
-        log.warning(f"Emulator {Manager.mode}")
-        Manager.switchmode()
         Manager.ForceGameBG()
 
         # Window protocols
@@ -158,7 +151,7 @@ class Manager:
 
                 Cheats.loadCheats()  # load the new cheats.
                 Cheats.LoadCheatsConfig()
-                FileManager.checkpath(Manager.mode)
+                FileManager.checkpath(NxMode.get())
                 Benchmark.ReloadBenchmarkInfo()
 
     def ChangeName(Manager):
@@ -359,8 +352,8 @@ class Manager:
         Manager.CreatePresets()
 
         # Run Scripts for checking OS and finding location
-        FileManager.checkpath(Manager.mode)
-        FileManager._DetectOS(Manager.mode)
+        FileManager.checkpath(NxMode.get())
+        FileManager._DetectOS(NxMode.get())
 
         # FOR DEBUGGING PURPOSES
         def onCanvasClick(event):
@@ -441,7 +434,7 @@ class Manager:
 
         # Reset to Appdata
         def appdata():
-            FileManager.checkpath(Manager.mode)
+            FileManager.checkpath(NxMode.get())
             superlog.info("Successfully Defaulted to Appdata!")
             save_user_choices(Manager, Manager.config, "appdata", None)
 
@@ -559,9 +552,21 @@ class Manager:
             row=20,
             cul=620,
             img_1=TextureMgr.Request("Switch_Button.png"),
+            img_2=TextureMgr.Request("Switch_Button.png"),
+            command=lambda event: NxMode.switch(),
+            Type=ButtonToggle.Static,
+            tags=["Ryujinx"]
+        )
+
+        Manager.ModeType = Canvas_Create.image_Button(
+            canvas=canvas,
+            row=20,
+            cul=620,
+            img_1=TextureMgr.Request("Switch_Button_2.png"),
             img_2=TextureMgr.Request("Switch_Button_2.png"),
-            command=lambda event: Manager.switchmode(),
-            Type=ButtonToggle.Dynamic,
+            command=lambda event: NxMode.switch(),
+            Type=ButtonToggle.Static,
+            tags=["Legacy"]
         )
 
         # reverse scale.
@@ -617,11 +622,9 @@ class Manager:
             if executable_name.endswith("Ryujinx.exe") or executable_name.endswith(
                 "Ava.exe"
             ):
-                if Manager.mode == "Legacy":
-                    Manager.switchmode(True)
+                NxMode.set("Ryujinx")
             else:
-                if Manager.mode == "Ryujinx":
-                    Manager.switchmode(True)
+                NxMode.set("Legacy")
 
             if Legacy_path:
                 # Save the selected Legacy.exe path to a configuration file
@@ -630,22 +633,22 @@ class Manager:
                 fullpath = os.path.dirname(Legacy_path)
                 if any(item in os.listdir(fullpath) for item in ["user", "portable"]):
                     superlog.info(
-                        f"Successfully selected {Manager.mode}.exe! And a portable folder was found at {home_directory}!"
+                        f"Successfully selected {NxMode.get()}.exe! And a portable folder was found at {home_directory}!"
                     )
-                    FileManager.checkpath(Manager.mode)
+                    FileManager.checkpath(NxMode.get())
                     return Legacy_path
                 else:
                     superlog.info(
-                        f"Portable folder for {Manager.mode} not found defaulting to appdata directory!"
+                        f"Portable folder for {NxMode.get()} not found defaulting to appdata directory!"
                     )
-                    FileManager.checkpath(Manager.mode)
+                    FileManager.checkpath(NxMode.get())
                     return Legacy_path
             else:
                 return None
 
         if Manager.os_platform == "Linux":
             Legacy_path = filedialog.askopenfilename(
-                title=f"Please select {Manager.mode}.AppImage",
+                title=f"Please select {NxMode.get()}.AppImage",
                 filetypes=[
                     ("Select AppImages or Executable: ", "*.*"),
                     ("All Files", "*.*"),
@@ -657,11 +660,7 @@ class Manager:
             if executable_name.startswith("Ryujinx") or executable_name.startswith(
                 "Ryujinx.ava"
             ):
-                if Manager.mode == "Legacy":
-                    Manager.switchmode(True)
-            else:
-                if Manager.mode == "Ryujinx":
-                    Manager.switchmode(True)
+                NxMode.set("Ryujinx")
 
             save_user_choices(Manager, Manager.config, Legacy_path)
         return Legacy_path
@@ -709,51 +708,6 @@ class Manager:
         elif web == "Discord":
             url = "https://www.nxoptimizer.com/discord/"
         webbrowser.open(url)
-
-    def ShowRyujinx(Manager):
-        Manager.mode = "Ryujinx"
-        for canvas in Manager.all_canvas:
-            canvas.itemconfig("Legacy", state="hidden")
-            canvas.itemconfig("Ryujinx", state="normal")
-            canvas.itemconfig(
-                "SWITCHOVERLAY", image=TextureMgr.Request("Ryujinx_BG.png")
-            )
-
-        log.warning("Show Ryujinx")
-
-    def ShowLegacy(Manager):
-        Manager.mode = "Legacy"
-        for canvas in Manager.all_canvas:
-            canvas.itemconfig("Legacy", state="normal")
-            canvas.itemconfig("Ryujinx", state="hidden")
-            canvas.itemconfig(
-                "SWITCHOVERLAY", image=TextureMgr.Request("Legacy_BG.png")
-            )
-        log.warning("Show Legacy")
-
-    def switchmode(Manager, Force=False):
-        if Force is True:
-            if Manager.mode == "Ryujinx":
-                Manager.ModeType.set(True)
-                Manager.ShowLegacy()
-            else:
-                Manager.ModeType.set(False)
-                Manager.ShowRyujinx()
-
-            superlog.info(f"Force Switched to {Manager.mode}")
-            FileManager.checkpath(Manager.mode)
-            Benchmark.ReloadBenchmarkInfo()
-            return
-
-        if Manager.ModeType.get() is False:
-            Manager.ShowRyujinx()
-
-        elif Manager.os_platform != "Darwin":
-            Manager.ShowLegacy()
-
-        superlog.info(f"Switched to {Manager.mode}")
-        FileManager.checkpath(Manager.mode)
-        Benchmark.ReloadBenchmarkInfo()
 
     def extract_patches(Manager):
         FileManager.is_extracting = True

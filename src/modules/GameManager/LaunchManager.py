@@ -1,3 +1,4 @@
+from modules.FrontEnd.FrontEndMode import NxMode
 from configuration.settings import *
 from tkinter import filedialog
 import ttkbootstrap as ttk
@@ -65,7 +66,7 @@ class LaunchManager:
 
         superlog.info(f"Launching game {Game_PATH}")
 
-        if manager.mode == "Legacy":
+        if NxMode.isLegacy():
             mode = "yuzu.exe"
             if cls.is_process_running("yuzu.exe"):
                 log.warning("Legacy is already running in the background.")
@@ -79,7 +80,7 @@ class LaunchManager:
 
             cmd = [f"{Legacy_PATH}", "-u", "1", "-f", "-g", f"{Game_PATH}"]
 
-        if manager.mode == "Ryujinx":
+        if NxMode.isRyujinx():
             mode = "Ryujinx.exe"
 
             if cls.is_process_running("Ryujinx.exe"):

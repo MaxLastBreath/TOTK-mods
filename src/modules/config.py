@@ -2,6 +2,8 @@ import shutil
 from configuration.settings import *
 import os, json
 
+from modules.FrontEnd.FrontEndMode import NxMode
+
 # fmt: off
 def apply_preset(Manager, preset_options):
     # Manager.fetch_var(Manager.ui_var, preset_options, "UI")
@@ -149,15 +151,15 @@ def save_user_choices(Manager, config_file, Legacy_path=None):
     # Save the Legacy.exe path if provided
     if not config.has_section("Paths"):
         config["Paths"] = {}
-    if Manager.mode == "Legacy":
+    if NxMode.isLegacy():
         if Legacy_path:
             config['Paths']['LegacyPath'] = Legacy_path
-    if Manager.mode == "Ryujinx":
+    if NxMode.isRyujinx():
         if Legacy_path:
             config['Paths']['RyujinxPath'] = Legacy_path
 
     # Save the manager selected mode I.E Ryujinx/Legacy
-    config["Mode"] = {"ManagerMode": Manager.mode}
+    config["Mode"] = {"ManagerMode": NxMode.get()}
 
     log.info("User choices saved in Memory,"
              "Attempting to write into file.")
