@@ -492,9 +492,11 @@ class FileManager:
         def Disable_Mods():
             ProgressBar.string.set(f"Disabling old mods...")
             log.info("Disabling Outdated Mods...")
+
             # Convert the lists to sets, removing any duplicates.
             filemgr.mod_blacklist = set(filemgr.mod_blacklist)
             filemgr.mod_whitelist = set(filemgr.mod_whitelist)
+            
             # Run the Main code to Enable and Disable necessary Mods, the remove ensures the mods are enabled.
             if NxMode.isLegacy():
                 
@@ -509,7 +511,7 @@ class FileManager:
                         emuconfig,
                         filemgr._manager._patchInfo.IDtoNum(),
                         item,
-                        action="add",
+                        action="add"
                     )
 
                 for item in filemgr.mod_whitelist:
@@ -519,7 +521,7 @@ class FileManager:
                         emuconfig,
                         filemgr._manager._patchInfo.IDtoNum(),
                         item,
-                        action="remove",
+                        action="remove"
                     )
 
             # fmt: off
