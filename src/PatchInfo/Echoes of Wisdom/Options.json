@@ -1,0 +1,242 @@
+{
+    "Keys": {
+        "freecam": {
+            "Name": "FreeCam EOW",
+            "Class": "bool",
+            "Section": "main",
+            "Auto": false,
+            "Default": true,
+            "Description": "UltraCam Beyond Freecam! NEWLY IMPROVED FREECAM from 2.0\nTurning this off will, not let you trigger freecam with controller.\n",
+            "Config_Class": [
+                "UltraCam",
+                "TriggerWithController"
+            ]
+        },
+        "fps": {
+            "Name": "FPS",
+            "Class": "scale",
+            "Section": "main",
+            "Auto": false,
+            "Values": [
+                20,
+                240
+            ],
+            "Type": "s32",
+            "Default": 60,
+            "Increments": 5,
+            "Description": "UltraCam Beyond New FPS setting.\nLet's you set to any FPS\nWARNING: SET TO 120 FPS FOR UNCAPPED.\nRecommended 30, 60 FPS caps for best FRAMETIMES.",
+            "Config_Class": [
+                "Resolution",
+                "MaxFramerate"
+            ]
+        },
+        "lod": {
+            "Name": "Level Of Detail",
+            "Class": "scale",
+            "Section": "main",
+            "Auto": false,
+            "Values": [
+                -1,
+                15
+            ],
+            "Type": "s32",
+            "Default": 0,
+            "Increments": 1,
+            "Description": "UltraCam EOW, Level of Detail setting, -1 is the highest and 0 is default, 15 is LOW Quality.",
+            "Config_Class": [
+                "Resolution",
+                "LevelOfDetail"
+            ]
+        },
+        "dof": {
+            "Name": "Depth of Field",
+            "Class": "scale",
+            "Section": "main",
+            "Auto": false,
+            "Values": [
+                0.0,
+                2
+            ],
+            "Type": "f32",
+            "Default": 1.0,
+            "Increments": 0.1,
+            "Description": "Depth of Field, default is 1.0, to turn off 0.0 and 0.5 to reduce etc.",
+            "Config_Class": [
+                "Features",
+                "DepthOfField"
+            ]
+        },
+        "fov": {
+            "Name": "FOV",
+            "Class": "scale",
+            "Section": "main",
+            "Auto": false,
+            "Values": [
+                20,
+                120
+            ],
+            "Type": "s32",
+            "Default": 28,
+            "Increments": 3,
+            "Description": "UltraCam Beyond NEW FOV setting, allows you to set FOV to anything\nThis now also scales up everything related to FOV.",
+            "Config_Class": [
+                "Features",
+                "Fov"
+            ]
+        },
+        "resolution": {
+            "Name": "Resolution",
+            "Class": "dropdown",
+            "Section": "main",
+            "Auto": false,
+            "Name_Values": [
+                "720p",
+                "900p",
+                "1080p",
+                "1152p",
+                "1296p"
+            ],
+            "Values": [
+                "1280x720",
+                "1600x900",
+                "1920x1080",
+                "2048x1152",
+                "2304x1296"
+            ],
+            "Default": 2,
+            "Description": "UltraCam EOW Resolution Scaling uses internal resolution\n",
+            "Config_Class": [
+                "Resolution",
+                "Width",
+                "Height"
+            ]
+        },
+        "aspect": {
+            "Name": "Aspect Ratio",
+            "Class": "dropdown",
+            "Section": "main",
+            "Auto": false,
+            "Name_Values": [
+                "16x9",
+                "16x10",
+                "20x9",
+                "21x9",
+                "21.5x9",
+                "32x9",
+                "4x4"
+            ],
+            "Values": [
+                [16, 9],
+                [16, 10],
+                [20, 9],
+                [21, 9],
+                [21.5, 9],
+                [32, 9],
+                [9, 9]
+            ],
+            "Default": 0,
+            "Description": "UltraCam EOW Aspect Ratios\n",
+            "Config_Class": [
+                "Aspect",
+                "Width",
+                "Height"
+            ]
+        },
+        "hide ui": {
+            "Name": "Auto Hide UI in FreeCam",
+            "Class": "bool",
+            "Section": "extra",
+            "Auto": false,
+            "Default": true,
+            "Description": "UltraCam Beyond AUTO Hide UI, this will automatically hide the UI in freecam mode.",
+            "Config_Class": [
+                "UltraCam",
+                "AutoHideUI"
+            ]
+        },
+        "freecam sens": {
+            "Name": "Freecam Sensitivity",
+            "Class": "scale",
+            "Section": "extra",
+            "Auto": false,
+            "Values": [
+                10,
+                100
+            ],
+            "Type": "s32",
+            "Default": 30,
+            "Increments": 5,
+            "Description": "Increase Freecam Sensitivity.",
+            "Config_Class": [
+                "UltraCam",
+                "CameraSpeed"
+            ]
+        },
+        "freecam speed": {
+            "Name": "Freecam Speed",
+            "Class": "scale",
+            "Section": "extra",
+            "Auto": false,
+            "Values": [
+                1,
+                20
+            ],
+            "Type": "s32",
+            "Default": 5,
+            "Increments": 1,
+            "Description": "Increase Camera Movement Speed.",
+            "Config_Class": [
+                "UltraCam",
+                "Speed"
+            ]
+        },
+        "ani smoothing": {
+            "Name": "Sequence Smoothing",
+            "Class": "scale",
+            "Section": "extra",
+            "Auto": true,
+            "Values": [
+                0.1,
+                0.5
+            ],
+            "Type": "f32",
+            "Default": 0.25,
+            "Increments": 0.05,
+            "Description": "Animation Smoothing set to auto for now.",
+            "Config_Class": [
+                "UltraCam",
+                "AnimationSmoothing"
+            ]
+        },
+        "animationfadeout": {
+            "Name": "Last Keyframe Fadeout",
+            "Class": "bool",
+            "Section": "extra",
+            "Auto": false,
+            "Default": false,
+            "Description": "Improves the smoothness of the last Keyframe for UltraCam sequencer.",
+            "Config_Class": [
+                "UltraCam",
+                "AnimationFadeout"
+            ]
+        },
+        "UCdof": {
+            "Name": "Depth of Field",
+            "Class": "scale",
+            "Section": "main",
+            "Auto": false,
+            "Values": [
+                0.0,
+                2
+            ],
+            "Type": "f32",
+            "Default": 0.0,
+            "Increments": 0.1,
+            "Description": "Depth of Field, default is 1.0, to turn off 0.0 and 0.5 to reduce etc While in FreeCam.",
+            "Config_Class": [
+                "UltraCam",
+                "DepthOfField"
+            ]
+        }
+    }
+}

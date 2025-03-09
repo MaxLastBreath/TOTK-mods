@@ -1,15 +1,13 @@
 from modules.colors import Color
 from modules.scaling import *
-from modules.json import *
-import time
 from modules.download import *
-import logging
-from tkinter import messagebox
+from modules.logger import log, superlog
+from modules.FrontEnd.Localization import Localization
 import configparser
 
-Version = "manager-2.1.3"
-repo_url_raw = 'https://github.com/MaxLastBreath/TOTK-mods'
-repo_url = 'https://api.github.com/repos/MaxLastBreath/TOTK-mods'
+Version = "manager-3.0.0"
+repo_url_raw = "https://github.com/MaxLastBreath/TOTK-mods"
+repo_url = "https://api.github.com/repos/MaxLastBreath/TOTK-mods"
 localconfig = "TOTKOptimizer.ini"
 
 if platform.system() == "Darwin":
@@ -25,6 +23,7 @@ w_scale = ""
 is_auto_backup = ""
 is_cheat_backup = ""
 is_animation = ""
+
 
 def get_setting(args=None):
     global font, tcolor, theme, toutline, tactive, is_animation, is_cheat_backup, is_auto_backup, w_scale
@@ -50,6 +49,8 @@ def get_setting(args=None):
     is_animation = config.get("Settings", "animation", fallback="On")
     DFPS_version = config.get("Updates", "dfps", fallback="1.1.0")
 
+    superlog.info(f"Version : {Version}")
+
     if args in ["back", "backup", "auto-backup"]:
         return is_auto_backup
     if args in ["cback", "cheatbackup", "cheat-backup", "cb"]:
@@ -70,7 +71,7 @@ def set_setting(args, value):
             config.add_section("Updates")
         config.set("Updates", "dfps", value)
 
-    with open(localconfig, 'w', encoding="utf-8") as config_file:
+    with open(localconfig, "w", encoding="utf-8") as config_file:
         config.write(config_file, space_around_delimiters=False)
 
 
@@ -80,19 +81,17 @@ FPS = 0.05
 
 # SET animation FPS to lower if higher resolution.
 if sf > 1.0:
-    CH +=5
+    CH += 5
 
 if sf > 1.5:
     FPS = 0.1
-    CH +=5
+    CH += 5
 
 CBHEIGHT = CH
 html_color = Color()
 
 # Settings for the manager.
 Hoverdelay = 500
-title_id = "0100F2C0115B6000"
-config_title_id = "72324500776771584"
 
 # Set fonts
 textfont = (font, 13)
@@ -109,16 +108,17 @@ style = "danger"
 
 # URLS
 cheatsurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/Cheats.json"
-presetsurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/beyond_presets.json"
 versionurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/VersionNew.json"
 descurl = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/Description.json"
 Legacy_presets_url = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/Legacy_presets.json"
 ultracambeyond = "https://raw.githubusercontent.com/MaxLastBreath/TOTK-mods/main/scripts/settings/UltraCam_Template.json"
 
 # Download UltraCam
-New_UCBeyond_Download = f"{repo_url_raw}/raw/main/scripts/Mods/UltraCam/UltraCamBeyond.zip"
+New_UCBeyond_Download = (
+    f"{repo_url_raw}/raw/main/scripts/Mods/UltraCam/UltraCamBeyond.zip"
+)
 
 # FP download:
 FP_Mod = f"{repo_url_raw}/raw/main/scripts/Mods/FP%20Mods/First%20Person.zip"
 
-description = load_json("Description.json", descurl)
+description = Localization.GetJson()
