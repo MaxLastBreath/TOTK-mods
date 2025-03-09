@@ -19,9 +19,10 @@ class NxMode:
     
     @classmethod
     def set(cls, value):
-        if not isinstance(value, NxType):
+        Tag = NxType(value)
+        if not isinstance(Tag, NxType):
             raise ValueError("Mode must be an instance of NxType")  
-        cls.__AUTOCHANGE(cls.__mode.value, value.value)
+        cls.__AUTOCHANGE(cls.__mode.value, Tag.value)
 
     @classmethod
     def get(cls):

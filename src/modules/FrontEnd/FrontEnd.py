@@ -432,9 +432,9 @@ class Manager:
 
         # Reset to Appdata
         def appdata():
-            FileManager.checkpath()
+            save_user_choices(Manager, Manager.config, "appdata")
             superlog.info("Successfully Defaulted to Appdata!")
-            save_user_choices(Manager, Manager.config, "appdata", None)
+            FileManager.checkpath()
 
         btn = Canvas_Create.image_Button(
             canvas=canvas,
@@ -444,7 +444,7 @@ class Manager:
             anchor="c",
             img_1=TextureMgr.Request("autosearch.png"),
             img_2=TextureMgr.Request("autosearch_a.png"),
-            command=lambda e: browse(),
+            command=lambda e: appdata(),
             tags=["Button"],
         )
 
@@ -596,7 +596,7 @@ class Manager:
             anchor="c",
             img_1=TextureMgr.Request("optimizer_logo.png"),
             img_2=TextureMgr.Request("optimizer_logo_active.png"),
-            command=lambda event: Manager.open_browser("Kofi"),
+            command=lambda event: Manager.open_browser("Web"),
         )
 
         Logo._Images.pop()
@@ -705,6 +705,8 @@ class Manager:
             url = "https://www.nxoptimizer.com/"
         elif web == "Discord":
             url = "https://www.nxoptimizer.com/discord/"
+        elif web == "Web":
+            url = "https://www.nxoptimizer.com/"
         webbrowser.open(url)
 
     def extract_patches(Manager):
