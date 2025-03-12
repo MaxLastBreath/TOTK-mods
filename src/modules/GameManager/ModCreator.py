@@ -196,11 +196,8 @@ class ModCreator:
 
         try:
             resolution = manager.UserChoices["resolution"].get()
-        except Exception as e:
+        except Exception:
             resolution = 1
-
-        if "resolution" not in patch_info:
-            return
 
         if "shadows" in patch_info:
             shadows = int(manager.UserChoices["shadow resolution"].get().split("x")[0])

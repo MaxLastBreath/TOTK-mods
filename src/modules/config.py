@@ -5,12 +5,22 @@ import os, json
 from modules.FrontEnd.FrontEndMode import NxMode
 
 # fmt: off
-def apply_preset(Manager, preset_options):
+def apply_preset(Manager, preset_options: dict):
+
+    "Apply Presets for different games"
+
+    from modules.FrontEnd.FrontEnd import Manager as mgr
+
+    Manager: mgr = Manager
+
     # Manager.fetch_var(Manager.ui_var, preset_options, "UI")
     # Manager.fetch_var(Manager.fp_var, preset_options, "First Person")
     # Manager.fetch_var(Manager.selected_settings, preset_options, "Settings") # set Legacy settings.
 
     patch_info = Manager.ultracam_beyond.get("Keys", [""])
+
+    if "emuscale" in preset_options:
+        Manager._EmulatorScale.set(preset_options["emuscale"])
 
     for option_key, option_value in preset_options.items():
         if option_key in Manager.selected_options:
@@ -22,7 +32,10 @@ def apply_preset(Manager, preset_options):
 
     if selected_preset.lower() == "default":
         for option_key in Manager.UserChoices:
-            patch_dict = patch_info[option_key.lower()]
+            try:
+                patch_dict = patch_info[option_key.lower()]
+            except KeyError:
+                continue
             patch_class = patch_dict["Class"]
             patch_default = patch_dict["Default"]
 

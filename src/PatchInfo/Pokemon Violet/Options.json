@@ -15,7 +15,7 @@
             "Description": "UltraCam Beyond New FPS setting.\nLet's you set to any FPS\nWARNING: SET TO 120 FPS FOR UNCAPPED.\nRecommended 30, 60 FPS caps for best FRAMETIMES.",
             "Config_Class": [
                 "DFPS",
-                "MaxFramerate"
+                "Framerate"
             ]
         }
     }
