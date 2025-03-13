@@ -68,7 +68,7 @@ jobs:
       with:
         artifacts: ${{ matrix.artifactsPath }}
         tag: ${{ inputs.tag }}
-        name: TOTK Optimizer ${{ inputs.tag }}
+        name: NX Optimizer ${{ inputs.tag }}
         allowUpdates: true
         artifactErrorsFailBuild: false
         prerelease: true

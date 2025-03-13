@@ -213,9 +213,10 @@ class ModCreator:
 
         if NxMode.isLegacy():
             # for emulator scale
-            new_scale = 1
+            new_scale = 2
             if (manager._patchInfo.ResolutionScale):
-                new_scale += int(manager._EmulatorScale.get())
+                emuscale = int(manager._EmulatorScale.get())
+                new_scale += emuscale - 1
 
             write_Legacy_config(manager, filemgr._gameconfig, manager._patchInfo.ID, "Renderer", "resolution_setup", f"{new_scale}")  # fmt: skip
             cls.UCLegacyRamPatcher(manager, filemgr, Resolution.getRamLayout())
