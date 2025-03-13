@@ -4,7 +4,7 @@ from modules.FrontEnd.FrontEndMode import NxMode
 from modules.FrontEnd.ProgressBar import ProgressBar
 from modules.GameManager.LaunchManager import LaunchManager
 from modules.GameManager.ModCreator import ModCreator
-from modules.GameManager.DragFile import DragFile
+# from modules.GameManager.DragFile import DragFile
 from modules.TOTK_Optimizer_Modules import *
 from configuration.settings import *
 from tkinter import messagebox
@@ -22,7 +22,7 @@ class FileManager:
     _window: ttk.Window = None
     _manager: any = None
     _emu_blacklist = ["citra-emu", "lime3ds-emu", "steam"]
-    _dragfile: DragFile = None
+    # _dragfile: DragFile = None
     _emulist: list[str] = []
     _emuselect: str = None
     _wrongconfigwarn = True
@@ -47,7 +47,7 @@ class FileManager:
 
         filemgr._manager : Manager = Mgr
         filemgr._window = Window
-        filemgr._dragfile = DragFile(Window, Mgr)
+        # filemgr._dragfile = DragFile(Window, Mgr)
 
     @classmethod
     # fmt: off

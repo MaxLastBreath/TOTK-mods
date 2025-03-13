@@ -1,5 +1,5 @@
 import ttkbootstrap as ttk
-from tkinterdnd2 import DND_FILES, TkinterDnD
+# from tkinterdnd2 import DND_FILES, TkinterDnD
 from modules.logger import *
 from modules.FrontEnd.FrontEnd import Manager
 from modules.update import textver, check_for_updates, delete_old_exe
@@ -14,7 +14,7 @@ if __name__ == "__main__":
             windll.shcore.SetProcessDpiAwareness(2)
             windll.user32.SetProcessDPIAware()
 
-        window = TkinterDnD.Tk()
+        window = ttk.Tk()
         window.title(f"NX Optimizer {textver}")
         window_width = scaleWindow(OptimizerWindowSize[0])
         window_height = scaleWindow(OptimizerWindowSize[1])
