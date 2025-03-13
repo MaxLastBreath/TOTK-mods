@@ -16,6 +16,7 @@ command = [
     "numpy",
     "zstandard",
     "imageio",
+    "tkinterdnd2",
     "https://github.com/MaxLastBreath/ttkbootstrapFIX/zipball/master"
 ]
 

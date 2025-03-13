@@ -26,36 +26,44 @@ class Game_Manager:
         cls.CreatePatches(patch_directory_root)
 
     @classmethod
+    def CreatePatchInfo(cls, patchfolder):
+        
+        "Load Patch Info for game."
+        
+        exists = False
+
+        for filename in os.listdir(patchfolder):
+            filepath = os.path.join(patchfolder, filename)
+
+            if filename == cls._PatchFile:
+                with open(filepath, "r", encoding="utf-8") as file:
+                    jsonfile = json.load(file)
+
+                # check if a game already exists inside of our loop
+                for item in cls.GamePatches:
+                    if item.Name == jsonfile['Name']:
+                        exists = True
+                        break
+
+                if (exists) : continue
+
+                log.info(
+                    f"{jsonfile['Name']} [{jsonfile['ID']}] : {jsonfile['Versions']}"
+                )
+
+                cls.GamePatches.append(
+                    PatchInfo(patchfolder, jsonfile)
+                )
+
+    @classmethod
     def CreatePatches(cls, patch_directory) -> None:
         "Loads patch info for each game detected in Patch Folder"
 
-        exists = False
-
         for folder in os.listdir(patch_directory):
             patchfolder = os.path.join(patch_directory, folder)
+            cls.CreatePatchInfo(patchfolder)
 
-            for filename in os.listdir(patchfolder):
-                filepath = os.path.join(patchfolder, filename)
 
-                if filename == cls._PatchFile:
-                    with open(filepath, "r", encoding="utf-8") as file:
-                        jsonfile = json.load(file)
-
-                    # check if a game already exists inside of our loop
-                    for item in cls.GamePatches:
-                        if item.Name == jsonfile['Name']:
-                            exists = True
-                            break
-
-                    if (exists) : continue
-
-                    log.info(
-                        f"{jsonfile['Name']} [{jsonfile['ID']}] : {jsonfile['Versions']}"
-                    )
-
-                    cls.GamePatches.append(
-                        PatchInfo(patchfolder, jsonfile)
-                    )
 
     @classmethod
     def GetJsonByID(cls, ID: str) -> PatchInfo:
