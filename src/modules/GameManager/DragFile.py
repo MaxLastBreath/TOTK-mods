@@ -18,7 +18,6 @@ class DragFile:
             ref.extractall(Game_Manager._Directory)
             patchnames = ref.namelist()
             patchnames = [file for file in patchnames if file.count('/') == 1]
-            log.info(patchnames)
 
         for patch in patchnames:
             patchdir = os.path.normpath(os.path.join(Game_Manager._Directory, patch))
@@ -35,7 +34,7 @@ class DragFile:
         files = re.findall(r'\{.*?\}|\S+', event.data.strip())
         files = [file[1:-1] if file.startswith('{') and file.endswith('}') else file for file in files]
         for file_path in files:
-            if (file_path.endswith(".nxop")): #NX-Optimizer Patch.
+            if (file_path.endswith(".nxop") or file_path.endswith(".zip")): #NX-Optimizer Patch.
                 log.info(f"Processing NX Optimizer Patch File {file_path}")
                 self.process_file(file_path)
             else:

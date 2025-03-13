@@ -139,7 +139,6 @@ class Manager:
         for item in Manager.patches:
             value.append(item.Name)
         Manager.PatchName["values"] = value
-        log.error(value)
 
     def LoadNewGameInfo(Manager):
         """Loads new Game info from the combobox (dropdown Menu)."""

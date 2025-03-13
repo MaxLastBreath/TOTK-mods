@@ -53,7 +53,6 @@ class Game_Manager:
                 cls.GamePatches.append(
                     _PatchInfo
                 )
-                log.info(f"{_PatchInfo.Name}, {_PatchInfo.ID}")
                 return _PatchInfo
 
     @classmethod
