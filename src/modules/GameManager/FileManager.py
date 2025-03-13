@@ -21,6 +21,9 @@ class FileManager:
     _manager: any = None
     _emu_blacklist = ["citra-emu", "lime3ds-emu", "steam"]
     _dragfile: DragFile = None
+    _emulist: list[str] = []
+    _emuselect: str = None
+    _wrongconfigwarn = True
 
     home_directory = os.path.expanduser("~")
     os_platform = platform.system()
@@ -57,13 +60,13 @@ class FileManager:
         response = messagebox.askyesno("Warning", message, icon=messagebox.WARNING)
         if response:
             filemgr.backup()
-            filemgr.warn_again = "no"
+            filemgr._wrongconfigwarn = False
             log.info("Sucessfully backed up save files, in backup folder. "
                     "Please delete qt-config in USER folder! "
                     "Or correct the user folder paths, then use the backup file to recover your saves!")
             pass
         else:
-            filemgr.warn_again = "no"
+            filemgr._wrongconfigwarn = False
             log.info("Warning has been declined, "
                     "no saves have been moved!")
     
@@ -86,7 +89,7 @@ class FileManager:
     def __LoopSearch(filemgr) -> str:
         GameID = filemgr._manager._patchInfo.ID
 
-        EmuList = []
+        filemgr._emulist = []
 
         if (filemgr.os_platform == "Windows"):
             SpecialDir = "AppData/Roaming"
@@ -97,14 +100,17 @@ class FileManager:
         for folder in os.listdir(userDir):
             FolderPath = os.path.join(userDir, folder)
             if os.path.exists(os.path.join(FolderPath, "load", GameID)):
-                EmuList.append(FolderPath)
+                filemgr._emulist.append(folder)
                 superlog.info(f"Found Legacy Emu folder at: {FolderPath}")
                 continue
         
-        if len(EmuList) < 1: # Fallback to citron
+        if len(filemgr._emulist) < 1: # Fallback to citron
             base_directory = os.path.join(filemgr.home_directory, SpecialDir, "citron")
         else:
-            base_directory = EmuList[0]
+            EmuDir = None
+            if (filemgr._emuselect is not None) : 
+                EmuDir = os.path.join(filemgr.home_directory, SpecialDir, filemgr._emuselect)
+            base_directory = EmuDir if EmuDir is not None else filemgr._emulist[0]
 
         return base_directory
     
@@ -163,10 +169,12 @@ class FileManager:
         base_directory = filemgr.home_directory
         patchinfo = filemgr._manager._patchInfo
 
-        base_directory = filemgr.__LoopSearch()
-
-        if (os.path.exists(portablefolder)):
+        if (os.path.exists(portablefolder) and portablefolder != "AppData"):
             base_directory = portablefolder
+        else: 
+            base_directory = filemgr.__LoopSearch()
+        
+        log.info(portablefolder)
 
         # Config FIle BS
         if (filemgr.os_platform == "Linux"):
@@ -175,7 +183,7 @@ class FileManager:
             filemgr._emuconfig = os.path.join(base_directory, "config/qt-config.ini")
 
         filemgr._emuglobal = base_directory
-        filemgr.nand = os.path.join(base_directory, "nand")
+        filemgr.nand = os.path.normpath(os.path.join(base_directory, "nand"))
         filemgr.load = os.path.join(base_directory, "load")
         filemgr.sdmc_dir = os.path.join(base_directory, "sdmc")
 
@@ -187,8 +195,8 @@ class FileManager:
             filemgr.load = os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=filemgr.load)).replace('"', "")
             filemgr.sdmc_dir = os.path.normpath(config_parser.get('Data%20Storage', 'sdmc_directory', fallback=filemgr.sdmc)).replace('"', "")
 
-            if (os.path.exists(portablefolder) and NEW_nand_dir is not filemgr.nand and filemgr.warn_again == "yes"):
-                filemgr.__Warn_LegacySaves()
+            if (os.path.exists(portablefolder) and NEW_nand_dir != filemgr.nand and filemgr._wrongconfigwarn):
+                filemgr.__Warn_LegacySaves(NEW_nand_dir, filemgr.nand)
             filemgr.nand = NEW_nand_dir
 
         filemgr.contentID = os.path.join(filemgr.load, patchinfo.ID)
@@ -379,9 +387,63 @@ class FileManager:
                 file.write(Context)
 
     @classmethod
+    def __SelectEmulator(filemgr):
+        if (not NxMode.isLegacy()):
+            return
+        
+        if (len(filemgr._emulist) > 1):
+            
+            Dialogue = ttk.Toplevel()
+            Dialogue.title(f"Select {NxMode.get()} Emulator")
+            screen_width = filemgr._window.winfo_screenwidth()
+            screen_height = filemgr._window.winfo_screenheight()
+
+            x_coordinate = (screen_width - Dialogue.winfo_reqwidth()) // 2
+            y_coordinate = (screen_height - Dialogue.winfo_reqheight()) // 2
+            Dialogue.geometry(f"+{x_coordinate}+{y_coordinate}")
+
+            canvas = ttk.Canvas(Dialogue, width=scale(400), height=scale(40 * len(filemgr._emulist) + 40 + 40))
+            canvas.pack()
+
+            row = 40
+
+            Canvas_Create.create_label(
+                    Dialogue, 
+                    canvas, 
+                    f"Please select which Emulator to install to :", 
+                    row = row,
+                    color = html_color["red"]
+                )
+            
+            row +=40
+
+            def Wee(event, Emu):
+                log.error(f"WEEE {Emu}")
+                filemgr._emuselect = Emu
+                Dialogue.destroy()
+
+            count = 0
+
+            for emu in filemgr._emulist:
+                count+=1
+                Canvas_Create.create_label(
+                        Dialogue, 
+                        canvas,
+                        f"{count}: {emu}",
+                        color=html_color["purple"],
+                        row = row, 
+                        command=lambda e, emu=emu: Wee(e, emu)
+                    )
+                row +=40
+
+            Dialogue.wait_window()
+            filemgr.checkpath()
+
+    @classmethod
     def submit(filemgr, mode: str | None = None):
 
         superlog.info(f"STARTING {mode}")
+        filemgr.__SelectEmulator()
 
         filemgr.mod_blacklist = []
         filemgr.mod_whitelist = []
