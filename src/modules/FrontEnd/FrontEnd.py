@@ -286,8 +286,7 @@ class Manager:
                 continue
             Manager.UserChoices[name] = patch_var
 
-        section_auto = dicts.get("Section")
-        pos = pos_dict[section_auto]
+        pos = pos_dict["main"]
 
         if (Manager._patchInfo.ResolutionScale is True):
             Manager._EmulatorScale = Canvas_Create.create_scale(
@@ -303,7 +302,7 @@ class Manager:
                 width=100,
                 increments=int(1),
                 tags=["scale", "patchinfo"],
-                tag="Main",
+                tag="main",
                 text_description="ResScale",
                 command=lambda e: Manager.UpdateEmuScale(canvas, Manager._EmulatorScale, ResolutionScaleName)
             )
