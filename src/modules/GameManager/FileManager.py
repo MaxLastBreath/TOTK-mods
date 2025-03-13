@@ -14,6 +14,8 @@ import subprocess
 import shutil
 import time
 
+from run_config import __ROOT__
+
 
 class FileManager:
 
@@ -264,6 +266,8 @@ class FileManager:
     def backup(filemgr):
         """Backup save files for a specific game, for Ryujinx it fetches all games."""
 
+        filemgr.__SelectEmulator()
+
         if NxMode.isLegacy():
             testforuserdir = os.path.join(
                 filemgr.nand, "user", "save", "0000000000000000"
@@ -271,22 +275,23 @@ class FileManager:
             target_folder = filemgr._manager._patchInfo.ID
             GameName = filemgr._manager._patchInfo.Name
 
+            log.info(testforuserdir)
+
+            # checks each individual folder ID for each user and finds the ones with saves for the selected game. Then backups the saves!
             try:
-                # checks each individual folder ID for each user and finds the ones with saves for the selected game. Then backups the saves!
                 for root, dirs, files in os.walk(testforuserdir):
                     if target_folder in dirs:
                         folder_to_backup = os.path.join(root, target_folder)
                 print(f"Attemping to backup {folder_to_backup}")
             except UnboundLocalError as e:
-                log.error("No Folder to backup Found.")
+                log.error(f"No Folder to backup Found.")
                 return
 
         # Create the 'backup' folder inside the mod manager directory if it doesn't exist
         elif NxMode.isRyujinx():
             folder_to_backup = filemgr.nand
 
-        local_dir = os.path.dirname(os.path.abspath(sys.executable))
-        backup_folder_path = os.path.join(local_dir, "backup")
+        backup_folder_path = os.path.join(__ROOT__, "backup", GameName)
 
         try:
             os.makedirs(backup_folder_path, exist_ok=True)
@@ -296,11 +301,7 @@ class FileManager:
             )
             return
 
-        backup_file = f"Backup {GameName}_.rar"
-        file_number = 1
-        while os.path.exists(os.path.join(backup_folder_path, backup_file)):
-            backup_file = f"Backup {GameName}_{file_number}.rar"
-            file_number += 1
+        backup_file = f"{GameName} {datetime.now().strftime('%Y-%m-%d %H.%M.%S')}.zip"
 
         # Construct the full path for the backup file inside the 'backup' folder
         backup_file_path = os.path.join(backup_folder_path, backup_file)
