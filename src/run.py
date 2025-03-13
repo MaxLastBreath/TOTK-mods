@@ -14,7 +14,7 @@ if __name__ == "__main__":
             windll.shcore.SetProcessDpiAwareness(2)
             windll.user32.SetProcessDPIAware()
 
-        window = ttk.Tk()
+        window = ttk.Window()
         window.title(f"NX Optimizer {textver}")
         window_width = scaleWindow(OptimizerWindowSize[0])
         window_height = scaleWindow(OptimizerWindowSize[1])
