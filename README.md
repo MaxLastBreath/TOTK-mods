@@ -50,12 +50,12 @@
 - [Tears Of The Kingdom](https://www.nxoptimizer.com/games/tears-of-the-kingdom) Versions - 1.1, 1.1.1, 1.1.2, 1.2.0, 1.2.1
 - [Echoes Of Wisdom](https://www.nxoptimizer.com/games/echoes-of-wisdom) Versions - 1.0.1, 1.0.2
 - [Breath Of The Wild](https://www.nxoptimizer.com/games/breath-of-the-wild) Versions - 1.6
+- [Pokemon Scarlet/Violet](https://www.nxoptimizer.com/games/pokemon-scarlet-violet) Versions - Latest
 
 ### **🎮 Hotkey Controls 🎮**
 - [Tears Of The Kingdom](https://www.nxoptimizer.com/games/tears-of-the-kingdom#Controls)
 - [Echoes Of Wisdom](https://www.nxoptimizer.com/games/echoes-of-wisdom#Controls)
 - [Breath Of The Wild](https://www.nxoptimizer.com/games/breath-of-the-wild#Controls)
-
 
 ### **Project Features Infromation - UltraCam**
 NX Optimizer and UltraCam aims to make Supported Switch Games run and behave better on higher Framerates. It Includes the Following. **(Some of the games may not support every feature.)**
