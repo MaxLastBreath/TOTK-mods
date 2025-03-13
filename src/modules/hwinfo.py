@@ -61,3 +61,4 @@ def _get_gpu_name(log) -> str:
             return GPU
     except Exception as e:
         log.warning(f"The GPU was not detected, nothing to be concerned about. {e}")
+        return "Not Detected"
