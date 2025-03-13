@@ -22,7 +22,7 @@ if __name__ == "__main__":
             "--add-data",
             "PatchInfo;PatchInfo",
             "--icon",
-            "GUI/LOGO.ico",
+            "GUI/LOGO.ico"
         ]
         subprocess.run(command, shell=True)
 
