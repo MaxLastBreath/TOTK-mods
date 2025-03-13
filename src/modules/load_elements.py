@@ -63,7 +63,7 @@ def load_UI_elements(manager, canvas: ttk.Canvas):
     Canvas_Create.image_Button(
         canvas=canvas,
         row=500 - Offset,
-        cul=980 - ButonWidth,
+        cul=980 - (ButonWidth * 1.4) / sf,
         anchor="c",
         img_1=TextureMgr.Request("benchmark_copy.png"),
         img_2=TextureMgr.Request("benchmark_copy_active.png"),
@@ -85,7 +85,7 @@ def load_UI_elements(manager, canvas: ttk.Canvas):
     Canvas_Create.image_Button(
         canvas=canvas,
         row=500 - Offset ,
-        cul=980 + ButonWidth,
+        cul=980 + (ButonWidth * 1.4) / sf,
         anchor="c",
         img_1=TextureMgr.Request("benchmark_cycle.png"),
         img_2=TextureMgr.Request("benchmark_cycle_active.png"),
