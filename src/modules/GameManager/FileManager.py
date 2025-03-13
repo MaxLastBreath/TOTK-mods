@@ -253,15 +253,6 @@ class FileManager:
         if NxMode.isRyujinx():
             filemgr.__PopulateRyujinx()
 
-        try: # Ensure the path exists.
-            # attempt to create qt-config.ini directories in case they don't exist. Give error to warn user
-            os.makedirs(filemgr.nand, exist_ok=True)
-            os.makedirs(filemgr.load, exist_ok=True)
-            os.makedirs(filemgr.contentID, exist_ok=True)
-        except PermissionError as e:
-            log.warrning(f"Unable to create directories, please run {NxMode.get()}, {e}")
-            filemgr._manager.warning(f"Unable to create directories, please run {NxMode.get()}, {e}")
-
     @classmethod
     def backup(filemgr):
         """Backup save files for a specific game, for Ryujinx it fetches all games."""
