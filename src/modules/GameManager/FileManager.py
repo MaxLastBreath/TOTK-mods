@@ -389,7 +389,7 @@ class FileManager:
 
     @classmethod
     def __SelectEmulator(filemgr):
-        if (not NxMode.isLegacy()):
+        if (not NxMode.isLegacy() or filemgr.is_extracting):
             return
         
         if (len(filemgr._emulist) > 1):
