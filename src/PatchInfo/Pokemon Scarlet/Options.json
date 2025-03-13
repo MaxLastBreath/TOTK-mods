@@ -1,0 +1,22 @@
+{
+    "Keys": {
+        "fps": {
+            "Name": "FPS",
+            "Class": "scale",
+            "Section": "main",
+            "Auto": false,
+            "Values": [
+                20,
+                240
+            ],
+            "Type": "s32",
+            "Default": 60,
+            "Increments": 5,
+            "Description": "UltraCam Beyond New FPS setting.\nLet's you set to any FPS\nWARNING: SET TO 120 FPS FOR UNCAPPED.\nRecommended 30, 60 FPS caps for best FRAMETIMES.",
+            "Config_Class": [
+                "DFPS",
+                "Framerate"
+            ]
+        }
+    }
+}

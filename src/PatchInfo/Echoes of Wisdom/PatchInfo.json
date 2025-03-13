@@ -1,0 +1,14 @@
+{
+    "Name" : "Echoes of Wisdom",
+    "Mod_Version" : "1.0",
+    "Version": "1.0",
+    "ID" : "01008CF01BAAC000",
+    "ModName" : "!!!EOW Optimizer",
+    "ModConfig" : "romfs/UltraCam/maxlastbreath.ini",
+    "Config" : "Options.json",
+    "ModFolder" : "UltraCam",
+    "Versions" : ["1.0.1"],
+    "EmulationScale" : true,
+    "Cheats": true,
+    "SD" : false
+}

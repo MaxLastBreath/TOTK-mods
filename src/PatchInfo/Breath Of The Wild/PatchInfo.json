@@ -1,0 +1,16 @@
+{
+    "Name" : "Breath of The Wild",
+    "Mod_Version" : "1.0",
+    "ID" : "01007EF00011E000",
+    "ModName" : "!!!BOTW Optimizer",
+    "ModConfig" : "romfs/UltraCam/maxlastbreath.ini",
+    "Config" : "Options.json",
+    "ModFolder" : "UltraCam",
+    "Versions" : ["1.6.0"],
+    "benchmarks" : true,
+    "benchmarks_version" : 0,
+    "benchmarks_file" : "BOTWBenchmark.txt",
+    "EmulationScale" : true,
+    "Cheats" : true,
+    "SD" : false
+}

@@ -1,8 +1,8 @@
+from modules.macos import macos_path
+from screeninfo import *
 import platform
 import configparser
 import os
-from screeninfo import *
-from modules.macos import macos_path
 
 CONFIG_FILE_LOCAL_OPTIMIZER = "TOTKOptimizer.ini"
 
@@ -12,6 +12,7 @@ if platform.system() == "Darwin":
 config = configparser.ConfigParser()
 config.read(CONFIG_FILE_LOCAL_OPTIMIZER)
 w_scale = config.get("Settings", "scale", fallback="On")
+
 
 def Auto_SF():
     if w_scale == "Off":
@@ -47,11 +48,15 @@ def Auto_SF():
             sf = 3.0
     return sf
 
+
 # Use First Monitor to determine SF, this bypasses scaling from windows.
 sf = Auto_SF()
 
 def scale(scale):
-    if sf == 1.0:
-        return scale
-    return int(float(scale * sf))
+    from run import OptimizerWindowSize
 
+    WindowSize: float  = (OptimizerWindowSize[0] + OptimizerWindowSize[1]) / (1200 + 600) - 1
+    return int(float(scale * sf) * (1.0 + (WindowSize)))
+
+def scaleWindow(scale):
+    return int(float(scale * sf))

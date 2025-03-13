@@ -32,3 +32,6 @@ src/modules/logger.txt
 /src/dist
 /src/build
 venv
+*.log
+src/run.dist.zip
+/src/run.dist

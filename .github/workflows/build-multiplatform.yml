@@ -20,7 +20,7 @@ jobs:
       matrix:
         include:
         - name: Windows
-          os: windows-latest
+          os: windows-2022
           artifactsPath: ./src/dist/*.exe
         - name: Linux
           os: ubuntu-20.04
@@ -31,17 +31,21 @@ jobs:
         - name: MacOS Silicon
           os: macos-latest
           artifactsPath: ./src/dist/*.zip
+        - name: Linux ARM64
+          os: ubuntu-22.04-arm
+          artifactsPath: ./src/dist/*.AppImage
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python 3.12
+    - name: Set up Python 3.11.3
       uses: actions/setup-python@v3
       with:
-        python-version: "3.12.0"
+        python-version: "3.11.3"
     - name: Install dependencies
       run: |
+        cd ./src/
         python -m pip install --upgrade pip
-        pip install requests patool screeninfo packaging wmi GPUtil psutil pyperclip pyinstaller https://github.com/MaxLastBreath/ttkbootstrapFIX/zipball/master
+        python dependencies.py
     - name: Build ${{ matrix.name }}
       run: |
         cd ./src/
@@ -51,9 +55,9 @@ jobs:
       run: |
         cd ./src/
         python ./compile.py
-      if: ${{ !endsWith(matrix.name, 'dir') && !startsWith(matrix.name, 'MacOS') }}
+      if: ${{ !endsWith(matrix.name, 'dir') && !startsWith(matrix.name, 'MacOS') && !endsWith(matrix.name, 'nuitka') }}
     - name: Upload artifacts
-      uses: actions/upload-artifact@v4.6.1
+      uses: actions/upload-artifact@v4.6.0
       with:
         name: artifacts-${{ matrix.name }}
         path: ./src/dist

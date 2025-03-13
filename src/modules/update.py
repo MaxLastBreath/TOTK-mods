@@ -1,22 +1,22 @@
-import time
-import requests
-import os
-import shutil
-from packaging.version import Version, parse
-import platform
-import sys
-import glob
+import subprocess
 from configuration.settings import Version
+from packaging.version import parse
 from tkinter import messagebox
 from modules.logger import log
+import requests, shutil, platform, sys, glob, os
 
 textver = Version.strip("manager-")
 GITHUB = "TOTK-mods"
 OWNER = "MaxLastBreath"
 
+
 def show_confirmation_dialog(remote_version_str):
-    result = messagebox.askyesno("Confirmation", f"Mod Manager version {remote_version_str} was found, do you want to apply the update?")
+    result = messagebox.askyesno(
+        "Confirmation",
+        f"Mod Manager version {remote_version_str} was found, do you want to apply the update?",
+    )
     return result
+
 
 # Check For Update
 def check_for_updates():
@@ -33,14 +33,16 @@ def check_for_updates():
             if remote_version > parse(textver):
                 confirmation_result = show_confirmation_dialog(remote_version_str)
                 if confirmation_result:
-                   download_update(release_info["assets"])
+                    download_update(release_info["assets"])
                 else:
                     return
             else:
                 log.info("No Updates Found. Your app is up to date.")
     except requests.exceptions.ConnectionError as e:
         log.warning(
-        "No internet connection or api limit reached. You won't be able to check for Updates.")
+            "No internet connection or api limit reached. You won't be able to check for Updates."
+        )
+
 
 def download_update(assets):
     current_platform = platform.system()
@@ -48,7 +50,7 @@ def download_update(assets):
     for asset in assets:
         asset_name = asset["name"]
         asset_url = asset["browser_download_url"]
-        
+
         if current_platform == "Linux" and asset_name.endswith(".AppImage"):
             log.info(f"Downloading {asset_name}")
             try:
@@ -78,6 +80,7 @@ def download_update(assets):
             log.info("Asset downloaded successfully.")
         apply_update(assets)
 
+
 def apply_update(assets):
     log.info("Applying Update...")
     current_platform = platform.system()
@@ -97,13 +100,13 @@ def apply_update(assets):
         old_executable = sys.argv[0]
         if os.path.exists(old_executable):
             os.rename(old_executable, f"{old_executable}.tmp")
-            log.info("Old executable deleted.")
+            log.warning("Old executable deleted.")
 
         if sys.platform.startswith("linux"):
-            name = "TOTK Optimizer.AppImage"
+            name = "NX Optimizer.AppImage"
             os.chmod(updated_executable, 0o755)
         elif sys.platform.startswith("win"):
-            name = "TOTK Optimizer.exe"
+            name = "NX Optimizer.exe"
             pass
         else:
             name = updated_executable
@@ -117,24 +120,31 @@ def apply_update(assets):
     log.info("Update Applied. Exiting...")
     sys.exit()
 
+
 def delete_old_exe():
     executable_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
     if sys.platform.startswith("linux"):
-        name = "TOTK Optimizer.AppImage"
+        name = "NX Optimizer.AppImage"
     elif sys.platform.startswith("win"):
-        name = "TOTK Optimizer.exe"
+        name = "NX Optimizer.exe"
     else:
-        name = "TOTK Optimizer.exe"
+        name = "NX Optimizer.exe"
     exe_to_rename = sys.argv[0]
     current = exe_to_rename.split("\\")[-1]
+
     if current == "run.py":
         return
+
+    for file in os.listdir(executable_directory):
+        if file == "NX Optimizer.exe" or file == "NX Optimizer.AppImage":
+            return
+
     try:
         os.rename(exe_to_rename, name)
+        subprocess.Popen([os.path.abspath(name)])
     except Exception as e:
-        log.warning(e)
+        log.error(e)
     try:
-        # Remove old versions of manager
         matching_files = glob.glob(os.path.join(executable_directory, "*.exe.tmp"))
         matching_files += glob.glob(os.path.join(executable_directory, "*appimage.tmp"))
 

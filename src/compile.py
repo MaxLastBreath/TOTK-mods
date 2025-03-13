@@ -4,6 +4,7 @@ import os
 from configuration.settings import *
 
 latest_version = Version.strip("manager-")
+program_name = "NX Optimizer"
 
 if __name__ == "__main__":
     if platform.system() == "Windows":
@@ -11,42 +12,59 @@ if __name__ == "__main__":
             "pyinstaller",
             "run.py",
             "--onefile",
-            f"--name=TOTK Optimizer {latest_version}",
-            "--add-data", "GUI;GUI",
-            "--add-data", "json.data;json.data",
-            "--icon", "GUI/LOGO.ico"
+            "--clean",
+            "--log-level=WARN",
+            f"--name={program_name} {latest_version}",
+            "--add-data",
+            "GUI;GUI",
+            "--add-data",
+            "Localization;Localization",
+            "--add-data",
+            "PatchInfo;PatchInfo",
+            "--icon",
+            "GUI/LOGO.ico",
         ]
         subprocess.run(command, shell=True)
-        
+
     elif platform.system() == "Linux":
         command = [
             "pyinstaller",
             "--onefile",
-            f"--name=TOTK Optimizer {latest_version}.AppImage",
+            f"--name={program_name} {latest_version}.AppImage",
             "run.py",
-            "--add-data", "GUI:GUI",
-            "--add-data", "json.data:json.data"
+            "--add-data",
+            "GUI:GUI",
+            "--add-data",
+            "Localization:Localization",
+            "--add-data",
+            "PatchInfo:PatchInfo",
             "--hidden-import=PIL",
             "--hidden-import=PIL._tkinter_finder",
             "--hidden-import=PIL._tkinter",
-            "--hidden-import=ttkbootstrap"
+            "--hidden-import=ttkbootstrap",
         ]
         subprocess.run(command, check=True)
-    
+
     elif platform.system() == "Darwin":
         command = [
             "pyinstaller",
             "--onefile",
             "--windowed",
             "--noconfirm",
-            f"--name=TOTK Optimizer",
+            f"--name={program_name}",
             "run.py",
-            "--add-data", "GUI:GUI",
-            "--add-data", "json.data:json.data",
-            "--icon", "GUI/LOGO.icns",
+            "--add-data",
+            "Localization:Localization",
+            "--add-data",
+            "GUI:GUI",
+            "--add-data",
+            "PatchInfo:PatchInfo",
+            "--icon",
+            "GUI/LOGO.icns",
             "--hidden-import=PIL",
             "--hidden-import=PIL._tkinter_finder",
             "--hidden-import=ttkbootstrap",
         ]
         subprocess.run(command, check=True)
-        if os.path.exists("dist/TOTK Optimizer"): os.remove("dist/TOTK Optimizer")
+        if os.path.exists(f"dist/{program_name}"):
+            os.remove(f"dist/{program_name}")
