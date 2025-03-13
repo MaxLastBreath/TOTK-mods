@@ -216,7 +216,7 @@ class FileManager:
             os.makedirs(destination, exist_ok=True)
             shutil.copytree(source, destination, dirs_exist_ok=True)
         else:
-            destination = os.path.join(os.getcwd(), patchinfo.ModName)
+            destination = os.path.join(os.getcwd(), "Extracted Files", patchinfo.ModName)
             os.makedirs(destination, exist_ok=True)
             shutil.copytree(source, destination, dirs_exist_ok=True)
 
