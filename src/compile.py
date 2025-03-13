@@ -23,6 +23,8 @@ if __name__ == "__main__":
             "PatchInfo;PatchInfo",
             "--icon",
             "GUI/LOGO.ico",
+            "--collect-all",
+            "tkinterdnd2"
         ]
         subprocess.run(command, shell=True)
 
@@ -42,6 +44,8 @@ if __name__ == "__main__":
             "--hidden-import=PIL._tkinter_finder",
             "--hidden-import=PIL._tkinter",
             "--hidden-import=ttkbootstrap",
+            "--collect-all",
+            "tkinterdnd2"
         ]
         subprocess.run(command, check=True)
 
@@ -64,6 +68,8 @@ if __name__ == "__main__":
             "--hidden-import=PIL",
             "--hidden-import=PIL._tkinter_finder",
             "--hidden-import=ttkbootstrap",
+            "--collect-all",
+            "tkinterdnd2"
         ]
         subprocess.run(command, check=True)
         if os.path.exists(f"dist/{program_name}"):
