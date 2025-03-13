@@ -26,11 +26,11 @@ class Game_Manager:
         cls.CreatePatches(patch_directory_root)
 
     @classmethod
-    def CreatePatchInfo(cls, patchfolder):
+    def CreatePatchInfo(cls, patchfolder) -> PatchInfo:
         
         "Load Patch Info for game."
         
-        exists = False
+        _PatchInfo = None
 
         for filename in os.listdir(patchfolder):
             filepath = os.path.join(patchfolder, filename)
@@ -42,18 +42,19 @@ class Game_Manager:
                 # check if a game already exists inside of our loop
                 for item in cls.GamePatches:
                     if item.Name == jsonfile['Name']:
-                        exists = True
-                        break
-
-                if (exists) : continue
+                        return item
 
                 log.info(
                     f"{jsonfile['Name']} [{jsonfile['ID']}] : {jsonfile['Versions']}"
                 )
 
+                _PatchInfo: PatchInfo = PatchInfo(patchfolder, jsonfile)
+
                 cls.GamePatches.append(
-                    PatchInfo(patchfolder, jsonfile)
+                    _PatchInfo
                 )
+                log.info(f"{_PatchInfo.Name}, {_PatchInfo.ID}")
+                return _PatchInfo
 
     @classmethod
     def CreatePatches(cls, patch_directory) -> None:
@@ -62,8 +63,6 @@ class Game_Manager:
         for folder in os.listdir(patch_directory):
             patchfolder = os.path.join(patch_directory, folder)
             cls.CreatePatchInfo(patchfolder)
-
-
 
     @classmethod
     def GetJsonByID(cls, ID: str) -> PatchInfo:

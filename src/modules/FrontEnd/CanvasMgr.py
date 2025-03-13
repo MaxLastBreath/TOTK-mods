@@ -87,6 +87,7 @@ class Canvas_Create:
         description_name: str = None,
         text_description: str = None,
         variable: ttk.StringVar = any,
+        dropdown_variable: ttk.Combobox = any,
         values=[],
         row: int = 40,
         cul: int = 40,
@@ -97,7 +98,7 @@ class Canvas_Create:
         tag: str = None,
         command: any = None,
         is_active: bool = True,
-    ) -> ttk.StringVar:
+    ) -> ttk.Combobox:
 
         # create text
         active_color_new = active_color
@@ -139,7 +140,7 @@ class Canvas_Create:
         )
 
         # create combobox
-        dropdown = ttk.Combobox(
+        dropdown_variable = ttk.Combobox(
             master=master,
             textvariable=new_variable,
             values=values,
@@ -151,21 +152,21 @@ class Canvas_Create:
             scale(drop_cul),
             scale(row),
             anchor="w",
-            window=dropdown,
+            window=dropdown_variable,
             width=scale(width),
             height=CBHEIGHT,
             tags=tags,
         )
 
         # bind canvas
-        dropdown.bind("<<ComboboxSelected>>", command)
+        dropdown_variable.bind("<<ComboboxSelected>>", command)
 
         # attempt to make a Hovertip
         cls.read_description(
             canvas=canvas,
             option=description_name,
             text=text_description,
-            position_list=[dropdown, text_line],
+            position_list=[dropdown_variable, text_line],
             master=master,
         )
 
@@ -181,7 +182,7 @@ class Canvas_Create:
         )
 
         row += 40
-        return new_variable
+        return dropdown_variable
 
     @classmethod
     def create_scale(

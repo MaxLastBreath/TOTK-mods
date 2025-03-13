@@ -42,7 +42,7 @@ class FileManager:
 
         filemgr._manager : Manager = Mgr
         filemgr._window = Window
-        filemgr._dragfile = DragFile(Window)
+        filemgr._dragfile = DragFile(Window, Mgr)
 
     @classmethod
     # fmt: off

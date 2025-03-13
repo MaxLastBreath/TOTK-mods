@@ -131,10 +131,24 @@ class Manager:
                 os.path.join(Manager._patchInfo.Folder, "image.jpg"),
             )
 
+    def SetPatch(Manager, patchInfo: PatchInfo):
+        Manager._patchInfo = patchInfo
+        Manager.PatchName.set(patchInfo.Name)
+        Manager.patches = Game_Manager.GetPatches()
+        value = []
+        for item in Manager.patches:
+            value.append(item.Name)
+        Manager.PatchName["values"] = value
+        log.error(value)
+
     def LoadNewGameInfo(Manager):
         """Loads new Game info from the combobox (dropdown Menu)."""
+        
         for item in Manager.patches:
             if Manager.PatchName.get() == item.Name:
+
+                log.warning(f"Loading Game Info {item.Name}")
+
                 Manager._patchInfo = item
                 Cheats.Initialize(Manager, item)
                 Manager.ultracam_beyond = Manager._patchInfo.LoadJson()
