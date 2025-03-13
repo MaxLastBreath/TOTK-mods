@@ -87,7 +87,6 @@ class Canvas_Create:
         description_name: str = None,
         text_description: str = None,
         variable: ttk.StringVar = any,
-        dropdown_variable: ttk.Combobox = any,
         values=[],
         row: int = 40,
         cul: int = 40,
