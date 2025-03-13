@@ -22,10 +22,8 @@ scripts/Mods/UI Mods/Playstation UI
 scripts/Mods/UI Mods/Xbox UI
 *.iml
 *.xml
-*.ini
 src/\!\!\!TOTK Optimizer/exefs/main.npdm
 src/\!\!\!TOTK Optimizer/exefs/subsdk3
-*.ini
 src/modules/logger.txt
 *.spec
 *.txt
@@ -35,3 +33,4 @@ venv
 *.log
 src/run.dist.zip
 /src/run.dist
+src/TOTKOptimizer.ini
