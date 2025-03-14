@@ -6,7 +6,7 @@ from modules.logger import log
 import requests, shutil, platform, sys, glob, os
 
 textver = Version.strip("manager-")
-GITHUB = "TOTK-mods"
+GITHUB = "nx-optimizer"
 OWNER = "MaxLastBreath"
 
 
