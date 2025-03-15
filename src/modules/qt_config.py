@@ -168,13 +168,16 @@ def modify_disabled_key(
     if config == None:
         return
 
-    if platform.system() == "Windows":
-        if action == "add":
-            print("Disabling mod:", entry, config_title_id)
-            add_entry(configdir, directory, config, config_title_id, entry)
-        if action == "remove":
-            print("Enabling mod:", entry, config_title_id)
-            find_and_remove_entry(configdir, directory, config, config_title_id, entry)
+    try:
+        if platform.system() == "Windows":
+            if action == "add":
+                print("Disabling mod:", entry, config_title_id)
+                add_entry(configdir, directory, config, config_title_id, entry)
+            if action == "remove":
+                print("Enabling mod:", entry, config_title_id)
+                find_and_remove_entry(configdir, directory, config, config_title_id, entry)
+    except configparser.InterpolationSyntaxError as e:
+        log.error(f"Failed to Patch Config files, likely due to a %% character in one of the mods {e}")
 
 
 def write_config_file(configdir, config):
