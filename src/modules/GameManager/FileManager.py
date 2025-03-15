@@ -133,7 +133,9 @@ class FileManager:
             if os.path.exists(lookupfile):
                 log.info(f"Found Config File {lookupfile}")
                 return lookupfile
-            
+
+        log.error("Didn't find a Legacy Emulator")
+
         return None
         
     @classmethod
@@ -181,6 +183,7 @@ class FileManager:
         # Config FIle BS
         if (filemgr.os_platform == "Linux"):
             filemgr._emuconfig = filemgr.__LoopSearchLinuxConfig()
+            if (filemgr._emuconfig == None): NxMode.switch()
         else:
             filemgr._emuconfig = os.path.join(base_directory, "config/qt-config.ini")
 
