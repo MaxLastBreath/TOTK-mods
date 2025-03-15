@@ -183,7 +183,9 @@ class FileManager:
         # Config FIle BS
         if (filemgr.os_platform == "Linux"):
             filemgr._emuconfig = filemgr.__LoopSearchLinuxConfig()
-            if (filemgr._emuconfig == None): NxMode.switch()
+            if (filemgr._emuconfig == None): 
+                NxMode.switch()
+                return
         else:
             filemgr._emuconfig = os.path.join(base_directory, "config/qt-config.ini")
 
