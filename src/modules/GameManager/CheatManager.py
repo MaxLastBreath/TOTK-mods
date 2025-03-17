@@ -335,6 +335,8 @@ class Cheats:
                 FileManager.contentID, "Cheat Manager Patch", "cheats"
             )
 
+            log.warning(f"Applying Cheats in {mod_path}")
+
             # Create the directory if it doesn't exist
             os.makedirs(mod_path, exist_ok=True)
 

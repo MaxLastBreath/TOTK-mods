@@ -112,7 +112,7 @@ class FileManager:
             EmuDir = None
             if (filemgr._emuselect is not None) : 
                 EmuDir = os.path.join(filemgr.home_directory, SpecialDir, filemgr._emuselect)
-            base_directory = EmuDir if EmuDir is not None else filemgr._emulist[0]
+            base_directory = EmuDir if EmuDir is not None else os.path.join(filemgr.home_directory, SpecialDir, filemgr._emulist[0])
 
         return base_directory
     
