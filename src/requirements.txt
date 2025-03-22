@@ -1,6 +1,7 @@
 altgraph==0.17.4
 certifi==2023.11.17
 charset-normalizer==3.3.2
+colorlog==6.9.0
 Cython==3.0.10
 GPUtil==1.4.0
 idna==3.6
@@ -19,5 +20,6 @@ requests==2.31.0
 screeninfo==0.8.1
 setuptools==70.2.0
 tk==0.1.0
+tkinterdnd2==0.4.3
 ttkbootstrap==1.10.1
 urllib3==2.1.0
