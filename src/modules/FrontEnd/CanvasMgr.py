@@ -738,20 +738,22 @@ class Canvas_Create:
 
     @classmethod
     def get_UI_path(cls, file_name: str, folder_name: str = "GUI"):
-        base_path = os.path.dirname(os.path.abspath(__file__))
-        base_path = os.path.dirname(base_path)
-        base_path = os.path.dirname(
-            base_path
-        )  # run twice, due to changes to file location
-        path = os.path.join(base_path, folder_name, file_name)
+        path = os.path.join(__ROOT__, folder_name, file_name)
         
         if not os.path.exists(path):
-            path2 = os.path.join(base_path, file_name)
+            path2 = os.path.join(__ROOT__, file_name)
             if os.path.exists(path2):
-                path = path2
-            else:
-                path = os.path.join(__ROOT__, folder_name, file_name)
-        
+                return path2
+
+            path2 = os.path.join(folder_name, file_name)
+            if os.path.exists(path2):
+                return path2
+            
+            path2 = os.path.join(file_name)
+            if os.path.exists(path2):
+                return path2
+
+            raise(f"COULDN'T IMAGE : {file_name}")
         return path
 
     @classmethod
