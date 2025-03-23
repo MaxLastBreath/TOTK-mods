@@ -112,7 +112,7 @@ class Benchmark:
         cls._patchInfo = cls._manager._patchInfo
         cls.__version = cls._patchInfo.Benchmark_Version
         cls.__support = cls._patchInfo.Support_Benchmark
-        cls.__path = os.path.join(FileManager.sdmc_dir, cls._patchInfo.Benchmarks_File)
+        cls.__path = os.path.join(FileManager.sdmc, cls._patchInfo.Benchmarks_File)
         cls.__load_benchmark()
         cls.__showButtons()
 

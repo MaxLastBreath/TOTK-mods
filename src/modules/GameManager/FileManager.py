@@ -161,7 +161,7 @@ class FileManager:
         filemgr._emuconfig = os.path.join(base_directory, "Config.json")
         filemgr.nand = os.path.join(base_directory, "bis", "user", "save")
         filemgr.load = os.path.join(base_directory, "mods", "contents")
-        filemgr.sdmc_dir = os.path.join(base_directory, "sdcard")
+        filemgr.sdmc = os.path.join(base_directory, "sdcard")
         filemgr.contentID = os.path.join(base_directory, "mods", "contents", patchinfo.ID)
         filemgr._gameconfig = os.path.join(base_directory, "games", f"{patchinfo.ID}", "Config.json")
     
@@ -192,7 +192,7 @@ class FileManager:
         filemgr._emuglobal = base_directory
         filemgr.nand = os.path.normpath(os.path.join(base_directory, "nand"))
         filemgr.load = os.path.join(base_directory, "load")
-        filemgr.sdmc_dir = os.path.join(base_directory, "sdmc")
+        filemgr.sdmc = os.path.join(base_directory, "sdmc")
 
         if os.path.exists(filemgr._emuconfig):
             config_parser = configparser.ConfigParser()
@@ -200,7 +200,7 @@ class FileManager:
         
             NEW_nand_dir = os.path.normpath(config_parser.get('Data%20Storage', 'nand_directory', fallback=filemgr.nand)).replace('"', "")
             filemgr.load = os.path.normpath(config_parser.get('Data%20Storage', 'load_directory', fallback=filemgr.load)).replace('"', "")
-            filemgr.sdmc_dir = os.path.normpath(config_parser.get('Data%20Storage', 'sdmc_directory', fallback=filemgr.sdmc)).replace('"', "")
+            filemgr.sdmc = os.path.normpath(config_parser.get('Data%20Storage', 'sdmc_directory', fallback=filemgr.sdmc)).replace('"', "")
 
             if (os.path.exists(portablefolder) and NEW_nand_dir != filemgr.nand and filemgr._wrongconfigwarn):
                 filemgr.__Warn_LegacySaves(NEW_nand_dir, filemgr.nand)
@@ -343,7 +343,7 @@ class FileManager:
     @classmethod
     def UltraCam_ConfigPath(filemgr) -> str:
         PatchInfo = filemgr._manager._patchInfo
-        SdCard = filemgr.sdmc_dir
+        SdCard = filemgr.sdmc
 
         if filemgr.is_extracting is True:
             Folder = os.path.join(os.getcwd(), "Extracted Files")
