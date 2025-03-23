@@ -29,6 +29,8 @@ if __name__ == "__main__":
         subprocess.run(command, shell=True)
 
     elif platform.system() == "Linux":
+        if platform.machine() == "aarch64":
+            program_name += " Arm64"
         command = [
             "pyinstaller",
             "--onefile",
