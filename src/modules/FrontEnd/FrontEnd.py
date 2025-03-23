@@ -434,7 +434,7 @@ class Manager:
         Offset = 170
 
         # Dynamically determine button spacing
-        buttonwidth = TextureMgr.Request("browse.png").width() * 0.65
+        buttonwidth = TextureMgr.Request("browse.png").width() / sf
         totalwidth = 0
 
         if (FileManager.os_platform != "Darwin"):
@@ -564,15 +564,6 @@ class Manager:
         row = pos_dict["main"][0]
         row_2 = pos_dict["main"][3]
 
-        Canvas_Create.image_Button(
-            canvas=canvas,
-            row=510,
-            cul=25,
-            img_1=TextureMgr.Request("apply.png"),
-            img_2=TextureMgr.Request("apply_active.png"),
-            command=lambda event: FileManager.submit(),
-        )
-
         Manager.ModeType = Canvas_Create.image_Button(
             canvas=canvas,
             row=50,
@@ -597,21 +588,37 @@ class Manager:
             tags=["Legacy"]
         )
 
-        # reverse scale.
+        buttonwidth = TextureMgr.Request("apply.png").width() / sf
+        totalwidth = 0
+
         Canvas_Create.image_Button(
             canvas=canvas,
             row=510,
-            cul=25 + int(TextureMgr.Request("apply.png").width() / sf),
-            img_1=TextureMgr.Request("launch.png"),
-            img_2=TextureMgr.Request("launch_active.png"),
-            command=lambda event: LaunchManager.launch_GAME(Manager, FileManager),
+            cul=25 + totalwidth,
+            img_1=TextureMgr.Request("apply.png"),
+            img_2=TextureMgr.Request("apply_active.png"),
+            command=lambda event: FileManager.submit(),
         )
+
+        totalwidth += buttonwidth
+
+        if (FileManager.os_platform != "Darwin"):
+            # reverse scale.
+            Canvas_Create.image_Button(
+                canvas=canvas,
+                row=510,
+                cul=25 + totalwidth,
+                img_1=TextureMgr.Request("launch.png"),
+                img_2=TextureMgr.Request("launch_active.png"),
+                command=lambda event: LaunchManager.launch_GAME(Manager, FileManager),
+            )
+            totalwidth += buttonwidth
 
         # extract
         Canvas_Create.image_Button(
             canvas=canvas,
             row=510,
-            cul=25 + int(7 + int(TextureMgr.Request("launch.png").width() / sf) * 2),
+            cul=25 + totalwidth,
             img_1=TextureMgr.Request("extract.png"),
             img_2=TextureMgr.Request("extract_active.png"),
             command=lambda event: Manager.extract_patches(),
