@@ -349,7 +349,6 @@ class FileManager:
             Folder = os.path.join(os.getcwd(), "Extracted Files")
             os.makedirs(Folder, exist_ok=True)
             return os.path.join(Folder, PatchInfo.ModName, PatchInfo.Config)
-        
         if PatchInfo.isSDconfig is True:
             return os.path.join(SdCard, PatchInfo.Config)
         else:
