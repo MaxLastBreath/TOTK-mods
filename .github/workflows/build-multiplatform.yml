@@ -68,7 +68,7 @@ jobs:
       with:
         artifacts: ${{ matrix.artifactsPath }}
         tag: ${{ inputs.tag }}
-        name: NX Optimizer ${{ inputs.tag }}
+        name: ${{ 'NX Optimizer ARM64 ' + inputs.tag if endsWith(matrix.name, 'ARM64') else 'NX Optimizer ' + inputs.tag }}
         allowUpdates: true
         artifactErrorsFailBuild: false
         prerelease: true
