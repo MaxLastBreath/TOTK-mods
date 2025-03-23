@@ -413,7 +413,11 @@ class Manager:
         def browse():
             Manager.select_Legacy_exe()
 
-        text = "SELECT EXECUTABLE"
+        if (FileManager.os_platform == "Darwin"):
+            text = "OPTIMIZER OPTIONS"
+        else:
+            text = "SELECT EXECUTABLE"
+            
         Canvas_Create.create_label(
             master=Manager._window,
             canvas=canvas,
@@ -429,55 +433,66 @@ class Manager:
 
         Offset = 170
 
+        # Dynamically determine button spacing
+        buttonwidth = TextureMgr.Request("browse.png").width() * 0.65
+        totalwidth = 0
+
+        if (FileManager.os_platform != "Darwin"):
+            Canvas_Create.image_Button(
+                canvas=canvas,
+                row=row - 5,
+                cul=cul_tex + Offset + totalwidth,
+                name="browse",
+                anchor="c",
+                img_1=TextureMgr.Request("browse.png"),
+                img_2=TextureMgr.Request("browse_a.png"),
+                command=lambda e: browse(),
+                tags=["Button"],
+            )
+
+            totalwidth += buttonwidth
+
+            # Reset to Appdata
+            def appdata():
+                save_user_choices(Manager, Manager.config, "appdata")
+                superlog.info("Successfully Defaulted to Appdata!")
+                FileManager.checkpath()
+
+            Canvas_Create.image_Button(
+                canvas=canvas,
+                row=row - 5,
+                cul=cul_tex + Offset + totalwidth,
+                name="appdata",
+                anchor="c",
+                img_1=TextureMgr.Request("autosearch.png"),
+                img_2=TextureMgr.Request("autosearch_a.png"),
+                command=lambda e: appdata(),
+                tags=["Button"],
+            )
+
+            totalwidth += buttonwidth
+
+
+            # Create a Backup button
+            Canvas_Create.image_Button(
+                canvas=canvas,
+                row=row - 5,
+                cul=cul_tex + Offset + totalwidth,
+                name="backup",
+                anchor="c",
+                img_1=TextureMgr.Request("backup.png"),
+                img_2=TextureMgr.Request("backup_a.png"),
+                command=lambda e: FileManager.backup(),
+                tags=["Button"],
+            )
+
+            totalwidth += buttonwidth
+
+
         Canvas_Create.image_Button(
             canvas=canvas,
             row=row - 5,
-            cul=cul_tex + Offset,
-            name="browse",
-            anchor="c",
-            img_1=TextureMgr.Request("browse.png"),
-            img_2=TextureMgr.Request("browse_a.png"),
-            command=lambda e: browse(),
-            tags=["Button"],
-        )
-
-        # Reset to Appdata
-        def appdata():
-            save_user_choices(Manager, Manager.config, "appdata")
-            superlog.info("Successfully Defaulted to Appdata!")
-            FileManager.checkpath()
-
-        Canvas_Create.image_Button(
-            canvas=canvas,
-            row=row - 5,
-            cul=cul_tex + Offset + 92,
-            name="appdata",
-            anchor="c",
-            img_1=TextureMgr.Request("autosearch.png"),
-            img_2=TextureMgr.Request("autosearch_a.png"),
-            command=lambda e: appdata(),
-            tags=["Button"],
-        )
-
-        backupbutton = cul_sel + 165
-
-        # Create a Backup button
-        Canvas_Create.image_Button(
-            canvas=canvas,
-            row=row - 5,
-            cul=cul_tex + Offset + 92 * 2,
-            name="backup",
-            anchor="c",
-            img_1=TextureMgr.Request("backup.png"),
-            img_2=TextureMgr.Request("backup_a.png"),
-            command=lambda e: FileManager.backup(),
-            tags=["Button"],
-        )
-
-        Canvas_Create.image_Button(
-            canvas=canvas,
-            row=row - 5,
-            cul=cul_tex + Offset + 92 * 3,
+            cul=cul_tex + Offset + totalwidth,
             name="shaders",
             anchor="c",
             img_1=TextureMgr.Request("shaders.png"),
@@ -485,6 +500,8 @@ class Manager:
             command=lambda e: FileManager.clean_shaders(),
             tags=["Button"],
         )
+
+        totalwidth += buttonwidth
 
         row += 40
 
