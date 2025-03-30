@@ -140,7 +140,6 @@ NX Optimizer and UltraCam aims to make Supported Switch Games run and behave bet
 - Testerr
 
 # Switch modders, I'm thankful to.
-- [StevensND](https://linktr.ee/stevensmods)
 - [Fl4sh](https://github.com/Fl4sh9174)
 - [OldManKain](https://github.com/OldManKain)
 - [TheBoy181](https://github.com/theboy181)
