@@ -133,7 +133,7 @@ class Benchmark:
         Last_Found = None
         with open(cls.__path, "r") as benchmarks:
             for line in benchmarks:
-                match = re.search(r"BENCHMARK FOR (\w+) COMPLETED", line)
+                match = re.search(r"BENCHMARK FOR ([\w']+(?:\s+[\w']+)*) COMPLETED", line)
 
                 if not match:
                     continue
